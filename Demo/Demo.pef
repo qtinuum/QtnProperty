@@ -1,0 +1,200 @@
+#include "../Core/PropertyCore.h"
+#include "../Core/PropertyGUI.h"
+
+#include_cpp <QFileDialog>
+
+enum COLOR
+{
+    red (1, "red"),
+    blue (2, "blue"),
+    green (3, "green")
+}
+
+enum FLAGS
+{
+    opt1(1, "Option1"),
+    opt2(2, "Option2"),
+    opt3(4, "Option3")
+}
+
+property_set Main
+{
+    Int count
+    {
+        description = "Count is a number of items.";
+        value = 5;
+    }
+
+    Bool isValid
+    {
+        description = "Validation flag.";
+        value = false;
+
+        slot propertyDidChange
+        {
+            Internal.switchState(qtn::PropertyStateImmutable, !isValid);
+        }
+    }
+
+    property_set Internal Internal
+    {
+        state = qtn::PropertyStateImmutable;
+        QString name
+        {
+            description = "Name of the item.";
+            value = "Item";
+        }
+
+        QRect rect
+        {
+            value = QRect(10, 23, 19, 2);
+            //rectMode = PropertyQRectModeLeftTopRightBottom;
+        }
+
+        QString item1
+        {
+            value = "Item1";
+        }
+        QString item2
+        {
+            value = "Item2";
+        }
+        QString item3
+        {
+            value = "Item3";
+        }
+        QString item4
+        {
+            value = "Item4";
+        }
+        QString item5
+        {
+            value = "Item5";
+        }
+
+        Bool item6;
+        Bool item7
+        {
+            delegate ComboBox;
+        }
+
+        Enum item8
+        {
+            value = COLOR::red;
+            enumInfo = &COLOR::info();
+        }
+
+        QColor item9
+        {
+            value = QColor(100, 100, 100);
+            delegate { shape = qtn::QColorDelegateShapeCircle; }
+        }
+    }
+
+    Bool flag
+    {
+        Value = false;
+        delegate ComboBox;
+    }
+
+    property_set SubProperties Supplementary
+    {
+        description = "Supplementary <b>description</b>";
+        Int intProp
+        {
+            value = -6;
+            maxValue = 10;
+            minValue = -10;
+            stepValue = 2;
+        }
+
+        UInt uintProp
+        {
+            value = 323;
+        }
+
+        Double doubleProp
+        {
+            value = 762.453;
+        }
+
+        Float floatProp
+        {
+            value = 0.234f;
+            minValue = 0;
+            maxValue = 1.f;
+            stepValue = 0.001f;
+        }
+
+        Bool boolProp
+        {
+            value = true;
+
+            delegate ComboBox
+            {
+                labelTrue = "On";
+                labelFalse = "Off";
+            }
+        }
+
+        Enum enumProp
+        {
+            value = COLOR::green;
+            enumInfo = &COLOR::info();
+        }
+
+        QColor colorProp
+        {
+            value = "red";
+        }
+
+        EnumFlags flagsProp
+        {
+            enumInfo = &FLAGS::info();
+            value = FLAGS::opt2 | FLAGS::opt3;
+        }
+
+        QString fileName1
+        {
+            delegate File;
+        }
+
+        QString fileName2
+        {
+            value = "file name";
+            delegate File
+            {
+                invalidColor = QColor(Qt::blue);
+                acceptMode = QFileDialog::AcceptSave;
+                nameFilters = QStringList() << "PDF files (*.pdf)" << "All files (*)";
+            }
+        }
+
+        QPoint pointProp
+        {
+            value = QPoint(12, 2);
+            description = "Point property.";
+        }
+
+        QSize sizeProp
+        {
+            value = QSize(22, 34);
+            description = "Size property.";
+        }
+
+        QFont fontProp
+        {
+            value = QFont();
+            description = "Font property.";
+        }
+
+        QString listProp
+        {
+            value = "one";
+            delegate List
+            {
+                items = QStringList() << "one" << "two" << "three";
+            }
+        }
+    }
+}

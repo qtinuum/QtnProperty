@@ -1,0 +1,24 @@
+PropertyArray
+
+Implement PropertySetForm - property widgets on form
+
+AutoValue feature
+
+Make wrapper propertyset for QObject derived classes
+
+Copy/NewInstance functions
+Save/Load via QDataStream/XML
+QtScript support
+toStr/fromStr and toVariant/fromVariant functions
+
+
+Demo with modal dialog and change properties console
+
+owner feature????
+How to define default PropertySet?
+
+command line parameters for PEG
+QtDesigner plugin
+Help
+pef files syntax highlight
+CMake support

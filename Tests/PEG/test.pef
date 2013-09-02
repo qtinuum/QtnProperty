@@ -1,0 +1,342 @@
+#include "Enum.h"
+#include_cpp <vector>
+#include_h "PropertyCore.h"
+#include_h "PropertyGUI.h"
+
+property_set Test1
+{
+    description = "Test property_set description";
+    state =0 ;
+    Int a
+    {
+        description = "Descripion";
+        value = 5;
+        stepValue = -1;
+        maxValue = 10;
+    }
+
+QString text{
+    value=QString("#^{};");
+    description = "defrf\"sde\"""deerf3rf"
+    "derf r g\r\nreg r{}""dfrgerg"
+    "fwrewre";
+}
+
+}
+
+property_set Test2{
+}
+
+
+code_h
+{
+    // declaration
+    void aaa();
+}
+
+property_set Test3: public qtn::Property, private QString {   
+    property_set YY yy
+    {
+        description = tr("ss")+tr("ss");
+        // rectangle property
+        QRect rect {value = QRect(10, 10, 10, 10);}
+    }
+
+    property_set SS: public qtn::Property, private QRect iis
+    {
+        Bool a{ value = true; }
+
+        property_set AA aa
+        {
+           code_h
+           {
+               private:
+                   bool m_s;
+           }
+           code_cpp
+           {
+               // AA cpp code
+           }
+        }
+    }
+
+    Bool u
+    {
+        value = true;
+        slot propertyDidChange
+        {
+            // sub u propertyDidChange
+        }
+    }
+
+    slot propertyDidChange
+    {
+        // this propertyDidChange
+    }
+
+    slot u.propertyWillChange
+    {
+        // u.propertyWillChange code
+    }
+    
+    /*
+     * external property set
+     **/
+    extern property_set Test2 xx {}
+
+    extern property_set Test2 tt;
+
+    extern property_set SS s
+    {
+        a.value = false;
+
+        slot propertyWillChange
+        {
+            yy.rect = QRect(1, 1, 1, 1);
+            // ss propertyWillChange
+        }
+
+        slot a.propertyValueAccept
+        {
+            // s.a.propertyValueAccept
+        }
+
+    }
+
+    Bool ww;
+
+    BoolCallback bc
+    {
+        callbackValueGet = [this]()->bool {
+                return ww;
+        };
+
+        callbackValueAccepted = [](bool value)->bool {
+            if (value) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        callbackValueEqual = [](bool value)->bool { return false; };
+
+        callbackValueSet = [this](bool value) {
+            m_s = value;
+        };
+    }
+
+    code_h
+    {
+        public:
+            bool m_s;
+    }
+
+}
+
+    code_cpp{
+        void aaa()
+        {
+
+        }
+    }
+
+enum LANGUAGE
+{
+    ENG(3, "English")
+}
+
+enum TYPE{}
+
+enum COLOR {
+    RED (10, "Red"),
+    BLUE (22, "Blue") hidden obsolete,
+    YELLOW (1, "Yellow")
+}
+
+enum MASK {
+    ONE (1, "One"),
+    TWO (2, "Two"),
+    FOUR (4, "Four")
+}
+
+property_set AllPropertyTypes
+{
+    Bool bp { id = 1; }
+    BoolCallback bpc
+    {
+        callbackValueGet = [this]() { return _b; };
+        callbackValueSet = [this](bool v) { _b = v; };
+        id = 2;
+    }
+
+    Int ip { id = 3; }
+    IntCallback ipc
+    {
+        callbackValueGet = [this]() { return _i; };
+        callbackValueSet = [this](qint32 v) { _i =v; };
+        id = 4;
+    }
+
+    UInt up { id = 5; }
+    UIntCallback upc
+    {
+        callbackValueGet = [this]() { return _ui; };
+        callbackValueSet = [this](quint32 v) { _ui = v; };
+        id = 6;
+    }
+
+    Float fp { id = 7; }
+    FloatCallback fpc
+    {
+        callbackValueGet = [this]() { return _f; };
+        callbackValueSet = [this](float v) { _f = v; };
+        id = 8;
+    }
+
+    Double dp { id = 9; }
+    DoubleCallback dpc
+    {
+        callbackValueGet = [this]() { return _d; };
+        callbackValueSet = [this](double v) { _d = v; };
+        id = 10;
+    }
+
+    QString sp { id = 11; }
+    QStringCallback spc
+    {
+        callbackValueGet = [this]() { return _s; };
+        callbackValueSet = [this](QString v) { _s = v; };
+        id = 12;
+    }
+
+    QRect rp { id = 13; }
+    QRectCallback rpc
+    {
+        callbackValueGet = [this]() { return _r; };
+        callbackValueSet = [this](QRect v) { _r = v; };
+        id = 14;
+    }
+
+    QPoint pp { id = 15; }
+    QPointCallback ppc
+    {
+        callbackValueGet = [this]() { return _p; };
+        callbackValueSet = [this](QPoint v) { _p = v; };
+        id = 16;
+    }
+
+    QSize szp { id = 17; }
+    QSizeCallback szpc
+    {
+        callbackValueGet = [this]() { return _sz; };
+        callbackValueSet = [this](QSize v) { _sz = v; };
+        id = 18;
+    }
+
+    Enum ep
+    {
+        enumInfo = &COLOR::info();
+        value = COLOR::BLUE;
+        id = 19;
+    }
+    EnumCallback epc
+    {
+        enumInfo = &COLOR::info();
+        callbackValueGet = [this]() { return _e; };
+        callbackValueSet = [this](qtn::EnumValueType v) { _e = v; };
+        id = 20;
+    }
+
+    EnumFlags efp
+    {
+        enumInfo = &MASK::info();
+        value = MASK::ONE|MASK::FOUR;
+        id = 21;
+    }
+    EnumFlagsCallback efpc
+    {
+        enumInfo = &MASK::info();
+        callbackValueGet = [this]() { return _ef; };
+        callbackValueSet = [this](qtn::EnumFlagsValueType v) { _ef = v; };
+        id = 22;
+    }
+
+    QColor cp
+    {
+        value = QColor(Qt::blue);
+        id = 23;
+    }
+    QColorCallback cpc
+    {
+        callbackValueGet = [this]() { return _cl; };
+        callbackValueSet = [this](QColor v) { _cl = v; };
+        id = 24;
+    }
+
+    QFont fnp
+    {
+        value = QFont("Courier", 10);
+        id = 25;
+    }
+    QFontCallback fnpc
+    {
+        callbackValueGet = [this]() { return _fn; };
+        callbackValueSet = [this](QFont v) { _fn = v; };
+        id = 26;
+    }
+
+    AllPropertyTypes(int a, const bool s, std::function<void()> f)
+        : _b(s)
+    {
+        _b = true;
+        _i =12;
+        _ui = 9;
+        _f = 0.2f;
+        _d = 32.4;
+        _s = "name";
+        _r = QRect(10, 10, 10, 10);
+        _p = QPoint(9, 2);
+        _sz = QSize(33, 21);
+        _e = COLOR::RED;
+        _ef = MASK::ONE|MASK::FOUR;
+        _cl = QColor(Qt::red);
+        _fn = QFont("Arial", 19);
+    }
+
+    ~AllPropertyTypes()
+    {
+        _b = false;
+    }
+
+    code_h
+    {
+    private:
+        bool _b;
+        qint32 _i;
+        quint32 _ui;
+        float _f;
+        double _d;
+        QString _s;
+        QRect _r;
+        QPoint _p;
+        QSize _sz;
+        qtn::EnumValueType _e;
+        qtn::EnumFlagsValueType _ef;
+        QColor _cl;
+        QFont _fn;
+    }
+}
+
+/*
+ *    NONE(-1, "None") hidden,
+    ENG(0, "English"),
+    FR(1, "French"),
+    GM(2, "German")
+
+enum MY_TYPE
+{
+    MY_TYPE1(1, "My type 1"),
+    MY_TYPE2(2, "My type 2")
+}
+*/

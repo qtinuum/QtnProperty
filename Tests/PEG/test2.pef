@@ -1,0 +1,29 @@
+#include_h "PropertyCore.h"
+
+property_set A
+{
+    Bool b
+    {
+        value = true;
+        description = "b property";
+        delegate Combobox
+        {
+            labelTrue = "On";
+            labelFalse = "Off";
+        }
+    }
+
+    code_h
+    {
+        public:
+            void setOwner(int a);
+    }
+
+    code_cpp
+    {
+        void PropertySetA::setOwner(int a)
+        {
+            b = (bool)a;
+        }
+    }
+};
