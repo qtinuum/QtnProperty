@@ -24,7 +24,7 @@
 int yycolumn = 1;
 int yy_bracket_count = 0;
 
-extern void yyerror(char const *s);
+extern void yyerror(YYLTYPE *yylloc, char const *s);
 
 #define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno; \
     yylloc->first_column = yycolumn; yylloc->last_column = yycolumn + yyleng - 1; \
@@ -63,7 +63,7 @@ public|protected|private    { *yylval = yytext; return ACCESS_ID; }
 [LR]?\"                     { yymore(); yy_push_state(STRING_STATE); yy_push_state(CPP_STRING_STATE); }
 
 .                           {
-    printf( "Unrecognized character: %s\n", yytext ); yyerror("scan error"); exit(1);
+    printf( "Unrecognized character: %s\n", yytext ); yyerror(yylloc, "scan error"); exit(1);
 }
 
 <STRING_STATE>{
@@ -87,7 +87,7 @@ public|protected|private    { *yylval = yytext; return ACCESS_ID; }
 
 <ASSIGN_STATE>{
 "/*"                        { yy_push_state(CPP_COMMENT_STATE); }
-"}"                         { printf( "Unbalanced } bracket\n"); yyerror("scan error"); exit(1); }
+"}"                         { printf( "Unbalanced } bracket\n"); yyerror(yylloc, "scan error"); exit(1); }
 "{"                         { yymore(); yy_push_state(CPP_CODE_STATE2); yy_bracket_count = 1; }
 [^\";{}]+                   { yymore(); }
 [LR]?\"                     { yymore(); yy_push_state(CPP_STRING_STATE); }

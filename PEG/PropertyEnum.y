@@ -3,8 +3,7 @@
 #include "PropertyEnumGenerator.h"
 #include <stdio.h>
 
-void yyerror(char const *);
-#define YYLEX_PARAM &yylval, &yylloc
+void yyerror(YYLTYPE *yylloc, char const *);
 #define YYERROR_VERBOSE
 #define YYPRINT(File, Type, Value) fprintf ((File), "%s", (Value).toLatin1().data())
 
@@ -16,6 +15,7 @@ extern void yy_push_state_initialization_list();
 
 %}
 
+%define api.pure full
 %locations
 
 %token  PROPERTY_SET
@@ -223,7 +223,7 @@ name_to_assign:   ID                        {
 slot_declaration:   SLOT name_to_assign            {
     if (!pegContext.checkSlotName(pegContext.currAssignFunc)) {
         QString error = peg.tr("Unrecognized slot name <%1>.").arg(pegContext.currAssignFunc);
-        yyerror(error.toLatin1().data());
+        yyerror(&yylloc, error.toLatin1().data());
         exit(1);
     }
 }
@@ -239,7 +239,7 @@ slot_declaration:   SLOT name_to_assign            {
 delegate_declaration:     DELEGATE {
     if (pegContext.current()->delegateInfo.data()) {
         QString error = peg.tr("Delegate for object <%1> already defined.").arg(pegContext.current()->name);
-        yyerror(error.toLatin1().data());
+        yyerror(&yylloc, error.toLatin1().data());
         exit(1);
     }
 
@@ -311,7 +311,7 @@ enum_value:         ID '(' NUMBER COMMA STR ')'     {
     item.id = $3.toInt(&success);
     if (!success) {
         QString error = peg.tr("Unrecognized enum item id <%1>.").arg($3);
-        yyerror(error.toLatin1().data());
+        yyerror(&yylloc, error.toLatin1().data());
         exit(1);
     }
     item.text = $5;
@@ -329,13 +329,13 @@ enum_states_list:         /* none */
 
 %%
 
-void yyerror(char const *s)
+void yyerror(YYLTYPE *yylloc, char const *s)
 {
     fprintf(stderr, "Parser error: (%d,%d)-(%d,%d) '%s'\n"
-                    ,yylloc.first_line
-                    ,yylloc.first_column
-                    ,yylloc.last_line
-                    ,yylloc.last_column
+                    ,yylloc->first_line
+                    ,yylloc->first_column
+                    ,yylloc->last_line
+                    ,yylloc->last_column
                     ,s);
 }
 
