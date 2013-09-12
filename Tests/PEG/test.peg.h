@@ -15,11 +15,19 @@ public:
     explicit PropertySetTest1(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetTest1();
+    // assignment declaration
+    PropertySetTest1& operator=(const PropertySetTest1& other);
     
     // start children declarations
     Qtinuum::PropertyInt &a;
     Qtinuum::PropertyQString &text;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();
@@ -37,6 +45,14 @@ public:
     explicit PropertySetTest2(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetTest2();
+    // assignment declaration
+    PropertySetTest2& operator=(const PropertySetTest2& other);
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();
@@ -58,10 +74,18 @@ public:
     explicit PropertySetYY(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetYY();
+    // assignment declaration
+    PropertySetYY& operator=(const PropertySetYY& other);
     
     // start children declarations
     Qtinuum::PropertyQRect &rect;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();
@@ -79,6 +103,14 @@ public:
     explicit PropertySetAA(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetAA();
+    // assignment declaration
+    PropertySetAA& operator=(const PropertySetAA& other);
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();
@@ -101,11 +133,19 @@ public:
     explicit PropertySetSS(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetSS();
+    // assignment declaration
+    PropertySetSS& operator=(const PropertySetSS& other);
     
     // start children declarations
     Qtinuum::PropertyBool &a;
     PropertySetAA &aa;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();
@@ -124,6 +164,8 @@ public:
     explicit PropertySetTest3(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetTest3();
+    // assignment declaration
+    PropertySetTest3& operator=(const PropertySetTest3& other);
     
     // start children declarations
     PropertySetYY &yy;
@@ -135,6 +177,12 @@ public:
     Qtinuum::PropertyBool &ww;
     Qtinuum::PropertyBoolCallback &bc;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();
@@ -209,9 +257,11 @@ class PropertySetAllPropertyTypes: public Qtinuum::Property
 
 public:
     // constructor declaration
-    explicit PropertySetAllPropertyTypes(int a, const bool s, std::function<void()> f, QObject *parent = 0);
+    explicit PropertySetAllPropertyTypes(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetAllPropertyTypes();
+    // assignment declaration
+    PropertySetAllPropertyTypes& operator=(const PropertySetAllPropertyTypes& other);
     
     // start children declarations
     Qtinuum::PropertyBool &bp;
@@ -241,6 +291,12 @@ public:
     Qtinuum::PropertyQFont &fnp;
     Qtinuum::PropertyQFontCallback &fnpc;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();

@@ -236,7 +236,6 @@ void SourceCode::generateCppFile(TextStreamIndent &s) const
 }
 
 PropertySetCode::PropertySetCode()
-    : _extern(false)
 {}
 
 void PropertySetCode::setName(QString _name)
@@ -253,8 +252,7 @@ void PropertySetCode::setSuperType(const PropertySetCode* parent)
         superType = parent->superType + "::" + parent->selfType;
 }
 
-void PropertySetCode::setConstructorCode(QString _name, QString _params_list,
-                                         QString _initialization_list, QString _code)
+void PropertySetCode::setConstructorCode(QString _name, QString _initialization_list, QString _code)
 {
     if (_name != name)
         peg.fatalError(QString("Cannot recognize as constructor '%1'.").arg(_name));
@@ -263,7 +261,6 @@ void PropertySetCode::setConstructorCode(QString _name, QString _params_list,
         peg.fatalError(QString("Constructor for '%1' already defined.").arg(_name));
 
     constructor.reset(new Constructor());
-    constructor->params_list = _params_list;
     constructor->initialization_list = _initialization_list.trimmed();
     constructor->code = _code;
 }
@@ -295,13 +292,20 @@ void PropertySetCode::generateHFile(TextStreamIndent &s) const
         s << endl;
     s.newLine(-1) << "public:";
         s.newLine() << "// constructor declaration";
-        s.newLine() << QString("explicit %1(%2QObject *parent = %3);")
+        s.newLine() << QString("explicit %1(QObject *parent = %2);")
                             .arg(selfType,
-                                 decorateStr(constructorParamsList(), "", ", "),
                                  valueByName(assignments, "parent", "0"));
         s.newLine() << "// destructor declaration";
         s.newLine() << QString("virtual ~%1();").arg(selfType);
+        s.newLine() << "// assignment declaration";
+        s.newLine() << QString("%1& operator=(const %1& other);").arg(selfType);
         generateChildrenDeclaration(s);
+        s << endl;
+    s.newLine(-1) << "protected:";
+        s.newLine() << "// cloning implementation";
+        s.newLine() << QTN_NAMESPACE + "Property* createNewImpl(QObject* parentForNew) const override;";
+        s.newLine() << QTN_NAMESPACE + "Property* createCopyImpl(QObject* parentForCopy) const override;";
+        s << endl;
     s.newLine(-1) << "private:";
         s.newLine() << "void init();";
         s.newLine() << "void connectSlots();";
@@ -316,11 +320,10 @@ void PropertySetCode::generateHFile(TextStreamIndent &s) const
 void PropertySetCode::generateCppFile(TextStreamIndent &s) const
 {
     generateSubPropertySetsImplementations(s);
+
     // constructor implementation
     s << endl;
-    s.newLine() << QString("%1::%1(%2QObject *parent)")
-                        .arg(selfType,
-                             decorateStr(constructorParamsList(), "", ", "));
+    s.newLine() << QString("%1::%1(QObject *parent)").arg(selfType);
     s.addIndent();
     s.newLine() << ": " << defaultParentType() << "(parent)";
         generateChildrenInitialization(s);
@@ -335,6 +338,7 @@ void PropertySetCode::generateCppFile(TextStreamIndent &s) const
         s.newLine() << "connectDelegates();";
     s.delIndent();
     s.newLine() << "}";
+
     // destructor implementation
     s << endl;
     s.newLine() << selfType << "::~"<< selfType << "()";
@@ -345,6 +349,36 @@ void PropertySetCode::generateCppFile(TextStreamIndent &s) const
         s.newLine() << "disconnectSlots();";
     s.delIndent();
     s.newLine() << "}";
+
+    // assignment implementation
+    s << endl;
+    s.newLine() << QString("%1& %1::operator=(const %1& other)").arg(selfType);
+    s.newLine() << "{";
+    s.addIndent();
+        generateChildrenCopy(s);
+        s << endl;
+        s.newLine() << "return *this;";
+    s.delIndent();
+    s.newLine() << "}";
+
+    // cloning implementation
+    s << endl;
+    s.newLine() << QString("%1Property* %2::createNewImpl(QObject* parentForNew) const").arg(QTN_NAMESPACE, selfType);
+    s.newLine() << "{";
+    s.addIndent();
+        s.newLine() << QString("return new %1(parentForNew);").arg(selfType);
+    s.delIndent();
+    s.newLine() << "}";
+    s << endl;
+    s.newLine() << QString("%1Property* %2::createCopyImpl(QObject* parentForCopy) const").arg(QTN_NAMESPACE, selfType);
+    s.newLine() << "{";
+    s.addIndent();
+        s.newLine() << QString("%1* p = new %1(parentForCopy);").arg(selfType);
+        s.newLine() << "*p = *this;";
+        s.newLine() << "return p;";
+    s.delIndent();
+    s.newLine() << "}";
+
     // initialization
     s << endl;
     s.newLine() << "void " << selfType << "::init()";
@@ -356,30 +390,34 @@ void PropertySetCode::generateCppFile(TextStreamIndent &s) const
         generateChildrenAssignment(s);
     s.delIndent();
     s.newLine() << "}";
+
     // slots connect/disconnect
     s << endl;
-    s.newLine() << "void " << selfType << "::connectSlots()";
+    s.newLine() << QString("void %1::connectSlots()").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
         generateSlotsConnections(s, "connect");
     s.delIndent();
     s.newLine() << "}";
     s << endl;
-    s.newLine() << "void " << selfType << "::disconnectSlots()";
+    s.newLine() << QString("void %1::disconnectSlots()").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
         generateSlotsConnections(s, "disconnect");
     s.delIndent();
     s.newLine() << "}";
     generateSlotsImplementation(s);
+
     // delegates connects
     s << endl;
-    s.newLine() << "void " << selfType << "::connectDelegates()";
+    s.newLine() << QString("void %1::connectDelegates()").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
         generateDelegatesConnection(s);
     s.delIndent();
     s.newLine() << "}";
+
+    // custom code
     generateCppSourceCode(s);
 }
 
@@ -397,14 +435,6 @@ QString PropertySetCode::defaultParentType() const
         return QTN_NAMESPACE + "Property";
     else
         return parentTypes.first().second;
-}
-
-QString PropertySetCode::constructorParamsList() const
-{
-    if (!constructor)
-        return QString();
-
-    return constructor->params_list;
 }
 
 void PropertySetCode::generateRestParentTypes(TextStreamIndent &s) const
@@ -460,6 +490,17 @@ void PropertySetCode::generateChildrenAssignment(TextStreamIndent &s) const
     s.popWrapperLines();
 }
 
+void PropertySetCode::generateChildrenCopy(TextStreamIndent &s) const
+{
+    if (members.isEmpty())
+        return;
+
+    foreach (auto p, members)
+    {
+        s.newLine() << QString("%1 = other.%1;").arg(p->name);
+    }
+}
+
 void PropertySetCode::generateSubPropertySetsDeclarations(TextStreamIndent &s) const
 {
     QVector<const PropertySetCode*> _subPropertySets = getSubpropertySets();
@@ -495,6 +536,9 @@ void PropertySetCode::generateSlotsDeclaration(TextStreamIndent &s) const
 
     for (auto it = members.begin(); it != members.end(); ++it)
     {
+        if (!(*it)->_extern)
+            continue;
+
         for (auto jt = (*it)->slots_code.begin(); jt != (*it)->slots_code.end(); ++jt)
         {
             s.newLine() << QString("void %1(%2);").arg(slotName(jt.key(), &(*it)->name, &jt.value().member)
@@ -521,6 +565,9 @@ void PropertySetCode::generateSlotsImplementation(TextStreamIndent &s) const
 
     for (auto it = members.begin(); it != members.end(); ++it)
     {
+        if (!(*it)->_extern)
+            continue;
+
         for (auto jt = (*it)->slots_code.begin(); jt != (*it)->slots_code.end(); ++jt)
         {
             s << endl;
@@ -619,6 +666,9 @@ void PropertySetCode::generateSlotsConnections(TextStreamIndent &s, const QStrin
 
     for (auto it = members.begin(); it != members.end(); ++it)
     {
+        if (!(*it)->_extern)
+            continue;
+
         for (auto jt = (*it)->slots_code.begin(); jt != (*it)->slots_code.end(); ++jt)
         {
             s.newLine() << QString("QObject::%1(%2, &%3Property::%4, this, &%5::%6);").arg(

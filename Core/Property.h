@@ -37,7 +37,6 @@ public:
     explicit Property(QObject *parent);
     virtual ~Property();
 
-    /*! Returns name of the property (calls QObject::objectName). */
     QString name() const { return objectName(); }
     void setName(const QString &name);
 
@@ -80,6 +79,10 @@ public:
     void setDelegate(const PropertyDelegateInfo &delegate);
     void setDelegateCallback(const std::function<const PropertyDelegateInfo *()> &callback);
 
+    // cloning
+    Property* createNew(QObject* parentForNew) const;
+    Property* createCopy(QObject* parentForCopy) const;
+
     // serialization
     bool load(QDataStream &stream);
     bool save(QDataStream &stream) const;
@@ -90,6 +93,11 @@ Q_SIGNALS:
     void propertyValueAccept(const Property *property, PropertyValuePtr valueToAccept, bool* accept);
 
 protected:
+    // cloning implementation
+    Property(QObject *parent, const Property &other);
+    virtual Property* createNewImpl(QObject* parentForNew) const;
+    virtual Property* createCopyImpl(QObject* parentForCopy) const;
+
     // serialization implementation
     virtual bool loadContentImpl(QDataStream &stream);
     virtual bool saveContentImpl(QDataStream &stream) const;

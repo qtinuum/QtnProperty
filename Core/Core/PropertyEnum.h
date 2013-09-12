@@ -36,31 +36,24 @@ public:
     {
     }
 
-    operator EnumValueType() const { return value(); }
-
-    PropertyEnumBase &operator=(const PropertyEnumBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnumBase &operator=(EnumValueType newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
     const EnumInfo *enumInfo() const { return m_enumInfo; }
     EnumInfo *enumInfo() { return m_enumInfo; }
     void setEnumInfo(EnumInfo *enumInfo) { m_enumInfo = enumInfo; }
 
 protected:
+    PropertyEnumBase(QObject* parent, const PropertyEnumBase& other)
+        : SinglePropertyBase<EnumValueType>(parent, other),
+          m_enumInfo(other.m_enumInfo)
+    {}
+
     bool isValueAcceptedImpl(ValueType valueToAccept) override;
 
 private:
+    PropertyEnumBase(const PropertyEnumBase &) Q_DECL_EQ_DELETE;
+
     EnumInfo *m_enumInfo;
 
-    PropertyEnumBase(const PropertyEnumBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyEnumBase)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyEnumBase, EnumValueType);
@@ -75,25 +68,8 @@ public:
     {
     }
 
-    operator EnumValueType() const { return value(); }
-
-    PropertyEnumCallback &operator=(const PropertyEnumCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnumCallback &operator=(const PropertyEnumBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnumCallback &operator=(EnumValueType newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumCallback, PropertyEnumBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyEnumCallback, SinglePropertyCallback<PropertyEnumBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyEnum: public SinglePropertyValue<PropertyEnumBase>
@@ -106,25 +82,8 @@ public:
     {
     }
 
-    operator EnumValueType() const { return value(); }
-
-    PropertyEnum &operator=(const PropertyEnum &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnum &operator=(const PropertyEnumBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnum &operator=(EnumValueType newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnum, PropertyEnumBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyEnum, SinglePropertyValue<PropertyEnumBase>)
 };
 
 } // end namespace Qtinuum

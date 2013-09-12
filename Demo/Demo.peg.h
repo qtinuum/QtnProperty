@@ -42,6 +42,8 @@ public:
     explicit PropertySetInternal(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetInternal();
+    // assignment declaration
+    PropertySetInternal& operator=(const PropertySetInternal& other);
     
     // start children declarations
     Qtinuum::PropertyQString &name;
@@ -56,6 +58,12 @@ public:
     Qtinuum::PropertyEnum &item8;
     Qtinuum::PropertyQColor &item9;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();
@@ -63,7 +71,7 @@ private:
     void connectDelegates();
 };
 
-class PropertySetSubProperties: public Qtinuum::Property
+class PropertySetSubProperties: public qtn::PropertyBool
 {
     Q_OBJECT
     //Q_DISABLE_COPY(PropertySetSubProperties)
@@ -73,6 +81,8 @@ public:
     explicit PropertySetSubProperties(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetSubProperties();
+    // assignment declaration
+    PropertySetSubProperties& operator=(const PropertySetSubProperties& other);
     
     // start children declarations
     Qtinuum::PropertyInt &intProp;
@@ -90,11 +100,21 @@ public:
     Qtinuum::PropertyQFont &fontProp;
     Qtinuum::PropertyQString &listProp;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();
     void disconnectSlots();
     void connectDelegates();
+    
+    // start slot declarations
+    void on_propertyDidChange(const Qtinuum::Property *changedProperty, const Qtinuum::Property *firedProperty, Qtinuum::PropertyChangeReason reason);
+    // end slot declarations
 };
 
 class PropertySetMain: public Qtinuum::Property
@@ -107,6 +127,8 @@ public:
     explicit PropertySetMain(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetMain();
+    // assignment declaration
+    PropertySetMain& operator=(const PropertySetMain& other);
     
     // start children declarations
     Qtinuum::PropertyInt &count;
@@ -115,6 +137,12 @@ public:
     Qtinuum::PropertyBool &flag;
     PropertySetSubProperties &Supplementary;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();

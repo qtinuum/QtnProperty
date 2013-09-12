@@ -32,23 +32,10 @@ class QTN_PE_CORE_EXPORT PropertyQRectBase: public SinglePropertyBase<QRect>
 public:
     explicit PropertyQRectBase(QObject *parent);
 
-    operator QRect() const { return value(); }
-
-    PropertyQRectBase &operator=(const PropertyQRectBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQRectBase &operator=(const QRect &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyQRectBase(const PropertyQRectBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQRectBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQRectBase, SinglePropertyBase<QRect>)
 };
+
 P_PROPERTY_DECL_EQ_OPERATORS(PropertyQRectBase, QRect);
 
 QTN_PE_CORE_EXPORT Property* createLeftProperty(QObject *parent, PropertyQRectBase *propertyRect);
@@ -68,25 +55,8 @@ public:
     {
     }
 
-    operator QRect() const { return value(); }
-
-    PropertyQRectCallback &operator=(const PropertyQRectCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQRectCallback &operator=(const PropertyQRectBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQRectCallback &operator=(const QRect &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQRectCallback, PropertyQRectBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQRectCallback, SinglePropertyCallback<PropertyQRectBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQRect: public SinglePropertyValue<PropertyQRectBase>
@@ -99,25 +69,8 @@ public:
     {
     }
 
-    operator QRect() const { return value(); }
-
-    PropertyQRect &operator=(const PropertyQRect &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQRect &operator=(const PropertyQRectBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQRect &operator=(const QRect &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQRect, PropertyQRectBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQRect, SinglePropertyValue<PropertyQRectBase>)
 };
 
 } // end namespace Qtinuum

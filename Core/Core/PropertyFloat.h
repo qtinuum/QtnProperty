@@ -34,22 +34,8 @@ public:
     {
     }
 
-    operator float() const { return value(); }
-
-    PropertyFloatBase &operator=(const PropertyFloatBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyFloatBase &operator=(float newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyFloatBase(const PropertyFloatBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyFloatBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyFloatBase, NumericPropertyBase<SinglePropertyBase<float>>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyFloatBase, float)
@@ -64,25 +50,8 @@ public:
     {
     }
 
-    operator float() const { return value(); }
-
-    PropertyFloatCallback &operator=(const PropertyFloatCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyFloatCallback &operator=(const PropertyFloatBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyFloatCallback &operator=(float newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyFloatCallback, PropertyFloatBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyFloatCallback, SinglePropertyCallback<PropertyFloatBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyFloat: public SinglePropertyValue<PropertyFloatBase>
@@ -95,25 +64,8 @@ public:
     {
     }
 
-    operator float() const { return value(); }
-
-    PropertyFloat &operator=(const PropertyFloat &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyFloat &operator=(const PropertyFloatBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyFloat &operator=(float newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyFloat, PropertyFloatBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyFloat, SinglePropertyValue<PropertyFloatBase>)
 };
 
 } // end namespace Qtinuum

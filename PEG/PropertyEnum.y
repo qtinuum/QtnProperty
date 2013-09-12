@@ -10,7 +10,6 @@ void yyerror(/*YYLTYPE *yylloc, */char const *);
 using namespace Qtinuum;
 
 extern void yy_push_state_cpp_code();
-extern void yy_push_state_params_list();
 extern void yy_push_state_initialization_list();
 
 %}
@@ -46,7 +45,6 @@ extern void yy_push_state_initialization_list();
         ENUM
         NUMBER
         STR
-        PARAMS_LIST
         INITIALIZATION_LIST
 
 %%
@@ -268,10 +266,10 @@ delegate_attribute:      ID ASSIGN VALUE_TO_ASSIGN {
     pegContext.current()->delegateInfo->attributes[$1] = $3;
 }
 
-constructor: ID '(' { yy_push_state_params_list(); } PARAMS_LIST ')'
+constructor: ID '(' ')'
                         initialization_list
                         CPP_BRACKET_OPEN { yy_push_state_cpp_code(); } CPP_CODE {
-    pegContext.currPropertySet->setConstructorCode($1, $4, $6, $9);
+    pegContext.currPropertySet->setConstructorCode($1, $4, $7);
 }
 ;
 

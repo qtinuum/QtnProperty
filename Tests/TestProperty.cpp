@@ -447,7 +447,7 @@ void TestProperty::propertySerializationValue()
 
     QVERIFY(p);
 
-    PropertySetAllPropertyTypes pp(5, true, nullptr, this);
+    PropertySetAllPropertyTypes pp(this);
 
     QVERIFY(pp.bp == false);
     QVERIFY(pp.bpc == true);

@@ -7,8 +7,6 @@ QT       -= gui
 
 TARGET = peg
 
-DESTDIR = $$BIN_DIR
-
 CONFIG   += console
 CONFIG   -= app_bundle
 

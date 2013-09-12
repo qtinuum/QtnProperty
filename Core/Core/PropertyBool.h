@@ -34,22 +34,8 @@ public:
     {
     }
 
-    operator bool() const { return value(); }
-
-    PropertyBoolBase &operator=(const PropertyBoolBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyBoolBase &operator=(bool newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyBoolBase(const PropertyBoolBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyBoolBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyBoolBase, SinglePropertyBase<bool>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyBoolBase, bool)
@@ -64,25 +50,8 @@ public:
     {
     }
 
-    operator bool() const { return value(); }
-
-    PropertyBoolCallback &operator=(const PropertyBoolCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyBoolCallback &operator=(const PropertyBoolBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyBoolCallback &operator=(bool newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyBoolCallback, PropertyBoolBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyBoolCallback, SinglePropertyCallback<PropertyBoolBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyBool: public SinglePropertyValue<PropertyBoolBase>
@@ -95,25 +64,8 @@ public:
     {
     }
 
-    operator bool() const { return value(); }
-
-    PropertyBool &operator=(const PropertyBool &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyBool &operator=(const PropertyBoolBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyBool &operator=(bool newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyBool, PropertyBoolBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyBool, SinglePropertyValue<PropertyBoolBase>)
 };
 
 } // end namespace Qtinuum

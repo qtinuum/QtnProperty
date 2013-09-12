@@ -190,7 +190,7 @@ void PropertyView::paintEvent(QPaintEvent *e)
     {
         const VisibleItem &vItem = m_visibleItems[i];
 
-        if (vItem.item->isPropertySet())
+        if (!vItem.item->delegate)
             drawPropertySetItem(painter, itemRect, vItem);
         else
             drawPropertyItem(painter, itemRect, vItem);
@@ -204,62 +204,62 @@ void PropertyView::paintEvent(QPaintEvent *e)
 
 void PropertyView::drawBranchNode(QStylePainter &painter, QRect &rect, const VisibleItem &vItem)
 {
-    if (vItem.hasChildren)
+    if (!vItem.hasChildren)
+        return;
+
+    QRectF branchRect(rect.left(), rect.top(), rect.height(), rect.height());
+    //painter.drawRect(branchRect);
+    qreal side = branchRect.height() / 3.5f;
+
+    QPainterPath branchPath;
+    if (vItem.item->collapsed())
     {
-        QRectF branchRect(rect.left(), rect.top(), rect.height(), rect.height());
-        //painter.drawRect(branchRect);
-        qreal side = branchRect.height() / 3.5f;
-
-        QPainterPath branchPath;
-        if (vItem.item->collapsed())
-        {
-            branchPath.moveTo(branchRect.left() + side, branchRect.top() + side);
-            branchPath.lineTo(branchRect.right() - side - 1, branchRect.top() + branchRect.height() / 2.f);
-            branchPath.lineTo(branchRect.left() + side, branchRect.bottom() - side);
-            branchPath.closeSubpath();
-        }
-        else
-        {
-            branchPath.moveTo(branchRect.left() + side, branchRect.top() + side);
-            branchPath.lineTo(branchRect.right() - side, branchRect.top() + side);
-            branchPath.lineTo(branchRect.left() + branchRect.width() / 2.f, branchRect.bottom() - side - 1);
-            branchPath.closeSubpath();
-        }
-
-        if (painter.testRenderHint(QPainter::Antialiasing))
-        {
-            painter.fillPath(branchPath, palette().color(QPalette::Text));
-        }
-        else
-        {
-            painter.setRenderHint(QPainter::Antialiasing, true);
-            painter.fillPath(branchPath, palette().color(QPalette::Text));
-            painter.setRenderHint(QPainter::Antialiasing, false);
-        }
-
-        // add action to collapse/expand branch
-        if (!vItem.actionsValid)
-        {
-            Action branch;
-            branch.rect = branchRect.toRect();//opt.rect;
-
-            Property* property = vItem.item->property;
-            branch.action = [property](QEvent *e, QRect rect)->bool {
-                if (e->type() == QEvent::MouseButtonPress)
-                {
-                    property->switchStateAuto(PropertyStateCollapsed);
-                    return true;
-                }
-
-                return false;
-            };
-
-            vItem.actions.append(branch);
-        }
-
-        // skip branch space
-        rect.setLeft(branchRect.right() + 1);
+        branchPath.moveTo(branchRect.left() + side, branchRect.top() + side);
+        branchPath.lineTo(branchRect.right() - side - 1, branchRect.top() + branchRect.height() / 2.f);
+        branchPath.lineTo(branchRect.left() + side, branchRect.bottom() - side);
+        branchPath.closeSubpath();
     }
+    else
+    {
+        branchPath.moveTo(branchRect.left() + side, branchRect.top() + side);
+        branchPath.lineTo(branchRect.right() - side, branchRect.top() + side);
+        branchPath.lineTo(branchRect.left() + branchRect.width() / 2.f, branchRect.bottom() - side - 1);
+        branchPath.closeSubpath();
+    }
+
+    if (painter.testRenderHint(QPainter::Antialiasing))
+    {
+        painter.fillPath(branchPath, palette().color(QPalette::Text));
+    }
+    else
+    {
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.fillPath(branchPath, palette().color(QPalette::Text));
+        painter.setRenderHint(QPainter::Antialiasing, false);
+    }
+
+    // add action to collapse/expand branch
+    if (!vItem.actionsValid)
+    {
+        Action branch;
+        branch.rect = branchRect.toRect();//opt.rect;
+
+        Property* property = vItem.item->property;
+        branch.action = [property](QEvent *e, QRect rect)->bool {
+            if (e->type() == QEvent::MouseButtonPress)
+            {
+                property->switchStateAuto(PropertyStateCollapsed);
+                return true;
+            }
+
+            return false;
+        };
+
+        vItem.actions.append(branch);
+    }
+
+    // skip branch space
+    rect.setLeft(branchRect.right() + 1);
 }
 
 void PropertyView::drawPropertySetItem(QStylePainter &painter, const QRect &rect, const VisibleItem &vItem)
@@ -778,7 +778,7 @@ void PropertyView::tooltipEvent(QHelpEvent *e)
         const VisibleItem &vItem = m_visibleItems[index];
 
         // propertyset case
-        if (vItem.item->isPropertySet())
+        if (!vItem.item->delegate)
         {
             tooltipText = vItem.item->property->description();
         }
@@ -812,7 +812,7 @@ void PropertyView::updateItemsTree()
     invalidateVisibleItems();
 }
 
-PropertyView::Item *PropertyView::createItemsTree(Property *rootProperty, PropertyDelegateFactory &factory)
+PropertyView::Item *PropertyView::createItemsTree(Property *rootProperty, const PropertyDelegateFactory &factory)
 {
     if (!rootProperty)
         return nullptr;

@@ -199,12 +199,14 @@ struct SourceCode: public Code
 
 struct PropertySetMemberCode
 {
+    PropertySetMemberCode(): _extern(false) {}
     virtual ~PropertySetMemberCode() {}
 
     QString name;
     QString selfType;
     Assignments assignments;
     Slots slots_code;
+    bool _extern;
 
     QScopedPointer<DelegateInfo> delegateInfo;
 };
@@ -212,6 +214,7 @@ struct PropertySetMemberCode
 // code for property
 struct PropertyCode: public PropertySetMemberCode
 {
+    PropertyCode() { _extern = true; }
 };
 
 // code for property_set
@@ -221,13 +224,11 @@ struct PropertySetCode: public Code, public PropertySetMemberCode
     QVector<QSharedPointer<PropertySetMemberCode>> members;
     QVector<QSharedPointer<PropertySetCode>> subPropertySets;
     QVector<QSharedPointer<SourceCode>> sourceCodes;
-    bool _extern;
     QString superType;
 
     struct Constructor
     {
         QString code;
-        QString params_list;
         QString initialization_list;
     };
     QScopedPointer<Constructor> constructor;
@@ -243,8 +244,7 @@ struct PropertySetCode: public Code, public PropertySetMemberCode
 
     void setName(QString _name);
     void setSuperType(const PropertySetCode* parent);
-    void setConstructorCode(QString _name, QString _params_list,
-                            QString _initialization_list, QString _code);
+    void setConstructorCode(QString _name,QString _initialization_list, QString _code);
     void setDestructorCode(QString _name, QString _code);
 
     void generateHFile(TextStreamIndent &s) const override;
@@ -259,6 +259,7 @@ private:
     void generateChildrenDeclaration(TextStreamIndent &s) const;
     void generateChildrenInitialization(TextStreamIndent &s) const;
     void generateChildrenAssignment(TextStreamIndent &s) const;
+    void generateChildrenCopy(TextStreamIndent &s) const;
     void generateSubPropertySetsDeclarations(TextStreamIndent &s) const;
     void generateSubPropertySetsImplementations(TextStreamIndent &s) const;
     void generateSlotsDeclaration(TextStreamIndent &s) const;

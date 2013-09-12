@@ -15,6 +15,25 @@ PropertySetA::~PropertySetA()
     disconnectSlots();
 }
 
+PropertySetA& PropertySetA::operator=(const PropertySetA& other)
+{
+    b = other.b;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetA::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetA(parentForNew);
+}
+
+Qtinuum::Property* PropertySetA::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetA* p = new PropertySetA(parentForCopy);
+    *p = *this;
+    return p;
+}
+
 void PropertySetA::init()
 {
     static QString A_name = tr("A");

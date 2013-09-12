@@ -24,32 +24,18 @@
 namespace Qtinuum
 {
 
-class QTN_PE_CORE_EXPORT PropertyDoubleBase: public NumericPropertyBase<SinglePropertyBase<double> >
+class QTN_PE_CORE_EXPORT PropertyDoubleBase: public NumericPropertyBase<SinglePropertyBase<double>>
 {
     Q_OBJECT
 
 public:
     explicit PropertyDoubleBase(QObject *parent)
-        : NumericPropertyBase<SinglePropertyBase<double> >(parent)
+        : NumericPropertyBase<SinglePropertyBase<double>>(parent)
     {
     }
 
-    operator double() const { return value(); }
-
-    PropertyDoubleBase &operator=(const PropertyDoubleBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyDoubleBase &operator=(double newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyDoubleBase(const PropertyDoubleBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyDoubleBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyDoubleBase, NumericPropertyBase<SinglePropertyBase<double>>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyDoubleBase, double)
@@ -64,25 +50,8 @@ public:
     {
     }
 
-    operator int() const { return value(); }
-
-    PropertyDoubleCallback &operator=(const PropertyDoubleCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyDoubleCallback &operator=(const PropertyDoubleBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyDoubleCallback &operator=(double newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyDoubleCallback, PropertyDoubleBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyDoubleCallback, SinglePropertyCallback<PropertyDoubleBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyDouble: public SinglePropertyValue<PropertyDoubleBase>
@@ -95,25 +64,8 @@ public:
     {
     }
 
-    operator double() const { return value(); }
-
-    PropertyDouble &operator=(const PropertyDouble &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyDouble &operator=(const PropertyDoubleBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyDouble &operator=(double newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyDouble, PropertyDoubleBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyDouble, SinglePropertyValue<PropertyDoubleBase>)
 };
 
 } // end namespace Qtinuum

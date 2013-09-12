@@ -34,22 +34,8 @@ public:
     {
     }
 
-    operator quint32() const { return value(); }
-
-    PropertyUIntBase &operator=(const PropertyUIntBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyUIntBase &operator=(quint32 newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyUIntBase(const PropertyUIntBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyUIntBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyUIntBase, NumericPropertyBase<SinglePropertyBase<quint32>>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyUIntBase, quint32)
@@ -64,25 +50,8 @@ public:
     {
     }
 
-    operator quint32() const { return value(); }
-
-    PropertyUIntCallback &operator=(const PropertyUIntCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyUIntCallback &operator=(const PropertyUIntBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyUIntCallback &operator=(quint32 newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyUIntCallback, PropertyUIntBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyUIntCallback, SinglePropertyCallback<PropertyUIntBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyUInt: public SinglePropertyValue<PropertyUIntBase>
@@ -95,25 +64,8 @@ public:
     {
     }
 
-    operator quint32() const { return value(); }
-
-    PropertyUInt &operator=(const PropertyUInt &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyUInt &operator=(const PropertyUIntBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyUInt &operator=(quint32 newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyUInt, PropertyUIntBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyUInt, SinglePropertyValue<PropertyUIntBase>)
 };
 
 } // end namespace Qtinuum

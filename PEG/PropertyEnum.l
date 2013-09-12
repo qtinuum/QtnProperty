@@ -14,7 +14,6 @@
 %x CPP_CODE_STATE
 %x CPP_CODE_STATE2
 %x STRING_STATE
-%x PARAMS_LIST_STATE
 %x INITIALIZATION_LIST_STATE
 
 %{
@@ -116,7 +115,7 @@ public|protected|private    { *yylval = yytext; return ACCESS_ID; }
 [^\r\n]*                    { /* skip line comment */ yy_pop_state(); }
 }
 
-<INITIAL,CPP_CODE_STATE,CPP_CODE_STATE2,ASSIGN_STATE,PARAMS_LIST_STATE,INITIALIZATION_LIST_STATE>"/*" { yy_push_state(CPP_COMMENT_STATE); }
+<INITIAL,CPP_CODE_STATE,CPP_CODE_STATE2,ASSIGN_STATE,INITIALIZATION_LIST_STATE>"/*" { yy_push_state(CPP_COMMENT_STATE); }
 
 <CPP_COMMENT_STATE>{
 [^*]*                       { /* skip cpp comment */ }
@@ -152,24 +151,6 @@ public|protected|private    { *yylval = yytext; return ACCESS_ID; }
                             }
 }
 
-<PARAMS_LIST_STATE>{
-[^()]*                      { yymore(); }
-"("                         { yymore(); ++yy_bracket_count; }
-")"                         {
-                                --yy_bracket_count;
-                                if (yy_bracket_count == 0) {
-                                    yy_pop_state();
-                                    // skip close bracked
-                                    yytext[yyleng-1] = '\0';
-                                    *yylval = yytext;
-                                    unput(')');
-                                    return PARAMS_LIST;
-                                } else {
-                                    yymore();
-                                }
-                            }
-}
-
 <INITIALIZATION_LIST_STATE>{
 [^{]*                       { yymore(); }
 "{"                         {
@@ -187,12 +168,6 @@ public|protected|private    { *yylval = yytext; return ACCESS_ID; }
 void yy_push_state_cpp_code()
 {
     yy_push_state(CPP_CODE_STATE);
-    yy_bracket_count = 1;
-}
-
-void yy_push_state_params_list()
-{
-    yy_push_state(PARAMS_LIST_STATE);
     yy_bracket_count = 1;
 }
 

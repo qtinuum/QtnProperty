@@ -13,10 +13,18 @@ public:
     explicit PropertySetA(QObject *parent = 0);
     // destructor declaration
     virtual ~PropertySetA();
+    // assignment declaration
+    PropertySetA& operator=(const PropertySetA& other);
     
     // start children declarations
     Qtinuum::PropertyBool &b;
     // end children declarations
+
+protected:
+    // cloning implementation
+    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+
 private:
     void init();
     void connectSlots();

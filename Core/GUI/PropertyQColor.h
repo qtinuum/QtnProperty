@@ -42,23 +42,10 @@ public:
     {
     }
 
-    operator QColor() const { return value(); }
-
-    PropertyQColorBase &operator=(const PropertyQColorBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQColorBase &operator=(const QColor &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyQColorBase(const PropertyQColorBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQColorBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQColorBase, SinglePropertyBase<QColor>)
 };
+
 P_PROPERTY_DECL_EQ_OPERATORS(PropertyQColorBase, QColor)
 
 class QTN_PE_CORE_EXPORT PropertyQColorCallback: public SinglePropertyCallback<PropertyQColorBase>
@@ -71,25 +58,8 @@ public:
     {
     }
 
-    operator QColor() const { return value(); }
-
-    PropertyQColorCallback &operator=(const PropertyQColorCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQColorCallback &operator=(const PropertyQColorBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQColorCallback &operator=(const QColor &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQColorCallback, PropertyQColorBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQColorCallback, SinglePropertyCallback<PropertyQColorBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQColor: public SinglePropertyValue<PropertyQColorBase>
@@ -102,25 +72,8 @@ public:
     {
     }
 
-    operator QColor() const { return value(); }
-
-    PropertyQColor &operator=(const PropertyQColor &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQColor &operator=(const PropertyQColorBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQColor &operator=(const QColor &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQColor, PropertyQColorBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQColor, SinglePropertyValue<PropertyQColorBase>)
 };
 
 } // end namespace Qtinuum

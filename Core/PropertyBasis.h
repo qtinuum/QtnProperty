@@ -20,6 +20,7 @@
 #define PROPERTYBASIS_H
 
 #include "Property.h"
+#include "PropertyMacro.h"
 #include <limits>
 #include <functional>
 
@@ -110,6 +111,11 @@ protected:
         return stream.status() == QDataStream::Ok;
     }
 
+protected:
+    SinglePropertyBase(QObject* parent, const SinglePropertyBase &other)
+        : Property(parent, other)
+    {}
+
 private:
     SinglePropertyBase(const SinglePropertyBase &) Q_DECL_EQ_DELETE;
 };
@@ -128,6 +134,10 @@ public:
     }
 
 protected:
+    SinglePropertyValue(QObject *parent, const SinglePropertyValue& other)
+        : SinglePropertyType(parent, other)
+    {}
+
     ValueType valueImpl() const override { return m_value; }
     void setValueImpl(ValueType newValue) override { m_value = newValue; }
 
@@ -160,6 +170,14 @@ public:
     void setCallbackValueEqual(const CallbackValueEqual &callback) { m_callbackValueEqual = callback; }
 
 protected:
+    SinglePropertyCallback(QObject *parent, const SinglePropertyCallback& other)
+        : SinglePropertyType(parent, other),
+          m_callbackValueGet(other.m_callbackValueGet),
+          m_callbackValueSet(other.m_callbackValueSet),
+          m_callbackValueAccepted(other.m_callbackValueAccepted),
+          m_callbackValueEqual(other.m_callbackValueEqual)
+    {}
+
     ValueType valueImpl() const override
     {
         //Q_ASSERT(m_callbackValueGet);
@@ -194,31 +212,6 @@ private:
     CallbackValueAccepted m_callbackValueAccepted;
     CallbackValueEqual m_callbackValueEqual;
 };
-
-#define P_PROPERTY_DECL_CMP_OPERATOR(ClassName, ValueType, Op) \
-    inline bool operator Op(const ClassName &left, const ClassName &right)\
-    {\
-        return left.value() Op right.value();\
-    }\
-    inline bool operator Op(const ClassName &left, ValueType right)\
-    {\
-        return left.value() Op right;\
-    }\
-    inline bool operator Op(ValueType left, const ClassName &right)\
-    {\
-        return left Op right.value();\
-    }
-
-#define P_PROPERTY_DECL_EQ_OPERATORS(ClassName, ValueType) \
-    P_PROPERTY_DECL_CMP_OPERATOR(ClassName, ValueType, ==)\
-    P_PROPERTY_DECL_CMP_OPERATOR(ClassName, ValueType, !=)
-
-#define P_PROPERTY_DECL_ALL_OPERATORS(ClassName, ValueType) \
-    P_PROPERTY_DECL_EQ_OPERATORS(ClassName, ValueType)\
-    P_PROPERTY_DECL_CMP_OPERATOR(ClassName, ValueType, <)\
-    P_PROPERTY_DECL_CMP_OPERATOR(ClassName, ValueType, <=)\
-    P_PROPERTY_DECL_CMP_OPERATOR(ClassName, ValueType, >)\
-    P_PROPERTY_DECL_CMP_OPERATOR(ClassName, ValueType, >=)
 
 template<typename SinglePropertyType>
 class NumericPropertyBase: public SinglePropertyType
@@ -264,6 +257,14 @@ public:
     }
 
 protected:
+    NumericPropertyBase(QObject *parent, const NumericPropertyBase& other)
+        : SinglePropertyType(parent, other),
+          m_defaultValue(other.m_defaultValue),
+          m_minValue(other.m_minValue),
+          m_maxValue(other.m_maxValue),
+          m_stepValue(other.m_stepValue)
+    {}
+
     bool isValueAcceptedImpl(ValueType valueToAccept) override
     {
         if (valueToAccept < m_minValue)
@@ -312,6 +313,11 @@ class NumericPropertyValue: public NumericPropertyBase<SinglePropertyType>
     }
 
 protected:
+    NumericPropertyValue(QObject* parent, const NumericPropertyValue &other)
+        : NumericPropertyBase<SinglePropertyType>(parent, other),
+          m_value(other.m_value)
+    {}
+
     ValueType valueImpl() const override { return m_value; }
     void setValueImpl(ValueType newValue) override { m_value = newValue; }
 

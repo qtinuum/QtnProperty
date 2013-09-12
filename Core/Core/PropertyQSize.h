@@ -32,22 +32,8 @@ class QTN_PE_CORE_EXPORT PropertyQSizeBase: public SinglePropertyBase<QSize>
 public:
     explicit PropertyQSizeBase(QObject *parent);
 
-    operator QSize() const { return value(); }
-
-    PropertyQSizeBase &operator=(const PropertyQSizeBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQSizeBase &operator=(const QSize &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyQSizeBase(const PropertyQSizeBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQSizeBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQSizeBase, SinglePropertyBase<QSize>)
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(PropertyQSizeBase, QSize)
@@ -65,25 +51,8 @@ public:
     {
     }
 
-    operator QSize() const { return value(); }
-
-    PropertyQSizeCallback &operator=(const PropertyQSizeCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQSizeCallback &operator=(const PropertyQSizeBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQSizeCallback &operator=(const QSize &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQSizeCallback, PropertyQSizeBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQSizeCallback, SinglePropertyCallback<PropertyQSizeBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQSize: public SinglePropertyValue<PropertyQSizeBase>
@@ -96,25 +65,8 @@ public:
     {
     }
 
-    operator QSize() const { return value(); }
-
-    PropertyQSize &operator=(const PropertyQSize &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQSize &operator=(const PropertyQSizeBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQSize &operator=(const QSize & newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQSize, PropertyQSizeBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQSize, SinglePropertyValue<PropertyQSizeBase>)
 };
 
 } // end namespace Qtinuum

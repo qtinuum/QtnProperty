@@ -4,8 +4,6 @@ TARGET = qtn_property_core
 TEMPLATE = lib
 VERSION = 1.0.1
 
-DESTDIR = $$BIN_DIR
-
 DEFINES += QTN_PE_CORE_LIBRARY
 
 SOURCES += Property.cpp \
@@ -31,6 +29,7 @@ HEADERS += CoreAPI.h\
     Property.h\
     Enum.h\
     PropertyBasis.h \
+    PropertyMacro.h \
     PropertyCore.h \
     PropertyGUI.h \
     PropertyAux.h \

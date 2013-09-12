@@ -17,6 +17,26 @@ PropertySetTest1::~PropertySetTest1()
     disconnectSlots();
 }
 
+PropertySetTest1& PropertySetTest1::operator=(const PropertySetTest1& other)
+{
+    a = other.a;
+    text = other.text;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetTest1::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetTest1(parentForNew);
+}
+
+Qtinuum::Property* PropertySetTest1::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetTest1* p = new PropertySetTest1(parentForCopy);
+    *p = *this;
+    return p;
+}
+
 void PropertySetTest1::init()
 {
     static QString Test1_name = tr("Test1");
@@ -68,6 +88,24 @@ PropertySetTest2::~PropertySetTest2()
     disconnectSlots();
 }
 
+PropertySetTest2& PropertySetTest2::operator=(const PropertySetTest2& other)
+{
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetTest2::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetTest2(parentForNew);
+}
+
+Qtinuum::Property* PropertySetTest2::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetTest2* p = new PropertySetTest2(parentForCopy);
+    *p = *this;
+    return p;
+}
+
 void PropertySetTest2::init()
 {
     static QString Test2_name = tr("Test2");
@@ -98,6 +136,25 @@ PropertySetYY::PropertySetYY(QObject *parent)
 PropertySetYY::~PropertySetYY()
 {
     disconnectSlots();
+}
+
+PropertySetYY& PropertySetYY::operator=(const PropertySetYY& other)
+{
+    rect = other.rect;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetYY::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetYY(parentForNew);
+}
+
+Qtinuum::Property* PropertySetYY::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetYY* p = new PropertySetYY(parentForCopy);
+    *p = *this;
+    return p;
 }
 
 void PropertySetYY::init()
@@ -139,6 +196,24 @@ PropertySetAA::~PropertySetAA()
     disconnectSlots();
 }
 
+PropertySetAA& PropertySetAA::operator=(const PropertySetAA& other)
+{
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetAA::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetAA(parentForNew);
+}
+
+Qtinuum::Property* PropertySetAA::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetAA* p = new PropertySetAA(parentForCopy);
+    *p = *this;
+    return p;
+}
+
 void PropertySetAA::init()
 {
     static QString aa_name = tr("aa");
@@ -173,6 +248,26 @@ PropertySetSS::PropertySetSS(QObject *parent)
 PropertySetSS::~PropertySetSS()
 {
     disconnectSlots();
+}
+
+PropertySetSS& PropertySetSS::operator=(const PropertySetSS& other)
+{
+    a = other.a;
+    aa = other.aa;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetSS::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetSS(parentForNew);
+}
+
+Qtinuum::Property* PropertySetSS::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetSS* p = new PropertySetSS(parentForCopy);
+    *p = *this;
+    return p;
 }
 
 void PropertySetSS::init()
@@ -220,6 +315,32 @@ PropertySetTest3::PropertySetTest3(QObject *parent)
 PropertySetTest3::~PropertySetTest3()
 {
     disconnectSlots();
+}
+
+PropertySetTest3& PropertySetTest3::operator=(const PropertySetTest3& other)
+{
+    yy = other.yy;
+    iis = other.iis;
+    u = other.u;
+    xx = other.xx;
+    tt = other.tt;
+    s = other.s;
+    ww = other.ww;
+    bc = other.bc;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetTest3::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetTest3(parentForNew);
+}
+
+Qtinuum::Property* PropertySetTest3::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetTest3* p = new PropertySetTest3(parentForCopy);
+    *p = *this;
+    return p;
 }
 
 void PropertySetTest3::init()
@@ -388,7 +509,7 @@ Qtinuum::EnumInfo &MASK::info()
     return enumInfo;
 }
 
-PropertySetAllPropertyTypes::PropertySetAllPropertyTypes(int a, const bool s, std::function<void()> f, QObject *parent)
+PropertySetAllPropertyTypes::PropertySetAllPropertyTypes(QObject *parent)
     : Qtinuum::Property(parent)
     , bp(*new Qtinuum::PropertyBool(this))
     , bpc(*new Qtinuum::PropertyBoolCallback(this))
@@ -416,10 +537,9 @@ PropertySetAllPropertyTypes::PropertySetAllPropertyTypes(int a, const bool s, st
     , cpc(*new Qtinuum::PropertyQColorCallback(this))
     , fnp(*new Qtinuum::PropertyQFont(this))
     , fnpc(*new Qtinuum::PropertyQFontCallback(this))
-    , _b(s)
+    , _b(true)
 {
     
-        _b = true;
         _i =12;
         _ui = 9;
         _f = 0.2f;
@@ -444,6 +564,50 @@ PropertySetAllPropertyTypes::~PropertySetAllPropertyTypes()
         _b = false;
     
     disconnectSlots();
+}
+
+PropertySetAllPropertyTypes& PropertySetAllPropertyTypes::operator=(const PropertySetAllPropertyTypes& other)
+{
+    bp = other.bp;
+    bpc = other.bpc;
+    ip = other.ip;
+    ipc = other.ipc;
+    up = other.up;
+    upc = other.upc;
+    fp = other.fp;
+    fpc = other.fpc;
+    dp = other.dp;
+    dpc = other.dpc;
+    sp = other.sp;
+    spc = other.spc;
+    rp = other.rp;
+    rpc = other.rpc;
+    pp = other.pp;
+    ppc = other.ppc;
+    szp = other.szp;
+    szpc = other.szpc;
+    ep = other.ep;
+    epc = other.epc;
+    efp = other.efp;
+    efpc = other.efpc;
+    cp = other.cp;
+    cpc = other.cpc;
+    fnp = other.fnp;
+    fnpc = other.fnpc;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetAllPropertyTypes::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetAllPropertyTypes(parentForNew);
+}
+
+Qtinuum::Property* PropertySetAllPropertyTypes::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetAllPropertyTypes* p = new PropertySetAllPropertyTypes(parentForCopy);
+    *p = *this;
+    return p;
 }
 
 void PropertySetAllPropertyTypes::init()

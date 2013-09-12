@@ -32,23 +32,10 @@ class QTN_PE_CORE_EXPORT PropertyQPointBase: public SinglePropertyBase<QPoint>
 public:
     explicit PropertyQPointBase(QObject *parent);
 
-    operator QPoint() const { return value(); }
-
-    PropertyQPointBase &operator=(const PropertyQPointBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQPointBase &operator=(const QPoint & newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyQPointBase(const PropertyQPointBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQPointBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQPointBase, SinglePropertyBase<QPoint>)
 };
+
 P_PROPERTY_DECL_EQ_OPERATORS(PropertyQPointBase, QPoint);
 
 QTN_PE_CORE_EXPORT Property* createXProperty(QObject *parent, PropertyQPointBase *propertyPoint);
@@ -64,25 +51,8 @@ public:
     {
     }
 
-    operator QPoint() const { return value(); }
-
-    PropertyQPointCallback &operator=(const PropertyQPointCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQPointCallback &operator=(const PropertyQPointBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQPointCallback &operator=(const QPoint & newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQPointCallback, PropertyQPointBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQPointCallback, SinglePropertyCallback<PropertyQPointBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQPoint: public SinglePropertyValue<PropertyQPointBase>
@@ -95,25 +65,8 @@ public:
     {
     }
 
-    operator QPoint() const { return value(); }
-
-    PropertyQPoint &operator=(const PropertyQPoint &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQPoint &operator=(const PropertyQPointBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQPoint &operator=(const QPoint & newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQPoint, PropertyQPointBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQPoint, SinglePropertyValue<PropertyQPointBase>)
 };
 
 } // end namespace Qtinuum

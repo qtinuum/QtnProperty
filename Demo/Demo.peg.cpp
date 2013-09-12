@@ -58,6 +58,35 @@ PropertySetInternal::~PropertySetInternal()
     disconnectSlots();
 }
 
+PropertySetInternal& PropertySetInternal::operator=(const PropertySetInternal& other)
+{
+    name = other.name;
+    rect = other.rect;
+    item1 = other.item1;
+    item2 = other.item2;
+    item3 = other.item3;
+    item4 = other.item4;
+    item5 = other.item5;
+    item6 = other.item6;
+    item7 = other.item7;
+    item8 = other.item8;
+    item9 = other.item9;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetInternal::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetInternal(parentForNew);
+}
+
+Qtinuum::Property* PropertySetInternal::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetInternal* p = new PropertySetInternal(parentForCopy);
+    *p = *this;
+    return p;
+}
+
 void PropertySetInternal::init()
 {
     static QString Internal_name = tr("Internal");
@@ -125,7 +154,7 @@ void PropertySetInternal::connectDelegates()
 }
 
 PropertySetSubProperties::PropertySetSubProperties(QObject *parent)
-    : Qtinuum::Property(parent)
+    : qtn::PropertyBool(parent)
     , intProp(*new Qtinuum::PropertyInt(this))
     , uintProp(*new Qtinuum::PropertyUInt(this))
     , doubleProp(*new Qtinuum::PropertyDouble(this))
@@ -149,6 +178,38 @@ PropertySetSubProperties::PropertySetSubProperties(QObject *parent)
 PropertySetSubProperties::~PropertySetSubProperties()
 {
     disconnectSlots();
+}
+
+PropertySetSubProperties& PropertySetSubProperties::operator=(const PropertySetSubProperties& other)
+{
+    intProp = other.intProp;
+    uintProp = other.uintProp;
+    doubleProp = other.doubleProp;
+    floatProp = other.floatProp;
+    boolProp = other.boolProp;
+    enumProp = other.enumProp;
+    colorProp = other.colorProp;
+    flagsProp = other.flagsProp;
+    fileName1 = other.fileName1;
+    fileName2 = other.fileName2;
+    pointProp = other.pointProp;
+    sizeProp = other.sizeProp;
+    fontProp = other.fontProp;
+    listProp = other.listProp;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetSubProperties::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetSubProperties(parentForNew);
+}
+
+Qtinuum::Property* PropertySetSubProperties::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetSubProperties* p = new PropertySetSubProperties(parentForCopy);
+    *p = *this;
+    return p;
 }
 
 void PropertySetSubProperties::init()
@@ -219,10 +280,19 @@ void PropertySetSubProperties::init()
 
 void PropertySetSubProperties::connectSlots()
 {
+    QObject::connect(this, &Qtinuum::Property::propertyDidChange, this, &PropertySetSubProperties::on_propertyDidChange);
 }
 
 void PropertySetSubProperties::disconnectSlots()
 {
+    QObject::disconnect(this, &Qtinuum::Property::propertyDidChange, this, &PropertySetSubProperties::on_propertyDidChange);
+}
+
+void PropertySetSubProperties::on_propertyDidChange(const Qtinuum::Property *changedProperty, const Qtinuum::Property *firedProperty, Qtinuum::PropertyChangeReason reason)
+{
+    
+            intProp.switchState(qtn::PropertyStateImmutable, !value());
+        
 }
 
 void PropertySetSubProperties::connectDelegates()
@@ -271,6 +341,29 @@ PropertySetMain::PropertySetMain(QObject *parent)
 PropertySetMain::~PropertySetMain()
 {
     disconnectSlots();
+}
+
+PropertySetMain& PropertySetMain::operator=(const PropertySetMain& other)
+{
+    count = other.count;
+    isValid = other.isValid;
+    Internal = other.Internal;
+    flag = other.flag;
+    Supplementary = other.Supplementary;
+
+    return *this;
+}
+
+Qtinuum::Property* PropertySetMain::createNewImpl(QObject* parentForNew) const
+{
+    return new PropertySetMain(parentForNew);
+}
+
+Qtinuum::Property* PropertySetMain::createCopyImpl(QObject* parentForCopy) const
+{
+    PropertySetMain* p = new PropertySetMain(parentForCopy);
+    *p = *this;
+    return p;
 }
 
 void PropertySetMain::init()

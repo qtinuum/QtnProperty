@@ -1,6 +1,5 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-#include "PropertyWidget.h"
 
 #include "Demo.peg.h"
 
@@ -12,16 +11,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    PropertyWidget *pw(new PropertyWidget(this));
-    setCentralWidget(pw);
+    PropertyWidget *pw = pw;
 
-    pw->setParts(PropertyWidgetPartsDescriptionPanel);
+    ui->pw->setParts(PropertyWidgetPartsDescriptionPanel);
 
 #ifdef Q_OS_WIN32
-    pw->propertyView()->setItemHeightRatio(1.3f);
+    ui->pw->propertyView()->setItemHeightRatio(1.3f);
 #endif
 
-    pw->setProperty(new PropertySetMain(this));
+    ui->pw->setProperty(new PropertySetMain(this));
 }
 
 MainWindow::~MainWindow()

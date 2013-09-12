@@ -48,7 +48,7 @@ void TestGeneratedProperty::test2()
 
 void TestGeneratedProperty::testAllPropertyTypes()
 {
-    PropertySetAllPropertyTypes p(3, false, nullptr);
+    PropertySetAllPropertyTypes p;
 
     QVERIFY(p.ep == COLOR::BLUE);
     p.ep = COLOR::RED;

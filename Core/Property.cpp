@@ -91,42 +91,6 @@ void disconnectChildProperty(Property *masterProperty, Property *childProperty)
     QObject::disconnect(childProperty, &Property::propertyDidChange, masterProperty, &Property::childPropertyDidChange);
 }
 
-/*!
-    \mainpage
-
-    \section stub_sec Stub
-
-    \image html 1.png
-
- */
-
-/*!
-    \class Property
-    \brief Base class for all property classes.
-
-    All final property classes (such as PropertyBool or PropertyFloatCallback)
-    inherit Property class.
-
-    The Property class itself inherits QObject class so properties can be part
-    of Qt objects hierarchies and support Qt signals/slots and meta-object
-    information.
-
-    In addition to be a base class, Property class can be used as parent for
-    other property instancies. Thus user can organize properties in hierarchy
-    using Property::addChildProperty function.
- */
-
-
-/*!
- * \brief Property::Property
- * Constructs a property instance.
- *
- * \param parent object to be used as parent of the property to be created.
- * If parent is Property or it's subclass the constructed property will be
- * added as child property (Property::addChildProperty function for parent
- * object will be called).
- */
-
 Property::Property(QObject *parent)
     : QObject(parent),
       m_id(PropertyIDInvalid),
@@ -139,14 +103,19 @@ Property::Property(QObject *parent)
         parentProperty->addChildProperty(this, false);
 }
 
-/*!
- * \brief Property::~Property
- * Destructs property instance.
- *
- * If parent object is Property or it's subclass the destroying property will be
- * removed from child properties of the parent (Property::removeChildProperty
- * will be called).
- */
+Property::Property(QObject *parent, const Property &other)
+    : QObject(parent),
+      m_description(other.m_description),
+      m_id(other.m_id),
+      m_stateLocal(other.m_stateLocal),
+      m_stateInherited(other.m_stateInherited),
+      m_ignoreChildPropertyChanges(false)
+{
+    Property *parentProperty = qobject_cast<Property*>(parent);
+    if (parentProperty)
+        parentProperty->addChildProperty(this, false);
+}
+
 Property::~Property()
 {
     clearChildProperties();
@@ -421,6 +390,26 @@ void Property::setDelegate(const PropertyDelegateInfo &delegate)
 void Property::setDelegateCallback(const std::function<const PropertyDelegateInfo *()> &callback)
 {
     m_delegateInfoGetter.reset(new PropertyDelegateInfoGetterCallback(callback));
+}
+
+Property* Property::createNew(QObject* parentForNew) const
+{
+    return createNewImpl(parentForNew);
+}
+
+Property* Property::createCopy(QObject* parentForCopy) const
+{
+    return createCopyImpl(parentForCopy);
+}
+
+Property* Property::createNewImpl(QObject* parentForNew) const
+{
+    return new Property(parentForNew);
+}
+
+Property* Property::createCopyImpl(QObject* parentForCopy) const
+{
+    return new Property(parentForCopy, *this);
 }
 
 bool Property::load(QDataStream &stream)

@@ -28,16 +28,4 @@ PropertyEnumFlagsBase::PropertyEnumFlagsBase(QObject *parent)
     addState(PropertyStateCollapsed);
 }
 
-/*
-bool PropertyEnumFlagsBase::isValueAcceptedImpl(ValueType valueToAccept)
-{
-    if (!m_enumInfo)
-        return false;
-
-    if (!m_enumInfo->findByValue(valueToAccept))
-        return false;
-
-    return true;
-}
-*/
 } // end namespace Qtinuum

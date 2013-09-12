@@ -6,8 +6,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = qtn_property_widget
 TEMPLATE = lib
 
-DESTDIR = $$BIN_DIR
-
 DEFINES += QTN_PE_PROPERTYWIDGET_LIBRARY
 
 SOURCES += PropertyWidget.cpp \

@@ -286,10 +286,9 @@ property_set AllPropertyTypes
         id = 26;
     }
 
-    AllPropertyTypes(int a, const bool s, std::function<void()> f)
-        : _b(s)
+    AllPropertyTypes()
+        : _b(true)
     {
-        _b = true;
         _i =12;
         _ui = 9;
         _f = 0.2f;

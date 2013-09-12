@@ -35,28 +35,22 @@ class QTN_PE_CORE_EXPORT PropertyEnumFlagsBase: public SinglePropertyBase<EnumFl
 public:
     explicit PropertyEnumFlagsBase(QObject *parent);
 
-    operator EnumFlagsValueType() const { return value(); }
-
-    PropertyEnumFlagsBase &operator=(const PropertyEnumFlagsBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnumFlagsBase &operator=(EnumFlagsValueType newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
     const EnumInfo *enumInfo() const { return m_enumInfo; }
     EnumInfo *enumInfo() { return m_enumInfo; }
     void setEnumInfo(EnumInfo *enumInfo) { m_enumInfo = enumInfo; }
 
+protected:
+    PropertyEnumFlagsBase(QObject* parent, const PropertyEnumFlagsBase& other)
+        : SinglePropertyBase<EnumFlagsValueType>(parent, other),
+          m_enumInfo(other.m_enumInfo)
+    {}
+
 private:
+    PropertyEnumFlagsBase(const PropertyEnumFlagsBase &) Q_DECL_EQ_DELETE;
+
     EnumInfo *m_enumInfo;
 
-    PropertyEnumFlagsBase(const PropertyEnumFlagsBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyEnumFlagsBase)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyEnumFlagsBase, EnumFlagsValueType);
@@ -71,25 +65,8 @@ public:
     {
     }
 
-    operator EnumFlagsValueType() const { return value(); }
-
-    PropertyEnumFlagsCallback &operator=(const PropertyEnumFlagsCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnumFlagsCallback &operator=(const PropertyEnumFlagsBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnumFlagsCallback &operator=(EnumFlagsValueType newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumFlagsCallback, PropertyEnumFlagsBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyEnumFlagsCallback, SinglePropertyCallback<PropertyEnumFlagsBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyEnumFlags: public SinglePropertyValue<PropertyEnumFlagsBase>
@@ -102,25 +79,8 @@ public:
     {
     }
 
-    operator EnumFlagsValueType() const { return value(); }
-
-    PropertyEnumFlags &operator=(const PropertyEnumFlags &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnumFlags &operator=(const PropertyEnumFlagsBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyEnumFlags &operator=(EnumFlagsValueType newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumFlags, PropertyEnumFlagsBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyEnumFlags, SinglePropertyValue<PropertyEnumFlagsBase>)
 };
 
 } // end namespace Qtinuum

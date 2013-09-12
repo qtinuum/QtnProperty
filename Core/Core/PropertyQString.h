@@ -34,29 +34,16 @@ public:
     {
     }
 
-    operator QString() const { return value(); }
-
-    PropertyQStringBase &operator=(const PropertyQStringBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQStringBase &operator=(const QString &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
     PropertyQStringBase &operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
     }
 
-private:
-    PropertyQStringBase(const PropertyQStringBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQStringBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQStringBase, SinglePropertyBase<QString>)
 };
+
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyQStringBase, QString)
 
 class QTN_PE_CORE_EXPORT PropertyQStringCallback: public SinglePropertyCallback<PropertyQStringBase>
@@ -69,31 +56,14 @@ public:
     {
     }
 
-    operator QString() const { return value(); }
-
-    PropertyQStringCallback &operator=(const PropertyQStringCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQStringCallback &operator=(const PropertyQStringBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQStringCallback &operator=(const QString &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
     PropertyQStringCallback &operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
     }
+
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQStringCallback, PropertyQStringBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQStringCallback, SinglePropertyCallback<PropertyQStringBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQString: public SinglePropertyValue<PropertyQStringBase>
@@ -106,31 +76,14 @@ public:
     {
     }
 
-    operator QString() const { return value(); }
-
-    PropertyQString &operator=(const PropertyQString &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQString &operator=(const PropertyQStringBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQString &operator=(const QString &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
     PropertyQString &operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
     }
+
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQString, PropertyQStringBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQString, SinglePropertyValue<PropertyQStringBase>)
 };
 
 } // end namespace Qtinuum

@@ -7,8 +7,6 @@ QT       += testlib
 
 TARGET = property_tests
 
-DESTDIR = $$BIN_DIR
-
 CONFIG   += console
 CONFIG   -= app_bundle
 

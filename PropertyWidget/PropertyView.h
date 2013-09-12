@@ -116,7 +116,6 @@ private:
         {}
 
         bool collapsed() const { return property->stateLocal() & PropertyStateCollapsed; }
-        bool isPropertySet() const { return !delegate; }
     };
 
     struct Action
@@ -147,7 +146,7 @@ private:
 
 private:
     void updateItemsTree();
-    static Item *createItemsTree(Property *rootProperty, PropertyDelegateFactory &factory);
+    static Item *createItemsTree(Property *rootProperty, const PropertyDelegateFactory &factory);
 
     void invalidateVisibleItems();
     void validateVisibleItems() const;

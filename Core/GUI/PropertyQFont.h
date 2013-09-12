@@ -32,23 +32,10 @@ class QTN_PE_CORE_EXPORT PropertyQFontBase: public SinglePropertyBase<QFont>
 public:
     explicit PropertyQFontBase(QObject *parent);
 
-    operator QFont() const { return value(); }
-
-    PropertyQFontBase &operator=(const PropertyQFontBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQFontBase &operator=(const QFont &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
-
-private:
-    PropertyQFontBase(const PropertyQFontBase &) Q_DECL_EQ_DELETE;
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQFontBase)
+    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQFontBase, SinglePropertyBase<QFont>)
 };
+
 P_PROPERTY_DECL_EQ_OPERATORS(PropertyQFontBase, QFont)
 
 class QTN_PE_CORE_EXPORT PropertyQFontCallback: public SinglePropertyCallback<PropertyQFontBase>
@@ -61,25 +48,8 @@ public:
     {
     }
 
-    operator QFont() const { return value(); }
-
-    PropertyQFontCallback &operator=(const PropertyQFontCallback &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQFontCallback &operator=(const PropertyQFontBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQFontCallback &operator=(const QFont &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQFontCallback, PropertyQFontBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQFontCallback, SinglePropertyCallback<PropertyQFontBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQFont: public SinglePropertyValue<PropertyQFontBase>
@@ -92,25 +62,8 @@ public:
     {
     }
 
-    operator QFont() const { return value(); }
-
-    PropertyQFont &operator=(const PropertyQFont &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQFont &operator=(const PropertyQFontBase &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
-
-    PropertyQFont &operator=(const QFont &newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQFont, PropertyQFontBase)
+    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQFont, SinglePropertyValue<PropertyQFontBase>)
 };
 
 } // end namespace Qtinuum

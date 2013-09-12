@@ -8,7 +8,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = demo_app
 TEMPLATE = app
-DESTDIR = $$BIN_DIR
 
 SOURCES += main.cpp\
         MainWindow.cpp
