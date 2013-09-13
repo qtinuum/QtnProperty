@@ -26,9 +26,11 @@ private Q_SLOTS:
     void propertyRect();
     void propertyEnum();
     void propertyEnumFlags();
-    void propertySerializationState();
-    void propertySerializationChildren();
-    void propertySerializationValue();
+    void serializationState();
+    void serializationChildren();
+    void serializationValue();
+    void createNew();
+    void createCopy();
 
 public Q_SLOTS:
 

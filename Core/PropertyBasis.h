@@ -135,7 +135,8 @@ public:
 
 protected:
     SinglePropertyValue(QObject *parent, const SinglePropertyValue& other)
-        : SinglePropertyType(parent, other)
+        : SinglePropertyType(parent, other),
+          m_value(other.m_value)
     {}
 
     ValueType valueImpl() const override { return m_value; }

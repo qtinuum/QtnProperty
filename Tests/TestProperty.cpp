@@ -7,6 +7,96 @@ static bool ret_true()
     return true;
 }
 
+static void verifyInitialValues(PropertySetAllPropertyTypes& pp)
+{
+    QVERIFY(pp.bp == false);
+    QVERIFY(pp.bpc == true);
+    QVERIFY(pp.ip == 0);
+    QVERIFY(pp.ipc == 12);
+    QVERIFY(pp.up == 0u);
+    QVERIFY(pp.upc == 9u);
+    QVERIFY(pp.fp == 0.f);
+    QVERIFY(pp.fpc == 0.2f);
+    QVERIFY(pp.dp == 0.);
+    QVERIFY(pp.dpc == 32.4);
+    QVERIFY(pp.sp == "");
+    QVERIFY(pp.spc == "name");
+    QVERIFY(pp.rp == QRect());
+    QVERIFY(pp.rpc == QRect(10, 10, 10, 10));
+    QVERIFY(pp.pp == QPoint());
+    QVERIFY(pp.ppc == QPoint(9, 2));
+    QVERIFY(pp.szp == QSize());
+    QVERIFY(pp.szpc == QSize(33, 21));
+    QVERIFY(pp.ep == COLOR::BLUE);
+    QVERIFY(pp.epc == COLOR::RED);
+    QVERIFY(pp.efp == (MASK::ONE|MASK::FOUR));
+    QVERIFY(pp.efpc == (MASK::ONE|MASK::FOUR));
+    QVERIFY(pp.cp == QColor(Qt::blue));
+    QVERIFY(pp.cpc == QColor(Qt::red));
+    QVERIFY(pp.fnp == QFont("Courier", 10));
+    QVERIFY(pp.fnpc == QFont("Arial", 19));
+}
+
+static void modify(PropertySetAllPropertyTypes& pp)
+{
+    pp.bp = true;
+    pp.bpc = false;
+    pp.ip = 12;
+    pp.ipc = 2;
+    pp.up = 3u;
+    pp.upc = 32u;
+    pp.fp = 0.32f;
+    pp.fpc = 32.2f;
+    pp.dp = 12.;
+    pp.dpc = 2.4;
+    pp.sp = "test";
+    pp.spc = "name#1";
+    pp.rp = QRect(12, 10, 16, 17);
+    pp.rpc = QRect(4, 3, 1, 0);
+    pp.pp = QPoint(21, 9);
+    pp.ppc = QPoint(15, 0);
+    pp.szp = QSize(90, 87);
+    pp.szpc = QSize(0, 1);
+    pp.ep = COLOR::RED;
+    pp.epc = COLOR::BLUE;
+    pp.efp = (MASK::FOUR);
+    pp.efpc = (MASK::ONE);
+    pp.cp = QColor(Qt::red);
+    pp.cpc = QColor(Qt::blue);
+    pp.fnp = QFont("Courier New", 11);
+    pp.fnpc = QFont("Myfont", 0);
+}
+
+static void verifyModified(PropertySetAllPropertyTypes& pp)
+{
+    QVERIFY(pp.bp == true);
+    QVERIFY(pp.bpc == false);
+    QVERIFY(pp.ip == 12);
+    QVERIFY(pp.ipc == 2);
+    QVERIFY(pp.up == 3u);
+    QVERIFY(pp.upc == 32u);
+    QVERIFY(pp.fp == 0.32f);
+    QVERIFY(pp.fpc == 32.2f);
+    QVERIFY(pp.dp == 12.);
+    QVERIFY(pp.dpc == 2.4);
+    QVERIFY(pp.sp == "test");
+    QVERIFY(pp.spc == "name#1");
+    QVERIFY(pp.rp == QRect(12, 10, 16, 17));
+    QVERIFY(pp.rpc == QRect(4, 3, 1, 0));
+    QVERIFY(pp.pp == QPoint(21, 9));
+    QVERIFY(pp.ppc == QPoint(15, 0));
+    QVERIFY(pp.szp == QSize(90, 87));
+    QVERIFY(pp.szpc == QSize(0, 1));
+    QVERIFY(pp.ep == COLOR::RED);
+    QVERIFY(pp.epc == COLOR::BLUE);
+    QVERIFY(pp.efp == (MASK::FOUR));
+    QVERIFY(pp.efpc == (MASK::ONE));
+    QVERIFY(pp.cp == QColor(Qt::red));
+    QVERIFY(pp.cpc == QColor(Qt::blue));
+    QVERIFY(pp.fnp == QFont("Courier New", 11));
+    QVERIFY(pp.fnpc == QFont("Myfont", 0));
+}
+
 using namespace Qtinuum;
 
 void TestProperty::name()
@@ -283,6 +373,10 @@ void TestProperty::propertyInt()
 
     p = 1;
     QVERIFY(p == 1);
+    QVERIFY(p > 0);
+    QVERIFY(p >= 0);
+    QVERIFY(p < 2);
+    QVERIFY(p <= 2);
 }
 
 void TestProperty::propertyString()
@@ -350,7 +444,7 @@ void TestProperty::propertyEnumFlags()
     QVERIFY(!(p & MASK::ONE));
 }
 
-void TestProperty::propertySerializationState()
+void TestProperty::serializationState()
 {
     Property p(this);
     p.setState(PropertyStateCollapsed);
@@ -373,7 +467,7 @@ void TestProperty::propertySerializationState()
     QVERIFY(p.state() == PropertyStateCollapsed);
 }
 
-void TestProperty::propertySerializationChildren()
+void TestProperty::serializationChildren()
 {
     Property p(this);
     p.setState(PropertyStateCollapsed);
@@ -422,7 +516,7 @@ void TestProperty::propertySerializationChildren()
     }
 }
 
-void TestProperty::propertySerializationValue()
+void TestProperty::serializationValue()
 {
     PropertyBool p(this);
     p = true;
@@ -449,32 +543,7 @@ void TestProperty::propertySerializationValue()
 
     PropertySetAllPropertyTypes pp(this);
 
-    QVERIFY(pp.bp == false);
-    QVERIFY(pp.bpc == true);
-    QVERIFY(pp.ip == 0);
-    QVERIFY(pp.ipc == 12);
-    QVERIFY(pp.up == 0u);
-    QVERIFY(pp.upc == 9u);
-    QVERIFY(pp.fp == 0.f);
-    QVERIFY(pp.fpc == 0.2f);
-    QVERIFY(pp.dp == 0.);
-    QVERIFY(pp.dpc == 32.4);
-    QVERIFY(pp.sp == "");
-    QVERIFY(pp.spc == "name");
-    QVERIFY(pp.rp == QRect());
-    QVERIFY(pp.rpc == QRect(10, 10, 10, 10));
-    QVERIFY(pp.pp == QPoint());
-    QVERIFY(pp.ppc == QPoint(9, 2));
-    QVERIFY(pp.szp == QSize());
-    QVERIFY(pp.szpc == QSize(33, 21));
-    QVERIFY(pp.ep == COLOR::BLUE);
-    QVERIFY(pp.epc == COLOR::RED);
-    QVERIFY(pp.efp == (MASK::ONE|MASK::FOUR));
-    QVERIFY(pp.efpc == (MASK::ONE|MASK::FOUR));
-    QVERIFY(pp.cp == QColor(Qt::blue));
-    QVERIFY(pp.cpc == QColor(Qt::red));
-    QVERIFY(pp.fnp == QFont("Courier", 10));
-    QVERIFY(pp.fnpc == QFont("Arial", 19));
+    verifyInitialValues(pp);
 
     {
         QDataStream s(&data, QIODevice::WriteOnly);
@@ -482,59 +551,8 @@ void TestProperty::propertySerializationValue()
         QVERIFY(s.status() == QDataStream::Ok);
     }
 
-    pp.bp = true;
-    pp.bpc = false;
-    pp.ip = 12;
-    pp.ipc = 2;
-    pp.up = 3u;
-    pp.upc = 32u;
-    pp.fp = 0.32f;
-    pp.fpc = 32.2f;
-    pp.dp = 12.;
-    pp.dpc = 2.4;
-    pp.sp = "test";
-    pp.spc = "name#1";
-    pp.rp = QRect(12, 10, 16, 17);
-    pp.rpc = QRect(4, 3, 1, 0);
-    pp.pp = QPoint(21, 9);
-    pp.ppc = QPoint(15, 0);
-    pp.szp = QSize(90, 87);
-    pp.szpc = QSize(0, 1);
-    pp.ep = COLOR::RED;
-    pp.epc = COLOR::BLUE;
-    pp.efp = (MASK::FOUR);
-    pp.efpc = (MASK::ONE);
-    pp.cp = QColor(Qt::red);
-    pp.cpc = QColor(Qt::blue);
-    pp.fnp = QFont("Courier New", 11);
-    pp.fnpc = QFont("Myfont", 0);
-
-    QVERIFY(pp.bp == true);
-    QVERIFY(pp.bpc == false);
-    QVERIFY(pp.ip == 12);
-    QVERIFY(pp.ipc == 2);
-    QVERIFY(pp.up == 3u);
-    QVERIFY(pp.upc == 32u);
-    QVERIFY(pp.fp == 0.32f);
-    QVERIFY(pp.fpc == 32.2f);
-    QVERIFY(pp.dp == 12.);
-    QVERIFY(pp.dpc == 2.4);
-    QVERIFY(pp.sp == "test");
-    QVERIFY(pp.spc == "name#1");
-    QVERIFY(pp.rp == QRect(12, 10, 16, 17));
-    QVERIFY(pp.rpc == QRect(4, 3, 1, 0));
-    QVERIFY(pp.pp == QPoint(21, 9));
-    QVERIFY(pp.ppc == QPoint(15, 0));
-    QVERIFY(pp.szp == QSize(90, 87));
-    QVERIFY(pp.szpc == QSize(0, 1));
-    QVERIFY(pp.ep == COLOR::RED);
-    QVERIFY(pp.epc == COLOR::BLUE);
-    QVERIFY(pp.efp == (MASK::FOUR));
-    QVERIFY(pp.efpc == (MASK::ONE));
-    QVERIFY(pp.cp == QColor(Qt::red));
-    QVERIFY(pp.cpc == QColor(Qt::blue));
-    QVERIFY(pp.fnp == QFont("Courier New", 11));
-    QVERIFY(pp.fnpc == QFont("Myfont", 0));
+    modify(pp);
+    verifyModified(pp);
 
     {
         QDataStream s(&data, QIODevice::ReadWrite);
@@ -542,32 +560,134 @@ void TestProperty::propertySerializationValue()
         QVERIFY(s.status() == QDataStream::Ok);
     }
 
-    QVERIFY(pp.bp == false);
-    QVERIFY(pp.bpc == true);
-    QVERIFY(pp.ip == 0);
-    QVERIFY(pp.ipc == 12);
-    QVERIFY(pp.up == 0u);
-    QVERIFY(pp.upc == 9u);
-    QVERIFY(pp.fp == 0.f);
-    QVERIFY(pp.fpc == 0.2f);
-    QVERIFY(pp.dp == 0.);
-    QVERIFY(pp.dpc == 32.4);
-    QVERIFY(pp.sp == "");
-    QVERIFY(pp.spc == "name");
-    QVERIFY(pp.rp == QRect());
-    QVERIFY(pp.rpc == QRect(10, 10, 10, 10));
-    QVERIFY(pp.pp == QPoint());
-    QVERIFY(pp.ppc == QPoint(9, 2));
-    QVERIFY(pp.szp == QSize());
-    QVERIFY(pp.szpc == QSize(33, 21));
-    QVERIFY(pp.ep == COLOR::BLUE);
-    QVERIFY(pp.epc == COLOR::RED);
-    QVERIFY(pp.efp == (MASK::ONE|MASK::FOUR));
-    QVERIFY(pp.efpc == (MASK::ONE|MASK::FOUR));
-    QVERIFY(pp.cp == QColor(Qt::blue));
-    QVERIFY(pp.cpc == QColor(Qt::red));
-    QVERIFY(pp.fnp == QFont("Courier", 10));
-    QVERIFY(pp.fnpc == QFont("Arial", 19));
+    verifyInitialValues(pp);
+}
+
+void TestProperty::createNew()
+{
+    {
+        PropertyBool pb(this);
+        QVERIFY(!pb);
+        pb = true;
+        QVERIFY(pb);
+
+        PropertyBool* pn = qobject_cast<PropertyBool*>(pb.createNew(this));
+        QVERIFY(pn);
+        QVERIFY(pn != &pb);
+        QVERIFY(pn->parent() == this);
+        QVERIFY(!*pn);
+
+        pb = false;
+        QVERIFY(!pb);
+        QVERIFY(!*pn);
+
+        *pn = true;
+        QVERIFY(!pb);
+        QVERIFY(*pn);
+
+        delete pn;
+    }
+
+    {
+        PropertyFloatCallback pf(this);
+        pf.setCallbackValueGet([]()->float { return 0.4f; });
+        QVERIFY(pf == 0.4f);
+
+        PropertyFloatCallback* pn = qobject_cast<PropertyFloatCallback*>(pf.createNew(this));
+        QVERIFY(pn);
+        QVERIFY(pn != &pf);
+        QVERIFY(pn->parent() == this);
+
+        try
+        {
+            pn->value(); // should throw here
+            QVERIFY(false);
+        }
+        catch (std::bad_function_call& e)
+        {
+
+        }
+
+        pn->setCallbackValueGet([]()->float { return 1.3f; });
+        QVERIFY(*pn == 1.3f);
+        QVERIFY(pf == 0.4f);
+
+        delete pn;
+    }
+
+    {
+        PropertySetAllPropertyTypes pp(this);
+
+        verifyInitialValues(pp);
+
+        modify(pp);
+
+        QScopedPointer<PropertySetAllPropertyTypes> pn;
+        pn.reset(qobject_cast<PropertySetAllPropertyTypes*>(pp.createNew(this)));
+        QVERIFY(pn);
+        QVERIFY(pn.data() != &pp);
+        QVERIFY(pn->parent() == this);
+
+        verifyInitialValues(*pn);
+    }
+}
+
+void TestProperty::createCopy()
+{
+    {
+        PropertyQColor pc(this);
+        QVERIFY(pc == QColor());
+
+        pc = QColor(10, 20, 30);
+        QVERIFY(pc == QColor(10, 20, 30));
+
+        PropertyQColorBase* pcpy = qobject_cast<PropertyQColorBase*>(pc.createCopy(this));
+        QVERIFY(pcpy);
+        QVERIFY(pcpy != &pc);
+        QVERIFY(pcpy->parent() == this);
+        QVERIFY(*pcpy == QColor(10, 20, 30));
+
+        *pcpy = QColor(200, 200, 200);
+        QVERIFY(*pcpy == QColor(200, 200, 200));
+        QVERIFY(pc == QColor(10, 20, 30));
+
+        delete pcpy;
+    }
+
+    {
+        QRect r(12, 34, 56, 78);
+        PropertyQRectCallback pr(this);
+        pr.setCallbackValueGet([&r]()->QRect { return r; });
+        pr.setCallbackValueSet([&r](QRect nr) { r = nr; });
+        QVERIFY(pr == QRect(12, 34, 56, 78));
+
+        QScopedPointer<PropertyQRectBase> pc;
+        pc.reset(qobject_cast<PropertyQRectBase*>(pr.createCopy(this)));
+        QVERIFY(pc);
+        QVERIFY(pc.data() != &pr);
+        QVERIFY(*pc == QRect(12, 34, 56, 78));
+
+        *pc = QRect(-98, -76, -54, -32);
+        QVERIFY(*pc == QRect(-98, -76, -54, -32));
+        QVERIFY(pr == QRect(-98, -76, -54, -32));
+        QVERIFY(r == QRect(-98, -76, -54, -32));
+   }
+
+    {
+        PropertySetAllPropertyTypes pp(this);
+
+        verifyInitialValues(pp);
+
+        modify(pp);
+
+        QScopedPointer<PropertySetAllPropertyTypes> pn;
+        pn.reset(qobject_cast<PropertySetAllPropertyTypes*>(pp.createCopy(this)));
+        QVERIFY(pn);
+        QVERIFY(pn.data() != &pp);
+        QVERIFY(pn->parent() == this);
+
+        verifyModified(*pn);
+    }
 }
 
 void TestProperty::checkPropertyStateIsNonSimple(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)

@@ -6,7 +6,6 @@ AutoValue feature
 
 Make wrapper propertyset for QObject derived classes
 
-Copy/NewInstance functions
 Save/Load via QDataStream/XML
 QtScript support
 toStr/fromStr and toVariant/fromVariant functions
@@ -22,3 +21,9 @@ QtDesigner plugin
 Help
 pef files syntax highlight
 CMake support
+
+Tests:
+1. Property assignment (=)
+2. Property equal (==)
+3. Property <, > for numerics
+4. make PropertySetAllPropertyTypes with subproperties
