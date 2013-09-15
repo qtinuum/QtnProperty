@@ -23,7 +23,6 @@ pef files syntax highlight
 CMake support
 
 Tests:
-1. Property assignment (=)
 2. Property equal (==)
 3. Property <, > for numerics
 4. make PropertySetAllPropertyTypes with subproperties

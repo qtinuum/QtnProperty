@@ -220,6 +220,8 @@ struct PropertyCode: public PropertySetMemberCode
 // code for property_set
 struct PropertySetCode: public Code, public PropertySetMemberCode
 {
+    // first - assess id (private/protected/public)
+    // second - type name
     QVector<QPair<QString, QString>> parentTypes;
     QVector<QSharedPointer<PropertySetMemberCode>> members;
     QVector<QSharedPointer<PropertySetCode>> subPropertySets;
@@ -259,6 +261,7 @@ private:
     void generateChildrenDeclaration(TextStreamIndent &s) const;
     void generateChildrenInitialization(TextStreamIndent &s) const;
     void generateChildrenAssignment(TextStreamIndent &s) const;
+    void generateParentTypeCopy(TextStreamIndent &s) const;
     void generateChildrenCopy(TextStreamIndent &s) const;
     void generateSubPropertySetsDeclarations(TextStreamIndent &s) const;
     void generateSubPropertySetsImplementations(TextStreamIndent &s) const;

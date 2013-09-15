@@ -10,14 +10,18 @@ TARGET = demo_app
 TEMPLATE = app
 
 SOURCES += main.cpp\
-        MainWindow.cpp
+        MainWindow.cpp \
+    mydialog.cpp
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    mydialog.h
 
-FORMS    += MainWindow.ui
+FORMS    += MainWindow.ui \
+    mydialog.ui
 
 PEG_SOURCES += Demo.pef
 
+INCLUDEPATH += $$ROOT_DIR/Core
 INCLUDEPATH += $$ROOT_DIR/PropertyWidget
 
 LIBS += -L$$BIN_DIR -lqtn_property_core -lqtn_property_widget

@@ -111,6 +111,11 @@ Property::Property(QObject *parent, const Property &other)
       m_stateInherited(other.m_stateInherited),
       m_ignoreChildPropertyChanges(false)
 {
+    foreach (Property* child, other.m_childProperties)
+    {
+        addChildProperty(child->createCopy(0));
+    }
+
     Property *parentProperty = qobject_cast<Property*>(parent);
     if (parentProperty)
         parentProperty->addChildProperty(this, false);
@@ -404,7 +409,16 @@ Property* Property::createCopy(QObject* parentForCopy) const
 
 Property* Property::createNewImpl(QObject* parentForNew) const
 {
-    return new Property(parentForNew);
+    QScopedPointer<Property> newInstance(new Property(0));
+
+    foreach (Property* child, m_childProperties)
+    {
+        newInstance->addChildProperty(child->createNew(0));
+    }
+
+    newInstance->setParent(parentForNew);
+
+    return newInstance.take();
 }
 
 Property* Property::createCopyImpl(QObject* parentForCopy) const

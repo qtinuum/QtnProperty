@@ -355,6 +355,7 @@ void PropertySetCode::generateCppFile(TextStreamIndent &s) const
     s.newLine() << QString("%1& %1::operator=(const %1& other)").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
+        generateParentTypeCopy(s);
         generateChildrenCopy(s);
         s << endl;
         s.newLine() << "return *this;";
@@ -490,11 +491,16 @@ void PropertySetCode::generateChildrenAssignment(TextStreamIndent &s) const
     s.popWrapperLines();
 }
 
+void PropertySetCode::generateParentTypeCopy(TextStreamIndent &s) const
+{
+    foreach (auto parentType, parentTypes)
+    {
+        s.newLine() << QString("%1::operator=(other);").arg(parentType.second);
+    }
+}
+
 void PropertySetCode::generateChildrenCopy(TextStreamIndent &s) const
 {
-    if (members.isEmpty())
-        return;
-
     foreach (auto p, members)
     {
         s.newLine() << QString("%1 = other.%1;").arg(p->name);

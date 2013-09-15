@@ -182,6 +182,7 @@ PropertySetSubProperties::~PropertySetSubProperties()
 
 PropertySetSubProperties& PropertySetSubProperties::operator=(const PropertySetSubProperties& other)
 {
+    qtn::PropertyBool::operator=(other);
     intProp = other.intProp;
     uintProp = other.uintProp;
     doubleProp = other.doubleProp;
