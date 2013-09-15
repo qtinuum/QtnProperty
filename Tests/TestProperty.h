@@ -31,6 +31,7 @@ private Q_SLOTS:
     void serializationValue();
     void createNew();
     void createCopy();
+    void propertyAssignment();
 
 public Q_SLOTS:
 

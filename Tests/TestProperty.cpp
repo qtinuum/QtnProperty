@@ -690,6 +690,56 @@ void TestProperty::createCopy()
     }
 }
 
+void TestProperty::propertyAssignment()
+{
+    {
+        PropertyDouble p1(this);
+        PropertyDouble p2(this);
+        PropertyDoubleCallback p3(this);
+        double d = 54.32;
+
+        p1 = 0.5;
+        p2 = 1.3;
+        p3.setCallbackValueGet([]()->double { return 23.4; });
+        p3.setCallbackValueSet([&d](double v) { d = v; });
+
+        QVERIFY(p1 == 0.5);
+        QVERIFY(p2 == 1.3);
+        QVERIFY(p3 == 23.4);
+
+        p2 = p1;
+        QVERIFY(p1 == 0.5);
+        QVERIFY(p2 == 0.5);
+
+        p1 = p3;
+        QVERIFY(p3 == 23.4);
+        QVERIFY(p1 == 23.4);
+
+        p3 = p2;
+        QVERIFY(p2 == 0.5);
+        QVERIFY(p3 == 23.4);
+        QVERIFY(d == 0.5);
+    }
+
+    {
+        PropertySetAllPropertyTypes pp(this);
+
+        verifyInitialValues(pp);
+
+        PropertySetAllPropertyTypes pp1(this);
+
+        verifyInitialValues(pp1);
+
+        modify(pp);
+
+        verifyModified(pp);
+
+        pp1 = pp;
+
+        verifyModified(pp1);
+    }
+}
+
 void TestProperty::checkPropertyStateIsNonSimple(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)
 {
     QVERIFY(changedProperty == firedProperty);
