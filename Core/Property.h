@@ -20,7 +20,7 @@
 #define QTN_PROPERTY_H
 
 #include "PropertyBase.h"
-#include "Aux/PropertyDelegateInfo.h"
+#include "Auxiliary/PropertyDelegateInfo.h"
 #include <functional>
 
 namespace Qtinuum

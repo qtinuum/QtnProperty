@@ -19,7 +19,7 @@
 #ifndef QTN_PROPERTY_BASE_H
 #define QTN_PROPERTY_BASE_H
 
-#include "Aux/PropertyAux.h"
+#include "Auxiliary/PropertyAux.h"
 #include <QDataStream>
 
 namespace Qtinuum

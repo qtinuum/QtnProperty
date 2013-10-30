@@ -31,10 +31,10 @@ HEADERS += CoreAPI.h\
     Enum.h\
     PropertyCore.h \
     PropertyGUI.h \
-    Aux/PropertyTemplates.h \
-    Aux/PropertyMacro.h \
-    Aux/PropertyAux.h \
-    Aux/PropertyDelegateInfo.h \
+    Auxiliary/PropertyTemplates.h \
+    Auxiliary/PropertyMacro.h \
+    Auxiliary/PropertyAux.h \
+    Auxiliary/PropertyDelegateInfo.h \
     Core/PropertyBool.h \
     Core/PropertyInt.h \
     Core/PropertyUInt.h \

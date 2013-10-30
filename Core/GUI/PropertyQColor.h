@@ -19,7 +19,7 @@
 #ifndef PROPERTYCOLOR_H
 #define PROPERTYCOLOR_H
 
-#include "../Aux/PropertyTemplates.h"
+#include "../Auxiliary/PropertyTemplates.h"
 #include <QtGui/QColor>
 
 namespace Qtinuum

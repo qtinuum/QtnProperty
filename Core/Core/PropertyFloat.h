@@ -19,7 +19,7 @@
 #ifndef PROPERTYFLOAT_H
 #define PROPERTYFLOAT_H
 
-#include "../Aux/PropertyTemplates.h"
+#include "../Auxiliary/PropertyTemplates.h"
 
 namespace Qtinuum
 {

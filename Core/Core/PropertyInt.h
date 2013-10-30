@@ -19,7 +19,7 @@
 #ifndef PROPERTYINT_H
 #define PROPERTYINT_H
 
-#include "../Aux/PropertyTemplates.h"
+#include "../Auxiliary/PropertyTemplates.h"
 
 namespace Qtinuum
 {

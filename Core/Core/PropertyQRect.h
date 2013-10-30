@@ -19,7 +19,7 @@
 #ifndef PROPERTYQRECT_H
 #define PROPERTYQRECT_H
 
-#include "../Aux/PropertyTemplates.h"
+#include "../Auxiliary/PropertyTemplates.h"
 #include <QRect>
 
 namespace Qtinuum

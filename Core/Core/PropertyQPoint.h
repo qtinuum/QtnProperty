@@ -19,7 +19,7 @@
 #ifndef PROPERTYQPOINT_H
 #define PROPERTYQPOINT_H
 
-#include "../Aux/PropertyTemplates.h"
+#include "../Auxiliary/PropertyTemplates.h"
 #include <QPoint>
 
 namespace Qtinuum

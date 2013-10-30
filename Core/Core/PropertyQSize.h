@@ -19,7 +19,7 @@
 #ifndef PROPERTYQSIZE_H
 #define PROPERTYQSIZE_H
 
-#include "../Aux/PropertyTemplates.h"
+#include "../Auxiliary/PropertyTemplates.h"
 #include <QSize>
 
 namespace Qtinuum

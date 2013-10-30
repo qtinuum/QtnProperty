@@ -19,7 +19,7 @@
 #ifndef PROPERTYFONT_H
 #define PROPERTYFONT_H
 
-#include "../Aux/PropertyTemplates.h"
+#include "../Auxiliary/PropertyTemplates.h"
 #include <QtGui/QFont>
 
 namespace Qtinuum
