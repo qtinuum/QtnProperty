@@ -12,7 +12,7 @@ void TestEnum::enumValue()
 void TestEnum::forEachEnumValue()
 {
     unsigned int count = 0;
-    COLOR::info().forEachEnumValue([&count](const EnumValueInfo &value)->bool {
+    COLOR::info().forEachEnumValue([&count](const EnumValueInfo& value)->bool {
         ++count;
         return true;
     });

@@ -21,14 +21,14 @@
 namespace Qtinuum
 {
 
-PropertyDelegateFactory::PropertyDelegateFactory(const PropertyDelegateFactory *superFactory)
+PropertyDelegateFactory::PropertyDelegateFactory(const PropertyDelegateFactory* superFactory)
     : m_superFactory(superFactory)
 {
 }
 
-PropertyDelegate *PropertyDelegateFactory::createDelegate(Property &owner) const
+PropertyDelegate* PropertyDelegateFactory::createDelegate(Property& owner) const
 {
-    const QMetaObject *metaObject = owner.metaObject();
+    const QMetaObject* metaObject = owner.metaObject();
     while (metaObject)
     {
         // try to find delegate factory by class name
@@ -37,13 +37,13 @@ PropertyDelegate *PropertyDelegateFactory::createDelegate(Property &owner) const
         if (it != m_createItems.end())
         {
             // try to find delegate factory by name
-            const CreateItem & createItem = it.value();
-            const PropertyDelegateInfo *propertyDelegate = owner.delegate();
+            const CreateItem& createItem = it.value();
+            const PropertyDelegateInfo* propertyDelegate = owner.delegate();
             QByteArray delegateName;
             if (propertyDelegate)
                 delegateName = propertyDelegate->name;
 
-            CreateFunction *createFunction = 0;
+            CreateFunction* createFunction = 0;
 
             if (delegateName.isEmpty())
             {
@@ -73,13 +73,13 @@ PropertyDelegate *PropertyDelegateFactory::createDelegate(Property &owner) const
     return 0;
 }
 
-bool PropertyDelegateFactory::registerDelegateDefault(const QMetaObject *propertyMetaObject, CreateFunction *createFunction, const QByteArray &delegateName)
+bool PropertyDelegateFactory::registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)
 {
     Q_ASSERT(propertyMetaObject);
     Q_ASSERT(createFunction);
 
     // find or create creation record
-    CreateItem &createItem = m_createItems[propertyMetaObject->className()];
+    CreateItem& createItem = m_createItems[propertyMetaObject->className()];
     // register default create function
     createItem.defaultCreateFunction = createFunction;
 
@@ -89,21 +89,21 @@ bool PropertyDelegateFactory::registerDelegateDefault(const QMetaObject *propert
     return true;
 }
 
-bool PropertyDelegateFactory::registerDelegate(const QMetaObject *propertyMetaObject, CreateFunction *createFunction, const QByteArray &delegateName)
+bool PropertyDelegateFactory::registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)
 {
     Q_ASSERT(propertyMetaObject);
     Q_ASSERT(createFunction);
     Q_ASSERT(!delegateName.isEmpty());
 
     // find or create creation record
-    CreateItem &createItem = m_createItems[propertyMetaObject->className()];
+    CreateItem& createItem = m_createItems[propertyMetaObject->className()];
     // register create function
     createItem.createFunctions[delegateName] = createFunction;
 
     return true;
 }
 
-PropertyDelegateFactory &PropertyDelegateFactory::staticInstance()
+PropertyDelegateFactory& PropertyDelegateFactory::staticInstance()
 {
     static PropertyDelegateFactory factory;
     return factory;

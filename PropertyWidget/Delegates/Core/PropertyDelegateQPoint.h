@@ -31,11 +31,11 @@ class QTN_PW_EXPORT PropertyDelegateQPoint: public PropertyDelegateTypedEx<Prope
     Q_DISABLE_COPY(PropertyDelegateQPoint)
 
 public:
-    PropertyDelegateQPoint(PropertyQPointBase &owner);
+    PropertyDelegateQPoint(PropertyQPointBase& owner);
 
 protected:
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
-    bool propertyValueToStr(QString &strValue) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    bool propertyValueToStr(QString& strValue) const override;
 };
 
 } // end namespace Qtinuum

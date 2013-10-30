@@ -19,7 +19,7 @@
 #ifndef PROPERTYENUM_H
 #define PROPERTYENUM_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 #include "../Enum.h"
 
 namespace Qtinuum
@@ -28,6 +28,7 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyEnumBase: public SinglePropertyBase<EnumValueType>
 {
     Q_OBJECT
+    PropertyEnumBase(const PropertyEnumBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyEnumBase(QObject *parent)
@@ -41,26 +42,20 @@ public:
     void setEnumInfo(EnumInfo *enumInfo) { m_enumInfo = enumInfo; }
 
 protected:
-    PropertyEnumBase(QObject* parent, const PropertyEnumBase& other)
-        : SinglePropertyBase<EnumValueType>(parent, other),
-          m_enumInfo(other.m_enumInfo)
-    {}
-
     bool isValueAcceptedImpl(ValueType valueToAccept) override;
 
 private:
-    PropertyEnumBase(const PropertyEnumBase &) Q_DECL_EQ_DELETE;
-
     EnumInfo *m_enumInfo;
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyEnumBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyEnumBase, EnumValueType);
+P_PROPERTY_DECL_ALL_OPERATORS(PropertyEnumBase, EnumValueType)
 
 class QTN_PE_CORE_EXPORT PropertyEnumCallback: public SinglePropertyCallback<PropertyEnumBase>
 {
     Q_OBJECT
+    PropertyEnumCallback(const PropertyEnumCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyEnumCallback(QObject *parent)
@@ -69,12 +64,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumCallback, PropertyEnumBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyEnumCallback, SinglePropertyCallback<PropertyEnumBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyEnum: public SinglePropertyValue<PropertyEnumBase>
 {
     Q_OBJECT
+    PropertyEnum(const PropertyEnum& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyEnum(QObject *parent)
@@ -83,7 +78,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnum, PropertyEnumBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyEnum, SinglePropertyValue<PropertyEnumBase>)
 };
 
 } // end namespace Qtinuum

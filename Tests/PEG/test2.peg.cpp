@@ -2,7 +2,7 @@
 
 
 PropertySetA::PropertySetA(QObject *parent)
-    : Qtinuum::Property(parent)
+    : Qtinuum::PropertySet(parent)
     , b(*new Qtinuum::PropertyBool(this))
 {
     init();
@@ -22,16 +22,30 @@ PropertySetA& PropertySetA::operator=(const PropertySetA& other)
     return *this;
 }
 
-Qtinuum::Property* PropertySetA::createNewImpl(QObject* parentForNew) const
+Qtinuum::PropertySet* PropertySetA::createNewImpl(QObject* parentForNew) const
 {
     return new PropertySetA(parentForNew);
 }
 
-Qtinuum::Property* PropertySetA::createCopyImpl(QObject* parentForCopy) const
+Qtinuum::PropertySet* PropertySetA::createCopyImpl(QObject* parentForCopy) const
 {
     PropertySetA* p = new PropertySetA(parentForCopy);
     *p = *this;
     return p;
+}
+
+bool PropertySetA::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask)
+{
+    PropertySetA* theCopyFrom = qobject_cast<PropertySetA*>(propertySetCopyFrom);
+    if (!theCopyFrom)
+        return false;
+
+    if (!(theCopyFrom->b.state() & ignoreMask))
+    {
+        b = theCopyFrom->b;
+    }
+
+    return true;
 }
 
 void PropertySetA::init()

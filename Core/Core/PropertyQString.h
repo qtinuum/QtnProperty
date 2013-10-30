@@ -19,7 +19,7 @@
 #ifndef PROPERTYSTRING_H
 #define PROPERTYSTRING_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 
 namespace Qtinuum
 {
@@ -27,6 +27,7 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyQStringBase: public SinglePropertyBase<QString>
 {
     Q_OBJECT
+    PropertyQStringBase(const PropertyQStringBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQStringBase(QObject *parent)
@@ -34,14 +35,13 @@ public:
     {
     }
 
-    PropertyQStringBase &operator=(const char* newValue)
+    PropertyQStringBase& operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQStringBase)
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQStringBase, SinglePropertyBase<QString>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyQStringBase, QString)
@@ -49,6 +49,7 @@ P_PROPERTY_DECL_ALL_OPERATORS(PropertyQStringBase, QString)
 class QTN_PE_CORE_EXPORT PropertyQStringCallback: public SinglePropertyCallback<PropertyQStringBase>
 {
     Q_OBJECT
+    PropertyQStringCallback(const PropertyQStringCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQStringCallback(QObject *parent)
@@ -56,19 +57,19 @@ public:
     {
     }
 
-    PropertyQStringCallback &operator=(const char* newValue)
+    PropertyQStringCallback& operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQStringCallback, PropertyQStringBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQStringCallback, SinglePropertyCallback<PropertyQStringBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQString: public SinglePropertyValue<PropertyQStringBase>
 {
     Q_OBJECT
+    PropertyQString(const PropertyQString& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQString(QObject *parent)
@@ -76,14 +77,13 @@ public:
     {
     }
 
-    PropertyQString &operator=(const char* newValue)
+    PropertyQString& operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQString, PropertyQStringBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQString, SinglePropertyValue<PropertyQStringBase>)
 };
 
 } // end namespace Qtinuum

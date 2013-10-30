@@ -1,7 +1,7 @@
 #include "Demo.peg.h"
 
 #include <QFileDialog>
-static Qtinuum::EnumInfo &create_COLOR_info()
+static Qtinuum::EnumInfo& create_COLOR_info()
 {
     QVector<Qtinuum::EnumValueInfo> staticValues;
     staticValues.append(Qtinuum::EnumValueInfo(COLOR::red, "red"));
@@ -12,12 +12,12 @@ static Qtinuum::EnumInfo &create_COLOR_info()
     return enumInfo;
 }
 
-Qtinuum::EnumInfo &COLOR::info()
+Qtinuum::EnumInfo& COLOR::info()
 {
-    static Qtinuum::EnumInfo &enumInfo = create_COLOR_info();
+    static Qtinuum::EnumInfo& enumInfo = create_COLOR_info();
     return enumInfo;
 }
-static Qtinuum::EnumInfo &create_FLAGS_info()
+static Qtinuum::EnumInfo& create_FLAGS_info()
 {
     QVector<Qtinuum::EnumValueInfo> staticValues;
     staticValues.append(Qtinuum::EnumValueInfo(FLAGS::opt1, "Option1"));
@@ -28,14 +28,14 @@ static Qtinuum::EnumInfo &create_FLAGS_info()
     return enumInfo;
 }
 
-Qtinuum::EnumInfo &FLAGS::info()
+Qtinuum::EnumInfo& FLAGS::info()
 {
-    static Qtinuum::EnumInfo &enumInfo = create_FLAGS_info();
+    static Qtinuum::EnumInfo& enumInfo = create_FLAGS_info();
     return enumInfo;
 }
 
 PropertySetInternal::PropertySetInternal(QObject *parent)
-    : Qtinuum::Property(parent)
+    : Qtinuum::PropertySet(parent)
     , name(*new Qtinuum::PropertyQString(this))
     , rect(*new Qtinuum::PropertyQRect(this))
     , item1(*new Qtinuum::PropertyQString(this))
@@ -75,16 +75,80 @@ PropertySetInternal& PropertySetInternal::operator=(const PropertySetInternal& o
     return *this;
 }
 
-Qtinuum::Property* PropertySetInternal::createNewImpl(QObject* parentForNew) const
+Qtinuum::PropertySet* PropertySetInternal::createNewImpl(QObject* parentForNew) const
 {
     return new PropertySetInternal(parentForNew);
 }
 
-Qtinuum::Property* PropertySetInternal::createCopyImpl(QObject* parentForCopy) const
+Qtinuum::PropertySet* PropertySetInternal::createCopyImpl(QObject* parentForCopy) const
 {
     PropertySetInternal* p = new PropertySetInternal(parentForCopy);
     *p = *this;
     return p;
+}
+
+bool PropertySetInternal::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask)
+{
+    PropertySetInternal* theCopyFrom = qobject_cast<PropertySetInternal*>(propertySetCopyFrom);
+    if (!theCopyFrom)
+        return false;
+
+    if (!(theCopyFrom->name.state() & ignoreMask))
+    {
+        name = theCopyFrom->name;
+    }
+
+    if (!(theCopyFrom->rect.state() & ignoreMask))
+    {
+        rect = theCopyFrom->rect;
+    }
+
+    if (!(theCopyFrom->item1.state() & ignoreMask))
+    {
+        item1 = theCopyFrom->item1;
+    }
+
+    if (!(theCopyFrom->item2.state() & ignoreMask))
+    {
+        item2 = theCopyFrom->item2;
+    }
+
+    if (!(theCopyFrom->item3.state() & ignoreMask))
+    {
+        item3 = theCopyFrom->item3;
+    }
+
+    if (!(theCopyFrom->item4.state() & ignoreMask))
+    {
+        item4 = theCopyFrom->item4;
+    }
+
+    if (!(theCopyFrom->item5.state() & ignoreMask))
+    {
+        item5 = theCopyFrom->item5;
+    }
+
+    if (!(theCopyFrom->item6.state() & ignoreMask))
+    {
+        item6 = theCopyFrom->item6;
+    }
+
+    if (!(theCopyFrom->item7.state() & ignoreMask))
+    {
+        item7 = theCopyFrom->item7;
+    }
+
+    if (!(theCopyFrom->item8.state() & ignoreMask))
+    {
+        item8 = theCopyFrom->item8;
+    }
+
+    if (!(theCopyFrom->item9.state() & ignoreMask))
+    {
+        item9 = theCopyFrom->item9;
+    }
+
+    return true;
 }
 
 void PropertySetInternal::init()
@@ -154,7 +218,7 @@ void PropertySetInternal::connectDelegates()
 }
 
 PropertySetSubProperties::PropertySetSubProperties(QObject *parent)
-    : qtn::PropertyBool(parent)
+    : Qtinuum::PropertySet(parent)
     , intProp(*new Qtinuum::PropertyInt(this))
     , uintProp(*new Qtinuum::PropertyUInt(this))
     , doubleProp(*new Qtinuum::PropertyDouble(this))
@@ -182,7 +246,6 @@ PropertySetSubProperties::~PropertySetSubProperties()
 
 PropertySetSubProperties& PropertySetSubProperties::operator=(const PropertySetSubProperties& other)
 {
-    qtn::PropertyBool::operator=(other);
     intProp = other.intProp;
     uintProp = other.uintProp;
     doubleProp = other.doubleProp;
@@ -201,16 +264,95 @@ PropertySetSubProperties& PropertySetSubProperties::operator=(const PropertySetS
     return *this;
 }
 
-Qtinuum::Property* PropertySetSubProperties::createNewImpl(QObject* parentForNew) const
+Qtinuum::PropertySet* PropertySetSubProperties::createNewImpl(QObject* parentForNew) const
 {
     return new PropertySetSubProperties(parentForNew);
 }
 
-Qtinuum::Property* PropertySetSubProperties::createCopyImpl(QObject* parentForCopy) const
+Qtinuum::PropertySet* PropertySetSubProperties::createCopyImpl(QObject* parentForCopy) const
 {
     PropertySetSubProperties* p = new PropertySetSubProperties(parentForCopy);
     *p = *this;
     return p;
+}
+
+bool PropertySetSubProperties::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask)
+{
+    PropertySetSubProperties* theCopyFrom = qobject_cast<PropertySetSubProperties*>(propertySetCopyFrom);
+    if (!theCopyFrom)
+        return false;
+
+    if (!(theCopyFrom->intProp.state() & ignoreMask))
+    {
+        intProp = theCopyFrom->intProp;
+    }
+
+    if (!(theCopyFrom->uintProp.state() & ignoreMask))
+    {
+        uintProp = theCopyFrom->uintProp;
+    }
+
+    if (!(theCopyFrom->doubleProp.state() & ignoreMask))
+    {
+        doubleProp = theCopyFrom->doubleProp;
+    }
+
+    if (!(theCopyFrom->floatProp.state() & ignoreMask))
+    {
+        floatProp = theCopyFrom->floatProp;
+    }
+
+    if (!(theCopyFrom->boolProp.state() & ignoreMask))
+    {
+        boolProp = theCopyFrom->boolProp;
+    }
+
+    if (!(theCopyFrom->enumProp.state() & ignoreMask))
+    {
+        enumProp = theCopyFrom->enumProp;
+    }
+
+    if (!(theCopyFrom->colorProp.state() & ignoreMask))
+    {
+        colorProp = theCopyFrom->colorProp;
+    }
+
+    if (!(theCopyFrom->flagsProp.state() & ignoreMask))
+    {
+        flagsProp = theCopyFrom->flagsProp;
+    }
+
+    if (!(theCopyFrom->fileName1.state() & ignoreMask))
+    {
+        fileName1 = theCopyFrom->fileName1;
+    }
+
+    if (!(theCopyFrom->fileName2.state() & ignoreMask))
+    {
+        fileName2 = theCopyFrom->fileName2;
+    }
+
+    if (!(theCopyFrom->pointProp.state() & ignoreMask))
+    {
+        pointProp = theCopyFrom->pointProp;
+    }
+
+    if (!(theCopyFrom->sizeProp.state() & ignoreMask))
+    {
+        sizeProp = theCopyFrom->sizeProp;
+    }
+
+    if (!(theCopyFrom->fontProp.state() & ignoreMask))
+    {
+        fontProp = theCopyFrom->fontProp;
+    }
+
+    if (!(theCopyFrom->listProp.state() & ignoreMask))
+    {
+        listProp = theCopyFrom->listProp;
+    }
+
+    return true;
 }
 
 void PropertySetSubProperties::init()
@@ -281,19 +423,10 @@ void PropertySetSubProperties::init()
 
 void PropertySetSubProperties::connectSlots()
 {
-    QObject::connect(this, &Qtinuum::Property::propertyDidChange, this, &PropertySetSubProperties::on_propertyDidChange);
 }
 
 void PropertySetSubProperties::disconnectSlots()
 {
-    QObject::disconnect(this, &Qtinuum::Property::propertyDidChange, this, &PropertySetSubProperties::on_propertyDidChange);
-}
-
-void PropertySetSubProperties::on_propertyDidChange(const Qtinuum::Property *changedProperty, const Qtinuum::Property *firedProperty, Qtinuum::PropertyChangeReason reason)
-{
-    
-            intProp.switchState(qtn::PropertyStateImmutable, !value());
-        
 }
 
 void PropertySetSubProperties::connectDelegates()
@@ -327,7 +460,7 @@ void PropertySetSubProperties::connectDelegates()
 }
 
 PropertySetMain::PropertySetMain(QObject *parent)
-    : Qtinuum::Property(parent)
+    : Qtinuum::PropertySet(parent)
     , count(*new Qtinuum::PropertyInt(this))
     , isValid(*new Qtinuum::PropertyBool(this))
     , Internal(*new PropertySetInternal(this))
@@ -355,16 +488,44 @@ PropertySetMain& PropertySetMain::operator=(const PropertySetMain& other)
     return *this;
 }
 
-Qtinuum::Property* PropertySetMain::createNewImpl(QObject* parentForNew) const
+Qtinuum::PropertySet* PropertySetMain::createNewImpl(QObject* parentForNew) const
 {
     return new PropertySetMain(parentForNew);
 }
 
-Qtinuum::Property* PropertySetMain::createCopyImpl(QObject* parentForCopy) const
+Qtinuum::PropertySet* PropertySetMain::createCopyImpl(QObject* parentForCopy) const
 {
     PropertySetMain* p = new PropertySetMain(parentForCopy);
     *p = *this;
     return p;
+}
+
+bool PropertySetMain::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask)
+{
+    PropertySetMain* theCopyFrom = qobject_cast<PropertySetMain*>(propertySetCopyFrom);
+    if (!theCopyFrom)
+        return false;
+
+    if (!(theCopyFrom->count.state() & ignoreMask))
+    {
+        count = theCopyFrom->count;
+    }
+
+    if (!(theCopyFrom->isValid.state() & ignoreMask))
+    {
+        isValid = theCopyFrom->isValid;
+    }
+
+    Internal.copyValues(&theCopyFrom->Internal, ignoreMask);
+
+    if (!(theCopyFrom->flag.state() & ignoreMask))
+    {
+        flag = theCopyFrom->flag;
+    }
+
+    Supplementary.copyValues(&theCopyFrom->Supplementary, ignoreMask);
+
+    return true;
 }
 
 void PropertySetMain::init()
@@ -406,7 +567,7 @@ void PropertySetMain::disconnectSlots()
     QObject::disconnect(&isValid, &Qtinuum::Property::propertyDidChange, this, &PropertySetMain::on_isValid_propertyDidChange);
 }
 
-void PropertySetMain::on_isValid_propertyDidChange(const Qtinuum::Property *changedProperty, const Qtinuum::Property *firedProperty, Qtinuum::PropertyChangeReason reason)
+void PropertySetMain::on_isValid_propertyDidChange(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, Qtinuum::PropertyChangeReason reason)
 {
     
             Internal.switchState(qtn::PropertyStateImmutable, !isValid);

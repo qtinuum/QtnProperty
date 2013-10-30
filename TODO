@@ -26,3 +26,7 @@ Tests:
 2. Property equal (==)
 3. Property <, > for numerics
 4. make PropertySetAllPropertyTypes with subproperties
+
+make 3 classes PropertyBase; Property and PropertySet-=]
+
+implement ReportError method

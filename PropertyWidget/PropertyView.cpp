@@ -33,7 +33,7 @@ namespace Qtinuum
 class PainterState
 {
 public:
-    PainterState(QPainter &p)
+    PainterState(QPainter& p)
         : m_p(p)
     {
         m_p.save();
@@ -45,10 +45,10 @@ public:
     }
 
 private:
-    QPainter &m_p;
+    QPainter& m_p;
 };
 
-static void updateVisibleProperties(const Property *property, unsigned int &count, bool simpleOnly)
+static void updateVisibleProperties(const PropertyBase* property, unsigned int& count, bool simpleOnly)
 {
     Q_ASSERT(property);
 
@@ -60,18 +60,22 @@ static void updateVisibleProperties(const Property *property, unsigned int &coun
 
     ++count;
 
-    if (!property->childProperties().isEmpty() && !(property->state()&PropertyStateCollapsed))
+    const PropertySet* propertySet = property->asPropertySet();
+    if (!propertySet)
+        return;
+
+    if (!propertySet->childProperties().isEmpty() && !(propertySet->state()&PropertyStateCollapsed))
     {
-        foreach(Property *childProperty, property->childProperties())
+        foreach(PropertyBase* childProperty, propertySet->childProperties())
         {
             updateVisibleProperties(childProperty, count, simpleOnly);
         }
     }
 }
 
-PropertyView::PropertyView(QWidget* parent, Property *property)
+PropertyView::PropertyView(QWidget* parent, PropertySet* propertySet)
     : QAbstractScrollArea(parent),
-      m_property(property),
+      m_propertySet(propertySet),
       m_activeProperty(nullptr),
       m_delegateFactory(&PropertyDelegateFactory::staticInstance()),
       m_visibleItemsValid(false),
@@ -94,20 +98,20 @@ PropertyView::~PropertyView()
 {
 }
 
-void PropertyView::setProperty(Property *newProperty)
+void PropertyView::setPropertySet(PropertySet* newPropertySet)
 {
-    if (m_property)
-        QObject::disconnect(m_property, &Property::propertyDidChange, this, &PropertyView::OnPropertyDidChange);
+    if (m_propertySet)
+        QObject::disconnect(m_propertySet, &Property::propertyDidChange, this, &PropertyView::OnPropertyDidChange);
 
-    m_property = newProperty;
+    m_propertySet = newPropertySet;
 
-    if (m_property)
-        QObject::connect(m_property, &Property::propertyDidChange, this, &PropertyView::OnPropertyDidChange);
+    if (m_propertySet)
+        QObject::connect(m_propertySet, &Property::propertyDidChange, this, &PropertyView::OnPropertyDidChange);
 
     updateItemsTree();
 }
 
-bool PropertyView::setActiveProperty(Property *newActiveProperty)
+bool PropertyView::setActiveProperty(PropertyBase* newActiveProperty)
 {
     if (m_activeProperty == newActiveProperty)
         return false;
@@ -132,7 +136,7 @@ bool PropertyView::setActiveProperty(Property *newActiveProperty)
     return true;
 }
 
-bool PropertyView::ensureVisible(const Property *property)
+bool PropertyView::ensureVisible(const PropertyBase* property)
 {
     if (!property)
         return false;
@@ -166,7 +170,7 @@ void PropertyView::removePropertyViewStyle(PropertyViewStyle style)
     setPropertyViewStyle(propertyViewStyle() & ~style);
 }
 
-void PropertyView::paintEvent(QPaintEvent *e)
+void PropertyView::paintEvent(QPaintEvent* e)
 {
     Q_UNUSED(e);
 
@@ -188,7 +192,7 @@ void PropertyView::paintEvent(QPaintEvent *e)
 
     for (int i = firstVisibleItemIndex; i <= lastVisibleItemIndex; ++i)
     {
-        const VisibleItem &vItem = m_visibleItems[i];
+        const VisibleItem& vItem = m_visibleItems[i];
 
         if (!vItem.item->delegate)
             drawPropertySetItem(painter, itemRect, vItem);
@@ -202,7 +206,7 @@ void PropertyView::paintEvent(QPaintEvent *e)
     }
 }
 
-void PropertyView::drawBranchNode(QStylePainter &painter, QRect &rect, const VisibleItem &vItem)
+void PropertyView::drawBranchNode(QStylePainter& painter, QRect& rect, const VisibleItem& vItem)
 {
     if (!vItem.hasChildren)
         return;
@@ -244,8 +248,8 @@ void PropertyView::drawBranchNode(QStylePainter &painter, QRect &rect, const Vis
         Action branch;
         branch.rect = branchRect.toRect();//opt.rect;
 
-        Property* property = vItem.item->property;
-        branch.action = [property](QEvent *e, QRect rect)->bool {
+        PropertyBase* property = vItem.item->property;
+        branch.action = [property](QEvent* e, QRect rect)->bool {
             if (e->type() == QEvent::MouseButtonPress)
             {
                 property->switchStateAuto(PropertyStateCollapsed);
@@ -262,7 +266,7 @@ void PropertyView::drawBranchNode(QStylePainter &painter, QRect &rect, const Vis
     rect.setLeft(branchRect.right() + 1);
 }
 
-void PropertyView::drawPropertySetItem(QStylePainter &painter, const QRect &rect, const VisibleItem &vItem)
+void PropertyView::drawPropertySetItem(QStylePainter& painter, const QRect& rect, const VisibleItem& vItem)
 {
     bool enabled = vItem.item->property->isEditableByUser();
     bool selected = m_activeProperty == vItem.item->property;
@@ -297,7 +301,7 @@ void PropertyView::drawPropertySetItem(QStylePainter &painter, const QRect &rect
     painter.drawText(nameRect, Qt::AlignLeading|Qt::AlignVCenter|Qt::TextSingleLine, elidedName);
 }
 
-void PropertyView::drawPropertyItem(QStylePainter &painter, const QRect &rect, const VisibleItem &vItem)
+void PropertyView::drawPropertyItem(QStylePainter& painter, const QRect& rect, const VisibleItem& vItem)
 {
     bool enabled = vItem.item->property->isEditableByUser();
     bool selected = m_activeProperty == vItem.item->property;
@@ -382,7 +386,7 @@ void PropertyView::drawPropertyItem(QStylePainter &painter, const QRect &rect, c
                 {
                     InplaceInfo inplaceInfo;
                     inplaceInfo.activationEvent = e;
-                    QWidget *editor = propertyDelegate->createValueEditor(viewport(), rect, &inplaceInfo);
+                    QWidget* editor = propertyDelegate->createValueEditor(viewport(), rect, &inplaceInfo);
                     if (!editor)
                         return false;
 
@@ -404,7 +408,7 @@ void PropertyView::drawPropertyItem(QStylePainter &painter, const QRect &rect, c
 
 void PropertyView::changeActivePropertyByIndex(int index)
 {
-    Property *newActiveProperty = (index < 0) ? nullptr : m_visibleItems[index].item->property;
+    PropertyBase* newActiveProperty = (index < 0) ? nullptr : m_visibleItems[index].item->property;
     setActiveProperty(newActiveProperty);
     ensureVisibleItemByIndex(index);
 }
@@ -418,7 +422,7 @@ int PropertyView::visibleItemIndexByPoint(QPoint pos) const
     return index;
 }
 
-int PropertyView::visibleItemIndexByProperty(const Property *property) const
+int PropertyView::visibleItemIndexByProperty(const PropertyBase* property) const
 {
     validateVisibleItems();
 
@@ -440,18 +444,18 @@ QRect PropertyView::visibleItemRect(int index) const
     return rect;
 }
 
-bool PropertyView::processItemActionByMouse(int index, QMouseEvent *e)
+bool PropertyView::processItemActionByMouse(int index, QMouseEvent* e)
 {
     if (index < 0)
         return false;
 
-    const VisibleItem &vItem = m_visibleItems[index];
+    const VisibleItem& vItem = m_visibleItems[index];
 
     if (!vItem.actionsValid)
         return false;
 
     const QList<Action>& actions = vItem.actions;
-    foreach (const Action &action, actions)
+    foreach (const Action& action, actions)
     {
         if (action.rect.contains(e->pos()))
         {
@@ -462,7 +466,7 @@ bool PropertyView::processItemActionByMouse(int index, QMouseEvent *e)
     return false;
 }
 
-void PropertyView::resizeEvent(QResizeEvent *e)
+void PropertyView::resizeEvent(QResizeEvent* e)
 {
     stopInplaceEdit();
     invalidateVisibleItemsActions();
@@ -471,7 +475,7 @@ void PropertyView::resizeEvent(QResizeEvent *e)
 
 static const int TOLERANCE = 3;
 
-void PropertyView::mousePressEvent(QMouseEvent *e)
+void PropertyView::mousePressEvent(QMouseEvent* e)
 {
     if (qAbs(e->x() - splitPosition()) < TOLERANCE)
     {
@@ -495,7 +499,7 @@ void PropertyView::mousePressEvent(QMouseEvent *e)
     }
 }
 
-void PropertyView::mouseReleaseEvent(QMouseEvent *e)
+void PropertyView::mouseReleaseEvent(QMouseEvent* e)
 {
     if (m_rubberBand)
     {
@@ -512,7 +516,7 @@ void PropertyView::mouseReleaseEvent(QMouseEvent *e)
     }
 }
 
-void PropertyView::mouseMoveEvent(QMouseEvent *e)
+void PropertyView::mouseMoveEvent(QMouseEvent* e)
 {
     if (m_rubberBand)
     {
@@ -547,7 +551,7 @@ void PropertyView::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
-void PropertyView::mouseDoubleClickEvent(QMouseEvent *e)
+void PropertyView::mouseDoubleClickEvent(QMouseEvent* e)
 {
     if (!m_rubberBand)
     {
@@ -555,7 +559,7 @@ void PropertyView::mouseDoubleClickEvent(QMouseEvent *e)
     }
 }
 
-bool PropertyView::viewportEvent(QEvent *e)
+bool PropertyView::viewportEvent(QEvent* e)
 {
     switch (e->type())
     {
@@ -565,7 +569,7 @@ bool PropertyView::viewportEvent(QEvent *e)
 
     case QEvent::ToolTip:
         {
-            QHelpEvent *helpEvent = static_cast<QHelpEvent *>(e);
+            QHelpEvent* helpEvent = static_cast<QHelpEvent *>(e);
             tooltipEvent(helpEvent);
         }
         break;
@@ -588,7 +592,7 @@ void PropertyView::scrollContentsBy(int dx, int dy)
     QAbstractScrollArea::scrollContentsBy(dx, dy);
 }
 
-void PropertyView::keyPressEvent(QKeyEvent *e)
+void PropertyView::keyPressEvent(QKeyEvent* e)
 {
     validateVisibleItems();
 
@@ -598,7 +602,7 @@ void PropertyView::keyPressEvent(QKeyEvent *e)
         return;
     }
 
-    QWidget *inplaceEditor = getInplaceEdit();
+    QWidget* inplaceEditor = getInplaceEdit();
     if (inplaceEditor)
     {
         int key = e->key();
@@ -685,7 +689,7 @@ void PropertyView::keyPressEvent(QKeyEvent *e)
                 changeActivePropertyByIndex(0);
             else
             {
-                const VisibleItem &vItem = m_visibleItems[index];
+                const VisibleItem& vItem = m_visibleItems[index];
                 if (vItem.hasChildren && !vItem.item->collapsed())
                 {
                     // collapse opened property
@@ -709,7 +713,7 @@ void PropertyView::keyPressEvent(QKeyEvent *e)
                 changeActivePropertyByIndex(0);
             else
             {
-                const VisibleItem &vItem = m_visibleItems[index];
+                const VisibleItem& vItem = m_visibleItems[index];
                 if (vItem.hasChildren && vItem.item->collapsed())
                 {
                     // expand closed property
@@ -731,7 +735,7 @@ void PropertyView::keyPressEvent(QKeyEvent *e)
 
             if (index >= 0)
             {
-                const QScopedPointer<PropertyDelegate> &delegate = m_visibleItems[index].item->delegate;
+                const QScopedPointer<PropertyDelegate>& delegate = m_visibleItems[index].item->delegate;
                 if (!delegate.isNull() && delegate->acceptKeyPressedForInplaceEdit(e))
                 {
                     qDebug() << "PropertyView Key event: " << e;
@@ -742,7 +746,7 @@ void PropertyView::keyPressEvent(QKeyEvent *e)
                     QRect valueRect = visibleItemRect(index);
                     valueRect.setLeft(splitPosition());
 
-                    QWidget *editor = delegate->createValueEditor(viewport(), valueRect, &inplaceInfo);
+                    QWidget* editor = delegate->createValueEditor(viewport(), valueRect, &inplaceInfo);
                     if (!editor)
                         break;
 
@@ -765,7 +769,7 @@ void PropertyView::keyPressEvent(QKeyEvent *e)
     }
 }
 
-void PropertyView::tooltipEvent(QHelpEvent *e)
+void PropertyView::tooltipEvent(QHelpEvent* e)
 {
     int index = visibleItemIndexByPoint(e->pos());
     if (index >= 0)
@@ -775,7 +779,7 @@ void PropertyView::tooltipEvent(QHelpEvent *e)
 
         QString tooltipText;
 
-        const VisibleItem &vItem = m_visibleItems[index];
+        const VisibleItem& vItem = m_visibleItems[index];
 
         // propertyset case
         if (!vItem.item->delegate)
@@ -808,49 +812,64 @@ void PropertyView::tooltipEvent(QHelpEvent *e)
 
 void PropertyView::updateItemsTree()
 {
-    m_itemsTree.reset(createItemsTree(m_property, m_delegateFactory));
+    m_itemsTree.reset(createItemsTree(m_propertySet, m_delegateFactory));
     invalidateVisibleItems();
 }
 
-PropertyView::Item *PropertyView::createItemsTree(Property *rootProperty, const PropertyDelegateFactory &factory)
+PropertyView::Item* PropertyView::createItemsTree(PropertyBase* rootProperty, const PropertyDelegateFactory& factory)
 {
     if (!rootProperty)
         return nullptr;
 
-    Item *item(new Item());
+    Item* item(new Item());
     item->property = rootProperty;
-    item->delegate.reset(factory.createDelegate(*rootProperty));
 
-    if (item->delegate)
+    Property* asProperty = rootProperty->asProperty();
+    if (asProperty)
     {
-        // apply attributes
-        const PropertyDelegateInfo * delegateInfo = rootProperty->delegate();
-        if (delegateInfo)
-        {
-            item->delegate->applyAttributes(delegateInfo->attributes);
-        }
+        item->delegate.reset(factory.createDelegate(*asProperty));
 
-        // process delegate subproperties
-        for (int i = 0, n = item->delegate->subPropertyCount(); i < n; ++i)
+        if (item->delegate)
         {
-            Property *child = item->delegate->subProperty(i);
-            if (child)
+            // apply attributes
+            const PropertyDelegateInfo* delegateInfo = asProperty->delegate();
+            if (delegateInfo)
+            {
+                item->delegate->applyAttributes(delegateInfo->attributes);
+            }
+
+            // process delegate subproperties
+            for (int i = 0, n = item->delegate->subPropertyCount(); i < n; ++i)
+            {
+                PropertyBase* child = item->delegate->subProperty(i);
+                if (child)
+                {
+                    QSharedPointer<Item> childItem(createItemsTree(child, factory));
+                    childItem->parent = item;
+                    item->children.append(childItem);
+                }
+            }
+        }
+    }
+    else
+    {
+        PropertySet* asPropertySet = rootProperty->asPropertySet();
+        if (asPropertySet)
+        {
+            // process property set subproperties
+            foreach (PropertyBase* child, asPropertySet->childProperties())
             {
                 QSharedPointer<Item> childItem(createItemsTree(child, factory));
                 childItem->parent = item;
                 item->children.append(childItem);
             }
         }
+        else
+        {
+            // unrecognized PropertyBase class
+            Q_ASSERT(false);
+        }
     }
-
-    // process root property subproperties
-    foreach (Property *child, rootProperty->childProperties())
-    {
-        QSharedPointer<Item> childItem(createItemsTree(child, factory));
-        childItem->parent = item;
-        item->children.append(childItem);
-    }
-
     return item;
 }
 
@@ -873,7 +892,7 @@ void PropertyView::validateVisibleItems() const
     m_visibleItemsValid = true;
 }
 
-void PropertyView::fillVisibleItems(Item *item, int level) const
+void PropertyView::fillVisibleItems(Item* item, int level) const
 {
     if (!item)
         return;
@@ -928,7 +947,7 @@ void PropertyView::fillVisibleItems(Item *item, int level) const
         m_visibleItems[index].hasChildren = true;
 }
 
-bool PropertyView::acceptItem(Item &item) const
+bool PropertyView::acceptItem(Item& item) const
 {
     return item.property->isVisible();
 }
@@ -954,7 +973,7 @@ void PropertyView::updateStyleStuff()
     m_itemHeight = (int)((float)m_itemHeight * m_itemHeightRatio);
 
     m_propertySetBackdroundColor = m_linesColor = palette().color(QPalette::Button);
-            //style()->styleHint(QStyle::SH_Table_GridLineColor, &opt, this, 0);
+    //style()->styleHint(QStyle::SH_Table_GridLineColor, &opt, this, 0);
 
     m_leadMargin = style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
 }
@@ -1004,7 +1023,7 @@ void PropertyView::updateSplitRatio(float splitRatio)
     viewport()->update();
 }
 
-void PropertyView::OnPropertyDidChange(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason)
+void PropertyView::OnPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason)
 {
     if (reason & PropertyChangeReasonChildren)
     {

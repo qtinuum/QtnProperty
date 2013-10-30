@@ -88,24 +88,9 @@ source_code:      CODE_H CPP_BRACKET_OPEN { yy_push_state_cpp_code(); }
 property_set:   property_set_head property_set_body { pegContext.commitPropertySet(); }
 ;
 
-property_set_head:  PROPERTY_SET    { pegContext.startPropertySet(); }
-                        property_set_decl
-;
-
-property_set_decl:    ID        { pegContext.currPropertySet->setName($1); }
-                    | ID COLON  { pegContext.currPropertySet->setName($1); }
-                        property_set_inheritance_list
-;
-
-property_set_inheritance_list:    inheritance_decl
-                                | property_set_inheritance_list COMMA inheritance_decl
-;
-
-inheritance_decl:     type_decl             {
-    pegContext.currPropertySet->parentTypes.append(QPair<QString, QString>("", pegContext.currentType()));
-}
-                    | ACCESS_ID type_decl   {
-    pegContext.currPropertySet->parentTypes.append(QPair<QString, QString>($1, pegContext.currentType()));
+property_set_head:  PROPERTY_SET ID   {
+    pegContext.startPropertySet();
+    pegContext.currPropertySet->setName($2);
 }
 ;
 

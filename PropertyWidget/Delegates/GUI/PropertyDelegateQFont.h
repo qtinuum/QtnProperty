@@ -31,12 +31,12 @@ class QTN_PW_EXPORT PropertyDelegateQFont: public PropertyDelegateTypedEx<Proper
     Q_DISABLE_COPY(PropertyDelegateQFont)
 
 public:
-    PropertyDelegateQFont(PropertyQFontBase &owner);
+    PropertyDelegateQFont(PropertyQFontBase& owner);
 
 protected:
-    void drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip = 0) const override;
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
-    bool propertyValueToStr(QString &strValue) const override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    bool propertyValueToStr(QString& strValue) const override;
 };
 
 } // end namespace Qtinuum

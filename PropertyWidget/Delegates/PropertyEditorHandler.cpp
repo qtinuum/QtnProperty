@@ -23,7 +23,7 @@
 namespace Qtinuum
 {
 
-PropertyEditorHandlerBase::PropertyEditorHandlerBase(Property &property, QWidget &editor)
+PropertyEditorHandlerBase::PropertyEditorHandlerBase(Property& property, QWidget& editor)
 {
     QObject::connect(&editor, &QObject::destroyed, this, &PropertyEditorHandlerBase::onObjectDestroyed);
     QObject::connect(&property, &QObject::destroyed, this, &PropertyEditorHandlerBase::onObjectDestroyed);
@@ -42,7 +42,7 @@ void PropertyEditorHandlerBase::onObjectDestroyed(QObject *object)
     delete this;
 }
 
-void PropertyEditorHandlerBase::onPropertyDidChange(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason)
+void PropertyEditorHandlerBase::onPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason)
 {
     if ((reason == PropertyChangeReasonValue) && (&propertyBase() == firedProperty))
         updateEditor();

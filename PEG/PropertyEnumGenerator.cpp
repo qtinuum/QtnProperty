@@ -83,12 +83,12 @@ static Exceptions setExceptions = createSetExceptions();
 static Signatures createSlotSignatures()
 {
     Signatures _slots;
-    _slots.insert("propertyWillChange",   "const " + QTN_NAMESPACE + "Property *changedProperty, "
-                                        + "const " + QTN_NAMESPACE + "Property *firedProperty, "
+    _slots.insert("propertyWillChange",   "const " + QTN_NAMESPACE + "PropertyBase* changedProperty, "
+                                        + "const " + QTN_NAMESPACE + "PropertyBase* firedProperty, "
                                         + QTN_NAMESPACE + "PropertyChangeReason reason, "
                                         + QTN_NAMESPACE + "PropertyValuePtr newValue");
-    _slots.insert("propertyDidChange",    "const " + QTN_NAMESPACE + "Property *changedProperty, "
-                                          + "const " + QTN_NAMESPACE + "Property *firedProperty, "
+    _slots.insert("propertyDidChange",    "const " + QTN_NAMESPACE + "PropertyBase* changedProperty, "
+                                          + "const " + QTN_NAMESPACE + "PropertyBase* firedProperty, "
                                           + QTN_NAMESPACE + "PropertyChangeReason reason");
     _slots.insert("propertyValueAccept",  "const " + QTN_NAMESPACE + "Property *property, "
                                         + QTN_NAMESPACE + "PropertyValuePtr valueToAccept, "
@@ -97,7 +97,7 @@ static Signatures createSlotSignatures()
 }
 static Signatures slotsSignatures = createSlotSignatures();
 
-static QString slotSignature(const QString &name)
+static QString slotSignature(const QString& name)
 {
     auto it = slotsSignatures.find(name);
     if (it == slotsSignatures.end())
@@ -106,9 +106,9 @@ static QString slotSignature(const QString &name)
     return it.value();
 }
 
-static QString valueByName(const Assignments & assignments,
-                           const QString & name,
-                           const QString &defaultValue)
+static QString valueByName(const Assignments& assignments,
+                           const QString& name,
+                           const QString& defaultValue)
 {
     auto it = assignments.find(name);
     if (it == assignments.end())
@@ -164,7 +164,7 @@ static void assignmentsSetCode(QString prefix,
     }
 }
 
-static QString slotName(const QString &name, const QString *member1, const QString *member2)
+static QString slotName(const QString& name, const QString *member1, const QString *member2)
 {
     QString slotName = "on_";
     if (member1 && !member1->isEmpty())
@@ -182,7 +182,7 @@ static QString slotName(const QString &name, const QString *member1, const QStri
     return slotName + name;
 }
 
-void DelegateInfo::generateCode(TextStreamIndent &s) const
+void DelegateInfo::generateCode(TextStreamIndent& s) const
 {
     s.newLine() << QString("QScopedPointer<%1PropertyDelegateInfo> info(new %1PropertyDelegateInfo());").arg(QTN_NAMESPACE);
 
@@ -202,33 +202,33 @@ IncludeCode::IncludeCode(QString name, bool isHeader)
       isHeader(isHeader)
 {}
 
-void IncludeCode::generateHFile(TextStreamIndent &s) const
+void IncludeCode::generateHFile(TextStreamIndent& s) const
 {
     if (!isHeader)
         return;
     generate(s);
 }
 
-void IncludeCode::generateCppFile(TextStreamIndent &s) const
+void IncludeCode::generateCppFile(TextStreamIndent& s) const
 {
     if (isHeader)
         return;
     generate(s);
 }
 
-SourceCode::SourceCode(const QString &code, bool code_h)
+SourceCode::SourceCode(const QString& code, bool code_h)
     : code(code),
       code_h(code_h)
 {}
 
-void SourceCode::generateHFile(TextStreamIndent &s) const
+void SourceCode::generateHFile(TextStreamIndent& s) const
 {
     if (!code_h)
         return;
     s.newLine() << code;
 }
 
-void SourceCode::generateCppFile(TextStreamIndent &s) const
+void SourceCode::generateCppFile(TextStreamIndent& s) const
 {
     if (code_h)
         return;
@@ -277,14 +277,12 @@ void PropertySetCode::setDestructorCode(QString _name, QString _code)
     destructor->code = _code;
 }
 
-void PropertySetCode::generateHFile(TextStreamIndent &s) const
+void PropertySetCode::generateHFile(TextStreamIndent& s) const
 {
     generateSubPropertySetsDeclarations(s);
     s << endl;
-    s.newLine() << QString("class %1: %2 %3").arg(selfType,
-                                                  defaultParentTypeAccess(),
-                                                  defaultParentType());
-        generateRestParentTypes(s);
+    s.newLine() << QString("class %1: public %2PropertySet").arg(selfType,
+                                                  QTN_NAMESPACE);
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << "Q_OBJECT";
@@ -303,8 +301,10 @@ void PropertySetCode::generateHFile(TextStreamIndent &s) const
         s << endl;
     s.newLine(-1) << "protected:";
         s.newLine() << "// cloning implementation";
-        s.newLine() << QTN_NAMESPACE + "Property* createNewImpl(QObject* parentForNew) const override;";
-        s.newLine() << QTN_NAMESPACE + "Property* createCopyImpl(QObject* parentForCopy) const override;";
+        s.newLine() << QString("%1PropertySet* createNewImpl(QObject* parentForNew) const override;").arg(QTN_NAMESPACE);
+        s.newLine() << QString("%1PropertySet* createCopyImpl(QObject* parentForCopy) const override;").arg(QTN_NAMESPACE);
+        s.newLine() << "// copy values implementation";
+        s.newLine() << QString("bool copyValuesImpl(%1PropertySet* propertySetCopyFrom, %1PropertyState ignoreMask) override;").arg(QTN_NAMESPACE);
         s << endl;
     s.newLine(-1) << "private:";
         s.newLine() << "void init();";
@@ -317,7 +317,7 @@ void PropertySetCode::generateHFile(TextStreamIndent &s) const
     s.newLine() << "};";
 }
 
-void PropertySetCode::generateCppFile(TextStreamIndent &s) const
+void PropertySetCode::generateCppFile(TextStreamIndent& s) const
 {
     generateSubPropertySetsImplementations(s);
 
@@ -325,7 +325,7 @@ void PropertySetCode::generateCppFile(TextStreamIndent &s) const
     s << endl;
     s.newLine() << QString("%1::%1(QObject *parent)").arg(selfType);
     s.addIndent();
-    s.newLine() << ": " << defaultParentType() << "(parent)";
+    s.newLine() << QString(": %1PropertySet(parent)").arg(QTN_NAMESPACE);
         generateChildrenInitialization(s);
         generateConstructorInitializationList(s);
     s.delIndent();
@@ -355,7 +355,6 @@ void PropertySetCode::generateCppFile(TextStreamIndent &s) const
     s.newLine() << QString("%1& %1::operator=(const %1& other)").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
-        generateParentTypeCopy(s);
         generateChildrenCopy(s);
         s << endl;
         s.newLine() << "return *this;";
@@ -364,19 +363,28 @@ void PropertySetCode::generateCppFile(TextStreamIndent &s) const
 
     // cloning implementation
     s << endl;
-    s.newLine() << QString("%1Property* %2::createNewImpl(QObject* parentForNew) const").arg(QTN_NAMESPACE, selfType);
+    s.newLine() << QString("%1PropertySet* %2::createNewImpl(QObject* parentForNew) const").arg(QTN_NAMESPACE, selfType);
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << QString("return new %1(parentForNew);").arg(selfType);
     s.delIndent();
     s.newLine() << "}";
     s << endl;
-    s.newLine() << QString("%1Property* %2::createCopyImpl(QObject* parentForCopy) const").arg(QTN_NAMESPACE, selfType);
+    s.newLine() << QString("%1PropertySet* %2::createCopyImpl(QObject* parentForCopy) const").arg(QTN_NAMESPACE, selfType);
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << QString("%1* p = new %1(parentForCopy);").arg(selfType);
         s.newLine() << "*p = *this;";
         s.newLine() << "return p;";
+    s.delIndent();
+    s.newLine() << "}";
+
+    // copy values implementation
+    s << endl;
+    s.newLine() << QString("bool %2::copyValuesImpl(%1PropertySet* propertySetCopyFrom, %1PropertyState ignoreMask)").arg(QTN_NAMESPACE, selfType);
+    s.newLine() << "{";
+    s.addIndent();
+        generateCopyValues(s);
     s.delIndent();
     s.newLine() << "}";
 
@@ -422,35 +430,7 @@ void PropertySetCode::generateCppFile(TextStreamIndent &s) const
     generateCppSourceCode(s);
 }
 
-QString PropertySetCode::defaultParentTypeAccess() const
-{
-    if (parentTypes.isEmpty())
-        return "public";
-    else
-        return parentTypes.first().first;
-}
-
-QString PropertySetCode::defaultParentType() const
-{
-    if (parentTypes.isEmpty())
-        return QTN_NAMESPACE + "Property";
-    else
-        return parentTypes.first().second;
-}
-
-void PropertySetCode::generateRestParentTypes(TextStreamIndent &s) const
-{
-    if (parentTypes.size() < 2)
-        return;
-
-    for (int i = 1; i < parentTypes.size(); ++i)
-    {
-        s.newLine(1) << ", " << parentTypes[i].first
-                     << " " << parentTypes[i].second;
-    }
-}
-
-void PropertySetCode::generateChildrenDeclaration(TextStreamIndent &s) const
+void PropertySetCode::generateChildrenDeclaration(TextStreamIndent& s) const
 {
     if (members.isEmpty())
         return;
@@ -463,7 +443,7 @@ void PropertySetCode::generateChildrenDeclaration(TextStreamIndent &s) const
     s.popWrapperLines();
 }
 
-void PropertySetCode::generateChildrenInitialization(TextStreamIndent &s) const
+void PropertySetCode::generateChildrenInitialization(TextStreamIndent& s) const
 {
     if (members.isEmpty())
         return;
@@ -476,7 +456,7 @@ void PropertySetCode::generateChildrenInitialization(TextStreamIndent &s) const
     }
 }
 
-void PropertySetCode::generateChildrenAssignment(TextStreamIndent &s) const
+void PropertySetCode::generateChildrenAssignment(TextStreamIndent& s) const
 {
     if (members.isEmpty())
         return;
@@ -491,15 +471,7 @@ void PropertySetCode::generateChildrenAssignment(TextStreamIndent &s) const
     s.popWrapperLines();
 }
 
-void PropertySetCode::generateParentTypeCopy(TextStreamIndent &s) const
-{
-    foreach (auto parentType, parentTypes)
-    {
-        s.newLine() << QString("%1::operator=(other);").arg(parentType.second);
-    }
-}
-
-void PropertySetCode::generateChildrenCopy(TextStreamIndent &s) const
+void PropertySetCode::generateChildrenCopy(TextStreamIndent& s) const
 {
     foreach (auto p, members)
     {
@@ -507,7 +479,7 @@ void PropertySetCode::generateChildrenCopy(TextStreamIndent &s) const
     }
 }
 
-void PropertySetCode::generateSubPropertySetsDeclarations(TextStreamIndent &s) const
+void PropertySetCode::generateSubPropertySetsDeclarations(TextStreamIndent& s) const
 {
     QVector<const PropertySetCode*> _subPropertySets = getSubpropertySets();
     if (_subPropertySets.isEmpty())
@@ -519,7 +491,7 @@ void PropertySetCode::generateSubPropertySetsDeclarations(TextStreamIndent &s) c
     }
 }
 
-void PropertySetCode::generateSubPropertySetsImplementations(TextStreamIndent &s) const
+void PropertySetCode::generateSubPropertySetsImplementations(TextStreamIndent& s) const
 {
     QVector<const PropertySetCode*> _subPropertySets = getSubpropertySets();
     if (_subPropertySets.isEmpty())
@@ -531,7 +503,7 @@ void PropertySetCode::generateSubPropertySetsImplementations(TextStreamIndent &s
     }
 }
 
-void PropertySetCode::generateSlotsDeclaration(TextStreamIndent &s) const
+void PropertySetCode::generateSlotsDeclaration(TextStreamIndent& s) const
 {
     s.pushWrapperLines("// start slot declarations", "// end slot declarations");
     for (auto it = slots_code.begin(); it != slots_code.end(); ++it)
@@ -554,7 +526,7 @@ void PropertySetCode::generateSlotsDeclaration(TextStreamIndent &s) const
     s.popWrapperLines();
 }
 
-void PropertySetCode::generateSlotsImplementation(TextStreamIndent &s) const
+void PropertySetCode::generateSlotsImplementation(TextStreamIndent& s) const
 {
     for (auto it = slots_code.begin(); it != slots_code.end(); ++it)
     {
@@ -589,7 +561,7 @@ void PropertySetCode::generateSlotsImplementation(TextStreamIndent &s) const
     }
 }
 
-void PropertySetCode::generateHSourceCode(TextStreamIndent &s) const
+void PropertySetCode::generateHSourceCode(TextStreamIndent& s) const
 {
     for (auto it = sourceCodes.begin(); it != sourceCodes.end(); ++it)
     {
@@ -599,7 +571,7 @@ void PropertySetCode::generateHSourceCode(TextStreamIndent &s) const
     }
 }
 
-void PropertySetCode::generateCppSourceCode(TextStreamIndent &s) const
+void PropertySetCode::generateCppSourceCode(TextStreamIndent& s) const
 {
     for (auto it = sourceCodes.begin(); it != sourceCodes.end(); ++it)
     {
@@ -609,7 +581,7 @@ void PropertySetCode::generateCppSourceCode(TextStreamIndent &s) const
     }
 }
 
-void PropertySetCode::generateDelegatesConnection(TextStreamIndent &s) const
+void PropertySetCode::generateDelegatesConnection(TextStreamIndent& s) const
 {
     if (!delegateInfo.isNull())
     {
@@ -633,7 +605,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent &s) const
     }
 }
 
-void PropertySetCode::generateConstructorInitializationList(TextStreamIndent &s) const
+void PropertySetCode::generateConstructorInitializationList(TextStreamIndent& s) const
 {
     if (!constructor || constructor->initialization_list.isEmpty())
         return;
@@ -641,7 +613,40 @@ void PropertySetCode::generateConstructorInitializationList(TextStreamIndent &s)
     s.newLine() << ", " << constructor->initialization_list;
 }
 
-QString PropertySetCode::slotMember(const QString &name)
+void PropertySetCode::generateCopyValues(TextStreamIndent& s) const
+{
+    s.newLine() << QString("%1* theCopyFrom = qobject_cast<%1*>(propertySetCopyFrom);").arg(selfType);
+    s.newLine() << "if (!theCopyFrom)";
+    s.newLine(1) << "return false;";
+    s << endl;
+
+    Q_ASSERT(members.size() >= subPropertySets.size());
+    auto mIt = members.begin();
+    auto sIt = subPropertySets.begin();
+    auto sEnd = subPropertySets.end();
+
+    for (auto mEnd = members.end(); mIt != mEnd; ++mIt)
+    {
+        if ((sIt != sEnd) && (*mIt)->name == (*sIt)->name)
+        {
+            s.newLine() << QString("%1.copyValues(&theCopyFrom->%1, ignoreMask);").arg((*mIt)->name);
+            ++sIt;
+        }
+        else
+        {
+            s.newLine() << QString("if (!(theCopyFrom->%1.state() & ignoreMask))").arg((*mIt)->name);
+            s.newLine() << "{";
+            s.newLine(1) << QString("%1 = theCopyFrom->%1;").arg((*mIt)->name);
+            s.newLine() << "}";
+        }
+
+        s << endl;
+    }
+
+    s.newLine() << "return true;";
+}
+
+QString PropertySetCode::slotMember(const QString& name)
 {
     if (!name.isEmpty())
         return "&" + name;
@@ -649,7 +654,7 @@ QString PropertySetCode::slotMember(const QString &name)
         return "this";
 }
 
-QString PropertySetCode::slotMember(const QString &name, const QString &subMember)
+QString PropertySetCode::slotMember(const QString& name, const QString& subMember)
 {
     if (subMember.isEmpty())
         return "&" + name;
@@ -657,7 +662,7 @@ QString PropertySetCode::slotMember(const QString &name, const QString &subMembe
         return "&" + name + "." + subMember;
 }
 
-void PropertySetCode::generateSlotsConnections(TextStreamIndent &s, const QString& name) const
+void PropertySetCode::generateSlotsConnections(TextStreamIndent& s, const QString& name) const
 {
     for (auto it = slots_code.begin(); it != slots_code.end(); ++it)
     {
@@ -694,7 +699,7 @@ QVector<const PropertySetCode*> PropertySetCode::getSubpropertySets() const
     QVectorIterator<QSharedPointer<PropertySetCode> > it(subPropertySets);
     while (it.hasNext())
     {
-        const QSharedPointer<PropertySetCode> &ps = it.next();
+        const QSharedPointer<PropertySetCode>& ps = it.next();
         if (!ps->_extern)
             _subPropertySets.append(ps.data());
     }
@@ -702,11 +707,11 @@ QVector<const PropertySetCode*> PropertySetCode::getSubpropertySets() const
     return _subPropertySets;
 }
 
-EnumCode::EnumCode(const QString &name)
+EnumCode::EnumCode(const QString& name)
     : name(name)
 {}
 
-void EnumCode::generateHFile(TextStreamIndent &s) const
+void EnumCode::generateHFile(TextStreamIndent& s) const
 {
     s.newLine();
     s.newLine() << QString("class %1").arg(name);
@@ -720,7 +725,7 @@ void EnumCode::generateHFile(TextStreamIndent &s) const
             s.addIndent();
                 for (size_t i = 0, n = items.size(); i < n; ++i)
                 {
-                    const EnumItemCode &enumItem = items[i];
+                    const EnumItemCode& enumItem = items[i];
                     s.newLine() << QString("%1 = %2").arg(enumItem.name).arg(enumItem.id);
                     if ((i+1) != n)
                         s << ",";
@@ -729,19 +734,19 @@ void EnumCode::generateHFile(TextStreamIndent &s) const
             s.newLine() << "};";
         }
         s.newLine();
-        s.newLine() << "static Qtinuum::EnumInfo &info();";
+        s.newLine() << "static Qtinuum::EnumInfo& info();";
         s.newLine() << QString("static const unsigned int values_count = %1;").arg(items.size());
         s.delIndent();
     s.newLine() << "};";
 }
 
-void EnumCode::generateCppFile(TextStreamIndent &s) const
+void EnumCode::generateCppFile(TextStreamIndent& s) const
 {
-    s.newLine() << QString("static Qtinuum::EnumInfo &create_%1_info()").arg(name);
+    s.newLine() << QString("static Qtinuum::EnumInfo& create_%1_info()").arg(name);
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << "QVector<Qtinuum::EnumValueInfo> staticValues;";
-        foreach(const EnumItemCode &enumItem, items)
+        foreach(const EnumItemCode& enumItem, items)
         {
             QString states;
             if (!enumItem.states.isEmpty())
@@ -749,7 +754,7 @@ void EnumCode::generateCppFile(TextStreamIndent &s) const
                 states += ", ";
                 for (size_t i = 0, n = enumItem.states.size(); i < n; ++i)
                 {
-                    const QString &state = enumItem.states[i];
+                    const QString& state = enumItem.states[i];
                     if (i != 0)
                         states += " | ";
                     states += "Qtinuum::EnumValueState";
@@ -768,10 +773,10 @@ void EnumCode::generateCppFile(TextStreamIndent &s) const
     s.delIndent();
     s.newLine() << "}";
     s.newLine();
-    s.newLine() << QString("Qtinuum::EnumInfo &%1::info()").arg(name);
+    s.newLine() << QString("Qtinuum::EnumInfo& %1::info()").arg(name);
     s.newLine() << "{";
     s.addIndent();
-        s.newLine() << QString("static Qtinuum::EnumInfo &enumInfo = create_%1_info();").arg(name);
+        s.newLine() << QString("static Qtinuum::EnumInfo& enumInfo = create_%1_info();").arg(name);
         s.newLine() << "return enumInfo;";
     s.delIndent();
     s.newLine() << "}";
@@ -875,13 +880,13 @@ void PegContext::commitProperty()
     currProperty = 0;
 }
 
-bool PegContext::checkSlotName(const QString &name)
+bool PegContext::checkSlotName(const QString& name)
 {
     return slotsSignatures.contains(name);
 }
 PegContext pegContext;
 
-PEG &PEG::instance()
+PEG& PEG::instance()
 {
     static PEG peg;
     return peg;

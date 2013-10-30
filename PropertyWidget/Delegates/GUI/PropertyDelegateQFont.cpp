@@ -35,7 +35,7 @@ namespace Qtinuum
 class PropertyQFontLineEditBttnHandler: public PropertyEditorHandler<PropertyQFontBase, LineEditBttn>
 {
 public:
-    PropertyQFontLineEditBttnHandler(PropertyQFontBase &property, LineEditBttn &editor)
+    PropertyQFontLineEditBttnHandler(PropertyQFontBase& property, LineEditBttn& editor)
         : PropertyEditorHandlerType(property, editor)
     {
         editor.lineEdit->setReadOnly(true);
@@ -74,9 +74,9 @@ static bool regQFontDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateQFont, PropertyQFontBase>
                                 , "LineEditBttn");
 
-static EnumInfo *styleStategyEnum()
+static EnumInfo* styleStategyEnum()
 {
-    static EnumInfo *enumInfo = 0;
+    static EnumInfo* enumInfo = 0;
     if (!enumInfo)
     {
         QVector<EnumValueInfo> items;
@@ -89,10 +89,10 @@ static EnumInfo *styleStategyEnum()
     return enumInfo;
 }
 
-PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
+PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
     : PropertyDelegateTypedEx<PropertyQFontBase>(owner)
 {
-    PropertyQStringCallback *propertyFamily = new PropertyQStringCallback(0);
+    PropertyQStringCallback* propertyFamily = new PropertyQStringCallback(0);
     addSubProperty(propertyFamily);
     propertyFamily->setName(owner.tr("Family"));
     propertyFamily->setDescription(owner.tr("Font Family for %1.").arg(owner.name()));
@@ -110,7 +110,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
     delegate.attributes["items"] = fDB.families();
     propertyFamily->setDelegate(delegate);
 
-    PropertyUIntCallback *propertyPointSize = new PropertyUIntCallback(0);
+    PropertyUIntCallback* propertyPointSize = new PropertyUIntCallback(0);
     addSubProperty(propertyPointSize);
     propertyPointSize->setName(owner.tr("PointSize"));
     propertyPointSize->setDescription(owner.tr("Point size for %1.").arg(owner.name()));
@@ -126,7 +126,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
     propertyPointSize->setMinValue(1);
     propertyPointSize->setMaxValue((quint32)std::numeric_limits<int>::max());
 
-    PropertyBoolCallback *propertyBold = new PropertyBoolCallback(0);
+    PropertyBoolCallback* propertyBold = new PropertyBoolCallback(0);
     addSubProperty(propertyBold);
     propertyBold->setName(owner.tr("Bold"));
     propertyBold->setDescription(owner.tr("Bold flag for %1").arg(owner.name()));
@@ -139,7 +139,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
         owner.setValue(font);
     });
 
-    PropertyBoolCallback *propertyItalic = new PropertyBoolCallback(0);
+    PropertyBoolCallback* propertyItalic = new PropertyBoolCallback(0);
     addSubProperty(propertyItalic);
     propertyItalic->setName(owner.tr("Italic"));
     propertyItalic->setDescription(owner.tr("Italic flag for %1").arg(owner.name()));
@@ -152,7 +152,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
         owner.setValue(font);
     });
 
-    PropertyBoolCallback *propertyUnderline = new PropertyBoolCallback(0);
+    PropertyBoolCallback* propertyUnderline = new PropertyBoolCallback(0);
     addSubProperty(propertyUnderline);
     propertyUnderline->setName(owner.tr("Underline"));
     propertyUnderline->setDescription(owner.tr("Underline flag for %1").arg(owner.name()));
@@ -165,7 +165,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
         owner.setValue(font);
     });
 
-    PropertyBoolCallback *propertyStrikeout = new PropertyBoolCallback(0);
+    PropertyBoolCallback* propertyStrikeout = new PropertyBoolCallback(0);
     addSubProperty(propertyStrikeout);
     propertyStrikeout->setName(owner.tr("Strikeout"));
     propertyStrikeout->setDescription(owner.tr("Strikeout flag for %1").arg(owner.name()));
@@ -178,7 +178,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
         owner.setValue(font);
     });
 
-    PropertyBoolCallback *propertyKerning = new PropertyBoolCallback(0);
+    PropertyBoolCallback* propertyKerning = new PropertyBoolCallback(0);
     addSubProperty(propertyKerning);
     propertyKerning->setName(owner.tr("Kerning"));
     propertyKerning->setDescription(owner.tr("Kerning flag for %1").arg(owner.name()));
@@ -191,7 +191,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
         owner.setValue(font);
     });
 
-    PropertyEnumCallback *propertyAntialiasing = new PropertyEnumCallback(0);
+    PropertyEnumCallback* propertyAntialiasing = new PropertyEnumCallback(0);
     addSubProperty(propertyAntialiasing);
     propertyAntialiasing->setName(owner.tr("Antialiasing"));
     propertyAntialiasing->setDescription(owner.tr("Antialiasing flag for %1.").arg(owner.name()));
@@ -206,7 +206,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase &owner)
     });
 }
 
-void PropertyDelegateQFont::drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+void PropertyDelegateQFont::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     QFont value = owner().value();
 
@@ -232,9 +232,9 @@ void PropertyDelegateQFont::drawValueImpl(QStylePainter &painter, const QRect &r
     }
 }
 
-QWidget *PropertyDelegateQFont::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateQFont::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
-    LineEditBttn *editor = new LineEditBttn(parent);
+    LineEditBttn* editor = new LineEditBttn(parent);
     editor->setGeometry(rect);
 
     new PropertyQFontLineEditBttnHandler(owner(), *editor);
@@ -247,7 +247,7 @@ QWidget *PropertyDelegateQFont::createValueEditorImpl(QWidget *parent, const QRe
     return editor;
 }
 
-bool PropertyDelegateQFont::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateQFont::propertyValueToStr(QString& strValue) const
 {
     QFont value = owner().value();
     strValue = QString("[%1, %2]").arg(value.family()).arg(value.pointSize());

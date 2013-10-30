@@ -26,32 +26,32 @@ namespace Qtinuum
 class SplitterEventsHandler: public QObject
 {
 public:
-    SplitterEventsHandler(QObject *parent)
+    SplitterEventsHandler(QObject* parent)
         : QObject(parent)
     {
     }
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event) override
+    bool eventFilter(QObject* obj, QEvent* event) override
     {
         // check input
         if (event->type() != QEvent::MouseButtonDblClick)
             return false;
 
-         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
          if (mouseEvent->button() != Qt::LeftButton)
              return false;
 
-        QSplitterHandle *splitterHandle = qobject_cast<QSplitterHandle*>(obj);
+        QSplitterHandle* splitterHandle = qobject_cast<QSplitterHandle*>(obj);
         if (!splitterHandle)
             return false;
 
-        QSplitter *splitter = splitterHandle->splitter();
+        QSplitter* splitter = splitterHandle->splitter();
         if (!splitter || splitter->count() < 2)
             return false;
 
         // change splitter sizes to make description panel occupy ideal height
-        QWidget *bottomWidget = splitter->widget(1);
+        QWidget* bottomWidget = splitter->widget(1);
         QList<int> sizes = splitter->sizes();
         if (sizes.size() != 2)
             return false;
@@ -109,7 +109,7 @@ void PropertyWidget::updateParts()
         {
             // create splitter
             Q_ASSERT(!m_descriptionPanel);
-            QSplitter *splitter = new QSplitter(Qt::Vertical, this);
+            QSplitter* splitter = new QSplitter(Qt::Vertical, this);
 
             // add property view
             splitter->addWidget(m_propertyView);
@@ -139,15 +139,15 @@ void PropertyWidget::updateParts()
         if (m_descriptionSplitter)
         {
             delete m_descriptionSplitter;
-            m_descriptionSplitter = 0;
-            m_descriptionPanel = 0;
+            m_descriptionSplitter = nullptr;
+            m_descriptionPanel = nullptr;
         }
 
         m_layout->addWidget(m_propertyView);
     }
 }
 
-void PropertyWidget::setActiveProperty(const Property *activeProperty)
+void PropertyWidget::setActiveProperty(const PropertyBase* activeProperty)
 {
     if (m_descriptionPanel)
     {

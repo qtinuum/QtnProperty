@@ -30,19 +30,19 @@ class QTN_PW_EXPORT PropertyDelegateFactory
     Q_DISABLE_COPY(PropertyDelegateFactory)
 
 public:
-    typedef PropertyDelegate *CreateFunction(Property &);
+    typedef PropertyDelegate *CreateFunction(Property&);
 
-    explicit PropertyDelegateFactory(const PropertyDelegateFactory *superFactory = 0);
+    explicit PropertyDelegateFactory(const PropertyDelegateFactory* superFactory = 0);
 
-    PropertyDelegate *createDelegate(Property &owner) const;
+    PropertyDelegate* createDelegate(Property& owner) const;
 
-    bool registerDelegateDefault(const QMetaObject *propertyMetaObject, CreateFunction *createFunction, const QByteArray &delegateName = "");
-    bool registerDelegate(const QMetaObject *propertyMetaObject, CreateFunction *createFunction, const QByteArray &delegateName);
+    bool registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName = "");
+    bool registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName);
 
-    static PropertyDelegateFactory &staticInstance();
+    static PropertyDelegateFactory& staticInstance();
 
 private:
-    const PropertyDelegateFactory *m_superFactory;
+    const PropertyDelegateFactory* m_superFactory;
 
     struct CreateItem
     {
@@ -51,17 +51,17 @@ private:
         {
         }
 
-        CreateFunction *defaultCreateFunction;
-        QMap<QByteArray, CreateFunction *> createFunctions;
+        CreateFunction* defaultCreateFunction;
+        QMap<QByteArray, CreateFunction*> createFunctions;
     };
 
     QMap<QByteArray, CreateItem> m_createItems;
 };
 
 template <typename PropertyDelegateClass, typename PropertyClass>
-PropertyDelegate *createDelegate(Property &owner)
+PropertyDelegate* createDelegate(Property& owner)
 {
-    PropertyClass *theOwner = qobject_cast<PropertyClass*>(&owner);
+    PropertyClass* theOwner = qobject_cast<PropertyClass*>(&owner);
     if (!theOwner)
         return nullptr;
 

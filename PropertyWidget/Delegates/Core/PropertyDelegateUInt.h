@@ -31,14 +31,14 @@ class QTN_PW_EXPORT PropertyDelegateUInt: public PropertyDelegateTyped<PropertyU
     Q_DISABLE_COPY(PropertyDelegateUInt)
 
 public:
-    PropertyDelegateUInt(PropertyUIntBase &owner)
+    PropertyDelegateUInt(PropertyUIntBase& owner)
         : PropertyDelegateTyped<PropertyUIntBase>(owner)
     {
     }
 
 protected:
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
-    bool propertyValueToStr(QString &strValue) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    bool propertyValueToStr(QString& strValue) const override;
 };
 
 } // end namespace Qtinuum

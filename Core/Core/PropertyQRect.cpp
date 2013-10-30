@@ -39,7 +39,7 @@ Property* createLeftProperty(QObject *parent, PropertyQRectBase *propertyRect)
         rect.setLeft(newLeft);
         propertyRect->setValue(rect);
     });
-    leftProperty->connectMasterState(*propertyRect);
+    PropertyBase::connectMasterState(*propertyRect, *leftProperty);
 
     return leftProperty;
 }
@@ -55,7 +55,7 @@ Property* createRightProperty(QObject *parent, PropertyQRectBase *propertyRect)
         rect.setRight(newRight);
         propertyRect->setValue(rect);
     });
-    rightProperty->connectMasterState(*propertyRect);
+    PropertyBase::connectMasterState(*propertyRect, *rightProperty);
 
     return rightProperty;
 }
@@ -71,7 +71,7 @@ Property* createTopProperty(QObject *parent, PropertyQRectBase *propertyRect)
         rect.setTop(newTop);
         propertyRect->setValue(rect);
     });
-    topProperty->connectMasterState(*propertyRect);
+    PropertyBase::connectMasterState(*propertyRect, *topProperty);
 
     return topProperty;
 }
@@ -87,7 +87,7 @@ Property* createBottomProperty(QObject *parent, PropertyQRectBase *propertyRect)
         rect.setBottom(newBottom);
         propertyRect->setValue(rect);
     });
-    bottomProperty->connectMasterState(*propertyRect);
+    PropertyBase::connectMasterState(*propertyRect, *bottomProperty);
 
     return bottomProperty;
 }
@@ -103,7 +103,7 @@ Property* createWidthProperty(QObject *parent, PropertyQRectBase *propertyRect)
         rect.setWidth(newWidth);
         propertyRect->setValue(rect);
     });
-    widthProperty->connectMasterState(*propertyRect);
+    PropertyBase::connectMasterState(*propertyRect, *widthProperty);
 
     return widthProperty;
 }
@@ -119,7 +119,7 @@ Property* createHeightProperty(QObject *parent, PropertyQRectBase *propertyRect)
         rect.setHeight(newHeight);
         propertyRect->setValue(rect);
     });
-    heightProperty->connectMasterState(*propertyRect);
+    PropertyBase::connectMasterState(*propertyRect, *heightProperty);
 
     return heightProperty;
 }

@@ -30,19 +30,19 @@ static bool regQSizeDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateQSize, PropertyQSizeBase>
                                 , "WH");
 
-PropertyDelegateQSize::PropertyDelegateQSize(PropertyQSizeBase &owner)
+PropertyDelegateQSize::PropertyDelegateQSize(PropertyQSizeBase& owner)
     : PropertyDelegateTypedEx<PropertyQSizeBase>(owner)
 {
     addSubProperty(createWidthProperty(0, &owner));
     addSubProperty(createHeightProperty(0, &owner));
 }
 
-QWidget *PropertyDelegateQSize::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateQSize::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
     return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool PropertyDelegateQSize::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateQSize::propertyValueToStr(QString& strValue) const
 {
     QSize value = owner().value();
     strValue = QString("%1 x %2").arg(value.width()).arg(value.height());

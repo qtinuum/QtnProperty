@@ -19,7 +19,7 @@
 #ifndef PROPERTYQPOINT_H
 #define PROPERTYQPOINT_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 #include <QPoint>
 
 namespace Qtinuum
@@ -28,15 +28,15 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyQPointBase: public SinglePropertyBase<QPoint>
 {
     Q_OBJECT
+    PropertyQPointBase(const PropertyQPointBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQPointBase(QObject *parent);
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQPointBase)
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQPointBase, SinglePropertyBase<QPoint>)
 };
 
-P_PROPERTY_DECL_EQ_OPERATORS(PropertyQPointBase, QPoint);
+P_PROPERTY_DECL_EQ_OPERATORS(PropertyQPointBase, QPoint)
 
 QTN_PE_CORE_EXPORT Property* createXProperty(QObject *parent, PropertyQPointBase *propertyPoint);
 QTN_PE_CORE_EXPORT Property* createYProperty(QObject *parent, PropertyQPointBase *propertyPoint);
@@ -44,6 +44,7 @@ QTN_PE_CORE_EXPORT Property* createYProperty(QObject *parent, PropertyQPointBase
 class QTN_PE_CORE_EXPORT PropertyQPointCallback: public SinglePropertyCallback<PropertyQPointBase>
 {
     Q_OBJECT
+    PropertyQPointCallback(const PropertyQPointCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQPointCallback(QObject *parent)
@@ -52,12 +53,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQPointCallback, PropertyQPointBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQPointCallback, SinglePropertyCallback<PropertyQPointBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQPoint: public SinglePropertyValue<PropertyQPointBase>
 {
     Q_OBJECT
+    PropertyQPoint(const PropertyQPoint& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQPoint(QObject *parent)
@@ -66,7 +67,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQPoint, PropertyQPointBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQPoint, SinglePropertyValue<PropertyQPointBase>)
 };
 
 } // end namespace Qtinuum

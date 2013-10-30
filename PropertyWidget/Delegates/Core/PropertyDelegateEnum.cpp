@@ -30,7 +30,7 @@ namespace Qtinuum
 class PropertyEnumComboBoxHandler: public PropertyEditorHandler<PropertyEnumBase, QComboBox>
 {
 public:
-    PropertyEnumComboBoxHandler(PropertyEnumBase &property, QComboBox &editor)
+    PropertyEnumComboBoxHandler(PropertyEnumBase& property, QComboBox& editor)
         : PropertyEditorHandlerType(property, editor)
     {
         updateEditor();
@@ -64,17 +64,16 @@ static bool regEnumDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateEnum, PropertyEnumBase>
                                 , "ComboBox");
 
-QWidget *PropertyDelegateEnum::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
-//    EnumValueType value = owner().value();
-    const EnumInfo *info = owner().enumInfo();
+    const EnumInfo* info = owner().enumInfo();
 
     if (!info)
         return 0;
 
     if (owner().isEditableByUser())
     {
-        QComboBox *combo = new QComboBox(parent);
+        QComboBox* combo = new QComboBox(parent);
         info->forEachEnumValue([combo](const EnumValueInfo &value)->bool {
             combo->addItem(value.name(), QVariant(value.value()));
             return true;
@@ -91,11 +90,11 @@ QWidget *PropertyDelegateEnum::createValueEditorImpl(QWidget *parent, const QRec
     }
     else
     {
-        const EnumValueInfo *valueInfo = info->findByValue(owner());
+        const EnumValueInfo* valueInfo = info->findByValue(owner());
         if (!valueInfo)
             return 0;
 
-        QLineEdit *lineEdit = new QLineEdit(parent);
+        QLineEdit* lineEdit = new QLineEdit(parent);
         lineEdit->setReadOnly(true);
         lineEdit->setText(valueInfo->name());
 
@@ -106,11 +105,11 @@ QWidget *PropertyDelegateEnum::createValueEditorImpl(QWidget *parent, const QRec
 
 }
 
-bool PropertyDelegateEnum::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateEnum::propertyValueToStr(QString& strValue) const
 {
     EnumValueType value = owner().value();
-    const EnumInfo *info = owner().enumInfo();
-    const EnumValueInfo *valueInfo = info ? info->findByValue(value) : 0;
+    const EnumInfo* info = owner().enumInfo();
+    const EnumValueInfo* valueInfo = info ? info->findByValue(value) : 0;
 
     if (!valueInfo)
         return false;

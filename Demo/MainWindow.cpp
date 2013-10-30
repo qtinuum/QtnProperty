@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pw->propertyView()->setItemHeightRatio(1.3f);
 #endif
 
-    ui->pw->setProperty(new PropertySetMain(this));
+    ui->pw->setPropertySet(new PropertySetMain(this));
 }
 
 MainWindow::~MainWindow()
@@ -29,7 +29,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_editButton_clicked()
 {
-    Property* properties = ui->pw->property();
+    PropertySet* properties = ui->pw->propertySet();
 
     if (!properties)
     {
@@ -38,13 +38,13 @@ void MainWindow::on_editButton_clicked()
     }
 
     // copy of properties
-    Property* cpy = properties->createCopy(this);
+    PropertySet* cpy = properties->createCopy(this);
     Q_ASSERT(cpy);
     // defaults
-    Property* dft = properties->createNew(this);
+    PropertySet* dft = properties->createNew(this);
     MyDialog dlg(this, *cpy, dft);
-    if (dlg.exec() == QMessageBox::Ok)
+    if (dlg.exec() == QDialog::Accepted)
     {
-
+        properties->copyValues(cpy, PropertyStateImmutable|PropertyStateInvisible);
     }
 }

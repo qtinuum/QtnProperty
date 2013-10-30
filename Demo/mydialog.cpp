@@ -3,14 +3,14 @@
 
 using namespace qtn;
 
-MyDialog::MyDialog(QWidget *parent, Property &property, const Property *defaultProperty) :
+MyDialog::MyDialog(QWidget* parent, PropertySet& propertySet, const PropertySet* defaultProperty) :
     QDialog(parent),
     ui(new Ui::MyDialog),
     m_defaultProperty(defaultProperty)
 {
     ui->setupUi(this);
 
-    ui->widget->setProperty(&property);
+    ui->widget->setPropertySet(&propertySet);
 }
 
 MyDialog::~MyDialog()

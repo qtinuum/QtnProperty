@@ -29,7 +29,7 @@ namespace Qtinuum
 class PropertyIntSpinBoxHandler: public PropertyEditorHandler<PropertyIntBase, QSpinBox>
 {
 public:
-    PropertyIntSpinBoxHandler(PropertyIntBase &property, QSpinBox &editor)
+    PropertyIntSpinBoxHandler(PropertyIntBase& property, QSpinBox& editor)
         : PropertyEditorHandlerType(property, editor)
     {
         if (!property.isEditableByUser())
@@ -61,9 +61,9 @@ static bool regIntDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateInt, PropertyIntBase>
                                 , "SpinBox");
 
-QWidget *PropertyDelegateInt::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateInt::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
-    QSpinBox *spinBox = new QSpinBox(parent);
+    QSpinBox* spinBox = new QSpinBox(parent);
     spinBox->setGeometry(rect);
 
     new PropertyIntSpinBoxHandler(owner(), *spinBox);
@@ -76,7 +76,7 @@ QWidget *PropertyDelegateInt::createValueEditorImpl(QWidget *parent, const QRect
     return spinBox;
 }
 
-bool PropertyDelegateInt::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateInt::propertyValueToStr(QString& strValue) const
 {
     strValue = QString::number(owner().value());
     return true;

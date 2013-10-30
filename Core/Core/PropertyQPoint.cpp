@@ -39,7 +39,7 @@ Property* createXProperty(QObject *parent, PropertyQPointBase *propertyPoint)
         point.setX(newX);
         propertyPoint->setValue(point);
     });
-    xProperty->connectMasterState(*propertyPoint);
+    PropertyBase::connectMasterState(*propertyPoint, *xProperty);
 
     return xProperty;
 }
@@ -55,7 +55,7 @@ Property* createYProperty(QObject *parent, PropertyQPointBase *propertyPoint)
         point.setY(newY);
         propertyPoint->setValue(point);
     });
-    yProperty->connectMasterState(*propertyPoint);
+    PropertyBase::connectMasterState(*propertyPoint, *yProperty);
 
     return yProperty;
 }

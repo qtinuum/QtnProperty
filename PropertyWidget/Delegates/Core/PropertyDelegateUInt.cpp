@@ -39,7 +39,7 @@ static quint32 i2u(qint32 val)
 class PropertyUIntSpinBoxHandler: public PropertyEditorHandler<PropertyUIntBase, QSpinBox>
 {
 public:
-    PropertyUIntSpinBoxHandler(PropertyUIntBase &property, QSpinBox &editor)
+    PropertyUIntSpinBoxHandler(PropertyUIntBase& property, QSpinBox& editor)
         : PropertyEditorHandlerType(property, editor)
     {
         if (!property.isEditableByUser())
@@ -69,13 +69,13 @@ private:
 class SpinBoxUnsigned: public QSpinBox
 {
 public:
-    SpinBoxUnsigned(QWidget *parent)
+    SpinBoxUnsigned(QWidget* parent)
         : QSpinBox(parent)
     {
     }
 
 protected:
-    int valueFromText(const QString &text) const override
+    int valueFromText(const QString& text) const override
     {
         return u2i(locale().toUInt(text));
     }
@@ -91,9 +91,9 @@ static bool regUIntDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateUInt, PropertyUIntBase>
                                 , "SpinBox");
 
-QWidget *PropertyDelegateUInt::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateUInt::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
-    QSpinBox *spinBox = new SpinBoxUnsigned(parent);
+    QSpinBox* spinBox = new SpinBoxUnsigned(parent);
     spinBox->setGeometry(rect);
 
     new PropertyUIntSpinBoxHandler(owner(), *spinBox);
@@ -106,12 +106,11 @@ QWidget *PropertyDelegateUInt::createValueEditorImpl(QWidget *parent, const QRec
     return spinBox;
 }
 
-bool PropertyDelegateUInt::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateUInt::propertyValueToStr(QString& strValue) const
 {
     strValue = QString::number(owner().value());
     return true;
 }
-
 
 } // end namespace Qtinuum
 

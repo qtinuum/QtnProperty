@@ -31,12 +31,12 @@ class QTN_PW_EXPORT PropertyDelegateQString: public PropertyDelegateTyped<Proper
     Q_DISABLE_COPY(PropertyDelegateQString)
 
 public:
-    PropertyDelegateQString(PropertyQStringBase &owner);
+    PropertyDelegateQString(PropertyQStringBase& owner);
 
 protected:
-    bool acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const override;
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
-    bool propertyValueToStr(QString &strValue) const override;
+    bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    bool propertyValueToStr(QString& strValue) const override;
 };
 
 class QTN_PW_EXPORT PropertyDelegateQStringInvalidBase: public PropertyDelegateQString
@@ -44,10 +44,10 @@ class QTN_PW_EXPORT PropertyDelegateQStringInvalidBase: public PropertyDelegateQ
     Q_DISABLE_COPY(PropertyDelegateQStringInvalidBase)
 
 protected:
-    PropertyDelegateQStringInvalidBase(PropertyQStringBase &owner);
+    PropertyDelegateQStringInvalidBase(PropertyQStringBase& owner);
 
-    void applyAttributesImpl(const PropertyDelegateAttributes &attributes) override;
-    void drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip = 0) const override;
+    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const override;
 
     virtual bool isPropertyValid() const = 0;
 
@@ -60,11 +60,11 @@ class QTN_PW_EXPORT PropertyDelegateQStringFile: public PropertyDelegateQStringI
     Q_DISABLE_COPY(PropertyDelegateQStringFile)
 
 public:
-    PropertyDelegateQStringFile(PropertyQStringBase &owner);
+    PropertyDelegateQStringFile(PropertyQStringBase& owner);
 
 protected:
-    void applyAttributesImpl(const PropertyDelegateAttributes &attributes) override;
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
+    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
 
     bool isPropertyValid() const override;
 
@@ -77,11 +77,11 @@ class QTN_PW_EXPORT PropertyDelegateQStringList: public PropertyDelegateQString
     Q_DISABLE_COPY(PropertyDelegateQStringList)
 
 public:
-    PropertyDelegateQStringList(PropertyQStringBase &owner);
+    PropertyDelegateQStringList(PropertyQStringBase& owner);
 
 protected:
-    void applyAttributesImpl(const PropertyDelegateAttributes &attributes) override;
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
+    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
 
 private:
     QStringList m_items;

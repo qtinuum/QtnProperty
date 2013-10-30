@@ -19,7 +19,7 @@
 #ifndef PROPERTYFLOAT_H
 #define PROPERTYFLOAT_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 
 namespace Qtinuum
 {
@@ -27,6 +27,7 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyFloatBase: public NumericPropertyBase<SinglePropertyBase<float> >
 {
     Q_OBJECT
+    PropertyFloatBase(const PropertyFloatBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyFloatBase(QObject *parent)
@@ -35,7 +36,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyFloatBase)
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyFloatBase, NumericPropertyBase<SinglePropertyBase<float>>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyFloatBase, float)
@@ -43,6 +43,7 @@ P_PROPERTY_DECL_ALL_OPERATORS(PropertyFloatBase, float)
 class QTN_PE_CORE_EXPORT PropertyFloatCallback: public SinglePropertyCallback<PropertyFloatBase>
 {
     Q_OBJECT
+    PropertyFloatCallback(const PropertyFloatCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyFloatCallback(QObject *parent)
@@ -51,12 +52,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyFloatCallback, PropertyFloatBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyFloatCallback, SinglePropertyCallback<PropertyFloatBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyFloat: public SinglePropertyValue<PropertyFloatBase>
 {
     Q_OBJECT
+    PropertyFloat(const PropertyFloat& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyFloat(QObject *parent)
@@ -65,7 +66,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyFloat, PropertyFloatBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyFloat, SinglePropertyValue<PropertyFloatBase>)
 };
 
 } // end namespace Qtinuum

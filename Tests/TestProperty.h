@@ -31,11 +31,12 @@ private Q_SLOTS:
     void serializationValue();
     void createNew();
     void createCopy();
+    void copyValues();
     void propertyAssignment();
 
 public Q_SLOTS:
 
-    void checkPropertyStateIsNonSimple(const Qtinuum::Property *changedProperty, const Qtinuum::Property *firedProperty, Qtinuum::PropertyChangeReason reason, Qtinuum::PropertyValuePtr newValue);
+    void checkPropertyStateIsNonSimple(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, Qtinuum::PropertyChangeReason reason, Qtinuum::PropertyValuePtr newValue);
 };
 
 #endif // TEST_PROPERTY_H

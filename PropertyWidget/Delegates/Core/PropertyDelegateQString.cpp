@@ -50,7 +50,7 @@ static bool regQStringListDelegate = PropertyDelegateFactory::staticInstance()
 class PropertyQStringLineEditHandler: public PropertyEditorHandler<PropertyQStringBase, QLineEdit>
 {
 public:
-    PropertyQStringLineEditHandler(PropertyQStringBase &property, QLineEdit &editor)
+    PropertyQStringLineEditHandler(PropertyQStringBase& property, QLineEdit& editor)
         : PropertyEditorHandlerType(property, editor)
     {
         updateEditor();
@@ -93,7 +93,7 @@ private:
     }
 };
 
-PropertyDelegateQString::PropertyDelegateQString(PropertyQStringBase &owner)
+PropertyDelegateQString::PropertyDelegateQString(PropertyQStringBase& owner)
     : PropertyDelegateTyped<PropertyQStringBase>(owner)
 {
 }
@@ -107,9 +107,9 @@ bool PropertyDelegateQString::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyE
     return acceptForLineEdit(keyEvent);
 }
 
-QWidget *PropertyDelegateQString::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateQString::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
-    QLineEdit *lineEdit = new QLineEdit(parent);
+    QLineEdit* lineEdit = new QLineEdit(parent);
     lineEdit->setGeometry(rect);
 
     new PropertyQStringLineEditHandler(owner(), *lineEdit);
@@ -119,7 +119,7 @@ QWidget *PropertyDelegateQString::createValueEditorImpl(QWidget *parent, const Q
     return lineEdit;
 }
 
-bool PropertyDelegateQString::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateQString::propertyValueToStr(QString& strValue) const
 {
     strValue = owner().value();
     return true;
@@ -128,7 +128,7 @@ bool PropertyDelegateQString::propertyValueToStr(QString &strValue) const
 class PropertyQStringFileLineEditBttnHandler: public PropertyEditorHandler<PropertyQStringBase, LineEditBttn>
 {
 public:
-    PropertyQStringFileLineEditBttnHandler(PropertyQStringBase &property, LineEditBttn &editor)
+    PropertyQStringFileLineEditBttnHandler(PropertyQStringBase& property, LineEditBttn& editor)
         : PropertyEditorHandlerType(property, editor),
           m_dlg(&editor)
     {
@@ -150,7 +150,7 @@ public:
 
     }
 
-    void applyAttributes(const PropertyDelegateAttributes &attributes)
+    void applyAttributes(const PropertyDelegateAttributes& attributes)
     {
         int option = 0;
         if (getAttribute(attributes, "acceptMode", option))
@@ -199,11 +199,11 @@ private:
         property() = editor().lineEdit->text();
     }
 
-    bool eventFilter(QObject *obj, QEvent *event) override
+    bool eventFilter(QObject* obj, QEvent* event) override
     {
         if (event->type() == QEvent::KeyPress)
         {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
             // revert all changes
             if (keyEvent->key() == Qt::Key_Escape)
                 updateEditor();
@@ -215,18 +215,18 @@ private:
     QFileDialog m_dlg;
 };
 
-PropertyDelegateQStringInvalidBase::PropertyDelegateQStringInvalidBase(PropertyQStringBase &owner)
+PropertyDelegateQStringInvalidBase::PropertyDelegateQStringInvalidBase(PropertyQStringBase& owner)
     : PropertyDelegateQString(owner),
       m_invalidColor(Qt::red)
 {
 }
 
-void PropertyDelegateQStringInvalidBase::applyAttributesImpl(const PropertyDelegateAttributes &attributes)
+void PropertyDelegateQStringInvalidBase::applyAttributesImpl(const PropertyDelegateAttributes& attributes)
 {
     getAttribute(attributes, "invalidColor", m_invalidColor);
 }
 
-void PropertyDelegateQStringInvalidBase::drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+void PropertyDelegateQStringInvalidBase::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     if ((m_invalidColor.alpha() != 0) && !isPropertyValid())
     {
@@ -242,20 +242,20 @@ void PropertyDelegateQStringInvalidBase::drawValueImpl(QStylePainter &painter, c
 }
 
 
-PropertyDelegateQStringFile::PropertyDelegateQStringFile(PropertyQStringBase &owner)
+PropertyDelegateQStringFile::PropertyDelegateQStringFile(PropertyQStringBase& owner)
     : PropertyDelegateQStringInvalidBase(owner)
 {
 }
 
-void PropertyDelegateQStringFile::applyAttributesImpl(const PropertyDelegateAttributes &attributes)
+void PropertyDelegateQStringFile::applyAttributesImpl(const PropertyDelegateAttributes& attributes)
 {
     PropertyDelegateQStringInvalidBase::applyAttributesImpl(attributes);
     m_editorAttributes = attributes;
 }
 
-QWidget *PropertyDelegateQStringFile::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateQStringFile::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
-    LineEditBttn *editor = new LineEditBttn(parent);
+    LineEditBttn* editor = new LineEditBttn(parent);
     editor->setGeometry(rect);
 
     auto handler = new PropertyQStringFileLineEditBttnHandler(owner(), *editor);
@@ -274,7 +274,7 @@ bool PropertyDelegateQStringFile::isPropertyValid() const
 class PropertyQStringListComboBoxHandler: public PropertyEditorHandler<PropertyQStringBase, QComboBox>
 {
 public:
-    PropertyQStringListComboBoxHandler(PropertyQStringBase &property, QComboBox &editor)
+    PropertyQStringListComboBoxHandler(PropertyQStringBase& property, QComboBox& editor)
         : PropertyEditorHandlerType(property, editor)
     {
         updateEditor();
@@ -292,25 +292,25 @@ private:
         editor().setCurrentText(property());
     }
 
-    void onCurrentTextChanged(const QString &text)
+    void onCurrentTextChanged(const QString& text)
     {
         property() = text;
     }
 };
 
-PropertyDelegateQStringList::PropertyDelegateQStringList(PropertyQStringBase &owner)
+PropertyDelegateQStringList::PropertyDelegateQStringList(PropertyQStringBase& owner)
     : PropertyDelegateQString(owner)
 {
 }
 
-void PropertyDelegateQStringList::applyAttributesImpl(const PropertyDelegateAttributes &attributes)
+void PropertyDelegateQStringList::applyAttributesImpl(const PropertyDelegateAttributes& attributes)
 {
     getAttribute(attributes, "items", m_items);
 }
 
-QWidget *PropertyDelegateQStringList::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateQStringList::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
-    QComboBox *editor = new QComboBox(parent);
+    QComboBox* editor = new QComboBox(parent);
     editor->setGeometry(rect);
 
     editor->addItems(m_items);

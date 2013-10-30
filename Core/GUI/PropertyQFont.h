@@ -19,7 +19,7 @@
 #ifndef PROPERTYFONT_H
 #define PROPERTYFONT_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 #include <QtGui/QFont>
 
 namespace Qtinuum
@@ -28,12 +28,12 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyQFontBase: public SinglePropertyBase<QFont>
 {
     Q_OBJECT
+    PropertyQFontBase(const PropertyQFontBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQFontBase(QObject *parent);
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQFontBase)
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQFontBase, SinglePropertyBase<QFont>)
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(PropertyQFontBase, QFont)
@@ -41,6 +41,7 @@ P_PROPERTY_DECL_EQ_OPERATORS(PropertyQFontBase, QFont)
 class QTN_PE_CORE_EXPORT PropertyQFontCallback: public SinglePropertyCallback<PropertyQFontBase>
 {
     Q_OBJECT
+    PropertyQFontCallback(const PropertyQFontCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQFontCallback(QObject *parent)
@@ -49,12 +50,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQFontCallback, PropertyQFontBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQFontCallback, SinglePropertyCallback<PropertyQFontBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQFont: public SinglePropertyValue<PropertyQFontBase>
 {
     Q_OBJECT
+    PropertyQFont(const PropertyQFont& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQFont(QObject *parent)
@@ -63,7 +64,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQFont, PropertyQFontBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQFont, SinglePropertyValue<PropertyQFontBase>)
 };
 
 } // end namespace Qtinuum

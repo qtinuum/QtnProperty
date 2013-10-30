@@ -97,15 +97,9 @@ property_set Main
         delegate ComboBox;
     }
 
-    property_set SubProperties:  public qtn::PropertyBool
-        Supplementary
+    property_set SubProperties Supplementary
     {
         description = "Supplementary <b>description</b>";
-
-        slot propertyDidChange
-        {
-            intProp.switchState(qtn::PropertyStateImmutable, !value());
-        }
 
         Int intProp
         {

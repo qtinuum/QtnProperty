@@ -30,7 +30,7 @@ namespace Qtinuum
 class PropertyQColorLineEditBttnHandler: public PropertyEditorHandler<PropertyQColorBase, LineEditBttn>
 {
 public:
-    PropertyQColorLineEditBttnHandler(PropertyQColorBase &property, LineEditBttn &editor)
+    PropertyQColorLineEditBttnHandler(PropertyQColorBase& property, LineEditBttn& editor)
         : PropertyEditorHandlerType(property, editor)
     {
         editor.lineEdit->setReadOnly(true);
@@ -68,18 +68,18 @@ static bool regQColorDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateQColor, PropertyQColorBase>
                                 , "LineEditBttn");
 
-PropertyDelegateQColor::PropertyDelegateQColor(PropertyQColorBase &owner)
+PropertyDelegateQColor::PropertyDelegateQColor(PropertyQColorBase& owner)
     : PropertyDelegateTyped<PropertyQColorBase>(owner),
       m_shape(QColorDelegateShapeSquare)
 {
 }
 
-void PropertyDelegateQColor::applyAttributesImpl(const PropertyDelegateAttributes &attributes)
+void PropertyDelegateQColor::applyAttributesImpl(const PropertyDelegateAttributes& attributes)
 {
     getAttribute(attributes, "shape", m_shape);
 }
 
-void PropertyDelegateQColor::drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+void PropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     QColor value = owner().value();
 
@@ -119,9 +119,9 @@ void PropertyDelegateQColor::drawValueImpl(QStylePainter &painter, const QRect &
     }
 }
 
-QWidget *PropertyDelegateQColor::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateQColor::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
-    LineEditBttn *editor = new LineEditBttn(parent);
+    LineEditBttn* editor = new LineEditBttn(parent);
     editor->setGeometry(rect);
 
     new PropertyQColorLineEditBttnHandler(owner(), *editor);
@@ -134,12 +134,11 @@ QWidget *PropertyDelegateQColor::createValueEditorImpl(QWidget *parent, const QR
     return editor;
 }
 
-bool PropertyDelegateQColor::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateQColor::propertyValueToStr(QString& strValue) const
 {
     strValue = owner().value().name();
     return true;
 }
-
 
 } // end namespace Qtinuum
 

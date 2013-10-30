@@ -6,11 +6,10 @@ VERSION = 1.0.1
 
 DEFINES += QTN_PE_CORE_LIBRARY
 
-SOURCES += Property.cpp \
-    Enum.cpp\
-    PropertyBasis.cpp \
-    PropertyCore.cpp \
-    PropertyGUI.cpp \
+SOURCES += PropertyBase.cpp \
+    Property.cpp \
+    PropertySet.cpp \
+    Enum.cpp \
     Core/PropertyBool.cpp \
     Core/PropertyInt.cpp \
     Core/PropertyUInt.cpp \
@@ -26,13 +25,16 @@ SOURCES += Property.cpp \
     GUI/PropertyQFont.cpp
 
 HEADERS += CoreAPI.h\
+    PropertyBase.h \
     Property.h\
+    PropertySet.h\
     Enum.h\
-    PropertyBasis.h \
-    PropertyMacro.h \
     PropertyCore.h \
     PropertyGUI.h \
-    PropertyAux.h \
+    Aux/PropertyTemplates.h \
+    Aux/PropertyMacro.h \
+    Aux/PropertyAux.h \
+    Aux/PropertyDelegateInfo.h \
     Core/PropertyBool.h \
     Core/PropertyInt.h \
     Core/PropertyUInt.h \

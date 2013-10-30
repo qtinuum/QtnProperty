@@ -21,14 +21,14 @@
 namespace Qtinuum
 {
 
-EnumInfo::EnumInfo(QVector<EnumValueInfo> &staticValues)
+EnumInfo::EnumInfo(QVector<EnumValueInfo>& staticValues)
 {
     m_staticValues.swap(staticValues);
 }
 
 const EnumValueInfo *EnumInfo::findByValue(EnumValueType value) const
 {
-    const EnumValueInfo *result = 0;
+    const EnumValueInfo *result = nullptr;
 
     forEachEnumValue([&result, value](const EnumValueInfo &enumValue)->bool {
         if (enumValue.value() == value)
@@ -45,7 +45,7 @@ const EnumValueInfo *EnumInfo::findByValue(EnumValueType value) const
 
 const EnumValueInfo *EnumInfo::findByName(const QString &name) const
 {
-    const EnumValueInfo *result = 0;
+    const EnumValueInfo *result = nullptr;
 
     forEachEnumValue([&result, name](const EnumValueInfo &enumValue)->bool {
         if (enumValue.name() == name)

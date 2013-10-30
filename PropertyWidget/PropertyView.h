@@ -21,7 +21,7 @@
 
 #include "PropertyWidgetAPI.h"
 #include "Delegates/PropertyDelegateFactory.h"
-#include "../Core/Property.h"
+#include "../Core/PropertySet.h"
 
 #include <QAbstractScrollArea>
 #include <QScopedPointer>
@@ -35,7 +35,7 @@ namespace Qtinuum
 class QTN_PW_EXPORT PropertyViewFilter
 {
 public:
-    virtual bool accept(const Property *property) const = 0;
+    virtual bool accept(const PropertyBase* property) const = 0;
 
     virtual ~PropertyViewFilter() {}
 
@@ -61,18 +61,18 @@ class QTN_PW_EXPORT PropertyView: public QAbstractScrollArea
     Q_DISABLE_COPY(PropertyView)
 
 public:
-    explicit PropertyView(QWidget* parent = nullptr, Property *property = nullptr);
+    explicit PropertyView(QWidget* parent = nullptr, PropertySet* propertySet = nullptr);
     ~PropertyView();
 
-    const Property *property() const { return m_property; }
-    Property *property() { return m_property; }
-    void setProperty(Property *newProperty);
+    const PropertySet* propertySet() const { return m_propertySet; }
+    PropertySet* propertySet() { return m_propertySet; }
+    void setPropertySet(PropertySet* newPropertySet);
 
-    Property *activeProperty() { return m_activeProperty; }
-    const Property *activeProperty() const { return m_activeProperty; }
-    bool setActiveProperty(Property *newActiveProperty);
+    PropertyBase* activeProperty() { return m_activeProperty; }
+    const PropertyBase* activeProperty() const { return m_activeProperty; }
+    bool setActiveProperty(PropertyBase*newActiveProperty);
 
-    bool ensureVisible(const Property *property);
+    bool ensureVisible(const PropertyBase* property);
 
     float itemHeightRatio() const { return m_itemHeightRatio; }
     bool setItemHeightRatio(float itemHeightRatio);
@@ -84,25 +84,25 @@ public:
 
 Q_SIGNALS:
     // emits when active property has changed
-    void activePropertyChanged(Property *activeProperty);
+    void activePropertyChanged(PropertyBase* activeProperty);
 
 protected:
-    void paintEvent(QPaintEvent *e) override;
-    void resizeEvent(QResizeEvent *e) override;
-    void mousePressEvent(QMouseEvent *e) override;
-    void mouseReleaseEvent(QMouseEvent *e) override;
-    void mouseMoveEvent(QMouseEvent *e) override;
-    void mouseDoubleClickEvent(QMouseEvent *e) override;
-    bool viewportEvent(QEvent *e) override;
+    void paintEvent(QPaintEvent* e) override;
+    void resizeEvent(QResizeEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
+    bool viewportEvent(QEvent* e) override;
     void scrollContentsBy(int dx, int dy) override;
-    void keyPressEvent(QKeyEvent *e) override;
-    void tooltipEvent(QHelpEvent *e);
+    void keyPressEvent(QKeyEvent* e) override;
+    void tooltipEvent(QHelpEvent* e);
 
 private:
 
     struct Item
     {
-        Property* property;
+        PropertyBase* property;
         QScopedPointer<PropertyDelegate> delegate;
         int level;
 
@@ -146,23 +146,23 @@ private:
 
 private:
     void updateItemsTree();
-    static Item *createItemsTree(Property *rootProperty, const PropertyDelegateFactory &factory);
+    static Item* createItemsTree(PropertyBase* rootProperty, const PropertyDelegateFactory& factory);
 
     void invalidateVisibleItems();
     void validateVisibleItems() const;
-    void fillVisibleItems(Item *item, int level) const;
-    bool acceptItem(Item &item) const;
+    void fillVisibleItems(Item* item, int level) const;
+    bool acceptItem(Item& item) const;
 
-    void drawBranchNode(QStylePainter &painter, QRect &rect, const VisibleItem &vItem);
-    void drawPropertySetItem(QStylePainter &painter, const QRect &rect, const VisibleItem &vItem);
-    void drawPropertyItem(QStylePainter &painter, const QRect &rect, const VisibleItem &vItem);
+    void drawBranchNode(QStylePainter& painter, QRect& rect, const VisibleItem& vItem);
+    void drawPropertySetItem(QStylePainter &painter, const QRect &rect, const VisibleItem& vItem);
+    void drawPropertyItem(QStylePainter& painter, const QRect& rect, const VisibleItem& vItem);
 
     void changeActivePropertyByIndex(int index);
     int visibleItemIndexByPoint(QPoint pos) const;
-    int visibleItemIndexByProperty(const Property *property) const;
+    int visibleItemIndexByProperty(const PropertyBase* property) const;
     QRect visibleItemRect(int index) const;
 
-    bool processItemActionByMouse(int index, QMouseEvent *e);
+    bool processItemActionByMouse(int index, QMouseEvent* e);
 
     void updateVScrollbar() const;
     void updateStyleStuff();
@@ -173,11 +173,11 @@ private:
     int splitPosition() const;
     void updateSplitRatio(float splitRatio);
 
-    void OnPropertyDidChange(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason);
+    void OnPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason);
 
 private:
-    Property *m_property;
-    Property *m_activeProperty;
+    PropertySet* m_propertySet;
+    PropertyBase* m_activeProperty;
 
     PropertyDelegateFactory m_delegateFactory;
 
@@ -194,7 +194,7 @@ private:
     QColor m_propertySetBackdroundColor;
 
     float m_splitRatio;
-    QRubberBand *m_rubberBand;
+    QRubberBand* m_rubberBand;
 };
 
 } // end namespace Qtinuum

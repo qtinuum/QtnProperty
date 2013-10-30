@@ -47,7 +47,7 @@ public:
     {
     }
 
-    EnumValueInfo(EnumValueType value, const QString &name, EnumValueState state = EnumValueStateNone)
+    EnumValueInfo(EnumValueType value, const QString& name, EnumValueState state = EnumValueStateNone)
         : m_value(value),
           m_name(name),
           m_state(state)
@@ -57,7 +57,7 @@ public:
     ~EnumValueInfo() {}
 
     EnumValueType value() const { return m_value; }
-    const QString &name() const { return m_name; }
+    const QString& name() const { return m_name; }
     EnumValueState state() const { return m_state; }
 
 private:
@@ -69,18 +69,18 @@ private:
 class QTN_PE_CORE_EXPORT EnumInfo
 {
 public:
-    EnumInfo(QVector<EnumValueInfo> &staticValues);
+    EnumInfo(QVector<EnumValueInfo>& staticValues);
 
     template <typename Pred>
     bool forEachEnumValue(Pred pred) const
     {
-        foreach(const EnumValueInfo &value, m_staticValues)
+        foreach(const EnumValueInfo& value, m_staticValues)
         {
             if (!pred(value))
                 return false;
         }
 
-        foreach(const EnumValueInfo &value, m_dynamicValues)
+        foreach(const EnumValueInfo& value, m_dynamicValues)
         {
             if (!pred(value))
                 return false;
@@ -88,8 +88,8 @@ public:
         return true;
     }
 
-    const EnumValueInfo *findByValue(EnumValueType value) const;
-    const EnumValueInfo *findByName(const QString &name) const;
+    const EnumValueInfo* findByValue(EnumValueType value) const;
+    const EnumValueInfo* findByName(const QString& name) const;
 
 private:
     QVector<EnumValueInfo> m_staticValues;

@@ -36,7 +36,7 @@ class PropertyDelegateFactory;
 class QTN_PW_EXPORT InplaceInfo
 {
 public:
-    QEvent *activationEvent;
+    QEvent* activationEvent;
 
     InplaceInfo()
         : activationEvent(0)
@@ -44,7 +44,7 @@ public:
     }
 };
 
-QTN_PW_EXPORT QString elidedText(const QPainter &painter, const QString &text, const QRect &rect, bool *elided = 0);
+QTN_PW_EXPORT QString elidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided = 0);
 
 class QTN_PW_EXPORT PropertyDelegate
 {
@@ -55,33 +55,33 @@ public:
 
     // for complex properties like PropertyQFont
     int subPropertyCount() const;
-    Property *subProperty(int index);
+    PropertyBase* subProperty(int index);
 
     // tune up with attributes
-    void applyAttributes(const PropertyDelegateAttributes &attributes);
+    void applyAttributes(const PropertyDelegateAttributes& attributes);
 
-    void drawValue(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip = 0) const;
+    void drawValue(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const;
     QString toolTip() const;
-    bool acceptKeyPressedForInplaceEdit(QKeyEvent *keyEvent) const;
-    QWidget *createValueEditor(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0);
+    bool acceptKeyPressedForInplaceEdit(QKeyEvent* keyEvent) const;
+    QWidget* createValueEditor(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0);
 
 protected:
     PropertyDelegate() {}
 
     virtual int subPropertyCountImpl() const { return 0; }
-    virtual Property *subPropertyImpl(int index) { return 0; }
-    virtual void applyAttributesImpl(const PropertyDelegateAttributes &attributes) {}
-    virtual void drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip = 0) const;
+    virtual PropertyBase* subPropertyImpl(int index) { return nullptr; }
+    virtual void applyAttributesImpl(const PropertyDelegateAttributes& attributes) {}
+    virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const;
     virtual QString toolTipImpl() const;
-    virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const;
-    virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) = 0;
+    virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const;
+    virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) = 0;
 
     // override this if property value can be displayed as string
-    virtual bool propertyValueToStr(QString &strValue) const { return false; }
+    virtual bool propertyValueToStr(QString& strValue) const { return false; }
 
     // helper functions
-    static void drawValueText(const QString &text, QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip = 0);
-    QWidget *createValueEditorLineEdit(QWidget *parent, const QRect &rect, bool readOnly, InplaceInfo *inplaceInfo = 0);
+    static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0);
+    QWidget* createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, InplaceInfo* inplaceInfo = 0);
 };
 
 template <typename PropertyClass>
@@ -90,11 +90,11 @@ class PropertyDelegateTyped: public PropertyDelegate
     Q_DISABLE_COPY(PropertyDelegateTyped)
 
 public:
-    const PropertyClass &owner() const { return m_owner; }
-    PropertyClass &owner() { return m_owner; }
+    const PropertyClass& owner() const { return m_owner; }
+    PropertyClass& owner() { return m_owner; }
 
 protected:
-    PropertyDelegateTyped(PropertyClass &owner)
+    PropertyDelegateTyped(PropertyClass& owner)
         : m_owner(owner)
     {
     }
@@ -104,7 +104,7 @@ protected:
     }
 
 private:
-    PropertyClass &m_owner;
+    PropertyClass& m_owner;
 };
 
 template <typename PropertyClass>
@@ -113,7 +113,7 @@ class PropertyDelegateTypedEx: public PropertyDelegateTyped<PropertyClass>
     Q_DISABLE_COPY(PropertyDelegateTypedEx)
 
 protected:
-    PropertyDelegateTypedEx(PropertyClass &owner)
+    PropertyDelegateTypedEx(PropertyClass& owner)
         : PropertyDelegateTyped<PropertyClass>(owner)
     {
     }
@@ -123,9 +123,9 @@ protected:
     }
 
     int subPropertyCountImpl() const override { return m_subProperties.size(); }
-    Property *subPropertyImpl(int index) override { return m_subProperties[index].data(); }
+    Property* subPropertyImpl(int index) override { return m_subProperties[index].data(); }
 
-    void addSubProperty(Property *subProperty)
+    void addSubProperty(Property* subProperty)
     {
         Q_ASSERT(subProperty);
         if (!subProperty)

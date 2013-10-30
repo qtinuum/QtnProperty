@@ -20,15 +20,15 @@
 #define PROPERTYMACRO_H
 
 #define P_PROPERTY_DECL_CMP_OPERATOR(ClassName, ValueType, Op) \
-    inline bool operator Op(const ClassName &left, const ClassName &right)\
+    inline bool operator Op(const ClassName& left, const ClassName& right)\
     {\
         return left.value() Op right.value();\
     }\
-    inline bool operator Op(const ClassName &left, ValueType right)\
+    inline bool operator Op(const ClassName& left, ValueType right)\
     {\
         return left.value() Op right;\
     }\
-    inline bool operator Op(ValueType left, const ClassName &right)\
+    inline bool operator Op(ValueType left, const ClassName& right)\
     {\
         return left Op right.value();\
     }
@@ -47,7 +47,7 @@
 #define P_PROPERTY_DECL_MEMBER_OPERATORS(ClassName) \
 public:\
     operator ValueType() const { return value(); }\
-    ClassName &operator=(const ClassName &newValue)\
+    ClassName& operator=(const ClassName& newValue)\
     {\
         setValue(newValue.value());\
         return *this;\
@@ -75,26 +75,6 @@ public:\
     {\
         setValue(newValue);\
         return *this;\
-    }
-
-#define P_PROPERTY_DECL_COPY_CONSTRUCTORS(ClassName, BaseClassName) \
-protected:\
-    ClassName(QObject* parent, const ClassName& other)\
-        : BaseClassName(parent, other)\
-    {}\
-private:\
-    ClassName(const ClassName&) Q_DECL_EQ_DELETE;
-
-#define P_PROPERTY_DECL_MEMBER_CLONING(ClassName, BaseClassName) \
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(ClassName, BaseClassName)\
-protected:\
-    Property* createNewImpl(QObject* parentForNew) const override\
-    {\
-        return new ClassName(parentForNew);\
-    }\
-    Property* createCopyImpl(QObject* parentForCopy) const override\
-    {\
-        return new ClassName(parentForCopy, *this);\
     }
 
 #endif // PROPERTYMACRO_H

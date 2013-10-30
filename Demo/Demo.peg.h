@@ -14,7 +14,7 @@ public:
         green = 3
     };
     
-    static Qtinuum::EnumInfo &info();
+    static Qtinuum::EnumInfo& info();
     static const unsigned int values_count = 3;
 };
 
@@ -28,11 +28,11 @@ public:
         opt3 = 4
     };
     
-    static Qtinuum::EnumInfo &info();
+    static Qtinuum::EnumInfo& info();
     static const unsigned int values_count = 3;
 };
 
-class PropertySetInternal: public Qtinuum::Property
+class PropertySetInternal: public Qtinuum::PropertySet
 {
     Q_OBJECT
     //Q_DISABLE_COPY(PropertySetInternal)
@@ -61,8 +61,10 @@ public:
 
 protected:
     // cloning implementation
-    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
-    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+    Qtinuum::PropertySet* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::PropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    // copy values implementation
+    bool copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask) override;
 
 private:
     void init();
@@ -71,7 +73,7 @@ private:
     void connectDelegates();
 };
 
-class PropertySetSubProperties: public qtn::PropertyBool
+class PropertySetSubProperties: public Qtinuum::PropertySet
 {
     Q_OBJECT
     //Q_DISABLE_COPY(PropertySetSubProperties)
@@ -103,21 +105,19 @@ public:
 
 protected:
     // cloning implementation
-    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
-    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+    Qtinuum::PropertySet* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::PropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    // copy values implementation
+    bool copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask) override;
 
 private:
     void init();
     void connectSlots();
     void disconnectSlots();
     void connectDelegates();
-    
-    // start slot declarations
-    void on_propertyDidChange(const Qtinuum::Property *changedProperty, const Qtinuum::Property *firedProperty, Qtinuum::PropertyChangeReason reason);
-    // end slot declarations
 };
 
-class PropertySetMain: public Qtinuum::Property
+class PropertySetMain: public Qtinuum::PropertySet
 {
     Q_OBJECT
     //Q_DISABLE_COPY(PropertySetMain)
@@ -140,8 +140,10 @@ public:
 
 protected:
     // cloning implementation
-    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
-    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+    Qtinuum::PropertySet* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::PropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    // copy values implementation
+    bool copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask) override;
 
 private:
     void init();
@@ -150,7 +152,7 @@ private:
     void connectDelegates();
     
     // start slot declarations
-    void on_isValid_propertyDidChange(const Qtinuum::Property *changedProperty, const Qtinuum::Property *firedProperty, Qtinuum::PropertyChangeReason reason);
+    void on_isValid_propertyDidChange(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, Qtinuum::PropertyChangeReason reason);
     // end slot declarations
 };
 

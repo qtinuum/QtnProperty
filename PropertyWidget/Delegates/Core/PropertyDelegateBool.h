@@ -31,14 +31,14 @@ class QTN_PW_EXPORT PropertyDelegateBoolCheck: public PropertyDelegateTyped<Prop
     Q_DISABLE_COPY(PropertyDelegateBoolCheck)
 
 public:
-    PropertyDelegateBoolCheck(PropertyBoolBase &owner)
+    PropertyDelegateBoolCheck(PropertyBoolBase& owner)
         : PropertyDelegateTyped<PropertyBoolBase>(owner)
     {
     }
 
 protected:
-    void drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip = 0) const override;
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
 };
 
 class QTN_PW_EXPORT PropertyDelegateBoolLabels: public PropertyDelegateTyped<PropertyBoolBase>
@@ -46,12 +46,12 @@ class QTN_PW_EXPORT PropertyDelegateBoolLabels: public PropertyDelegateTyped<Pro
     Q_DISABLE_COPY(PropertyDelegateBoolLabels)
 
 public:
-    PropertyDelegateBoolLabels(PropertyBoolBase &owner);
+    PropertyDelegateBoolLabels(PropertyBoolBase& owner);
 
 protected:
-    void applyAttributesImpl(const PropertyDelegateAttributes &attributes) override;
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
-    bool propertyValueToStr(QString &strValue) const override;
+    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    bool propertyValueToStr(QString& strValue) const override;
 
 private:
     QString m_labels[2];

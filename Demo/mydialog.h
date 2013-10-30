@@ -13,12 +13,12 @@ class MyDialog : public QDialog
     Q_OBJECT
     
 public:
-    MyDialog(QWidget *parent, qtn::Property& property, const qtn::Property* defaultProperty = 0);
+    MyDialog(QWidget* parent, qtn::PropertySet& properties, const qtn::PropertySet* defaultProperties = 0);
     ~MyDialog();
     
 private:
     Ui::MyDialog *ui;
-    const qtn::Property* m_defaultProperty;
+    const qtn::PropertySet* m_defaultProperty;
 };
 
 #endif // MYDIALOG_H

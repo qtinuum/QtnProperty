@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
         hFileName = argv[3];
     }
 
-    PEG &peg = PEG::instance();
+    PEG& peg = PEG::instance();
 
     if (!peg.start(hFileName, cppFileName))
         return 1;

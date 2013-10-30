@@ -29,19 +29,19 @@ static bool regQPointDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateQPoint, PropertyQPointBase>
                                 , "XY");
 
-PropertyDelegateQPoint::PropertyDelegateQPoint(PropertyQPointBase &owner)
+PropertyDelegateQPoint::PropertyDelegateQPoint(PropertyQPointBase& owner)
     : PropertyDelegateTypedEx<PropertyQPointBase>(owner)
 {
     addSubProperty(createXProperty(0, &owner));
     addSubProperty(createYProperty(0, &owner));
 }
 
-QWidget *PropertyDelegateQPoint::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateQPoint::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
     return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool PropertyDelegateQPoint::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateQPoint::propertyValueToStr(QString& strValue) const
 {
     QPoint value = owner().value();
     strValue = QString("%1 x %2").arg(value.x()).arg(value.y());

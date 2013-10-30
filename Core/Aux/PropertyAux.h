@@ -19,13 +19,16 @@
 #ifndef QTN_PROPERTY_AUX_H
 #define QTN_PROPERTY_AUX_H
 
-#include "CoreAPI.h"
+#include "../CoreAPI.h"
 #include <QtCore/QObject>
-#include <QMap>
-#include <QVariant>
 
 namespace Qtinuum
 {
+
+// forward declarations
+class PropertyBase;
+class Property;
+class PropertySet;
 
 enum PropertyStateFlag
 {
@@ -59,41 +62,12 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(PropertyChangeReason)
 
 typedef qint32 PropertyID;
 const PropertyID PropertyIDInvalid = -1;
-typedef void * PropertyValuePtr;
+typedef void* PropertyValuePtr;
 
 template<typename T>
-static T *CastPropertyValue(PropertyValuePtr value) { return reinterpret_cast<T *>(value); }
+inline T* CastPropertyValue(PropertyValuePtr value) { return reinterpret_cast<T*>(value); }
 template<typename T>
-static const T *ConstCastPropertyValue(PropertyValuePtr value) { return reinterpret_cast<const T *>(value); }
-
-typedef QMap<QByteArray, QVariant> PropertyDelegateAttributes;
-
-struct QTN_PE_CORE_EXPORT PropertyDelegateInfo
-{
-    QByteArray name;
-    PropertyDelegateAttributes attributes;
-
-    PropertyDelegateInfo()
-    {
-    }
-
-    PropertyDelegateInfo(const PropertyDelegateInfo &other)
-        : name(other.name),
-          attributes(other.attributes)
-    {
-    }
-};
-
-template <typename T>
-bool getAttribute(const PropertyDelegateAttributes &attributes, const QByteArray &attributeName, T &attributeValue)
-{
-    auto it = attributes.find(attributeName);
-    if (it == attributes.end())
-        return false;
-
-    attributeValue = it.value().value<T>();
-    return true;
-}
+inline const T* ConstCastPropertyValue(PropertyValuePtr value) { return reinterpret_cast<const T*>(value); }
 
 } // end namespace Qtinuum
 

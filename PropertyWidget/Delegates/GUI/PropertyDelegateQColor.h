@@ -31,13 +31,13 @@ class QTN_PW_EXPORT PropertyDelegateQColor: public PropertyDelegateTyped<Propert
     Q_DISABLE_COPY(PropertyDelegateQColor)
 
 public:
-    PropertyDelegateQColor(PropertyQColorBase &owner);
+    PropertyDelegateQColor(PropertyQColorBase& owner);
 
 protected:
-    void applyAttributesImpl(const PropertyDelegateAttributes &attributes) override;
-    void drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip = 0) const override;
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
-    bool propertyValueToStr(QString &strValue) const override;
+    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    bool propertyValueToStr(QString& strValue) const override;
 
 private:
     quint32 m_shape;

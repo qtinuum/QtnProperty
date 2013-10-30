@@ -50,33 +50,24 @@ public:
     PropertyWidgetParts parts() const { return m_parts; }
     void setParts(PropertyWidgetParts newParts);
 
-    const Property *property() const { return m_propertyView->property(); }
-    Property *property() { return m_propertyView->property(); }
-    void setProperty(Property *newProperty) { m_propertyView->setProperty(newProperty); }
+    const PropertySet* propertySet() const { return m_propertyView->propertySet(); }
+    PropertySet* propertySet() { return m_propertyView->propertySet(); }
+    void setPropertySet(PropertySet* newPropertySet) { m_propertyView->setPropertySet(newPropertySet); }
 
     PropertyView *propertyView() { return m_propertyView; }
 
-Q_SIGNALS:
-    /*
-    void propertyWillChange(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue);
-    void propertyDidChange(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason);
-    void propertyValueAccept(const Property *property, PropertyValuePtr valueToAccept, bool* accept);
-    */
-
-protected:
-
 private:
     void updateParts();
-    void setActiveProperty(const Property *activeProperty);
+    void setActiveProperty(const PropertyBase* activeProperty);
 
 private:
     PropertyWidgetParts m_parts;
 
-    QVBoxLayout *m_layout;
-    QLabel *m_toolbar;
-    PropertyView *m_propertyView;
-    QWidget *m_descriptionSplitter;
-    QLabel *m_descriptionPanel;
+    QVBoxLayout* m_layout;
+    QLabel* m_toolbar;
+    PropertyView* m_propertyView;
+    QWidget* m_descriptionSplitter;
+    QLabel* m_descriptionPanel;
 };
 
 } // end namespace Qtinuum

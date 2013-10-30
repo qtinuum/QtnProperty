@@ -101,96 +101,111 @@ using namespace Qtinuum;
 
 void TestProperty::name()
 {
-    Property p(this);
+    PropertyInt p(this);
     p.setName(tr("PropertyName"));
     QCOMPARE(p.name(), QString("PropertyName"));
+
+    PropertySet p1(nullptr);
+    p1.setName("Another Name");
+    QCOMPARE(p1.name(), QString("Another Name"));
 }
 
 void TestProperty::description()
 {
-    Property p(this);
+    PropertyBool p(this);
     p.setDescription(tr("PropertyDescription"));
     QCOMPARE(p.description(), QString("PropertyDescription"));
+
+    PropertySet p1(nullptr);
+    p1.setDescription("Another description\nwith multiline.");
+    QCOMPARE(p1.description(), QString("Another description\nwith multiline."));
 }
 
 void TestProperty::id()
 {
-    Property p(0);
-    p.setId(5);
-    QCOMPARE(p.id(), 5);
+    PropertySet p(nullptr);
+    QCOMPARE(p.id(), PropertyIDInvalid);
+    p.setId(12);
+    QCOMPARE(p.id(), 12);
+
+    PropertyUInt p1(&p);
+    QCOMPARE(p1.id(), PropertyIDInvalid);
+    p1.setId(5);
+    QCOMPARE(p1.id(), 5);
+
 }
 
 void TestProperty::state()
 {
-    Property master_p(0);
-    Property sub_p(&master_p);
+    PropertySet ps(0);
+    PropertyInt p(&ps);
 
-    QCOMPARE(master_p.state(), PropertyStateNone);
-    QCOMPARE(sub_p.state(), PropertyStateNone);
+    QCOMPARE(ps.state(), PropertyStateNone);
+    QCOMPARE(p.state(), PropertyStateNone);
 
     PropertyState master_state = PropertyStateInvisible|PropertyStateNonSimple;
 
-    master_p.setState(master_state);
-    QCOMPARE(master_p.state(), master_state);
-    QCOMPARE(master_p.stateLocal(), master_state);
-    QCOMPARE(master_p.stateInherited(), PropertyStateNone);
-    QCOMPARE(sub_p.state(), master_state);
-    QCOMPARE(sub_p.stateLocal(), PropertyStateNone);
-    QCOMPARE(sub_p.stateInherited(), master_state);
+    ps.setState(master_state);
+    QCOMPARE(ps.state(), master_state);
+    QCOMPARE(ps.stateLocal(), master_state);
+    QCOMPARE(ps.stateInherited(), PropertyStateNone);
+    QCOMPARE(p.state(), master_state);
+    QCOMPARE(p.stateLocal(), PropertyStateNone);
+    QCOMPARE(p.stateInherited(), master_state);
 
-    sub_p.addState(PropertyStateCollapsed);
-    QCOMPARE(master_p.state(), master_state);
-    QCOMPARE(master_p.stateLocal(), master_state);
-    QCOMPARE(master_p.stateInherited(), PropertyStateNone);
-    QCOMPARE(sub_p.state(), master_state|PropertyStateCollapsed);
-    QCOMPARE(sub_p.stateLocal(), PropertyStateCollapsed);
-    QCOMPARE(sub_p.stateInherited(), master_state);
+    p.addState(PropertyStateCollapsed);
+    QCOMPARE(ps.state(), master_state);
+    QCOMPARE(ps.stateLocal(), master_state);
+    QCOMPARE(ps.stateInherited(), PropertyStateNone);
+    QCOMPARE(p.state(), master_state|PropertyStateCollapsed);
+    QCOMPARE(p.stateLocal(), PropertyStateCollapsed);
+    QCOMPARE(p.stateInherited(), master_state);
 
-    master_p.removeState(PropertyStateInvisible);
-    QCOMPARE(master_p.state(), PropertyStateNonSimple);
-    QCOMPARE(master_p.stateLocal(), PropertyStateNonSimple);
-    QCOMPARE(master_p.stateInherited(), PropertyStateNone);
-    QCOMPARE(sub_p.state(), PropertyStateNonSimple|PropertyStateCollapsed);
-    QCOMPARE(sub_p.stateLocal(), PropertyStateCollapsed);
-    QCOMPARE(sub_p.stateInherited(), PropertyStateNonSimple);
+    ps.removeState(PropertyStateInvisible);
+    QCOMPARE(ps.state(), PropertyStateNonSimple);
+    QCOMPARE(ps.stateLocal(), PropertyStateNonSimple);
+    QCOMPARE(ps.stateInherited(), PropertyStateNone);
+    QCOMPARE(p.state(), PropertyStateNonSimple|PropertyStateCollapsed);
+    QCOMPARE(p.stateLocal(), PropertyStateCollapsed);
+    QCOMPARE(p.stateInherited(), PropertyStateNonSimple);
 
-    sub_p.switchState(PropertyStateCollapsed, false);
-    master_p.switchState(PropertyStateInvisible, true);
-    QCOMPARE(master_p.state(), master_state);
-    QCOMPARE(master_p.stateLocal(), master_state);
-    QCOMPARE(master_p.stateInherited(), PropertyStateNone);
-    QCOMPARE(sub_p.state(), master_state);
-    QCOMPARE(sub_p.stateLocal(), PropertyStateNone);
-    QCOMPARE(sub_p.stateInherited(), master_state);
+    p.switchState(PropertyStateCollapsed, false);
+    ps.switchState(PropertyStateInvisible, true);
+    QCOMPARE(ps.state(), master_state);
+    QCOMPARE(ps.stateLocal(), master_state);
+    QCOMPARE(ps.stateInherited(), PropertyStateNone);
+    QCOMPARE(p.state(), master_state);
+    QCOMPARE(p.stateLocal(), PropertyStateNone);
+    QCOMPARE(p.stateInherited(), master_state);
 
-    QCOMPARE(master_p.isEditableByUser(), false);
+    QCOMPARE(ps.isEditableByUser(), false);
 
-    master_p.removeState(master_state|PropertyStateCollapsed);
-    QCOMPARE(master_p.isEditableByUser(), true);
-    QCOMPARE(master_p.state(), PropertyStateNone);
+    ps.removeState(master_state|PropertyStateCollapsed);
+    QCOMPARE(ps.isEditableByUser(), true);
+    QCOMPARE(ps.state(), PropertyStateNone);
 
     int call_count = 0;
-    QObject::connect(&master_p, &Property::propertyWillChange, [&call_count](const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue) {
+    QObject::connect(&ps, &Property::propertyWillChange, [&call_count](const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue) {
         ++call_count;
     });
 
-    QObject::connect(&master_p, &Property::propertyDidChange, [&call_count](const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason) {
+    QObject::connect(&ps, &Property::propertyDidChange, [&call_count](const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason) {
         ++call_count;
     });
 
-    master_p.addState(PropertyStateNone, true);
+    ps.addState(PropertyStateNone, true);
     QCOMPARE(call_count, 2);
 
-    master_p.removeState(PropertyStateCollapsed);
+    ps.removeState(PropertyStateCollapsed);
     QCOMPARE(call_count, 2);
 
-    master_p.removeState(PropertyStateCollapsed, true);
+    ps.removeState(PropertyStateCollapsed, true);
     QCOMPARE(call_count, 4);
 }
 
 void TestProperty::stateChange()
 {
-    Property p(this);
+    PropertyFloat p(this);
     QObject::connect(&p, &Property::propertyWillChange, this, &TestProperty::checkPropertyStateIsNonSimple);
 
     p.addState(PropertyStateNonSimple);
@@ -403,7 +418,7 @@ void TestProperty::propertyRect()
     PropertyQRectCallback pc(this);
     QRect pc_value;
     pc.setCallbackValueGet([&pc_value]()->const QRect& { return pc_value; });
-    pc.setCallbackValueSet([&pc_value](const QRect &value) { pc_value = value; });
+    pc.setCallbackValueSet([&pc_value](const QRect& value) { pc_value = value; });
 
     pc = QRect(10, 10, 10, 10);
     QVERIFY(pc == QRect(10, 10, 10, 10));
@@ -444,9 +459,8 @@ void TestProperty::propertyEnumFlags()
     QVERIFY(!(p & MASK::ONE));
 }
 
-void TestProperty::serializationState()
+static void testSerializationState(PropertyBase& p)
 {
-    Property p(this);
     p.setState(PropertyStateCollapsed);
 
     QByteArray data;
@@ -467,24 +481,37 @@ void TestProperty::serializationState()
     QVERIFY(p.state() == PropertyStateCollapsed);
 }
 
+void TestProperty::serializationState()
+{
+    {
+        PropertyInt p(this);
+        testSerializationState(p);
+    }
+
+    {
+        PropertySet p(nullptr);
+        testSerializationState(p);
+    }
+}
+
 void TestProperty::serializationChildren()
 {
-    Property p(this);
-    p.setState(PropertyStateCollapsed);
+    PropertySet ps(this);
+    ps.setState(PropertyStateCollapsed);
 
     QByteArray data;
 
-    Property* p2(new Property(&p));
+    Property* p2(new PropertyInt(&ps));
     p2->setId(1);
     p2->setState(PropertyStateImmutable);
 
-    Property p3(&p);
+    PropertyBool p3(&ps);
     p3.setId(2);
     p3.setState(PropertyStateNonSerialized);
 
     {
         QDataStream s(&data, QIODevice::WriteOnly);
-        s << p;
+        s << ps;
         QVERIFY(s.status() == QDataStream::Ok);
     }
 
@@ -499,7 +526,7 @@ void TestProperty::serializationChildren()
 
     {
         QDataStream s(&data, QIODevice::ReadOnly);
-        s >> p;
+        s >> ps;
         QVERIFY(s.status() == QDataStream::Ok);
     }
 
@@ -511,7 +538,7 @@ void TestProperty::serializationChildren()
 
     {
         QDataStream s(&data, QIODevice::ReadOnly);
-        s >> p;
+        s >> ps;
         QVERIFY(s.status() == QDataStream::Ok);
     }
 }
@@ -566,56 +593,6 @@ void TestProperty::serializationValue()
 void TestProperty::createNew()
 {
     {
-        PropertyBool pb(this);
-        QVERIFY(!pb);
-        pb = true;
-        QVERIFY(pb);
-
-        PropertyBool* pn = qobject_cast<PropertyBool*>(pb.createNew(this));
-        QVERIFY(pn);
-        QVERIFY(pn != &pb);
-        QVERIFY(pn->parent() == this);
-        QVERIFY(!*pn);
-
-        pb = false;
-        QVERIFY(!pb);
-        QVERIFY(!*pn);
-
-        *pn = true;
-        QVERIFY(!pb);
-        QVERIFY(*pn);
-
-        delete pn;
-    }
-
-    {
-        PropertyFloatCallback pf(this);
-        pf.setCallbackValueGet([]()->float { return 0.4f; });
-        QVERIFY(pf == 0.4f);
-
-        PropertyFloatCallback* pn = qobject_cast<PropertyFloatCallback*>(pf.createNew(this));
-        QVERIFY(pn);
-        QVERIFY(pn != &pf);
-        QVERIFY(pn->parent() == this);
-
-        try
-        {
-            pn->value(); // should throw here
-            QVERIFY(false);
-        }
-        catch (std::bad_function_call& e)
-        {
-
-        }
-
-        pn->setCallbackValueGet([]()->float { return 1.3f; });
-        QVERIFY(*pn == 1.3f);
-        QVERIFY(pf == 0.4f);
-
-        delete pn;
-    }
-
-    {
         PropertySetAllPropertyTypes pp(this);
 
         verifyInitialValues(pp);
@@ -635,45 +612,6 @@ void TestProperty::createNew()
 void TestProperty::createCopy()
 {
     {
-        PropertyQColor pc(this);
-        QVERIFY(pc == QColor());
-
-        pc = QColor(10, 20, 30);
-        QVERIFY(pc == QColor(10, 20, 30));
-
-        PropertyQColorBase* pcpy = qobject_cast<PropertyQColorBase*>(pc.createCopy(this));
-        QVERIFY(pcpy);
-        QVERIFY(pcpy != &pc);
-        QVERIFY(pcpy->parent() == this);
-        QVERIFY(*pcpy == QColor(10, 20, 30));
-
-        *pcpy = QColor(200, 200, 200);
-        QVERIFY(*pcpy == QColor(200, 200, 200));
-        QVERIFY(pc == QColor(10, 20, 30));
-
-        delete pcpy;
-    }
-
-    {
-        QRect r(12, 34, 56, 78);
-        PropertyQRectCallback pr(this);
-        pr.setCallbackValueGet([&r]()->QRect { return r; });
-        pr.setCallbackValueSet([&r](QRect nr) { r = nr; });
-        QVERIFY(pr == QRect(12, 34, 56, 78));
-
-        QScopedPointer<PropertyQRectBase> pc;
-        pc.reset(qobject_cast<PropertyQRectBase*>(pr.createCopy(this)));
-        QVERIFY(pc);
-        QVERIFY(pc.data() != &pr);
-        QVERIFY(*pc == QRect(12, 34, 56, 78));
-
-        *pc = QRect(-98, -76, -54, -32);
-        QVERIFY(*pc == QRect(-98, -76, -54, -32));
-        QVERIFY(pr == QRect(-98, -76, -54, -32));
-        QVERIFY(r == QRect(-98, -76, -54, -32));
-   }
-
-    {
         PropertySetAllPropertyTypes pp(this);
 
         verifyInitialValues(pp);
@@ -688,6 +626,11 @@ void TestProperty::createCopy()
 
         verifyModified(*pn);
     }
+}
+
+void TestProperty::copyValues()
+{
+
 }
 
 void TestProperty::propertyAssignment()
@@ -740,7 +683,7 @@ void TestProperty::propertyAssignment()
     }
 }
 
-void TestProperty::checkPropertyStateIsNonSimple(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)
+void TestProperty::checkPropertyStateIsNonSimple(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)
 {
     QVERIFY(changedProperty == firedProperty);
     QVERIFY(reason==PropertyChangeReasonStateLocal);

@@ -19,7 +19,7 @@
 #ifndef PROPERTYQRECT_H
 #define PROPERTYQRECT_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 #include <QRect>
 
 namespace Qtinuum
@@ -28,15 +28,15 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyQRectBase: public SinglePropertyBase<QRect>
 {
     Q_OBJECT
+    PropertyQRectBase(const PropertyQRectBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQRectBase(QObject *parent);
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQRectBase)
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyQRectBase, SinglePropertyBase<QRect>)
 };
 
-P_PROPERTY_DECL_EQ_OPERATORS(PropertyQRectBase, QRect);
+P_PROPERTY_DECL_EQ_OPERATORS(PropertyQRectBase, QRect)
 
 QTN_PE_CORE_EXPORT Property* createLeftProperty(QObject *parent, PropertyQRectBase *propertyRect);
 QTN_PE_CORE_EXPORT Property* createRightProperty(QObject *parent, PropertyQRectBase *propertyRect);
@@ -48,6 +48,7 @@ QTN_PE_CORE_EXPORT Property* createHeightProperty(QObject *parent, PropertyQRect
 class QTN_PE_CORE_EXPORT PropertyQRectCallback: public SinglePropertyCallback<PropertyQRectBase>
 {
     Q_OBJECT
+    PropertyQRectCallback(const PropertyQRectCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQRectCallback(QObject *parent)
@@ -56,12 +57,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQRectCallback, PropertyQRectBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQRectCallback, SinglePropertyCallback<PropertyQRectBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyQRect: public SinglePropertyValue<PropertyQRectBase>
 {
     Q_OBJECT
+    PropertyQRect(const PropertyQRect& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyQRect(QObject *parent)
@@ -70,7 +71,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQRect, PropertyQRectBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyQRect, SinglePropertyValue<PropertyQRectBase>)
 };
 
 } // end namespace Qtinuum

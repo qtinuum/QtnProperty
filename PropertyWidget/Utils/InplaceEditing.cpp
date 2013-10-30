@@ -28,15 +28,15 @@ class InplaceEditorHandler: public QObject
 {
 public:
 
-    bool eventFilter(QObject *watched, QEvent *event) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
-    void OnEditorDestroyed(QObject *obj);
+    void OnEditorDestroyed(QObject* obj);
 };
 
-static QWidget *g_inplaceEditor = 0;
-static InplaceEditorHandler *g_inplaceEditorHandler = 0;
+static QWidget* g_inplaceEditor = 0;
+static InplaceEditorHandler* g_inplaceEditorHandler = 0;
 
-bool startInplaceEdit(QWidget *editor)
+bool startInplaceEdit(QWidget* editor)
 {
     if (!editor)
         return false;
@@ -47,7 +47,7 @@ bool startInplaceEdit(QWidget *editor)
         stopInplaceEdit();
     }
 
-    QCoreApplication *app = QCoreApplication::instance();
+    QCoreApplication* app = QCoreApplication::instance();
     if (!app)
     {
         Q_ASSERT(false);
@@ -71,16 +71,16 @@ bool startInplaceEdit(QWidget *editor)
     return true;
 }
 
-QWidget *getInplaceEdit()
+QWidget* getInplaceEdit()
 {
     return g_inplaceEditor;
 }
 
 
-void onInplaceWidgetDestroyed(QObject *object)
+void onInplaceWidgetDestroyed(QObject* object)
 {
     // set focus to parent of inplace widget
-    QWidget *parent = qobject_cast<QWidget*>(object->parent());
+    QWidget* parent = qobject_cast<QWidget*>(object->parent());
     if (parent)
         parent->setFocus();
 }
@@ -104,7 +104,7 @@ bool stopInplaceEdit()
     return true;
 }
 
-bool hasParent(QObject *child, QObject *parent)
+bool hasParent(QObject* child, QObject* parent)
 {
 //    qDebug() << "hasParent(" << child << ", " << parent << ")";
     if (!child)
@@ -116,7 +116,7 @@ bool hasParent(QObject *child, QObject *parent)
     return hasParent(child->parent(), parent);
 }
 
-bool InplaceEditorHandler::eventFilter(QObject *watched, QEvent *event)
+bool InplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
 {
     Q_ASSERT(g_inplaceEditor);
 
@@ -163,7 +163,7 @@ bool InplaceEditorHandler::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
-void InplaceEditorHandler::OnEditorDestroyed(QObject *obj)
+void InplaceEditorHandler::OnEditorDestroyed(QObject* obj)
 {
     Q_ASSERT(obj == g_inplaceEditor);
 

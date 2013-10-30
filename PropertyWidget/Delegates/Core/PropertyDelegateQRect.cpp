@@ -30,7 +30,7 @@ static bool regQRectDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateQRect, PropertyQRectBase>
                                 , "LTWH");
 
-PropertyDelegateQRect::PropertyDelegateQRect(PropertyQRectBase &owner)
+PropertyDelegateQRect::PropertyDelegateQRect(PropertyQRectBase& owner)
     : PropertyDelegateTypedEx<PropertyQRectBase>(owner)
 {
     addSubProperty(createLeftProperty(0, &owner));
@@ -39,12 +39,12 @@ PropertyDelegateQRect::PropertyDelegateQRect(PropertyQRectBase &owner)
     addSubProperty(createHeightProperty(0, &owner));
 }
 
-QWidget *PropertyDelegateQRect::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateQRect::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
     return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool PropertyDelegateQRect::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateQRect::propertyValueToStr(QString& strValue) const
 {
     QRect value = owner().value();
     strValue = QString("[(%1, %2), %3 x %4]").arg(value.left()).arg(value.top()).arg(value.width()).arg(value.height());

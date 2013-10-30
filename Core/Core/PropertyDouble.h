@@ -19,7 +19,7 @@
 #ifndef PROPERTYDOUBLE_H
 #define PROPERTYDOUBLE_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 
 namespace Qtinuum
 {
@@ -27,6 +27,7 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyDoubleBase: public NumericPropertyBase<SinglePropertyBase<double>>
 {
     Q_OBJECT
+    PropertyDoubleBase(const PropertyDoubleBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyDoubleBase(QObject *parent)
@@ -35,7 +36,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyDoubleBase)
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyDoubleBase, NumericPropertyBase<SinglePropertyBase<double>>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyDoubleBase, double)
@@ -43,6 +43,7 @@ P_PROPERTY_DECL_ALL_OPERATORS(PropertyDoubleBase, double)
 class QTN_PE_CORE_EXPORT PropertyDoubleCallback: public SinglePropertyCallback<PropertyDoubleBase>
 {
     Q_OBJECT
+    PropertyDoubleCallback(const PropertyDoubleCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyDoubleCallback(QObject *parent)
@@ -51,12 +52,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyDoubleCallback, PropertyDoubleBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyDoubleCallback, SinglePropertyCallback<PropertyDoubleBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyDouble: public SinglePropertyValue<PropertyDoubleBase>
 {
     Q_OBJECT
+    PropertyDouble(const PropertyDouble& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyDouble(QObject *parent)
@@ -65,7 +66,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyDouble, PropertyDoubleBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyDouble, SinglePropertyValue<PropertyDoubleBase>)
 };
 
 } // end namespace Qtinuum

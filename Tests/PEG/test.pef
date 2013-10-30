@@ -34,7 +34,7 @@ code_h
     void aaa();
 }
 
-property_set Test3: public qtn::Property, private QString {   
+property_set Test3 {
     property_set YY yy
     {
         description = tr("ss")+tr("ss");
@@ -42,7 +42,7 @@ property_set Test3: public qtn::Property, private QString {
         QRect rect {value = QRect(10, 10, 10, 10);}
     }
 
-    property_set SS: public qtn::Property, private QRect iis
+    property_set SS iis
     {
         Bool a{ value = true; }
 

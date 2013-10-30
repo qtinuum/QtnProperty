@@ -3,7 +3,7 @@
 
 #include "PropertyCore.h"
 
-class PropertySetA: public Qtinuum::Property
+class PropertySetA: public Qtinuum::PropertySet
 {
     Q_OBJECT
     //Q_DISABLE_COPY(PropertySetA)
@@ -22,8 +22,10 @@ public:
 
 protected:
     // cloning implementation
-    Qtinuum::Property* createNewImpl(QObject* parentForNew) const override;
-    Qtinuum::Property* createCopyImpl(QObject* parentForCopy) const override;
+    Qtinuum::PropertySet* createNewImpl(QObject* parentForNew) const override;
+    Qtinuum::PropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    // copy values implementation
+    bool copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask) override;
 
 private:
     void init();

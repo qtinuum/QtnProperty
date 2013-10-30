@@ -31,14 +31,14 @@ class QTN_PW_EXPORT PropertyDelegateEnum: public PropertyDelegateTyped<PropertyE
     Q_DISABLE_COPY(PropertyDelegateEnum)
 
 public:
-    PropertyDelegateEnum(PropertyEnumBase &owner)
+    PropertyDelegateEnum(PropertyEnumBase& owner)
         : PropertyDelegateTyped<PropertyEnumBase>(owner)
     {
     }
 
 protected:
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
-    bool propertyValueToStr(QString &strValue) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    bool propertyValueToStr(QString& strValue) const override;
 };
 
 } // end namespace Qtinuum

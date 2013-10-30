@@ -19,7 +19,7 @@
 #ifndef PROPERTYENUMFLAGS_H
 #define PROPERTYENUMFLAGS_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 #include "../Enum.h"
 
 namespace Qtinuum
@@ -31,6 +31,7 @@ typedef /*unsigned*/ int EnumFlagsValueType;
 class QTN_PE_CORE_EXPORT PropertyEnumFlagsBase: public SinglePropertyBase<EnumFlagsValueType>
 {
     Q_OBJECT
+    PropertyEnumFlagsBase(const PropertyEnumFlagsBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyEnumFlagsBase(QObject *parent);
@@ -39,25 +40,18 @@ public:
     EnumInfo *enumInfo() { return m_enumInfo; }
     void setEnumInfo(EnumInfo *enumInfo) { m_enumInfo = enumInfo; }
 
-protected:
-    PropertyEnumFlagsBase(QObject* parent, const PropertyEnumFlagsBase& other)
-        : SinglePropertyBase<EnumFlagsValueType>(parent, other),
-          m_enumInfo(other.m_enumInfo)
-    {}
-
 private:
-    PropertyEnumFlagsBase(const PropertyEnumFlagsBase &) Q_DECL_EQ_DELETE;
-
     EnumInfo *m_enumInfo;
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyEnumFlagsBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyEnumFlagsBase, EnumFlagsValueType);
+P_PROPERTY_DECL_ALL_OPERATORS(PropertyEnumFlagsBase, EnumFlagsValueType)
 
 class QTN_PE_CORE_EXPORT PropertyEnumFlagsCallback: public SinglePropertyCallback<PropertyEnumFlagsBase>
 {
     Q_OBJECT
+    PropertyEnumFlagsCallback(const PropertyEnumFlagsCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyEnumFlagsCallback(QObject *parent)
@@ -66,12 +60,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumFlagsCallback, PropertyEnumFlagsBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyEnumFlagsCallback, SinglePropertyCallback<PropertyEnumFlagsBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyEnumFlags: public SinglePropertyValue<PropertyEnumFlagsBase>
 {
     Q_OBJECT
+    PropertyEnumFlags(const PropertyEnumFlags& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyEnumFlags(QObject *parent)
@@ -80,7 +74,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumFlags, PropertyEnumFlagsBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyEnumFlags, SinglePropertyValue<PropertyEnumFlagsBase>)
 };
 
 } // end namespace Qtinuum

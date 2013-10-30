@@ -31,14 +31,14 @@ class QTN_PW_EXPORT PropertyDelegateDouble: public PropertyDelegateTyped<Propert
     Q_DISABLE_COPY(PropertyDelegateDouble)
 
 public:
-    PropertyDelegateDouble(PropertyDoubleBase &owner)
+    PropertyDelegateDouble(PropertyDoubleBase& owner)
         : PropertyDelegateTyped<PropertyDoubleBase>(owner)
     {
     }
 
 protected:
-    QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo = 0) override;
-    bool propertyValueToStr(QString &strValue) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    bool propertyValueToStr(QString& strValue) const override;
 };
 
 } // end namespace Qtinuum

@@ -19,7 +19,7 @@
 #ifndef PROPERTYINT_H
 #define PROPERTYINT_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 
 namespace Qtinuum
 {
@@ -27,6 +27,7 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyIntBase: public NumericPropertyBase<SinglePropertyBase<qint32>>
 {
     Q_OBJECT
+    PropertyIntBase(const PropertyIntBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyIntBase(QObject *parent)
@@ -35,7 +36,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyIntBase)
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyIntBase, NumericPropertyBase<SinglePropertyBase<qint32>>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyIntBase, qint32)
@@ -43,6 +43,7 @@ P_PROPERTY_DECL_ALL_OPERATORS(PropertyIntBase, qint32)
 class QTN_PE_CORE_EXPORT PropertyIntCallback: public SinglePropertyCallback<PropertyIntBase>
 {
     Q_OBJECT
+    PropertyIntCallback(const PropertyIntCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyIntCallback(QObject *parent)
@@ -51,12 +52,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyIntCallback, PropertyIntBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyIntCallback, SinglePropertyCallback<PropertyIntBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyInt: public SinglePropertyValue<PropertyIntBase>
 {
     Q_OBJECT
+    PropertyInt(const PropertyInt& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyInt(QObject *parent)
@@ -65,7 +66,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyInt, PropertyIntBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyInt, SinglePropertyValue<PropertyIntBase>)
 };
 
 } // end namespace Qtinuum

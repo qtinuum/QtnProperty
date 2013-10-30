@@ -19,7 +19,7 @@
 #ifndef PROPERTYBOOL_H
 #define PROPERTYBOOL_H
 
-#include "../PropertyBasis.h"
+#include "../Aux/PropertyTemplates.h"
 
 namespace Qtinuum
 {
@@ -27,6 +27,7 @@ namespace Qtinuum
 class QTN_PE_CORE_EXPORT PropertyBoolBase: public SinglePropertyBase<bool>
 {
     Q_OBJECT
+    PropertyBoolBase(const PropertyBoolBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyBoolBase(QObject *parent)
@@ -35,7 +36,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyBoolBase)
-    P_PROPERTY_DECL_COPY_CONSTRUCTORS(PropertyBoolBase, SinglePropertyBase<bool>)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyBoolBase, bool)
@@ -43,6 +43,7 @@ P_PROPERTY_DECL_ALL_OPERATORS(PropertyBoolBase, bool)
 class QTN_PE_CORE_EXPORT PropertyBoolCallback: public SinglePropertyCallback<PropertyBoolBase>
 {
     Q_OBJECT
+    PropertyBoolCallback(const PropertyBoolCallback& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyBoolCallback(QObject *parent)
@@ -51,12 +52,12 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyBoolCallback, PropertyBoolBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyBoolCallback, SinglePropertyCallback<PropertyBoolBase>)
 };
 
 class QTN_PE_CORE_EXPORT PropertyBool: public SinglePropertyValue<PropertyBoolBase>
 {
     Q_OBJECT
+    PropertyBool(const PropertyBool& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit PropertyBool(QObject *parent)
@@ -65,7 +66,6 @@ public:
     }
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyBool, PropertyBoolBase)
-    P_PROPERTY_DECL_MEMBER_CLONING(PropertyBool, SinglePropertyValue<PropertyBoolBase>)
 };
 
 } // end namespace Qtinuum

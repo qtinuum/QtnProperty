@@ -37,11 +37,11 @@ public:
     {
     }
 
-    QTextStream &newLine(int indentOffset = 0)
+    QTextStream& newLine(int indentOffset = 0)
     {
         if (!m_wrapperLines.isEmpty())
         {
-            auto &info = m_wrapperLines.top();
+            auto& info = m_wrapperLines.top();
             if (!info.active)
             {
                 info.active = true;
@@ -56,7 +56,7 @@ public:
     void addIndent() { ++m_indent; }
     void delIndent() { --m_indent; }
 
-    void pushWrapperLines(const QString &firstLine, const QString &lastLine, int indentOffset = 0)
+    void pushWrapperLines(const QString& firstLine, const QString& lastLine, int indentOffset = 0)
     {
         WrapperLinesInfo info;
         info.firstLine = firstLine;
@@ -99,8 +99,8 @@ public:
     Code() {}
     virtual ~Code() {}
 
-    virtual void generateHFile(TextStreamIndent &s) const = 0;
-    virtual void generateCppFile(TextStreamIndent &s) const = 0;
+    virtual void generateHFile(TextStreamIndent& s) const = 0;
+    virtual void generateCppFile(TextStreamIndent& s) const = 0;
 };
 
 class PEG: public QObject
@@ -111,7 +111,7 @@ class PEG: public QObject
 public:
     ~PEG() {}
 
-    static PEG &instance();
+    static PEG& instance();
 
     bool start(QString hFileName, QString cppFileName);
     void stop();
@@ -165,7 +165,7 @@ struct DelegateInfo
     QString name;
     QMap<QString, QString> attributes;
 
-    void generateCode(TextStreamIndent &s) const;
+    void generateCode(TextStreamIndent& s) const;
 };
 
 // code for #include constructions
@@ -176,11 +176,11 @@ struct IncludeCode: public Code
 
     IncludeCode(QString name, bool isHeader);
 
-    void generateHFile(TextStreamIndent &s) const override;
-    void generateCppFile(TextStreamIndent &s) const override;
+    void generateHFile(TextStreamIndent& s) const override;
+    void generateCppFile(TextStreamIndent& s) const override;
 
 private:
-    void generate(TextStreamIndent &s) const { s.newLine() << "#include " << name; }
+    void generate(TextStreamIndent& s) const { s.newLine() << "#include " << name; }
 
     Q_DISABLE_COPY(IncludeCode)
 };
@@ -191,10 +191,10 @@ struct SourceCode: public Code
     QString code;
     bool code_h;
 
-    SourceCode(const QString &code, bool code_h);
+    SourceCode(const QString& code, bool code_h);
 
-    void generateHFile(TextStreamIndent &s) const override;
-    void generateCppFile(TextStreamIndent &s) const override;
+    void generateHFile(TextStreamIndent& s) const override;
+    void generateCppFile(TextStreamIndent& s) const override;
 };
 
 struct PropertySetMemberCode
@@ -220,9 +220,6 @@ struct PropertyCode: public PropertySetMemberCode
 // code for property_set
 struct PropertySetCode: public Code, public PropertySetMemberCode
 {
-    // first - assess id (private/protected/public)
-    // second - type name
-    QVector<QPair<QString, QString>> parentTypes;
     QVector<QSharedPointer<PropertySetMemberCode>> members;
     QVector<QSharedPointer<PropertySetCode>> subPropertySets;
     QVector<QSharedPointer<SourceCode>> sourceCodes;
@@ -249,33 +246,30 @@ struct PropertySetCode: public Code, public PropertySetMemberCode
     void setConstructorCode(QString _name,QString _initialization_list, QString _code);
     void setDestructorCode(QString _name, QString _code);
 
-    void generateHFile(TextStreamIndent &s) const override;
-    void generateCppFile(TextStreamIndent &s) const override;
+    void generateHFile(TextStreamIndent& s) const override;
+    void generateCppFile(TextStreamIndent& s) const override;
 
 private:
-    QString defaultParentTypeAccess() const;
-    QString defaultParentType() const;
     QString constructorParamsList() const;
 
-    void generateRestParentTypes(TextStreamIndent &s) const;
-    void generateChildrenDeclaration(TextStreamIndent &s) const;
-    void generateChildrenInitialization(TextStreamIndent &s) const;
-    void generateChildrenAssignment(TextStreamIndent &s) const;
-    void generateParentTypeCopy(TextStreamIndent &s) const;
-    void generateChildrenCopy(TextStreamIndent &s) const;
-    void generateSubPropertySetsDeclarations(TextStreamIndent &s) const;
-    void generateSubPropertySetsImplementations(TextStreamIndent &s) const;
-    void generateSlotsDeclaration(TextStreamIndent &s) const;
-    void generateSlotsImplementation(TextStreamIndent &s) const;
-    void generateHSourceCode(TextStreamIndent &s) const;
-    void generateCppSourceCode(TextStreamIndent &s) const;
-    void generateDelegatesConnection(TextStreamIndent &s) const;
-    void generateConstructorInitializationList(TextStreamIndent &s) const;
+    void generateChildrenDeclaration(TextStreamIndent& s) const;
+    void generateChildrenInitialization(TextStreamIndent& s) const;
+    void generateChildrenAssignment(TextStreamIndent& s) const;
+    void generateChildrenCopy(TextStreamIndent& s) const;
+    void generateSubPropertySetsDeclarations(TextStreamIndent& s) const;
+    void generateSubPropertySetsImplementations(TextStreamIndent& s) const;
+    void generateSlotsDeclaration(TextStreamIndent& s) const;
+    void generateSlotsImplementation(TextStreamIndent& s) const;
+    void generateHSourceCode(TextStreamIndent& s) const;
+    void generateCppSourceCode(TextStreamIndent& s) const;
+    void generateDelegatesConnection(TextStreamIndent& s) const;
+    void generateConstructorInitializationList(TextStreamIndent& s) const;
+    void generateCopyValues(TextStreamIndent& s) const;
 
-    static QString slotMember(const QString &name);
-    static QString slotMember(const QString &name, const QString &subMember);
+    static QString slotMember(const QString& name);
+    static QString slotMember(const QString& name, const QString& subMember);
 
-    void generateSlotsConnections(TextStreamIndent &s, const QString& name) const;
+    void generateSlotsConnections(TextStreamIndent& s, const QString& name) const;
     QVector<const PropertySetCode*> getSubpropertySets() const;
 };
 
@@ -294,10 +288,10 @@ struct EnumCode: public Code
 
     QVector<EnumItemCode> items;
 
-    EnumCode(const QString &name);
+    EnumCode(const QString& name);
 
-    void generateHFile(TextStreamIndent &s) const override;
-    void generateCppFile(TextStreamIndent &s) const override;
+    void generateHFile(TextStreamIndent& s) const override;
+    void generateCppFile(TextStreamIndent& s) const override;
 };
 
 struct PegContext
@@ -333,7 +327,7 @@ struct PegContext
     void startProperty();
     void commitProperty();
 
-    bool checkSlotName(const QString &name);
+    bool checkSlotName(const QString& name);
 
 private:
     Q_DISABLE_COPY(PegContext)

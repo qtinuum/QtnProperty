@@ -24,6 +24,6 @@
 
 struct YYLTYPE;
 
-extern int yylex (YYSTYPE * yylval_param, YYLTYPE * yylloc_param );
+extern int yylex(YYSTYPE* yylval_param, YYLTYPE* yylloc_param);
 
 #endif // PROPERTY_ENUM_GENERATOR_COMMON_H

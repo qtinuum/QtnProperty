@@ -19,7 +19,7 @@
 #ifndef PROPERTYBASIS_H
 #define PROPERTYBASIS_H
 
-#include "Property.h"
+#include "../Property.h"
 #include "PropertyMacro.h"
 #include <limits>
 #include <functional>
@@ -33,11 +33,6 @@ class SinglePropertyBase: public Property
  public:
     typedef T ValueType;
     typedef typename std::remove_const<typename std::remove_reference<ValueType>::type>::type ValueTypeStore;
-
-    explicit SinglePropertyBase(QObject *parent)
-        : Property(parent)
-    {
-    }
 
     ValueType value() const { return valueImpl(); }
     bool setValue(ValueType newValue)
@@ -64,27 +59,32 @@ class SinglePropertyBase: public Property
     {
         return value();
     }
-    SinglePropertyBase<ValueType> & operator=(ValueType newValue)
+    SinglePropertyBase<ValueType>& operator=(ValueType newValue)
     {
         setValue(newValue);
         return *this;
     }
-    SinglePropertyBase<ValueType> & operator=(const SinglePropertyBase<ValueType> &newValue)
+    SinglePropertyBase<ValueType>& operator=(const SinglePropertyBase<ValueType>& newValue)
     {
         setValue(newValue.value());
         return *this;
     }
 
 protected:
+    explicit SinglePropertyBase(QObject *parent)
+        : Property(parent)
+    {
+    }
+
     virtual ValueType valueImpl() const = 0;
     virtual void setValueImpl(ValueType newValue) = 0;
     virtual bool isValueAcceptedImpl(ValueType valueToAccept) { return true; }
     virtual bool isValueEqualImpl(ValueType valueToCompare) { return EqPred()(valueToCompare, value()); }
 
     // serialization implementation
-    bool loadContentImpl(QDataStream &stream) override
+    bool loadImpl(QDataStream& stream) override
     {
-        if (!Property::loadContentImpl(stream))
+        if (!Property::loadImpl(stream))
             return false;
 
         ValueType newValue = ValueType();
@@ -100,9 +100,9 @@ protected:
         return stream.status() == QDataStream::Ok;
     }
 
-    bool saveContentImpl(QDataStream &stream) const override
+    bool saveImpl(QDataStream& stream) const override
     {
-        if (!Property::saveContentImpl(stream))
+        if (!Property::saveImpl(stream))
             return false;
 
         ValueType valueToSave = value();
@@ -111,13 +111,8 @@ protected:
         return stream.status() == QDataStream::Ok;
     }
 
-protected:
-    SinglePropertyBase(QObject* parent, const SinglePropertyBase &other)
-        : Property(parent, other)
-    {}
-
 private:
-    SinglePropertyBase(const SinglePropertyBase &) Q_DECL_EQ_DELETE;
+    SinglePropertyBase(const SinglePropertyBase&) Q_DECL_EQ_DELETE;
 };
 
 template<typename SinglePropertyType>
@@ -127,17 +122,12 @@ public:
     typedef typename SinglePropertyType::ValueType ValueType;
     typedef typename SinglePropertyType::ValueTypeStore ValueTypeStore;
 
+protected:
     explicit SinglePropertyValue(QObject *parent)
         : SinglePropertyType(parent),
           m_value(ValueTypeStore())
     {
     }
-
-protected:
-    SinglePropertyValue(QObject *parent, const SinglePropertyValue& other)
-        : SinglePropertyType(parent, other),
-          m_value(other.m_value)
-    {}
 
     ValueType valueImpl() const override { return m_value; }
     void setValueImpl(ValueType newValue) override { m_value = newValue; }
@@ -160,24 +150,16 @@ public:
     typedef std::function<bool(ValueType)> CallbackValueAccepted;
     typedef std::function<bool(ValueType)> CallbackValueEqual;
 
+    void setCallbackValueGet(const CallbackValueGet& callback) { m_callbackValueGet = callback; }
+    void setCallbackValueSet(const CallbackValueSet& callback) { m_callbackValueSet = callback; }
+    void setCallbackValueAccepted(const CallbackValueAccepted& callback) { m_callbackValueAccepted = callback; }
+    void setCallbackValueEqual(const CallbackValueEqual& callback) { m_callbackValueEqual = callback; }
+
+protected:
     explicit SinglePropertyCallback(QObject *parent)
         : SinglePropertyType(parent)
     {
     }
-
-    void setCallbackValueGet(const CallbackValueGet &callback) { m_callbackValueGet = callback; }
-    void setCallbackValueSet(const CallbackValueSet &callback) { m_callbackValueSet = callback; }
-    void setCallbackValueAccepted(const CallbackValueAccepted &callback) { m_callbackValueAccepted = callback; }
-    void setCallbackValueEqual(const CallbackValueEqual &callback) { m_callbackValueEqual = callback; }
-
-protected:
-    SinglePropertyCallback(QObject *parent, const SinglePropertyCallback& other)
-        : SinglePropertyType(parent, other),
-          m_callbackValueGet(other.m_callbackValueGet),
-          m_callbackValueSet(other.m_callbackValueSet),
-          m_callbackValueAccepted(other.m_callbackValueAccepted),
-          m_callbackValueEqual(other.m_callbackValueEqual)
-    {}
 
     ValueType valueImpl() const override
     {
@@ -220,15 +202,6 @@ class NumericPropertyBase: public SinglePropertyType
 public:
     typedef typename SinglePropertyType::ValueType ValueType;
 
-    explicit NumericPropertyBase(QObject *parent)
-        : SinglePropertyType(parent),
-          m_defaultValue(ValueType(0)),
-          m_minValue(std::numeric_limits<ValueType>::lowest()),
-          m_maxValue(std::numeric_limits<ValueType>::max()),
-          m_stepValue(ValueType(1))
-    {
-    }
-
     ValueType defaultValue() const { return m_defaultValue; }
     void setDefaultValue(ValueType defaultValue) { m_defaultValue = defaultValue; }
 
@@ -258,13 +231,14 @@ public:
     }
 
 protected:
-    NumericPropertyBase(QObject *parent, const NumericPropertyBase& other)
-        : SinglePropertyType(parent, other),
-          m_defaultValue(other.m_defaultValue),
-          m_minValue(other.m_minValue),
-          m_maxValue(other.m_maxValue),
-          m_stepValue(other.m_stepValue)
-    {}
+    explicit NumericPropertyBase(QObject *parent)
+        : SinglePropertyType(parent),
+          m_defaultValue(ValueType(0)),
+          m_minValue(std::numeric_limits<ValueType>::lowest()),
+          m_maxValue(std::numeric_limits<ValueType>::max()),
+          m_stepValue(ValueType(1))
+    {
+    }
 
     bool isValueAcceptedImpl(ValueType valueToAccept) override
     {
@@ -307,17 +281,12 @@ class NumericPropertyValue: public NumericPropertyBase<SinglePropertyType>
   public:
     typedef typename NumericPropertyBase<SinglePropertyType>::ValueType ValueType;
 
+protected:
     explicit NumericPropertyValue(QObject *parent)
         : NumericPropertyBase<SinglePropertyType>(parent),
           m_value(ValueType(0))
     {
     }
-
-protected:
-    NumericPropertyValue(QObject* parent, const NumericPropertyValue &other)
-        : NumericPropertyBase<SinglePropertyType>(parent, other),
-          m_value(other.m_value)
-    {}
 
     ValueType valueImpl() const override { return m_value; }
     void setValueImpl(ValueType newValue) override { m_value = newValue; }

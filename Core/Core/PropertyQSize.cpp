@@ -40,7 +40,7 @@ Property* createWidthProperty(QObject *parent, PropertyQSizeBase *propertySize)
         size.setWidth(newWidth);
         propertySize->setValue(size);
     });
-    widthProperty->connectMasterState(*propertySize);
+    PropertyBase::connectMasterState(*propertySize, *widthProperty);
 
     return widthProperty;
 }
@@ -56,7 +56,7 @@ Property* createHeightProperty(QObject *parent, PropertyQSizeBase *propertySize)
         size.setHeight(newHeight);
         propertySize->setValue(size);
     });
-    heightProperty->connectMasterState(*propertySize);
+    PropertyBase::connectMasterState(*propertySize, *heightProperty);
 
     return heightProperty;
 }

@@ -29,16 +29,16 @@ namespace Qtinuum
 class QTN_PW_EXPORT PropertyEditorHandlerBase: public QObject
 {
 protected:
-    PropertyEditorHandlerBase(Property &property, QWidget &editor);
+    PropertyEditorHandlerBase(Property& property, QWidget& editor);
     ~PropertyEditorHandlerBase();
 
-    virtual Property &propertyBase() = 0;
-    virtual QWidget &editorBase()  = 0;
+    virtual Property& propertyBase() = 0;
+    virtual QWidget& editorBase()  = 0;
     virtual void updateEditor() = 0;
 
 private:
-    void onObjectDestroyed(QObject *object);
-    void onPropertyDidChange(const Property *changedProperty, const Property *firedProperty, PropertyChangeReason reason);
+    void onObjectDestroyed(QObject* object);
+    void onPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason);
 };
 
 template <typename PropertyClass, typename PropertyEditorClass>
@@ -47,7 +47,7 @@ class PropertyEditorHandler: public PropertyEditorHandlerBase
 protected:
     typedef PropertyEditorHandler<PropertyClass, PropertyEditorClass> PropertyEditorHandlerType;
 
-    PropertyEditorHandler(PropertyClass &property, PropertyEditorClass &editor)
+    PropertyEditorHandler(PropertyClass& property, PropertyEditorClass& editor)
         : PropertyEditorHandlerBase(property, editor),
           m_property(property),
           m_editor(editor)
@@ -58,15 +58,15 @@ protected:
     {
     }
 
-    PropertyClass &property() { return m_property;  }
-    PropertyEditorClass &editor() { return m_editor; }
+    PropertyClass& property() { return m_property;  }
+    PropertyEditorClass& editor() { return m_editor; }
 
-    Property &propertyBase() override { return property(); }
-    QWidget &editorBase() override {return editor(); }
+    Property& propertyBase() override { return property(); }
+    QWidget& editorBase() override {return editor(); }
 
 private:
-    PropertyClass &m_property;
-    PropertyEditorClass &m_editor;
+    PropertyClass& m_property;
+    PropertyEditorClass& m_editor;
 };
 
 } // end namespace Qtinuum

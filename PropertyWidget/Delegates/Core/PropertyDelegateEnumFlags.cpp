@@ -27,7 +27,7 @@
 namespace Qtinuum
 {
 
-static QString enumFlagsProperty2Str(const PropertyEnumFlagsBase &property)
+static QString enumFlagsProperty2Str(const PropertyEnumFlagsBase& property)
 {
     QString text;
 
@@ -39,7 +39,7 @@ static QString enumFlagsProperty2Str(const PropertyEnumFlagsBase &property)
     if (value == 0)
         return text;
 
-    enumInfo->forEachEnumValue([&text, value](const EnumValueInfo &e)->bool {
+    enumInfo->forEachEnumValue([&text, value](const EnumValueInfo& e)->bool {
         if (value & e.value())
         {
             if (!text.isEmpty()) text += "|";
@@ -55,7 +55,7 @@ static QString enumFlagsProperty2Str(const PropertyEnumFlagsBase &property)
 class PropertyEnumFlagsLineEditHandler: public PropertyEditorHandler<PropertyEnumFlagsBase, QLineEdit>
 {
 public:
-    PropertyEnumFlagsLineEditHandler(PropertyEnumFlagsBase &property, QLineEdit &editor)
+    PropertyEnumFlagsLineEditHandler(PropertyEnumFlagsBase& property, QLineEdit& editor)
         : PropertyEditorHandlerType(property, editor)
     {
 //        if (!property.isEditableByUser())
@@ -76,18 +76,18 @@ static bool regEnumFlagsDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateEnumFlags, PropertyEnumFlagsBase>
                                 , "FlagsList");
 
-PropertyDelegateEnumFlags::PropertyDelegateEnumFlags(PropertyEnumFlagsBase &owner)
+PropertyDelegateEnumFlags::PropertyDelegateEnumFlags(PropertyEnumFlagsBase& owner)
     : PropertyDelegateTypedEx<PropertyEnumFlagsBase>(owner)
 {
     const EnumInfo *enumInfo = owner.enumInfo();
     if (enumInfo)
     {
         EnumFlagsValueType value= owner;
-        enumInfo->forEachEnumValue([this, &owner, value](const EnumValueInfo &e)->bool {
+        enumInfo->forEachEnumValue([this, &owner, value](const EnumValueInfo& e)->bool {
             if (e.state() == EnumValueStateNone)
             {
                 EnumValueType enum_value = e.value();
-                PropertyEnumFlagsBase &_owner = owner;
+                PropertyEnumFlagsBase& _owner = owner;
 
                 PropertyBoolCallback *flagProperty = new PropertyBoolCallback(0);
                 flagProperty->setName(e.name());
@@ -110,7 +110,7 @@ PropertyDelegateEnumFlags::PropertyDelegateEnumFlags(PropertyEnumFlagsBase &owne
     }
 }
 
-QWidget *PropertyDelegateEnumFlags::createValueEditorImpl(QWidget *parent, const QRect &rect, InplaceInfo *inplaceInfo)
+QWidget* PropertyDelegateEnumFlags::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
 {
     QLineEdit *lineEdit = new QLineEdit(parent);
     lineEdit->setGeometry(rect);
@@ -125,7 +125,7 @@ QWidget *PropertyDelegateEnumFlags::createValueEditorImpl(QWidget *parent, const
     return lineEdit;
 }
 
-bool PropertyDelegateEnumFlags::propertyValueToStr(QString &strValue) const
+bool PropertyDelegateEnumFlags::propertyValueToStr(QString& strValue) const
 {
     strValue = enumFlagsProperty2Str(owner());
     return true;
