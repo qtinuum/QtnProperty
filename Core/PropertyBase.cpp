@@ -17,7 +17,6 @@
  */
 
 #include "PropertyBase.h"
-#include <QVariant>
 
 namespace Qtinuum
 {
@@ -296,7 +295,7 @@ bool PropertyBase::fromVariant(const QVariant& var)
     return fromVariantImpl(var);
 }
 
-bool PropertyBase::toVariant(QVariant& var)
+bool PropertyBase::toVariant(QVariant& var) const
 {
     return toVariantImpl(var);
 }
@@ -351,6 +350,18 @@ void PropertyBase::masterPropertyStateDidChange(const PropertyBase *changedPrope
     {
         setStateInherited(changedProperty->state());
     }
+}
+
+QVariant PropertyBase::valueAsVariant() const
+{
+    QVariant result;
+    toVariant(result);
+    return result;
+}
+
+void PropertyBase::setValueAsVariant(const QVariant& value)
+{
+    fromVariant(value);
 }
 
 QDataStream& operator<< (QDataStream& stream, const PropertyBase& property)

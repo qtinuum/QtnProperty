@@ -56,9 +56,16 @@
        </widget>
       </item>
       <item>
-       <widget class="QPlainTextEdit" name="propertyEdit">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Script:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="scriptCode">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -67,10 +74,23 @@
       </item>
       <item>
        <widget class="QPushButton" name="commitButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Commit</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Script output:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextBrowser" name="scriptOutput"/>
       </item>
      </layout>
     </item>

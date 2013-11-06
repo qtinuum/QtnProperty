@@ -13,18 +13,47 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->scriptCode->installEventFilter(this);
+
     ui->pw->setParts(PropertyWidgetPartsDescriptionPanel);
 
 #ifdef Q_OS_WIN32
     ui->pw->propertyView()->setItemHeightRatio(1.3f);
 #endif
 
-    ui->pw->setPropertySet(new PropertySetMain(this));
+    qtn::PropertySet* ps = new PropertySetMain(this);
+    ui->pw->setPropertySet(ps);
+
+    jsEngine.globalObject().setProperty("params", jsEngine.newQObject(ps));
+
+    ui->scriptCode->setFocus();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::eventFilter(QObject* obj, QEvent* event)
+{
+    if (obj == ui->scriptCode)
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            if (keyEvent->key() == Qt::Key_Return && keyEvent->modifiers() == Qt::ControlModifier)
+            {
+                commitCode();
+                return true;
+            }
+        }
+
+        return false;
+    }
+    else
+    {
+        return QMainWindow::eventFilter(obj, event);
+    }
 }
 
 void MainWindow::on_editButton_clicked()
@@ -47,4 +76,34 @@ void MainWindow::on_editButton_clicked()
     {
         properties->copyValues(cpy, PropertyStateImmutable|PropertyStateInvisible);
     }
+}
+
+void MainWindow::on_commitButton_clicked()
+{
+    commitCode();
+}
+
+void MainWindow::commitCode()
+{
+    QString code = ui->scriptCode->document()->toPlainText();
+    QJSValue result = jsEngine.evaluate(code);
+
+    if (!result.isError())
+        ui->scriptCode->clear();
+
+    QString resText = result.toString();
+    if (!resText.isEmpty())
+    {
+        QTextCursor c(ui->scriptOutput->document());
+        if (result.isError())
+            c.insertHtml(QString("<p><font color='#ff0000'>%1<br></p>").arg(resText));
+        else
+            c.insertHtml(QString("<p>%1<br></p>").arg(resText));
+    }
+}
+
+void MainWindow::on_scriptCode_textChanged()
+{
+    QString code = ui->scriptCode->document()->toPlainText();
+    ui->commitButton->setDisabled(code.isEmpty());
 }

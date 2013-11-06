@@ -21,6 +21,7 @@
 
 #include "Auxiliary/PropertyAux.h"
 #include <QDataStream>
+#include <QVariant>
 
 namespace Qtinuum
 {
@@ -72,7 +73,7 @@ public:
 
     // variant conversion
     bool fromVariant(const QVariant& var);
-    bool toVariant(QVariant& var);
+    bool toVariant(QVariant& var) const;
 
     // casts
     virtual Property* asProperty() { return nullptr; }
@@ -82,6 +83,12 @@ public:
 
     static QMetaObject::Connection connectMasterState(const PropertyBase& masterProperty, PropertyBase& slaveProperty);
     static bool disconnectMasterState(const PropertyBase& masterProperty, PropertyBase& slaveProperty);
+
+public: // properties
+    Q_PROPERTY(QString description READ description)
+    Q_PROPERTY(PropertyID id READ id)
+    Q_PROPERTY(PropertyState state READ state)
+    Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 Q_SIGNALS:
     void propertyWillChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue);
@@ -108,6 +115,8 @@ protected:
 
 private:
     void masterPropertyStateDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason);
+    QVariant valueAsVariant() const;
+    void setValueAsVariant(const QVariant& value);
 
     QString m_description;
     PropertyID m_id;
