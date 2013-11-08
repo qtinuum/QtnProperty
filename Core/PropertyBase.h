@@ -84,10 +84,11 @@ public:
     static QMetaObject::Connection connectMasterState(const PropertyBase& masterProperty, PropertyBase& slaveProperty);
     static bool disconnectMasterState(const PropertyBase& masterProperty, PropertyBase& slaveProperty);
 
-public: // properties
+public: // properties for scripting
+    Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString description READ description)
     Q_PROPERTY(PropertyID id READ id)
-    Q_PROPERTY(PropertyState state READ state)
+    Q_PROPERTY(bool isEditable READ isEditableByUser)
     Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 Q_SIGNALS:

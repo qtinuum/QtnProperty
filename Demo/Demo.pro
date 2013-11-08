@@ -2,7 +2,7 @@ include(../Common.pri)
 PEG_TOOL = $$BIN_DIR/peg
 include(../PEG.pri)
 
-QT       += core gui qml
+QT       += core gui script scripttools
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

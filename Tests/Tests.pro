@@ -3,6 +3,7 @@ PEG_TOOL = $$BIN_DIR/peg
 include(../PEG.pri)
 
 QT       += core
+QT       += script
 QT       += testlib
 
 TARGET = property_tests

@@ -33,6 +33,7 @@ private Q_SLOTS:
     void createCopy();
     void copyValues();
     void propertyAssignment();
+    void propertyScripting();
 
 public Q_SLOTS:
 

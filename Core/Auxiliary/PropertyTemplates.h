@@ -111,6 +111,22 @@ protected:
         return stream.status() == QDataStream::Ok;
     }
 
+    // variant conversion implementation
+    bool fromVariantImpl(const QVariant& var) override
+    {
+        if (var.canConvert<ValueType>())
+            return setValue(var.value<ValueType>());
+        else
+            return false;
+    }
+
+    bool toVariantImpl(QVariant& var) const override
+    {
+        var.setValue<ValueType>(value());
+        return var.isValid();
+    }
+
+
 private:
     SinglePropertyBase(const SinglePropertyBase&) Q_DECL_EQ_DELETE;
 };

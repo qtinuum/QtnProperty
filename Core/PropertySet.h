@@ -48,7 +48,7 @@ public:
     PropertySet* createCopy(QObject* parentForCopy) const;
 
     // copy values
-    bool copyValues(PropertySet* propertySetCopyFrom, PropertyState ignoreMask);
+    bool copyValues(PropertySet* propertySetCopyFrom, PropertyState ignoreMask = PropertyStateNone);
 
     // casts
     PropertySet* asPropertySet() override { return this; }

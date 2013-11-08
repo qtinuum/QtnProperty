@@ -13,8 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->scriptCode->installEventFilter(this);
-
     ui->pw->setParts(PropertyWidgetPartsDescriptionPanel);
 
 #ifdef Q_OS_WIN32
@@ -26,7 +24,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     jsEngine.globalObject().setProperty("params", jsEngine.newQObject(ps));
 
-    ui->scriptCode->setFocus();
+    dbg.attachTo(&jsEngine);
+    dbgWindow = dbg.standardWindow();
+    //dbgWindow->show();
 }
 
 MainWindow::~MainWindow()
@@ -34,26 +34,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-bool MainWindow::eventFilter(QObject* obj, QEvent* event)
+bool MainWindow::event(QEvent* e)
 {
-    if (obj == ui->scriptCode)
+    if (e->type() == QEvent::Hide)
     {
-        if (event->type() == QEvent::KeyPress)
-        {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-            if (keyEvent->key() == Qt::Key_Return && keyEvent->modifiers() == Qt::ControlModifier)
-            {
-                commitCode();
-                return true;
-            }
-        }
+        delete dbgWindow;
+        dbgWindow = nullptr;
+    }
 
-        return false;
-    }
-    else
-    {
-        return QMainWindow::eventFilter(obj, event);
-    }
+    return QMainWindow::event(e);
 }
 
 void MainWindow::on_editButton_clicked()
@@ -78,32 +67,7 @@ void MainWindow::on_editButton_clicked()
     }
 }
 
-void MainWindow::on_commitButton_clicked()
+void MainWindow::on_dbgButton_clicked()
 {
-    commitCode();
-}
-
-void MainWindow::commitCode()
-{
-    QString code = ui->scriptCode->document()->toPlainText();
-    QJSValue result = jsEngine.evaluate(code);
-
-    if (!result.isError())
-        ui->scriptCode->clear();
-
-    QString resText = result.toString();
-    if (!resText.isEmpty())
-    {
-        QTextCursor c(ui->scriptOutput->document());
-        if (result.isError())
-            c.insertHtml(QString("<p><font color='#ff0000'>%1<br></p>").arg(resText));
-        else
-            c.insertHtml(QString("<p>%1<br></p>").arg(resText));
-    }
-}
-
-void MainWindow::on_scriptCode_textChanged()
-{
-    QString code = ui->scriptCode->document()->toPlainText();
-    ui->commitButton->setDisabled(code.isEmpty());
+    dbgWindow->show();
 }

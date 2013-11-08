@@ -1,6 +1,7 @@
 #include "TestProperty.h"
 #include "PEG/test.peg.h"
 #include <QtTest/QtTest>
+#include <QtScript/QScriptEngine>
 
 static bool ret_true()
 {
@@ -421,7 +422,7 @@ void TestProperty::propertyRect()
     pc.setCallbackValueSet([&pc_value](const QRect& value) { pc_value = value; });
 
     pc = QRect(10, 10, 10, 10);
-    QVERIFY(pc == QRect(10, 10, 10, 10));
+    QCOMPARE(pc.value(), QRect(10, 10, 10, 10));
 
     pc = p;
     QVERIFY(pc.value() == p.value());
@@ -471,14 +472,14 @@ static void testSerializationState(PropertyBase& p)
     }
 
     p.setState(PropertyStateImmutable);
-    QVERIFY(p.state() == PropertyStateImmutable);
+    QCOMPARE(p.state(), PropertyStateImmutable);
 
     {
         QDataStream s(&data, QIODevice::ReadOnly);
         QVERIFY(p.load(s));
     }
 
-    QVERIFY(p.state() == PropertyStateCollapsed);
+    QCOMPARE(p.state(), PropertyStateCollapsed);
 }
 
 void TestProperty::serializationState()
@@ -512,26 +513,26 @@ void TestProperty::serializationChildren()
     {
         QDataStream s(&data, QIODevice::WriteOnly);
         s << ps;
-        QVERIFY(s.status() == QDataStream::Ok);
+        QCOMPARE(s.status(), QDataStream::Ok);
     }
 
-    QVERIFY(p2->state() == (PropertyStateImmutable|PropertyStateCollapsed));
-    QVERIFY(p3.state() == (PropertyStateNonSerialized|PropertyStateCollapsed));
+    QCOMPARE(p2->state(), (PropertyStateImmutable|PropertyStateCollapsed));
+    QCOMPARE(p3.state(), (PropertyStateNonSerialized|PropertyStateCollapsed));
 
     p2->removeState(PropertyStateImmutable);
     p3.addState(PropertyStateImmutable);
 
-    QVERIFY(p2->state() == PropertyStateCollapsed);
-    QVERIFY(p3.state() == (PropertyStateNonSerialized|PropertyStateImmutable|PropertyStateCollapsed));
+    QCOMPARE(p2->state(), PropertyStateCollapsed);
+    QCOMPARE(p3.state(), (PropertyStateNonSerialized|PropertyStateImmutable|PropertyStateCollapsed));
 
     {
         QDataStream s(&data, QIODevice::ReadOnly);
         s >> ps;
-        QVERIFY(s.status() == QDataStream::Ok);
+        QCOMPARE(s.status(), QDataStream::Ok);
     }
 
-    QVERIFY(p2->state() == (PropertyStateImmutable|PropertyStateCollapsed));
-    QVERIFY(p3.state() == (PropertyStateNonSerialized|PropertyStateImmutable|PropertyStateCollapsed));
+    QCOMPARE(p2->state(), (PropertyStateImmutable|PropertyStateCollapsed));
+    QCOMPARE(p3.state(), (PropertyStateNonSerialized|PropertyStateImmutable|PropertyStateCollapsed));
 
     delete p2;
     p2 = 0;
@@ -539,7 +540,7 @@ void TestProperty::serializationChildren()
     {
         QDataStream s(&data, QIODevice::ReadOnly);
         s >> ps;
-        QVERIFY(s.status() == QDataStream::Ok);
+        QCOMPARE(s.status(), QDataStream::Ok);
     }
 }
 
@@ -554,7 +555,7 @@ void TestProperty::serializationValue()
     {
         QDataStream s(&data, QIODevice::WriteOnly);
         s << p;
-        QVERIFY(s.status() == QDataStream::Ok);
+        QCOMPARE(s.status(), QDataStream::Ok);
     }
 
     p = false;
@@ -563,7 +564,7 @@ void TestProperty::serializationValue()
     {
         QDataStream s(&data, QIODevice::ReadOnly);
         s >> p;
-        QVERIFY(s.status() == QDataStream::Ok);
+        QCOMPARE(s.status(), QDataStream::Ok);
     }
 
     QVERIFY(p);
@@ -575,7 +576,7 @@ void TestProperty::serializationValue()
     {
         QDataStream s(&data, QIODevice::WriteOnly);
         s << pp;
-        QVERIFY(s.status() == QDataStream::Ok);
+        QCOMPARE(s.status(), QDataStream::Ok);
     }
 
     modify(pp);
@@ -584,7 +585,7 @@ void TestProperty::serializationValue()
     {
         QDataStream s(&data, QIODevice::ReadWrite);
         s >> pp;
-        QVERIFY(s.status() == QDataStream::Ok);
+        QCOMPARE(s.status(), QDataStream::Ok);
     }
 
     verifyInitialValues(pp);
@@ -603,7 +604,7 @@ void TestProperty::createNew()
         pn.reset(qobject_cast<PropertySetAllPropertyTypes*>(pp.createNew(this)));
         QVERIFY(pn);
         QVERIFY(pn.data() != &pp);
-        QVERIFY(pn->parent() == this);
+        QCOMPARE(pn->parent(), this);
 
         verifyInitialValues(*pn);
     }
@@ -622,7 +623,7 @@ void TestProperty::createCopy()
         pn.reset(qobject_cast<PropertySetAllPropertyTypes*>(pp.createCopy(this)));
         QVERIFY(pn);
         QVERIFY(pn.data() != &pp);
-        QVERIFY(pn->parent() == this);
+        QCOMPARE(pn->parent(), this);
 
         verifyModified(*pn);
     }
@@ -630,7 +631,34 @@ void TestProperty::createCopy()
 
 void TestProperty::copyValues()
 {
+    {
+        PropertySetAllPropertyTypes pp(this);
+        verifyInitialValues(pp);
+        modify(pp);
 
+        PropertySetAllPropertyTypes pp1(this);
+        verifyInitialValues(pp1);
+        pp1.copyValues(&pp, PropertyStateNone);
+        verifyModified(pp1);
+    }
+
+    {
+        PropertySetAllPropertyTypes pp(this);
+        verifyInitialValues(pp);
+        modify(pp);
+
+        PropertySetAllPropertyTypes pp1(this);
+        verifyInitialValues(pp1);
+        QCOMPARE(pp1.bp.value(), false);
+        pp.bp.addState(PropertyStateImmutable);
+        QCOMPARE(pp.bp.state(), PropertyStateImmutable);
+
+        pp1.copyValues(&pp, PropertyStateImmutable);
+        QCOMPARE(pp1.bp.value(), false);
+
+        pp1.copyValues(&pp);
+        verifyModified(pp1);
+    }
 }
 
 void TestProperty::propertyAssignment()
@@ -646,22 +674,22 @@ void TestProperty::propertyAssignment()
         p3.setCallbackValueGet([]()->double { return 23.4; });
         p3.setCallbackValueSet([&d](double v) { d = v; });
 
-        QVERIFY(p1 == 0.5);
-        QVERIFY(p2 == 1.3);
-        QVERIFY(p3 == 23.4);
+        QCOMPARE(p1.value(), 0.5);
+        QCOMPARE(p2.value(), 1.3);
+        QCOMPARE(p3.value(), 23.4);
 
         p2 = p1;
-        QVERIFY(p1 == 0.5);
-        QVERIFY(p2 == 0.5);
+        QCOMPARE(p1.value(), 0.5);
+        QCOMPARE(p2.value(), 0.5);
 
         p1 = p3;
-        QVERIFY(p3 == 23.4);
-        QVERIFY(p1 == 23.4);
+        QCOMPARE(p3.value(), 23.4);
+        QCOMPARE(p1.value(), 23.4);
 
         p3 = p2;
-        QVERIFY(p2 == 0.5);
-        QVERIFY(p3 == 23.4);
-        QVERIFY(d == 0.5);
+        QCOMPARE(p2.value(), 0.5);
+        QCOMPARE(p3.value(), 23.4);
+        QCOMPARE(d, 0.5);
     }
 
     {
@@ -683,11 +711,34 @@ void TestProperty::propertyAssignment()
     }
 }
 
+void TestProperty::propertyScripting()
+{
+
+    {
+        PropertyBool b(this);
+        b.setName("isValid");
+        b.setDescription("isValid property.");
+        b.setId(15);
+
+        QScriptEngine eng;
+        eng.globalObject().setProperty("b", eng.newQObject(&b));
+
+        QScriptValue val = eng.evaluate("b.name");
+        QCOMPARE(val.toString(), b.name());
+
+        val = eng.evaluate("b.name = \"a\"");
+        QCOMPARE(b.name(), QString("isValid"));
+
+        val = eng.evaluate("b.description");
+        QCOMPARE(val.toString(), QString("isValid property."));
+    }
+}
+
 void TestProperty::checkPropertyStateIsNonSimple(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)
 {
-    QVERIFY(changedProperty == firedProperty);
-    QVERIFY(reason==PropertyChangeReasonStateLocal);
+    QCOMPARE(changedProperty, firedProperty);
+    QCOMPARE(reason, PropertyChangeReasonStateLocal);
     auto state = CastPropertyValue<PropertyState>(newValue);
     QVERIFY(state);
-    QVERIFY(*state==PropertyStateNonSimple);
+    QCOMPARE(*state, PropertyStateNonSimple);
 }

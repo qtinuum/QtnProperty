@@ -282,6 +282,9 @@ bool PropertyBase::saveImpl(QDataStream& stream) const
 
 bool PropertyBase::fromStr(const QString& str)
 {
+    if (!isEditableByUser())
+        return false;
+
     return fromStrImpl(str);
 }
 
@@ -292,6 +295,9 @@ bool PropertyBase::toStr(QString& str) const
 
 bool PropertyBase::fromVariant(const QVariant& var)
 {
+    if (!isEditableByUser())
+        return false;
+
     return fromVariantImpl(var);
 }
 

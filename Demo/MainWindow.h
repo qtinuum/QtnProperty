@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtQml/QJSEngine>
+#include <QtScript/QScriptEngine>
+#include <QtScriptTools/QScriptEngineDebugger>
 
 #include "Property.h"
 
@@ -19,18 +20,18 @@ public:
     ~MainWindow();
 
 protected:
-    bool eventFilter(QObject* obj, QEvent* event) override;
+    bool event(QEvent* e) override;
     
 private slots:
     void on_editButton_clicked();
-    void on_commitButton_clicked();
-    void on_scriptCode_textChanged();
+    void on_dbgButton_clicked();
 
 private:
-    void commitCode();
-
     Ui::MainWindow *ui;
-    QJSEngine jsEngine;
+    //QJSEngine jsEngine;
+    QScriptEngine jsEngine;
+    QScriptEngineDebugger dbg;
+    QMainWindow* dbgWindow;
 };
 
 #endif // MAINWINDOW_H
