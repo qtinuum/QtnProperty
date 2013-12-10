@@ -15,11 +15,6 @@ TEMPLATE = app
 
 #DEFINES += DISABLE_QTINUUM_NAMESPACE
 
-PEG_SOURCES += PEG/test.pef \
-                PEG/test2.pef
-
-OTHER_FILES += $$PEG_SOURCES
-
 HEADERS += \
     TestProperty.h \
     TestGeneratedProperty.h \
@@ -30,6 +25,10 @@ SOURCES += main.cpp \
     TestGeneratedProperty.cpp \
     TestEnum.cpp
 
+PEG_SOURCES += PEG/test.pef \
+                PEG/test2.pef
+
+OTHER_FILES += $$PEG_SOURCES
 
 LIBS += -L$$BIN_DIR -lqtn_property_core
 win32 {

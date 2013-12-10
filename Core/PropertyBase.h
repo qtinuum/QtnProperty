@@ -23,6 +23,8 @@
 #include <QDataStream>
 #include <QVariant>
 
+class QScriptEngine;
+
 namespace Qtinuum
 {
 
@@ -87,13 +89,14 @@ public:
 public: // properties for scripting
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString description READ description)
-    Q_PROPERTY(PropertyID id READ id)
+    Q_PROPERTY(Qtinuum::PropertyID id READ id)
     Q_PROPERTY(bool isEditable READ isEditableByUser)
+    Q_PROPERTY(Qtinuum::PropertyState state READ state)
     Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 Q_SIGNALS:
-    void propertyWillChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue);
-    void propertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason);
+    void propertyWillChange(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue);
+    void propertyDidChange(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, PropertyChangeReason reason);
 
 protected:
     PropertyBase(QObject* parent);
@@ -116,6 +119,8 @@ protected:
 
 private:
     void masterPropertyStateDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason);
+
+    // getter/setter for "value" property
     QVariant valueAsVariant() const;
     void setValueAsVariant(const QVariant& value);
 
@@ -131,6 +136,10 @@ private:
 QTN_PE_CORE_EXPORT QDataStream& operator<< (QDataStream& stream, const PropertyBase& property);
 QTN_PE_CORE_EXPORT QDataStream& operator>> (QDataStream& stream, PropertyBase& property);
 
+QTN_PE_CORE_EXPORT void scriptRegisterPropertyTypes(QScriptEngine* engine);
+
 } // end namespace Qtinuum
+
+Q_DECLARE_METATYPE(const Qtinuum::PropertyBase*)
 
 #endif // QTN_PROPERTY_BASE_H

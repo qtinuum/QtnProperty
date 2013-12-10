@@ -71,4 +71,9 @@ inline const T* ConstCastPropertyValue(PropertyValuePtr value) { return reinterp
 
 } // end namespace Qtinuum
 
+Q_DECLARE_METATYPE(Qtinuum::PropertyID)
+Q_DECLARE_METATYPE(Qtinuum::PropertyState)
+Q_DECLARE_METATYPE(Qtinuum::PropertyChangeReason)
+Q_DECLARE_METATYPE(Qtinuum::PropertyValuePtr)
+
 #endif // QTN_PROPERTY_AUX_H

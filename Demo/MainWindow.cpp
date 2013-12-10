@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qtn::PropertySet* ps = new PropertySetMain(this);
     ui->pw->setPropertySet(ps);
 
+    scriptRegisterPropertyTypes(&jsEngine);
     jsEngine.globalObject().setProperty("params", jsEngine.newQObject(ps));
 
     dbg.attachTo(&jsEngine);

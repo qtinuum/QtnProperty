@@ -2,22 +2,22 @@ include(../Common.pri)
 PEG_TOOL = $$BIN_DIR/peg
 include(../PEG.pri)
 
-QT       += core gui script scripttools
+QT += core gui script scripttools
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = demo_app
 TEMPLATE = app
 
-SOURCES += main.cpp\
-        MainWindow.cpp \
-    mydialog.cpp
+SOURCES +=  main.cpp\
+            MainWindow.cpp \
+            mydialog.cpp
 
 HEADERS  += MainWindow.h \
-    mydialog.h
+            mydialog.h
 
 FORMS    += MainWindow.ui \
-    mydialog.ui
+            mydialog.ui
 
 PEG_SOURCES += Demo.pef
 

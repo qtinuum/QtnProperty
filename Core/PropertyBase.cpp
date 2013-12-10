@@ -17,6 +17,8 @@
  */
 
 #include "PropertyBase.h"
+//#include <QtScript/QScriptValue>
+#include <QtScript/QScriptEngine>
 
 namespace Qtinuum
 {
@@ -28,6 +30,97 @@ static quint16 PropertyMagicNumber = 0x1984;
 // extern declaration
 void addPropertyAsChild(QObject* parent, PropertyBase* child, bool moveOwnership);
 void removePropertyAsChild(QObject* parent, PropertyBase* child);
+
+static QScriptValue PropertyIdToScriptValue(QScriptEngine* engine, const PropertyID& val)
+{
+    QScriptValue obj((int)val);
+    return obj;
+}
+
+static void PropertyIdFromScriptValue(const QScriptValue& obj, PropertyID& val)
+{
+    val = obj.toInt32();
+}
+
+static QScriptValue PropertyStateToScriptValue(QScriptEngine* engine, const PropertyState& val)
+{
+    QScriptValue obj((PropertyState::Int)val);
+    return obj;
+}
+
+static void PropertyStateFromScriptValue(const QScriptValue& obj, PropertyState& val)
+{
+    val = (PropertyState::enum_type)obj.toInt32();
+}
+
+static QScriptValue PropertyChangeReasonToScriptValue(QScriptEngine* engine, const PropertyChangeReason& val)
+{
+    QScriptValue obj((PropertyChangeReason::Int)val);
+    return obj;
+}
+
+static void PropertyChangeReasonFromScriptValue(const QScriptValue& obj, PropertyChangeReason& val)
+{
+    val = (PropertyChangeReason::enum_type)obj.toInt32();
+}
+
+static QScriptValue PropertyValuePtrToScriptValue(QScriptEngine* engine, const PropertyValuePtr& val)
+{
+    // no sutable conversion
+    return QScriptValue();
+}
+
+static void PropertyValuePtrFromScriptValue(const QScriptValue& obj, PropertyValuePtr& val)
+{
+    // no sutable conversion
+}
+
+typedef const PropertyBase* PropertyBasePtr;
+
+static QScriptValue PropertyBasePtrToScriptValue(QScriptEngine* engine, const PropertyBasePtr& val)
+{
+    PropertyBasePtr value = val;
+    QScriptValue obj = engine->newQObject(const_cast<PropertyBase*>(value));
+    return obj;
+}
+
+static void PropertyBasePtrFromScriptValue(const QScriptValue& obj, PropertyBasePtr& val)
+{
+    val = qobject_cast<const PropertyBase*>(obj.toQObject());
+}
+
+void scriptRegisterPropertyTypes(QScriptEngine* engine)
+{
+    qScriptRegisterMetaType(engine, PropertyIdToScriptValue, PropertyIdFromScriptValue);
+    qScriptRegisterMetaType(engine, PropertyStateToScriptValue, PropertyStateFromScriptValue);
+    qScriptRegisterMetaType(engine, PropertyChangeReasonToScriptValue, PropertyChangeReasonFromScriptValue);
+    qScriptRegisterMetaType(engine, PropertyValuePtrToScriptValue, PropertyValuePtrFromScriptValue);
+    qScriptRegisterMetaType(engine, PropertyBasePtrToScriptValue, PropertyBasePtrFromScriptValue);
+
+    QScriptValue obj = engine->newObject();
+
+    obj.setProperty("PropertyStateNone", PropertyStateNone, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyStateNonSimple", PropertyStateNonSimple, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyStateInvisible", PropertyStateInvisible, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyStateImmutable", PropertyStateImmutable, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyStateCollapsed", PropertyStateCollapsed, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyStateNonSerialized", PropertyStateNonSerialized, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+
+    obj.setProperty("PropertyChangeReasonNewValue", PropertyChangeReasonNewValue, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonLoadedValue", PropertyChangeReasonLoadedValue, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonValue", PropertyChangeReasonValue, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonName", PropertyChangeReasonName, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonDescription", PropertyChangeReasonDescription, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonId", PropertyChangeReasonId, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonStateLocal", PropertyChangeReasonStateLocal, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonStateInherited", PropertyChangeReasonStateInherited, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonState", PropertyChangeReasonState, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonChildPropertyAdd", PropertyChangeReasonChildPropertyAdd, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonChildPropertyRemove", PropertyChangeReasonChildPropertyRemove, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("PropertyChangeReasonChildren", PropertyChangeReasonChildren, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+
+    engine->globalObject().setProperty("Qtinuum", obj);
+}
 
 PropertyBase::PropertyBase(QObject *parent)
     : QObject(parent),

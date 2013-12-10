@@ -721,6 +721,7 @@ void TestProperty::propertyScripting()
         b.setId(15);
 
         QScriptEngine eng;
+        scriptRegisterPropertyTypes(&eng);
         eng.globalObject().setProperty("b", eng.newQObject(&b));
 
         QScriptValue val = eng.evaluate("b.name");
@@ -731,6 +732,76 @@ void TestProperty::propertyScripting()
 
         val = eng.evaluate("b.description");
         QCOMPARE(val.toString(), QString("isValid property."));
+
+        val = eng.evaluate("b.description = 'new description'");
+        QCOMPARE(b.description(), QString("isValid property."));
+
+        val = eng.evaluate("var id = b.id");
+        val = eng.evaluate("id");
+        QVERIFY(val.isNumber());
+        QCOMPARE(val.toNumber(), 15.);
+
+        val = eng.evaluate("b.id = 92");
+        QCOMPARE(b.id(), 15);
+
+        val = eng.evaluate("b.isEditable");
+        QCOMPARE(val.toBool(), true);
+
+        val = eng.evaluate("b.isEditable = false");
+        QCOMPARE(b.isEditableByUser(), true);
+
+        b.addState(PropertyStateImmutable);
+        val = eng.evaluate("b.isEditable");
+        QCOMPARE(val.toBool(), false);
+
+        b.setState(PropertyStateInvisible);
+        val = eng.evaluate("b.isEditable");
+        QCOMPARE(val.toBool(), false);
+
+        val = eng.evaluate("b.value");
+        QCOMPARE(val.toBool(), false);
+
+        b = true;
+        val = eng.evaluate("b.value");
+        QCOMPARE(val.toBool(), true);
+
+        val = eng.evaluate("b.value = false");
+        QCOMPARE(b.value(), true);
+
+        b.setState(PropertyStateNone);
+        val = eng.evaluate("b.value = false");
+        QCOMPARE(b.value(), false);
+
+        eng.evaluate("var b_changed = false;"
+                     "function on_b_changed() {"
+                     "  b_changed = true;"
+                     "}");
+
+        val = eng.evaluate("b_changed");
+        QCOMPARE(val.toBool(), false);
+
+        val = eng.evaluate("on_b_changed()");
+        val = eng.evaluate("b_changed");
+        QCOMPARE(val.toBool(), true);
+
+        eng.evaluate("var success = true;");
+        eng.evaluate("var f1 = function(p1, p2, reason) {"
+                     "  if (p1 != p2) success = false;"
+                     "  if (p1.name != 'isValid') success = false;"
+                     "  if (p1.state != Qtinuum.PropertyStateNone) success = false;"
+                     "  if (p1.id != 15) success = false;"
+                     "  if (reason != Qtinuum.PropertyChangeReasonNewValue) success = false;"
+                     "  if (p1.value != true) success = false;"
+                     "}");
+        eng.evaluate("b.propertyDidChange.connect(f1);");
+        eng.evaluate("b.value = true;");
+        val = eng.evaluate("success");
+        QCOMPARE(val.toBool(), true);
+
+        eng.evaluate("b.propertyDidChange.disconnect(f1);");
+        eng.evaluate("b.value = true;");
+        val = eng.evaluate("success");
+        QCOMPARE(val.toBool(), true);
     }
 }
 
