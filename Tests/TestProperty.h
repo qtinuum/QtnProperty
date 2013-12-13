@@ -34,6 +34,7 @@ private Q_SLOTS:
     void copyValues();
     void propertyAssignment();
     void propertyScripting();
+    void variantConversions();
 
 public Q_SLOTS:
 

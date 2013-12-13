@@ -805,6 +805,304 @@ void TestProperty::propertyScripting()
     }
 }
 
+void TestProperty::variantConversions()
+{
+    {
+        PropertyBool b(this);
+        QVariant value = true;
+
+        QCOMPARE(b.value(), false);
+        QVERIFY(b.fromVariant(value));
+        QCOMPARE(b.value(), true);
+
+        value = 17;
+        QVERIFY(!b.fromVariant(value));
+        QCOMPARE(b.value(), true);
+
+        QVERIFY(b.toVariant(value));
+        QCOMPARE(value.toBool(), true);
+
+        b = false;
+        QVERIFY(b.toVariant(value));
+        QCOMPARE(value.toBool(), false);
+    }
+
+    {
+        PropertySetAllPropertyTypes pp(this);
+        QVariant value;
+        bool ok = false;
+
+        QVERIFY(pp.bp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Bool);
+        QCOMPARE(value.toBool(), false);
+        value = true;
+        QVERIFY(pp.bp.fromVariant(value));
+        QCOMPARE(pp.bp.value(), true);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.bp.fromVariant(value));
+        QCOMPARE(pp.bp.value(), true);
+
+        QVERIFY(pp.bpc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Bool);
+        QCOMPARE(value.toBool(), true);
+        value = false;
+        QVERIFY(pp.bpc.fromVariant(value));
+        QCOMPARE(pp.bpc.value(), false);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.bpc.fromVariant(value));
+        QCOMPARE(pp.bpc.value(), false);
+
+        QVERIFY(pp.ip.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Int);
+        QCOMPARE(value.toInt(&ok), 0);
+        QVERIFY(ok);
+        value = 13;
+        QVERIFY(pp.ip.fromVariant(value));
+        QCOMPARE(pp.ip.value(), 13);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.ip.fromVariant(value));
+        QCOMPARE(pp.ip.value(), 13);
+
+        QVERIFY(pp.ipc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Int);
+        QCOMPARE(value.toInt(&ok), 12);
+        QVERIFY(ok);
+        value = -83;
+        QVERIFY(pp.ipc.fromVariant(value));
+        QCOMPARE(pp.ipc.value(), -83);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.ipc.fromVariant(value));
+        QCOMPARE(pp.ipc.value(), -83);
+
+        QVERIFY(pp.up.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::UInt);
+        QCOMPARE(value.toUInt(&ok), 0u);
+        QVERIFY(ok);
+        value = 98234;
+        QVERIFY(pp.up.fromVariant(value));
+        QCOMPARE(pp.up.value(), 98234u);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.up.fromVariant(value));
+        QCOMPARE(pp.up.value(), 98234u);
+
+        QVERIFY(pp.upc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::UInt);
+        QCOMPARE(value.toUInt(&ok), 9u);
+        QVERIFY(ok);
+        value = 76u;
+        QVERIFY(pp.upc.fromVariant(value));
+        QCOMPARE(pp.upc.value(), 76u);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.upc.fromVariant(value));
+        QCOMPARE(pp.upc.value(), 76u);
+
+        QVERIFY(pp.fp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Float);
+        QCOMPARE(value.toFloat(&ok), 0.f);
+        QVERIFY(ok);
+        value = 0.32f;
+        QVERIFY(pp.fp.fromVariant(value));
+        QCOMPARE(pp.fp.value(), 0.32f);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.fp.fromVariant(value));
+        QCOMPARE(pp.fp.value(), 0.32f);
+
+        QVERIFY(pp.fpc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Float);
+        QCOMPARE(value.toFloat(&ok), 0.2f);
+        QVERIFY(ok);
+        value = -0.32f;
+        QVERIFY(pp.fpc.fromVariant(value));
+        QCOMPARE(pp.fpc.value(), -0.32f);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.fpc.fromVariant(value));
+        QCOMPARE(pp.fpc.value(), -0.32f);
+
+        QVERIFY(pp.dp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Double);
+        QCOMPARE(value.toDouble(&ok), 0.);
+        QVERIFY(ok);
+        value = -23.4;
+        QVERIFY(pp.dp.fromVariant(value));
+        QCOMPARE(pp.dp.value(), -23.4);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.dp.fromVariant(value));
+        QCOMPARE(pp.dp.value(), -23.4);
+
+        QVERIFY(pp.dpc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Double);
+        QCOMPARE(value.toDouble(&ok), 32.4);
+        QVERIFY(ok);
+        value = 543.22;
+        QVERIFY(pp.dpc.fromVariant(value));
+        QCOMPARE(pp.dpc.value(), 543.22);
+        value = QPoint(3, 5);
+        QVERIFY(!pp.dpc.fromVariant(value));
+        QCOMPARE(pp.dpc.value(), 543.22);
+
+        pp.sp = tr("hello");
+        QVERIFY(pp.sp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QString);
+        QCOMPARE(value.toString(), tr("hello"));
+        value = tr("world");
+        QVERIFY(pp.sp.fromVariant(value));
+        QCOMPARE(pp.sp.value(), tr("world"));
+        value = QPoint(3, 5);
+        QVERIFY(!pp.sp.fromVariant(value));
+        QCOMPARE(pp.sp.value(), tr("world"));
+
+        QVERIFY(pp.spc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QString);
+        QCOMPARE(value.toString(), tr("name"));
+        value = tr("another");
+        QVERIFY(pp.spc.fromVariant(value));
+        QCOMPARE(pp.spc.value(), tr("another"));
+        value = QPoint(3, 5);
+        QVERIFY(!pp.spc.fromVariant(value));
+        QCOMPARE(pp.spc.value(), tr("another"));
+
+        QVERIFY(pp.rp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QRect);
+        QCOMPARE(value.toRect(), QRect());
+        value = QRect(23, 4, 56, 76);
+        QVERIFY(pp.rp.fromVariant(value));
+        QCOMPARE(pp.rp.value(), QRect(23, 4, 56, 76));
+        value = "sss";
+        QVERIFY(!pp.rp.fromVariant(value));
+        QCOMPARE(pp.rp.value(), QRect(23, 4, 56, 76));
+
+        QVERIFY(pp.rpc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QRect);
+        QCOMPARE(value.toRect(), QRect(10, 10, 10, 10));
+        value = QRect(-2, 3, 23, 3);
+        QVERIFY(pp.rpc.fromVariant(value));
+        QCOMPARE(pp.rpc.value(), QRect(-2, 3, 23, 3));
+        value = "sss";
+        QVERIFY(!pp.rpc.fromVariant(value));
+        QCOMPARE(pp.rpc.value(), QRect(-2, 3, 23, 3));
+
+        QVERIFY(pp.pp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QPoint);
+        QCOMPARE(value.toPoint(), QPoint());
+        value = QPoint(-2, 3);
+        QVERIFY(pp.pp.fromVariant(value));
+        QCOMPARE(pp.pp.value(), QPoint(-2, 3));
+        value = "sss";
+        QVERIFY(!pp.pp.fromVariant(value));
+        QCOMPARE(pp.pp.value(), QPoint(-2, 3));
+
+        QVERIFY(pp.ppc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QPoint);
+        QCOMPARE(value.toPoint(), QPoint(9, 2));
+        value = QPoint(100, 100);
+        QVERIFY(pp.ppc.fromVariant(value));
+        QCOMPARE(pp.ppc.value(), QPoint(100, 100));
+        value = "sss";
+        QVERIFY(!pp.ppc.fromVariant(value));
+        QCOMPARE(pp.ppc.value(), QPoint(100, 100));
+
+        QVERIFY(pp.szp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QSize);
+        QCOMPARE(value.toSize(), QSize());
+        value = QSize(72, 3);
+        QVERIFY(pp.szp.fromVariant(value));
+        QCOMPARE(pp.szp.value(), QSize(72, 3));
+        value = "sss";
+        QVERIFY(!pp.szp.fromVariant(value));
+        QCOMPARE(pp.szp.value(), QSize(72, 3));
+
+        QVERIFY(pp.szpc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QSize);
+        QCOMPARE(value.toSize(), QSize(33, 21));
+        value = QSize(6, 4);
+        QVERIFY(pp.szpc.fromVariant(value));
+        QCOMPARE(pp.szpc.value(), QSize(6, 4));
+        value = "sss";
+        QVERIFY(!pp.szpc.fromVariant(value));
+        QCOMPARE(pp.szpc.value(), QSize(6, 4));
+
+        QVERIFY(pp.ep.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Int);
+        QCOMPARE(value.toInt(), (int)COLOR::BLUE);
+        value = (int)COLOR::RED;
+        QVERIFY(pp.ep.fromVariant(value));
+        QCOMPARE(pp.ep.value(), (int)COLOR::RED);
+        value = QSize(6, 4);
+        QVERIFY(!pp.ep.fromVariant(value));
+        QCOMPARE(pp.ep.value(), (int)COLOR::RED);
+
+        QVERIFY(pp.epc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Int);
+        QCOMPARE(value.toInt(), (int)COLOR::RED);
+        value = (int)COLOR::YELLOW;
+        QVERIFY(pp.epc.fromVariant(value));
+        QCOMPARE(pp.epc.value(), (int)COLOR::YELLOW);
+        value = QSize(6, 4);
+        QVERIFY(!pp.epc.fromVariant(value));
+        QCOMPARE(pp.epc.value(), (int)COLOR::YELLOW);
+
+        QVERIFY(pp.efp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Int);
+        QCOMPARE(value.toInt(), (int)(MASK::ONE|MASK::FOUR));
+        value = (int)MASK::TWO;
+        QVERIFY(pp.efp.fromVariant(value));
+        QCOMPARE(pp.efp.value(), (int)MASK::TWO);
+        value = QSize(6, 4);
+        QVERIFY(!pp.efp.fromVariant(value));
+        QCOMPARE(pp.efp.value(), (int)MASK::TWO);
+
+        QVERIFY(pp.efpc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::Int);
+        QCOMPARE(value.toInt(), (int)(MASK::ONE|MASK::FOUR));
+        value = (int)MASK::TWO;
+        QVERIFY(pp.efpc.fromVariant(value));
+        QCOMPARE(pp.efpc.value(), (int)MASK::TWO);
+        value = QSize(6, 4);
+        QVERIFY(!pp.efpc.fromVariant(value));
+        QCOMPARE(pp.efpc.value(), (int)MASK::TWO);
+
+        QVERIFY(pp.cp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QColor);
+        QCOMPARE(value.value<QColor>(), QColor(Qt::blue));
+        value = QColor(200, 23, 44);
+        QVERIFY(pp.cp.fromVariant(value));
+        QCOMPARE(pp.cp.value(), QColor(200, 23, 44));
+        value = QSize(6, 4);
+        QVERIFY(!pp.cp.fromVariant(value));
+        QCOMPARE(pp.cp.value(), QColor(200, 23, 44));
+
+        QVERIFY(pp.cpc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QColor);
+        QCOMPARE(value.value<QColor>(), QColor(Qt::red));
+        value = QColor(0, 3, 3);
+        QVERIFY(pp.cpc.fromVariant(value));
+        QCOMPARE(pp.cpc.value(), QColor(0, 3, 3));
+        value = QSize(6, 4);
+        QVERIFY(!pp.cpc.fromVariant(value));
+        QCOMPARE(pp.cpc.value(), QColor(0, 3, 3));
+
+        QVERIFY(pp.fnp.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QFont);
+        QCOMPARE(value.value<QFont>(), QFont("Courier", 10));
+        value = QFont("Arial", 14);
+        QVERIFY(pp.fnp.fromVariant(value));
+        QCOMPARE(pp.fnp.value(),QFont("Arial", 14));
+        value = QSize(6, 4);
+        QVERIFY(!pp.fnp.fromVariant(value));
+        QCOMPARE(pp.fnp.value(), QFont("Arial", 14));
+
+        QVERIFY(pp.fnpc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QFont);
+        QCOMPARE(value.value<QFont>(), QFont("Arial", 19));
+        value = QFont("Courier", 9);
+        QVERIFY(pp.fnpc.fromVariant(value));
+        QCOMPARE(pp.fnpc.value(), QFont("Courier", 9));
+        value = QSize(6, 4);
+        QVERIFY(!pp.fnpc.fromVariant(value));
+        QCOMPARE(pp.fnpc.value(), QFont("Courier", 9));
+    }
+}
+
 void TestProperty::checkPropertyStateIsNonSimple(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)
 {
     QCOMPARE(changedProperty, firedProperty);
