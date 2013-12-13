@@ -6,12 +6,11 @@ AutoValue feature
 
 Make wrapper propertyset for QObject derived classes
 
-Save/Load via QDataStream/XML
-QtScript support
-toStr/fromStr and toVariant/fromVariant functions
+Save/Load via XML
+toStr/fromStr functions
 
 
-Demo with modal dialog and change properties console
+Demo with change properties console
 
 owner feature????
 How to define default PropertySet?
@@ -26,7 +25,6 @@ Tests:
 2. Property equal (==)
 3. Property <, > for numerics
 4. make PropertySetAllPropertyTypes with subproperties
-
-make 3 classes PropertyBase; Property and PropertySet-=]
+5. add benchmarks
 
 implement ReportError method

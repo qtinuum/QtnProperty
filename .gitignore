@@ -3,4 +3,4 @@
 *.pro.user
 *.lexer.*
 *.parser.*
-
+*~
