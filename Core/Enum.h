@@ -26,7 +26,7 @@
 namespace Qtinuum
 {
 
-typedef int EnumValueType;
+typedef qint32 EnumValueType;
 
 enum EnumValueStateFlag
 {
