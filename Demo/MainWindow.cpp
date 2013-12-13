@@ -26,24 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
     jsEngine.globalObject().setProperty("params", jsEngine.newQObject(ps));
 
     dbg.attachTo(&jsEngine);
-    dbgWindow = dbg.standardWindow();
-    //dbgWindow->show();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-bool MainWindow::event(QEvent* e)
-{
-    if (e->type() == QEvent::Hide)
-    {
-        delete dbgWindow;
-        dbgWindow = nullptr;
-    }
-
-    return QMainWindow::event(e);
 }
 
 void MainWindow::on_editButton_clicked()
@@ -70,5 +57,6 @@ void MainWindow::on_editButton_clicked()
 
 void MainWindow::on_dbgButton_clicked()
 {
+    QMainWindow* dbgWindow = dbg.standardWindow();
     dbgWindow->show();
 }

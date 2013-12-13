@@ -19,19 +19,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-protected:
-    bool event(QEvent* e) override;
-    
 private slots:
     void on_editButton_clicked();
     void on_dbgButton_clicked();
 
 private:
     Ui::MainWindow *ui;
-    //QJSEngine jsEngine;
-    QScriptEngine jsEngine;
+
     QScriptEngineDebugger dbg;
-    QMainWindow* dbgWindow;
+    QScriptEngine jsEngine;
 };
 
 #endif // MAINWINDOW_H
