@@ -28,6 +28,44 @@ PropertyQPointBase::PropertyQPointBase(QObject *parent)
     addState(PropertyStateCollapsed);
 }
 
+bool PropertyQPointBase::fromStrImpl(const QString& str)
+{
+    static QRegExp parserPoint("^\\s*QPoint\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
+    static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
+
+    if (!parserPoint.exactMatch(str))
+        return false;
+
+    QStringList params = parserPoint.capturedTexts();
+    if (params.size() != 2)
+        return false;
+
+    if (!parserParams.exactMatch(params[1]))
+        return false;
+
+    params = parserParams.capturedTexts();
+    if (params.size() != 3)
+        return false;
+
+    bool ok = false;
+    int x = params[1].toInt(&ok);
+    if (!ok)
+        return false;
+
+    int y = params[2].toInt(&ok);
+    if (!ok)
+        return false;
+
+    return setValue(QPoint(x, y));
+}
+
+bool PropertyQPointBase::toStrImpl(QString& str) const
+{
+    QPoint v = value();
+    str = QString("QPoint(%1, %2)").arg(v.x()).arg(v.y());
+    return true;
+}
+
 Property* createXProperty(QObject *parent, PropertyQPointBase *propertyPoint)
 {
     PropertyIntCallback *xProperty = new PropertyIntCallback(parent);

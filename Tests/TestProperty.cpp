@@ -1103,6 +1103,189 @@ void TestProperty::variantConversions()
     }
 }
 
+void TestProperty::stringConversions()
+{
+    {
+        PropertyBool p(this);
+        QString text;
+        QVERIFY(p.toStr(text));
+        QCOMPARE(text, tr("False"));
+
+        QVERIFY(p.fromStr("true"));
+        QCOMPARE(p.value(), true);
+
+        QVERIFY(p.toStr(text));
+        QCOMPARE(text, tr("True"));
+
+        QVERIFY(!p.fromStr("Hello"));
+        QCOMPARE(p.value(), true);
+    }
+
+    {
+        PropertySetAllPropertyTypes pp(this);
+        QString str;
+//        bool ok = false;
+
+        QVERIFY(pp.bp.toStr(str));
+        QCOMPARE(str, tr("False"));
+        QVERIFY(pp.bp.fromStr(tr("tRue")));
+        QCOMPARE(pp.bp.value(), true);
+        QVERIFY(pp.bp.toStr(str));
+        QCOMPARE(str, tr("True"));
+        QVERIFY(!pp.bp.fromStr("aaa"));
+        QCOMPARE(pp.bp.value(), true);
+
+        QVERIFY(pp.bpc.toStr(str));
+        QCOMPARE(str, tr("True"));
+        QVERIFY(pp.bpc.fromStr(tr("falSe")));
+        QCOMPARE(pp.bpc.value(), false);
+        QVERIFY(pp.bpc.toStr(str));
+        QCOMPARE(str, tr("False"));
+        QVERIFY(!pp.bpc.fromStr("bbb"));
+        QCOMPARE(pp.bpc.value(), false);
+
+        QVERIFY(pp.ip.toStr(str));
+        QCOMPARE(str, tr("0"));
+        QVERIFY(pp.ip.fromStr(tr("-23")));
+        QCOMPARE(pp.ip.value(), -23);
+        QVERIFY(pp.ip.toStr(str));
+        QCOMPARE(str, tr("-23"));
+        QVERIFY(!pp.ip.fromStr("93jms"));
+        QCOMPARE(pp.ip.value(), -23);
+
+        QVERIFY(pp.ipc.toStr(str));
+        QCOMPARE(str, tr("12"));
+        QVERIFY(pp.ipc.fromStr(tr("45")));
+        QCOMPARE(pp.ipc.value(), 45);
+        QVERIFY(pp.ipc.toStr(str));
+        QCOMPARE(str, tr("45"));
+        QVERIFY(!pp.ipc.fromStr("23.22"));
+        QCOMPARE(pp.ipc.value(), 45);
+
+        QVERIFY(pp.up.toStr(str));
+        QCOMPARE(str, tr("0"));
+        QVERIFY(pp.up.fromStr(tr("7829")));
+        QCOMPARE(pp.up.value(), 7829u);
+        QVERIFY(pp.up.toStr(str));
+        QCOMPARE(str, tr("7829"));
+        QVERIFY(!pp.up.fromStr("92ms"));
+        QCOMPARE(pp.up.value(), 7829u);
+
+        QVERIFY(pp.upc.toStr(str));
+        QCOMPARE(str, tr("9"));
+        QVERIFY(pp.upc.fromStr(tr("11")));
+        QCOMPARE(pp.upc.value(), 11u);
+        QVERIFY(pp.upc.toStr(str));
+        QCOMPARE(str, tr("11"));
+        QVERIFY(!pp.upc.fromStr("-233"));
+        QCOMPARE(pp.upc.value(), 11u);
+
+        QVERIFY(pp.fp.toStr(str));
+        QCOMPARE(str, tr("0"));
+        QVERIFY(pp.fp.fromStr(tr("-23.2")));
+        QCOMPARE(pp.fp.value(), -23.2f);
+        QVERIFY(pp.fp.toStr(str));
+        QCOMPARE(str, tr("-23.2"));
+        QVERIFY(!pp.fp.fromStr("32.ws"));
+        QCOMPARE(pp.fp.value(), -23.2f);
+
+        QVERIFY(pp.fpc.toStr(str));
+        QCOMPARE(str, tr("0.2"));
+        QVERIFY(pp.fpc.fromStr(tr("0.002")));
+        QCOMPARE(pp.fpc.value(), 0.002f);
+        QVERIFY(pp.fpc.toStr(str));
+        QCOMPARE(str, tr("0.002"));
+        QVERIFY(!pp.fpc.fromStr("-s233"));
+        QCOMPARE(pp.fpc.value(), 0.002f);
+
+        QVERIFY(pp.dp.toStr(str));
+        QCOMPARE(str, tr("0"));
+        QVERIFY(pp.dp.fromStr(tr("9403.234")));
+        QCOMPARE(pp.dp.value(), 9403.234);
+        QVERIFY(pp.dp.toStr(str));
+        QCOMPARE(str, tr("9403.234"));
+        QVERIFY(!pp.dp.fromStr("94d03.234s"));
+        QCOMPARE(pp.dp.value(), 9403.234);
+
+        QVERIFY(pp.dpc.toStr(str));
+        QCOMPARE(str, tr("32.4"));
+        QVERIFY(pp.dpc.fromStr(tr("-92.34")));
+        QCOMPARE(pp.dpc.value(), -92.34);
+        QVERIFY(pp.dpc.toStr(str));
+        QCOMPARE(str, tr("-92.34"));
+        QVERIFY(!pp.dpc.fromStr("weee"));
+        QCOMPARE(pp.dpc.value(), -92.34);
+
+        QVERIFY(pp.sp.toStr(str));
+        QCOMPARE(str, tr(""));
+        QVERIFY(pp.sp.fromStr("Hello"));
+        QCOMPARE(pp.sp.value(), tr("Hello"));
+        QVERIFY(pp.sp.toStr(str));
+        QCOMPARE(str, tr("Hello"));
+
+        QVERIFY(pp.spc.toStr(str));
+        QCOMPARE(str, tr("name"));
+        QVERIFY(pp.spc.fromStr(tr("Name")));
+        QCOMPARE(pp.spc.value(), tr("Name"));
+        QVERIFY(pp.spc.toStr(str));
+        QCOMPARE(str, tr("Name"));
+
+        QVERIFY(pp.rp.toStr(str));
+        QCOMPARE(str, tr("QRect(0, 0, 0, 0)"));
+        QVERIFY(pp.rp.fromStr(tr("QRect (-2, 3, 43, 45 )   ")));
+        QCOMPARE(pp.rp.value(), QRect(-2, 3, 43, 45));
+        QVERIFY(pp.rp.toStr(str));
+        QCOMPARE(str, tr("QRect(-2, 3, 43, 45)"));
+        QVERIFY(!pp.rp.fromStr("ddlwk,s"));
+        QCOMPARE(pp.rp.value(), QRect(-2, 3, 43, 45));
+
+        QVERIFY(pp.rpc.toStr(str));
+        QCOMPARE(str, tr("QRect(10, 10, 10, 10)"));
+        QVERIFY(pp.rpc.fromStr(tr("QRect(0, 0, 10, 10)")));
+        QCOMPARE(pp.rpc.value(), QRect(0, 0, 10, 10));
+        QVERIFY(pp.rpc.toStr(str));
+        QCOMPARE(str, tr("QRect(0, 0, 10, 10)"));
+        QVERIFY(!pp.rpc.fromStr("weee"));
+        QCOMPARE(pp.rpc.value(), QRect(0, 0, 10, 10));
+
+        QVERIFY(pp.pp.toStr(str));
+        QCOMPARE(str, tr("QPoint(0, 0)"));
+        QVERIFY(pp.pp.fromStr(tr("QPoint (-2, 3 )   ")));
+        QCOMPARE(pp.pp.value(), QPoint(-2, 3));
+        QVERIFY(pp.pp.toStr(str));
+        QCOMPARE(str, tr("QPoint(-2, 3)"));
+        QVERIFY(!pp.pp.fromStr("ddlwk,s"));
+        QCOMPARE(pp.pp.value(), QPoint(-2, 3));
+
+        QVERIFY(pp.ppc.toStr(str));
+        QCOMPARE(str, tr("QPoint(9, 2)"));
+        QVERIFY(pp.ppc.fromStr(tr("QPoint(-3, 20)")));
+        QCOMPARE(pp.ppc.value(), QPoint(-3, 20));
+        QVERIFY(pp.ppc.toStr(str));
+        QCOMPARE(str, tr("QPoint(-3, 20)"));
+        QVERIFY(!pp.ppc.fromStr("weee"));
+        QCOMPARE(pp.ppc.value(), QPoint(-3, 20));
+
+        QVERIFY(pp.szp.toStr(str));
+        QCOMPARE(str, tr("QSize(-1, -1)"));
+        QVERIFY(pp.szp.fromStr(tr("QSize (-2, 3 )   ")));
+        QCOMPARE(pp.szp.value(), QSize(-2, 3));
+        QVERIFY(pp.szp.toStr(str));
+        QCOMPARE(str, tr("QSize(-2, 3)"));
+        QVERIFY(!pp.szp.fromStr("ddlwk,s"));
+        QCOMPARE(pp.szp.value(), QSize(-2, 3));
+
+        QVERIFY(pp.szpc.toStr(str));
+        QCOMPARE(str, tr("QSize(33, 21)"));
+        QVERIFY(pp.szpc.fromStr(tr("QSize(-3, 20)")));
+        QCOMPARE(pp.szpc.value(), QSize(-3, 20));
+        QVERIFY(pp.szpc.toStr(str));
+        QCOMPARE(str, tr("QSize(-3, 20)"));
+        QVERIFY(!pp.szpc.fromStr("weee"));
+        QCOMPARE(pp.szpc.value(), QSize(-3, 20));
+    }
+}
+
 void TestProperty::checkPropertyStateIsNonSimple(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)
 {
     QCOMPARE(changedProperty, firedProperty);

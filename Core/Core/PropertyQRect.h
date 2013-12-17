@@ -33,6 +33,11 @@ class QTN_PE_CORE_EXPORT PropertyQRectBase: public SinglePropertyBase<QRect>
 public:
     explicit PropertyQRectBase(QObject *parent);
 
+protected:
+    // string conversion implementation
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
+
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQRectBase)
 };
 

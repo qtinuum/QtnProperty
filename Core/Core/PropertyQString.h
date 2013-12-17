@@ -41,6 +41,11 @@ public:
         return *this;
     }
 
+protected:
+    // string conversion implementation
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
+
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQStringBase)
 };
 

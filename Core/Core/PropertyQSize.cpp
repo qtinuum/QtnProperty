@@ -28,6 +28,43 @@ PropertyQSizeBase::PropertyQSizeBase(QObject *parent)
     addState(PropertyStateCollapsed);
 }
 
+bool PropertyQSizeBase::fromStrImpl(const QString& str)
+{
+    static QRegExp parserSize("^\\s*QSize\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
+    static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
+
+    if (!parserSize.exactMatch(str))
+        return false;
+
+    QStringList params = parserSize.capturedTexts();
+    if (params.size() != 2)
+        return false;
+
+    if (!parserParams.exactMatch(params[1]))
+        return false;
+
+    params = parserParams.capturedTexts();
+    if (params.size() != 3)
+        return false;
+
+    bool ok = false;
+    int width = params[1].toInt(&ok);
+    if (!ok)
+        return false;
+
+    int height = params[2].toInt(&ok);
+    if (!ok)
+        return false;
+
+    return setValue(QSize(width, height));
+}
+
+bool PropertyQSizeBase::toStrImpl(QString& str) const
+{
+    QSize v = value();
+    str = QString("QSize(%1, %2)").arg(v.width()).arg(v.height());
+    return true;
+}
 
 Property* createWidthProperty(QObject *parent, PropertyQSizeBase *propertySize)
 {

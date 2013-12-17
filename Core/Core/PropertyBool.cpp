@@ -21,4 +21,41 @@
 namespace Qtinuum
 {
 
+static QString getBoolText(bool value)
+{
+    static QString boolTexts[2] = {QObject::tr("False"), QObject::tr("True")};
+    return boolTexts[value];
+}
+
+static bool getBoolValue(QString boolText, bool& success)
+{
+    success = true;
+    if (QString::compare(boolText, getBoolText(false), Qt::CaseInsensitive) == 0)
+        return false;
+
+    if (QString::compare(boolText, getBoolText(true), Qt::CaseInsensitive) == 0)
+        return true;
+
+    success = false;
+    return false;
+}
+
+bool PropertyBoolBase::fromStrImpl(const QString& str)
+{
+    bool success = false;
+    bool value = getBoolValue(str, success);
+
+    if (!success)
+        return false;
+
+    return setValue(value);
+}
+
+bool PropertyBoolBase::toStrImpl(QString& str) const
+{
+    bool boolValue = value();
+    str = getBoolText(boolValue);
+    return true;
+}
+
 } // end namespace Qtinuum

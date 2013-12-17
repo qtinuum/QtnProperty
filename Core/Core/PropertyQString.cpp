@@ -21,4 +21,15 @@
 namespace Qtinuum
 {
 
+bool PropertyQStringBase::fromStrImpl(const QString& str)
+{
+    return setValue(str);
+}
+
+bool PropertyQStringBase::toStrImpl(QString& str) const
+{
+    str = value();
+    return true;
+}
+
 } // end namespace Qtinuum

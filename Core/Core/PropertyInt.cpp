@@ -21,4 +21,30 @@
 namespace Qtinuum
 {
 
+bool PropertyIntBase::fromStrImpl(const QString& str)
+{
+    bool ok = false;
+    ValueType value = str.toInt(&ok);
+    if (!ok)
+        return false;
+
+    return setValue(value);
+}
+
+bool PropertyIntBase::toStrImpl(QString& str) const
+{
+    str = QString::number(value());
+    return true;
+}
+
+bool PropertyIntBase::fromVariantImpl(const QVariant& var)
+{
+    bool ok = false;
+    ValueType value = var.toInt(&ok);
+    if (!ok)
+        return false;
+
+    return setValue(value);
+}
+
 } // end namespace Qtinuum

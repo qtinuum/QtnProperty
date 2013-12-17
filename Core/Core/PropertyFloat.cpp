@@ -21,4 +21,30 @@
 namespace Qtinuum
 {
 
+bool PropertyFloatBase::fromStrImpl(const QString& str)
+{
+    bool ok = false;
+    ValueType value = str.toFloat(&ok);
+    if (!ok)
+        return false;
+
+    return setValue(value);
+}
+
+bool PropertyFloatBase::toStrImpl(QString& str) const
+{
+    str = QString::number(value());
+    return true;
+}
+
+bool PropertyFloatBase::fromVariantImpl(const QVariant& var)
+{
+    bool ok = false;
+    ValueType value = var.toFloat(&ok);
+    if (!ok)
+        return false;
+
+    return setValue(value);
+}
+
 } // end namespace Qtinuum

@@ -35,19 +35,15 @@ public:
     {
     }
 
+protected:
+    // string conversion implementation
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
+
+    // variant conversion implementation
+    bool fromVariantImpl(const QVariant& var) override;
+
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyIntBase)
-
-    protected:
-        // variant conversion implementation
-        bool fromVariantImpl(const QVariant& var) override
-        {
-            bool ok = false;
-            ValueType value = var.toInt(&ok);
-            if (!ok)
-                return false;
-
-            return setValue(value);
-        }
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyIntBase, qint32)

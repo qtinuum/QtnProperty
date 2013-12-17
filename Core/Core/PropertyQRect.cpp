@@ -28,6 +28,52 @@ PropertyQRectBase::PropertyQRectBase(QObject *parent)
     addState(PropertyStateCollapsed);
 }
 
+bool PropertyQRectBase::fromStrImpl(const QString& str)
+{
+    static QRegExp parserRect("^\\s*QRect\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
+    static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$", Qt::CaseInsensitive);
+
+    if (!parserRect.exactMatch(str))
+        return false;
+
+    QStringList params = parserRect.capturedTexts();
+    if (params.size() != 2)
+        return false;
+
+    if (!parserParams.exactMatch(params[1]))
+        return false;
+
+    params = parserParams.capturedTexts();
+    if (params.size() != 5)
+        return false;
+
+    bool ok = false;
+    int left = params[1].toInt(&ok);
+    if (!ok)
+        return false;
+
+    int top = params[2].toInt(&ok);
+    if (!ok)
+        return false;
+
+    int width = params[3].toInt(&ok);
+    if (!ok)
+        return false;
+
+    int height = params[4].toInt(&ok);
+    if (!ok)
+        return false;
+
+    return setValue(QRect(left, top, width, height));
+}
+
+bool PropertyQRectBase::toStrImpl(QString& str) const
+{
+    QRect v = value();
+    str = QString("QRect(%1, %2, %3, %4)").arg(v.left()).arg(v.top()).arg(v.width()).arg(v.height());
+    return true;
+}
+
 Property* createLeftProperty(QObject *parent, PropertyQRectBase *propertyRect)
 {
     PropertyIntCallback *leftProperty = new PropertyIntCallback(parent);

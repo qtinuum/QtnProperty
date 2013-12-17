@@ -35,19 +35,15 @@ public:
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyUIntBase)
-
 protected:
-    // variant conversion implementation
-    bool fromVariantImpl(const QVariant& var) override
-    {
-        bool ok = false;
-        ValueType value = var.toUInt(&ok);
-        if (!ok)
-            return false;
+    // string conversion implementation
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
 
-        return setValue(value);
-    }
+    // variant conversion implementation
+    bool fromVariantImpl(const QVariant& var) override;
+
+    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyUIntBase)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(PropertyUIntBase, quint32)
