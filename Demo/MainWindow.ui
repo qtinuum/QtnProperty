@@ -64,7 +64,12 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Script:</string>
+         <string>Script examples:
+params.count.value = 6
+params.Internal.state</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
         </property>
        </widget>
       </item>
@@ -75,6 +80,29 @@
         </property>
         <property name="text">
          <string>Show script debugger</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>String examples:
+count = 3
+isValid = true
+Internal.item3 = &quot;ssss&quot;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="plainTextEdit"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>from string</string>
         </property>
        </widget>
       </item>

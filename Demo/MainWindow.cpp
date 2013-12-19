@@ -60,3 +60,24 @@ void MainWindow::on_dbgButton_clicked()
     QMainWindow* dbgWindow = dbg.standardWindow();
     dbgWindow->show();
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    PropertySet* properties = ui->pw->propertySet();
+
+    if (!properties)
+    {
+        QMessageBox::warning(this, "Demo", "Property is not set.");
+        return;
+    }
+
+    QString txt = ui->plainTextEdit->toPlainText();
+
+    if (!properties->fromStr(txt))
+    {
+        QMessageBox::warning(this, "Demo", "Cannot apply string to Propertyset.");
+        return;
+    }
+
+    ui->plainTextEdit->clear();
+}

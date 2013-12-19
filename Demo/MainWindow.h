@@ -23,6 +23,8 @@ private slots:
     void on_editButton_clicked();
     void on_dbgButton_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
