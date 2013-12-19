@@ -1189,6 +1189,10 @@ void TestProperty::stringConversions()
         QCOMPARE(str, tr("-23"));
         QVERIFY(!pp.ip.fromStr("93jms"));
         QCOMPARE(pp.ip.value(), -23);
+        pp.ip.setMinValue(-2);
+        QCOMPARE(pp.ip.value(), -2);
+        QVERIFY(!pp.ip.fromStr("-32"));
+        QCOMPARE(pp.ip.value(), -2);
 
         QVERIFY(pp.ipc.toStr(str));
         QCOMPARE(str, tr("12"));
@@ -1215,6 +1219,10 @@ void TestProperty::stringConversions()
         QVERIFY(pp.upc.toStr(str));
         QCOMPARE(str, tr("11"));
         QVERIFY(!pp.upc.fromStr("-233"));
+        QCOMPARE(pp.upc.value(), 11u);
+        pp.upc.setMaxValue(100);
+        QCOMPARE(pp.upc.value(), 11u);
+        QVERIFY(!pp.upc.fromStr("110"));
         QCOMPARE(pp.upc.value(), 11u);
 
         QVERIFY(pp.fp.toStr(str));

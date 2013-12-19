@@ -7,7 +7,6 @@ AutoValue feature
 Make wrapper propertyset for QObject derived classes
 
 Save/Load via XML
-toStr/fromStr functions
 
 
 Demo with change properties console
