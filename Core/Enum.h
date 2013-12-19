@@ -69,7 +69,9 @@ private:
 class QTN_PE_CORE_EXPORT EnumInfo
 {
 public:
-    EnumInfo(QVector<EnumValueInfo>& staticValues);
+    EnumInfo(const QString& name, QVector<EnumValueInfo>& staticValues);
+
+    const QString& name() const { return m_name; }
 
     template <typename Pred>
     bool forEachEnumValue(Pred pred) const
@@ -89,9 +91,13 @@ public:
     }
 
     const EnumValueInfo* findByValue(EnumValueType value) const;
-    const EnumValueInfo* findByName(const QString& name) const;
+    const EnumValueInfo* findByName(const QString& name, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
+
+    const EnumValueInfo* fromStr(const QString& str) const;
+    bool toStr(QString& str, const EnumValueInfo* value) const;
 
 private:
+    QString m_name;
     QVector<EnumValueInfo> m_staticValues;
     QVector<EnumValueInfo> m_dynamicValues;
 };

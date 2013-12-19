@@ -460,6 +460,43 @@ void TestProperty::propertyEnumFlags()
     QVERIFY(!(p & MASK::ONE));
 }
 
+void TestProperty::propertySet()
+{
+    PropertySet p(this);
+
+    PropertySet pp(&p);
+    pp.setName("pp");
+
+    PropertyBool b(&pp);
+    b.setName("b");
+
+    PropertyFloat f(nullptr);
+    f.setName("f");
+    p.addChildProperty(&f);
+
+    PropertyBool bb(&p);
+    bb.setName("b");
+
+    QList<PropertyBase*> res = p.findChildProperties("pp");
+    QCOMPARE(res.size(), 1);
+    QCOMPARE(res[0], &pp);
+
+    res = p.findChildProperties("b");
+    QCOMPARE(res.size(), 2);
+
+    res = p.findChildProperties("b", Qt::FindDirectChildrenOnly);
+    QCOMPARE(res.size(), 1);
+    QCOMPARE(res[0], &bb);
+
+    res = pp.findChildProperties("b");
+    QCOMPARE(res.size(), 1);
+    QCOMPARE(res[0], &b);
+
+    res = p.findChildProperties("pp.b");
+    QCOMPARE(res.size(), 1);
+    QCOMPARE(res[0], &b);
+}
+
 static void testSerializationState(PropertyBase& p)
 {
     p.setState(PropertyStateCollapsed);
@@ -1222,6 +1259,8 @@ void TestProperty::stringConversions()
         QCOMPARE(pp.sp.value(), tr("Hello"));
         QVERIFY(pp.sp.toStr(str));
         QCOMPARE(str, tr("Hello"));
+        QVERIFY(pp.sp.fromStr("  \"Hello world \"  "));
+        QCOMPARE(pp.sp.value(), tr("Hello world "));
 
         QVERIFY(pp.spc.toStr(str));
         QCOMPARE(str, tr("name"));
@@ -1283,6 +1322,96 @@ void TestProperty::stringConversions()
         QCOMPARE(str, tr("QSize(-3, 20)"));
         QVERIFY(!pp.szpc.fromStr("weee"));
         QCOMPARE(pp.szpc.value(), QSize(-3, 20));
+
+        QVERIFY(pp.ep.toStr(str));
+        QCOMPARE(str, tr("COLOR::Blue"));
+        QVERIFY(pp.ep.fromStr(tr(" Color::Yellow   \t")));
+        QCOMPARE(pp.ep.value(), (EnumValueType)COLOR::YELLOW);
+        QVERIFY(pp.ep.toStr(str));
+        QCOMPARE(str, tr("COLOR::Yellow"));
+        QVERIFY(!pp.ep.fromStr("ddlwk,s"));
+        QCOMPARE(pp.ep.value(), (EnumValueType)COLOR::YELLOW);
+
+        QVERIFY(pp.epc.toStr(str));
+        QCOMPARE(str, tr("COLOR::Red"));
+        QVERIFY(pp.epc.fromStr(tr("COLOR::BlUe")));
+        QCOMPARE(pp.epc.value(), (EnumValueType)COLOR::BLUE);
+        QVERIFY(pp.epc.toStr(str));
+        QCOMPARE(str, tr("COLOR::Blue"));
+        QVERIFY(!pp.epc.fromStr("COLOUR::Red"));
+        QCOMPARE(pp.epc.value(), (EnumValueType)COLOR::BLUE);
+
+        QVERIFY(pp.efp.toStr(str));
+        QCOMPARE(str, tr("MASK::One|MASK::Four"));
+        QVERIFY(pp.efp.fromStr(tr(" 0   \t")));
+        QCOMPARE(pp.efp.value(), 0);
+        QVERIFY(pp.efp.toStr(str));
+        QCOMPARE(str, tr("0"));
+        QVERIFY(pp.efp.fromStr("Two"));
+        QCOMPARE(pp.efp.value(), (EnumFlagsValueType)MASK::TWO);
+        QVERIFY(pp.efp.fromStr("Two | Mask::Four"));
+        QCOMPARE(pp.efp.value(), (EnumFlagsValueType)(MASK::TWO|MASK::FOUR));
+        QVERIFY(!pp.efp.fromStr("Two&Mask::Four"));
+        QCOMPARE(pp.efp.value(), (EnumFlagsValueType)(MASK::TWO|MASK::FOUR));
+
+        QVERIFY(pp.efpc.toStr(str));
+        QCOMPARE(str, tr("MASK::One|MASK::Four"));
+        QVERIFY(pp.efpc.fromStr(tr("Two")));
+        QCOMPARE(pp.efpc.value(), (EnumFlagsValueType)MASK::TWO);
+        QVERIFY(pp.efpc.toStr(str));
+        QCOMPARE(str, tr("MASK::Two"));
+        QVERIFY(!pp.efpc.fromStr("weee"));
+        QCOMPARE(pp.efpc.value(), (EnumFlagsValueType)MASK::TWO);
+
+        QVERIFY(pp.cp.toStr(str));
+        QCOMPARE(str, tr("#0000ff"));
+        QVERIFY(pp.cp.fromStr(tr(" Red   \t")));
+        QCOMPARE(pp.cp.value(), QColor(Qt::red));
+        QVERIFY(pp.cp.toStr(str));
+        QCOMPARE(str, tr("#ff0000"));
+        QVERIFY(!pp.cp.fromStr("ddlwk,s"));
+        QCOMPARE(pp.cp.value(), QColor(Qt::red));
+
+        QVERIFY(pp.cpc.toStr(str));
+        QCOMPARE(str, tr("#ff0000"));
+        QVERIFY(pp.cpc.fromStr(tr("transparent")));
+        QCOMPARE(pp.cpc.value(), QColor(Qt::transparent));
+        QVERIFY(pp.cpc.toStr(str));
+        QCOMPARE(str, tr("#00000000"));
+        QVERIFY(!pp.cpc.fromStr("COLOUR::Red"));
+        QCOMPARE(pp.cpc.value(), QColor(Qt::transparent));
+
+        QVERIFY(pp.fnp.toStr(str));
+        QCOMPARE(str, tr("Courier,10,-1,5,50,0,0,0,0,0"));
+        QVERIFY(pp.fnp.fromStr(tr(" Arial,18,-1,5,50,0,0,0,0,0   \t")));
+        QCOMPARE(pp.fnp.value(), QFont("Arial", 18));
+        QVERIFY(pp.fnp.toStr(str));
+        QCOMPARE(str, tr("Arial,18,-1,5,50,0,0,0,0,0"));
+
+        QVERIFY(pp.fnpc.toStr(str));
+        QCOMPARE(str, tr("Arial,19,-1,5,50,0,0,0,0,0"));
+        QVERIFY(pp.fnpc.fromStr(tr("Mono,23")));
+        QFont font;
+        font.setFamily("Mono");
+        font.setPointSize(23);
+        QCOMPARE(pp.fnpc.value(), font);
+        QVERIFY(pp.fnpc.toStr(str));
+        QCOMPARE(str, tr("Mono,23,-1,5,50,0,0,0,0,0"));
+    }
+
+    {
+        PropertySetTest3 p(this);
+        QCOMPARE(p.iis.a.value(), true);
+        QVERIFY(p.fromStr("iis.a = false"));
+        QCOMPARE(p.iis.a.value(), false);
+
+        QCOMPARE(p.u.value(), true);
+        QCOMPARE(p.yy.s.value(), tr(""));
+        QCOMPARE(p.s.a.value(), false);
+        QVERIFY(p.fromStr("u = False\r\nyy.s = \"new value\"\n  s.a=true"));
+        QCOMPARE(p.u.value(), false);
+        QCOMPARE(p.yy.s.value(), tr("new value"));
+        QCOMPARE(p.s.a.value(), true);
     }
 }
 

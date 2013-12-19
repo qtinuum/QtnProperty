@@ -155,6 +155,7 @@ void PropertySetTest2::connectDelegates()
 PropertySetYY::PropertySetYY(QObject *parent)
     : Qtinuum::PropertySet(parent)
     , rect(*new Qtinuum::PropertyQRect(this))
+    , s(*new Qtinuum::PropertyQString(this))
 {
     init();
     connectSlots();
@@ -169,6 +170,7 @@ PropertySetYY::~PropertySetYY()
 PropertySetYY& PropertySetYY::operator=(const PropertySetYY& other)
 {
     rect = other.rect;
+    s = other.s;
 
     return *this;
 }
@@ -196,6 +198,11 @@ bool PropertySetYY::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qt
         rect = theCopyFrom->rect;
     }
 
+    if (!(theCopyFrom->s.state() & ignoreMask))
+    {
+        s = theCopyFrom->s;
+    }
+
     return true;
 }
 
@@ -210,6 +217,8 @@ void PropertySetYY::init()
     static QString rect_name = tr("rect");
     rect.setName(rect_name);
     rect.setValue(QRect(10, 10, 10, 10));
+    static QString s_name = tr("s");
+    s.setName(s_name);
     // end children initialization
 }
 
@@ -555,7 +564,7 @@ static Qtinuum::EnumInfo& create_LANGUAGE_info()
     QVector<Qtinuum::EnumValueInfo> staticValues;
     staticValues.append(Qtinuum::EnumValueInfo(LANGUAGE::ENG, "English"));
     
-    static Qtinuum::EnumInfo enumInfo(staticValues);
+    static Qtinuum::EnumInfo enumInfo("LANGUAGE", staticValues);
     return enumInfo;
 }
 
@@ -568,7 +577,7 @@ static Qtinuum::EnumInfo& create_TYPE_info()
 {
     QVector<Qtinuum::EnumValueInfo> staticValues;
     
-    static Qtinuum::EnumInfo enumInfo(staticValues);
+    static Qtinuum::EnumInfo enumInfo("TYPE", staticValues);
     return enumInfo;
 }
 
@@ -584,7 +593,7 @@ static Qtinuum::EnumInfo& create_COLOR_info()
     staticValues.append(Qtinuum::EnumValueInfo(COLOR::BLUE, "Blue", Qtinuum::EnumValueStateHidden | Qtinuum::EnumValueStateObsolete));
     staticValues.append(Qtinuum::EnumValueInfo(COLOR::YELLOW, "Yellow"));
     
-    static Qtinuum::EnumInfo enumInfo(staticValues);
+    static Qtinuum::EnumInfo enumInfo("COLOR", staticValues);
     return enumInfo;
 }
 
@@ -600,7 +609,7 @@ static Qtinuum::EnumInfo& create_MASK_info()
     staticValues.append(Qtinuum::EnumValueInfo(MASK::TWO, "Two"));
     staticValues.append(Qtinuum::EnumValueInfo(MASK::FOUR, "Four"));
     
-    static Qtinuum::EnumInfo enumInfo(staticValues);
+    static Qtinuum::EnumInfo enumInfo("MASK", staticValues);
     return enumInfo;
 }
 

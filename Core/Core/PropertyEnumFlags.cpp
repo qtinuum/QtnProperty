@@ -28,4 +28,75 @@ PropertyEnumFlagsBase::PropertyEnumFlagsBase(QObject *parent)
     addState(PropertyStateCollapsed);
 }
 
+bool PropertyEnumFlagsBase::fromStrImpl(const QString& str)
+{
+    static QRegExp parserEnumFlags("^\\s*([^|\\s]+)\\s*\\|(.+)$", Qt::CaseInsensitive);
+
+    if (!m_enumInfo)
+        return false;
+
+    EnumFlagsValueType val = 0;
+    QString enumStr = str.trimmed();
+
+    if (enumStr != "0")
+    {
+        while (parserEnumFlags.exactMatch(enumStr))
+        {
+            QStringList params = parserEnumFlags.capturedTexts();
+            if (params.size() != 3)
+                return false;
+
+            const EnumValueInfo* enumValue = m_enumInfo->fromStr(params[1]);
+            if (!enumValue)
+                return false;
+
+            val = val|enumValue->value();
+
+            enumStr = params[2];
+        }
+
+        const EnumValueInfo* enumValue = m_enumInfo->fromStr(enumStr);
+        if (!enumValue)
+            return false;
+
+        val = val|enumValue->value();
+    }
+
+    return setValue(val);
+}
+
+bool PropertyEnumFlagsBase::toStrImpl(QString& str) const
+{
+    if (!m_enumInfo)
+        return false;
+
+    EnumFlagsValueType v = value();
+
+    if (v == 0)
+    {
+        str = "0";
+        return true;
+    }
+
+    QString strValues;
+    m_enumInfo->forEachEnumValue([&strValues, v, this](const EnumValueInfo& value)->bool {
+        if (v & value.value())
+        {
+            if (!strValues.isEmpty())
+                strValues += "|";
+
+            QString enumStr;
+            m_enumInfo->toStr(enumStr, &value);
+            strValues += enumStr;
+        }
+
+        return true;
+    });
+
+    Q_ASSERT(!strValues.isEmpty());
+
+    str = strValues;
+    return true;
+}
+
 } // end namespace Qtinuum

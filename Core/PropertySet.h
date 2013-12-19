@@ -36,7 +36,7 @@ public:
     // sub properties
     bool hasChildProperties() const { return !m_childProperties.empty(); }
     const QList<PropertyBase*>& childProperties() const { return m_childProperties; }
-    QList<PropertyBase*> findChildProperties(const QString& name, Qt::FindChildOptions options = Qt::FindChildrenRecursively);
+    QList<PropertyBase*> findChildProperties(QString name, Qt::FindChildOptions options = Qt::FindChildrenRecursively);
     QList<PropertyBase*> findChildProperties(const QRegularExpression& re, Qt::FindChildOptions options = Qt::FindChildrenRecursively);
     PropertyBase* findChildProperty(PropertyID id);
     void clearChildProperties();
@@ -63,6 +63,10 @@ protected:
 
     // copy values
     virtual bool copyValuesImpl(PropertySet* propertySetCopyFrom, PropertyState ignoreMask) { return false; }
+
+    // string conversion implementation
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
 
     // serialization implementation
     bool loadImpl(QDataStream& stream) override;

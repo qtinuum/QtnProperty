@@ -33,6 +33,11 @@ class QTN_PE_CORE_EXPORT PropertyQFontBase: public SinglePropertyBase<QFont>
 public:
     explicit PropertyQFontBase(QObject *parent);
 
+protected:
+    // string conversion implementation
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
+
     P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQFontBase)
 };
 

@@ -33,7 +33,7 @@ class QTN_PE_CORE_EXPORT PropertyEnumBase: public SinglePropertyBase<EnumValueTy
 public:
     explicit PropertyEnumBase(QObject *parent)
         : SinglePropertyBase<EnumValueType>(parent),
-          m_enumInfo(0)
+          m_enumInfo(nullptr)
     {
     }
 
@@ -42,6 +42,10 @@ public:
     void setEnumInfo(EnumInfo *enumInfo) { m_enumInfo = enumInfo; }
 
 protected:
+    // string conversion implementation
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
+
     bool isValueAcceptedImpl(ValueType valueToAccept) override;
 
 private:

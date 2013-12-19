@@ -40,6 +40,8 @@ property_set Test3 {
         description = tr("ss")+tr("ss");
         // rectangle property
         QRect rect {value = QRect(10, 10, 10, 10);}
+
+        QString s;
     }
 
     property_set SS iis

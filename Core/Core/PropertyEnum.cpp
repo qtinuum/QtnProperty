@@ -21,6 +21,28 @@
 namespace Qtinuum
 {
 
+bool PropertyEnumBase::fromStrImpl(const QString& str)
+{
+    if (!m_enumInfo)
+        return false;
+
+    const EnumValueInfo* enumValue = m_enumInfo->fromStr(str);
+    if (!enumValue)
+        return false;
+
+    return setValue(enumValue->value());
+}
+
+bool PropertyEnumBase::toStrImpl(QString& str) const
+{
+    if (!m_enumInfo)
+        return false;
+
+    EnumValueType v = value();
+    const EnumValueInfo* enumValue = m_enumInfo->findByValue(v);
+    return m_enumInfo->toStr(str, enumValue);
+}
+
 bool PropertyEnumBase::isValueAcceptedImpl(ValueType valueToAccept)
 {
     if (!m_enumInfo)

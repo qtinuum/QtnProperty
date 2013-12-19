@@ -58,23 +58,50 @@ PropertySet::~PropertySet()
     clearChildProperties();
 }
 
-QList<PropertyBase*> PropertySet::findChildProperties(const QString& name, Qt::FindChildOptions options)
+QList<PropertyBase*> PropertySet::findChildProperties(QString name, Qt::FindChildOptions options)
 {
     QList<PropertyBase*> result;
 
-    foreach(PropertyBase* childProperty, m_childProperties)
-    {
-        if (childProperty->name() == name)
-            result.append(childProperty);
-    }
+    // normilize name
+    name = name.trimmed();
 
-    if (options & Qt::FindChildrenRecursively)
+    // if name is dot separated property path
+    if (name.contains('.'))
+    {
+        QString nameHead = name.section('.', 0, 0);
+        if (nameHead.isEmpty())
+            return result;
+
+        QString nameTail = name.section('.', 1);
+        if (nameTail.isEmpty())
+            return result;
+
+        QList<PropertyBase*> headResult = findChildProperties(nameHead, options);
+        foreach (PropertyBase* headProperty, headResult)
+        {
+            PropertySet* headPropertySet = headProperty->asPropertySet();
+            if (!headPropertySet)
+                continue;
+
+            result.append(headPropertySet->findChildProperties(nameTail, options));
+        }
+    }
+    else
     {
         foreach(PropertyBase* childProperty, m_childProperties)
         {
-            PropertySet* propertySet = childProperty->asPropertySet();
-            if (propertySet)
-                propertySet->findChildPropertiesRecursive(name, result);
+            if (childProperty->name() == name)
+                result.append(childProperty);
+        }
+
+        if (options & Qt::FindChildrenRecursively)
+        {
+            foreach(PropertyBase* childProperty, m_childProperties)
+            {
+                PropertySet* propertySet = childProperty->asPropertySet();
+                if (propertySet)
+                    propertySet->findChildPropertiesRecursive(name, result);
+            }
         }
     }
 
@@ -197,6 +224,44 @@ void PropertySet::updateStateInherited(bool force)
         childProperty->setStateInherited(state(), force);
     }
     m_ignoreChildPropertyChanges = false;
+}
+
+bool PropertySet::fromStrImpl(const QString& str)
+{
+    static QRegExp parserLine("^\\s*([^=]+)=(.*)$");
+
+    QStringList lines = str.split(QChar::LineFeed, QString::SkipEmptyParts);
+    if (lines.isEmpty())
+        return true;
+
+    bool anySuccess = false;
+
+    foreach (QString line, lines)
+    {
+        if (!parserLine.exactMatch(line))
+            continue;
+
+        QStringList params = parserLine.capturedTexts();
+        if (params.size() != 3)
+            continue;
+
+        QString propertyPath = params[1];
+        QString propertyStrValue = params[2];
+
+        QList<PropertyBase*> subProperties = findChildProperties(propertyPath, Qt::FindChildrenRecursively);
+        if (subProperties.size() != 1)
+            continue;
+
+        if (subProperties[0]->fromStr(propertyStrValue))
+            anySuccess = true;
+    }
+
+    return anySuccess;
+}
+
+bool PropertySet::toStrImpl(QString& str) const
+{
+    return false;
 }
 
 bool PropertySet::loadImpl(QDataStream& stream)

@@ -17,6 +17,7 @@
  */
 
 #include "PropertyQFont.h"
+#include <QFontDatabase>
 
 namespace Qtinuum
 {
@@ -25,6 +26,22 @@ PropertyQFontBase::PropertyQFontBase(QObject *parent)
     : SinglePropertyBase<QFont>(parent)
 {
     addState(PropertyStateCollapsed);
+}
+
+bool PropertyQFontBase::fromStrImpl(const QString& str)
+{
+    QFont font;
+    if (!font.fromString(str.trimmed()))
+        return false;
+
+    return setValue(font);
+}
+
+bool PropertyQFontBase::toStrImpl(QString& str) const
+{
+    QFont v = value();
+    str = v.toString();
+    return true;
 }
 
 } // end namespace Qtinuum

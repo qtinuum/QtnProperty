@@ -768,7 +768,7 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
                                , states);
         }
         s.newLine();
-        s.newLine() << "static Qtinuum::EnumInfo enumInfo(staticValues);";
+        s.newLine() << QString("static Qtinuum::EnumInfo enumInfo(\"%1\", staticValues);").arg(name);
         s.newLine() << "return enumInfo;";
     s.delIndent();
     s.newLine() << "}";

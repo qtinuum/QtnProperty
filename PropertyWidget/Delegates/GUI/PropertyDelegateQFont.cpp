@@ -74,7 +74,7 @@ static bool regQFontDelegate = PropertyDelegateFactory::staticInstance()
                                 , &createDelegate<PropertyDelegateQFont, PropertyQFontBase>
                                 , "LineEditBttn");
 
-static EnumInfo* styleStategyEnum()
+static EnumInfo* styleStrategyEnum()
 {
     static EnumInfo* enumInfo = 0;
     if (!enumInfo)
@@ -83,7 +83,7 @@ static EnumInfo* styleStategyEnum()
         items.append(EnumValueInfo(QFont::PreferDefault, "PreferDefault"));
         items.append(EnumValueInfo(QFont::NoAntialias, "NoAntialias"));
         items.append(EnumValueInfo(QFont::PreferAntialias, "PreferAntialias"));
-        enumInfo = new EnumInfo(items);
+        enumInfo = new EnumInfo("StyleStrategy", items);
     }
 
     return enumInfo;
@@ -195,7 +195,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
     addSubProperty(propertyAntialiasing);
     propertyAntialiasing->setName(owner.tr("Antialiasing"));
     propertyAntialiasing->setDescription(owner.tr("Antialiasing flag for %1.").arg(owner.name()));
-    propertyAntialiasing->setEnumInfo(styleStategyEnum());
+    propertyAntialiasing->setEnumInfo(styleStrategyEnum());
     propertyAntialiasing->setCallbackValueGet([&owner]()->EnumValueType {
         return owner.value().styleStrategy();
     });

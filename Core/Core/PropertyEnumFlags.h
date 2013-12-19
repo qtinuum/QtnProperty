@@ -26,7 +26,7 @@ namespace Qtinuum
 {
 
 // not unsigned to disable warnings
-typedef /*unsigned*/ int EnumFlagsValueType;
+typedef /*unsigned*/ qint32 EnumFlagsValueType;
 
 class QTN_PE_CORE_EXPORT PropertyEnumFlagsBase: public SinglePropertyBase<EnumFlagsValueType>
 {
@@ -39,6 +39,11 @@ public:
     const EnumInfo *enumInfo() const { return m_enumInfo; }
     EnumInfo *enumInfo() { return m_enumInfo; }
     void setEnumInfo(EnumInfo *enumInfo) { m_enumInfo = enumInfo; }
+
+protected:
+    // string conversion implementation
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
 
 private:
     EnumInfo *m_enumInfo;

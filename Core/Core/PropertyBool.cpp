@@ -43,7 +43,7 @@ static bool getBoolValue(QString boolText, bool& success)
 bool PropertyBoolBase::fromStrImpl(const QString& str)
 {
     bool success = false;
-    bool value = getBoolValue(str, success);
+    bool value = getBoolValue(str.trimmed(), success);
 
     if (!success)
         return false;

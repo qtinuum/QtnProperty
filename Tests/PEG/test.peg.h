@@ -83,6 +83,7 @@ public:
     
     // start children declarations
     Qtinuum::PropertyQRect &rect;
+    Qtinuum::PropertyQString &s;
     // end children declarations
 
 protected:

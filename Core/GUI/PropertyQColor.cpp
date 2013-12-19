@@ -21,4 +21,25 @@
 namespace Qtinuum
 {
 
+bool PropertyQColorBase::fromStrImpl(const QString& str)
+{
+    QColor color(str.trimmed());
+    if (!color.isValid())
+        return false;
+
+    return setValue(color);
+}
+
+bool PropertyQColorBase::toStrImpl(QString& str) const
+{
+    QColor v = value();
+
+    if (v.alpha() < 255)
+        str = v.name(QColor::HexArgb);
+    else
+        str = v.name();
+
+    return true;
+}
+
 } // end namespace Qtinuum

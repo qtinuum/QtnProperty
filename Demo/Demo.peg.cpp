@@ -8,7 +8,7 @@ static Qtinuum::EnumInfo& create_COLOR_info()
     staticValues.append(Qtinuum::EnumValueInfo(COLOR::blue, "blue"));
     staticValues.append(Qtinuum::EnumValueInfo(COLOR::green, "green"));
     
-    static Qtinuum::EnumInfo enumInfo(staticValues);
+    static Qtinuum::EnumInfo enumInfo("COLOR", staticValues);
     return enumInfo;
 }
 
@@ -24,7 +24,7 @@ static Qtinuum::EnumInfo& create_FLAGS_info()
     staticValues.append(Qtinuum::EnumValueInfo(FLAGS::opt2, "Option2"));
     staticValues.append(Qtinuum::EnumValueInfo(FLAGS::opt3, "Option3"));
     
-    static Qtinuum::EnumInfo enumInfo(staticValues);
+    static Qtinuum::EnumInfo enumInfo("FLAGS", staticValues);
     return enumInfo;
 }
 

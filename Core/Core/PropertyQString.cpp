@@ -23,7 +23,18 @@ namespace Qtinuum
 
 bool PropertyQStringBase::fromStrImpl(const QString& str)
 {
-    return setValue(str);
+    QString strValue = str;
+
+    QString quotedStr = str.trimmed();
+    if (quotedStr.size() > 1)
+    {
+        if (quotedStr.startsWith('"') && quotedStr.endsWith('"'))
+        {
+            strValue = quotedStr.mid(1, quotedStr.size() - 2);
+        }
+    }
+
+    return setValue(strValue);
 }
 
 bool PropertyQStringBase::toStrImpl(QString& str) const
