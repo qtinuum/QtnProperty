@@ -1,4 +1,5 @@
 #include "TestProperty.h"
+#include "QObjectPropertySet.h"
 #include "PEG/test.peg.h"
 #include <QtTest/QtTest>
 #include <QtScript/QScriptEngine>
@@ -1421,6 +1422,33 @@ void TestProperty::stringConversions()
         QCOMPARE(p.yy.s.value(), tr("new value"));
         QCOMPARE(p.s.a.value(), true);
     }
+}
+
+void TestProperty::qObjectProperty()
+{
+    {
+        QObject obj;
+        obj.setObjectName("Item1");
+
+        Property* p = createQObjectProperty(&obj, "objectName");
+        QVERIFY(p);
+        PropertyQStringBase* ps = qobject_cast<PropertyQStringBase*>(p);
+        QVERIFY(ps);
+        QCOMPARE(ps->value(), tr("Item1"));
+        QCOMPARE(ps->state(), PropertyStateImmutable);
+        ps->setValue("NewItemName");
+        QCOMPARE(obj.objectName(), tr("NewItemName"));
+        QCOMPARE(ps->value(), tr("NewItemName"));
+    }
+}
+
+void TestProperty::qObjectPropertySet()
+{
+    QObject obj;
+    obj.setObjectName("name");
+
+    PropertySet* p = createQObjectPropertySet(&obj);
+    QVERIFY(p);
 }
 
 void TestProperty::checkPropertyStateIsNonSimple(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)

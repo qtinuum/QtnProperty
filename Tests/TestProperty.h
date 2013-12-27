@@ -37,6 +37,8 @@ private Q_SLOTS:
     void propertyScripting();
     void variantConversions();
     void stringConversions();
+    void qObjectProperty();
+    void qObjectPropertySet();
 
 public Q_SLOTS:
 

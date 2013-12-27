@@ -10,6 +10,7 @@ SOURCES += PropertyBase.cpp \
     Property.cpp \
     PropertySet.cpp \
     Enum.cpp \
+    QObjectPropertySet.cpp \
     Core/PropertyBool.cpp \
     Core/PropertyInt.cpp \
     Core/PropertyUInt.cpp \
@@ -29,6 +30,7 @@ HEADERS += CoreAPI.h\
     Property.h\
     PropertySet.h\
     Enum.h\
+    QObjectPropertySet.h \
     PropertyCore.h \
     PropertyGUI.h \
     Auxiliary/PropertyTemplates.h \

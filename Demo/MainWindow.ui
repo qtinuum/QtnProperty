@@ -65,8 +65,12 @@
         </property>
         <property name="text">
          <string>Script examples:
-params.count.value = 6
-params.Internal.state</string>
+params.count.value = 6;
+print(params.Internal.state);
+params.count.propertyDidChange.connect(
+    function(p1, p2) {
+        print(p2.name+&quot; is &quot;+p2.value+&quot; now&quot;);
+});</string>
         </property>
         <property name="textFormat">
          <enum>Qt::PlainText</enum>
