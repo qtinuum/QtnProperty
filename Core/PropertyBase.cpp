@@ -445,7 +445,7 @@ void PropertyBase::setStateInherited(PropertyState stateToSet, bool force)
 void PropertyBase::masterPropertyStateDidChange(const PropertyBase *changedProperty, const PropertyBase *firedProperty, PropertyChangeReason reason)
 {
     // state has changed and not from child property
-    if ((reason | PropertyChangeReasonState) && (changedProperty == firedProperty))
+    if ((reason & PropertyChangeReasonState) && (changedProperty == firedProperty))
     {
         setStateInherited(changedProperty->state());
     }

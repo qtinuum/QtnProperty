@@ -44,7 +44,7 @@ void PropertyEditorHandlerBase::onObjectDestroyed(QObject *object)
 
 void PropertyEditorHandlerBase::onPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason)
 {
-    if ((reason == PropertyChangeReasonValue) && (&propertyBase() == firedProperty))
+    if ((reason & PropertyChangeReasonValue) && (&propertyBase() == firedProperty))
         updateEditor();
 }
 
