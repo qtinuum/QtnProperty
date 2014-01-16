@@ -15,9 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->pw->setParts(PropertyWidgetPartsDescriptionPanel);
 
-#ifdef Q_OS_WIN32
+//#ifdef Q_OS_WIN32
     ui->pw->propertyView()->setItemHeightRatio(1.3f);
-#endif
+//#endif
 
     qtn::PropertySet* ps = new PropertySetMain(this);
     ui->pw->setPropertySet(ps);

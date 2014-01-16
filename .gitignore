@@ -4,3 +4,4 @@
 *.lexer.*
 *.parser.*
 *~
+/.directory

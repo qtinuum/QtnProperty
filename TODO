@@ -5,11 +5,23 @@ Implement PropertySetForm - property widgets on form
 AutoValue feature
 
 Make wrapper propertyset for QObject derived classes
+Add reset button
+Connect to QObject property changed signal
+
+remove namespace!!!
 
 Save/Load via XML
+Save/Load in JSON
+
+PropertyTypes:
+1. Date/Time
+2. Bitmap ???
+3. Brush
+4. Cursor
+5. Icon
+6. Pen
 
 
-Demo with change properties console
 
 owner feature????
 How to define default PropertySet?

@@ -137,6 +137,7 @@ PropertySet* createQObjectPropertySet(QObject* object)
     if (!object)
         return nullptr;
 
+    // collect property sets by object's classes
     QList<PropertySet*> propertySetsByClass;
 
     const QMetaObject* metaObject = object->metaObject();
@@ -145,7 +146,7 @@ PropertySet* createQObjectPropertySet(QObject* object)
         if (metaObject->propertyCount() > 0)
         {
             QList<Property*> properties;
-            for (int propertyIndex = 0, n = metaObject->propertyCount(); propertyIndex < n; ++propertyIndex)
+            for (int propertyIndex = metaObject->propertyOffset(), n = metaObject->propertyCount(); propertyIndex < n; ++propertyIndex)
             {
                 QMetaProperty metaProperty = metaObject->property(propertyIndex);
                 Property* property = createQObjectProperty(object, metaProperty);
@@ -174,7 +175,9 @@ PropertySet* createQObjectPropertySet(QObject* object)
     if (propertySetsByClass.isEmpty())
         return nullptr;
 
+    // move collected property sets to object's property set
     QScopedPointer<PropertySet> propertySet(new PropertySet(object));
+    propertySet->setName(object->objectName());
 
     foreach (PropertySet* propertySetByClass, propertySetsByClass)
     {

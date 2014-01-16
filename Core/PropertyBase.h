@@ -30,7 +30,6 @@ namespace Qtinuum
 
 class PropertySet;
 class Property;
-class PropertyVisitor;
 
 class QTN_PE_CORE_EXPORT PropertyBase: public QObject
 {

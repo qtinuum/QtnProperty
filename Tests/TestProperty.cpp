@@ -1444,11 +1444,29 @@ void TestProperty::qObjectProperty()
 
 void TestProperty::qObjectPropertySet()
 {
-    QObject obj;
-    obj.setObjectName("name");
+    {
+        QObject obj;
+        obj.setObjectName("name");
 
-    PropertySet* p = createQObjectPropertySet(&obj);
-    QVERIFY(p);
+        PropertySet* p = createQObjectPropertySet(&obj);
+        QVERIFY(p);
+        QCOMPARE(p->name(), tr("name"));
+        const QList<PropertyBase*>& subPropertySets = p->childProperties();
+        QCOMPARE(subPropertySets.size(), 1);
+
+        PropertySet* p1 = subPropertySets[0]->asPropertySet();
+        QVERIFY(p1);
+        QCOMPARE(p1->name(), tr("QObject"));
+        QCOMPARE(p1->childProperties().size(), 1);
+    }
+
+    {
+        QCoreApplication* app = QCoreApplication::instance();
+        QVERIFY(app);
+
+        PropertySet* p = createQObjectPropertySet(app);
+        QVERIFY(p);
+    }
 }
 
 void TestProperty::checkPropertyStateIsNonSimple(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)
