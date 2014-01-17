@@ -21,17 +21,14 @@
 
 #include "../Auxiliary/PropertyTemplates.h"
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyUIntBase: public NumericPropertyBase<SinglePropertyBase<quint32> >
+class QTN_PE_CORE_EXPORT QtnPropertyUIntBase: public QtnNumericPropertyBase<QtnSinglePropertyBase<quint32> >
 {
     Q_OBJECT
-    PropertyUIntBase(const PropertyUIntBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyUIntBase(const QtnPropertyUIntBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyUIntBase(QObject *parent)
-        : NumericPropertyBase<SinglePropertyBase<quint32> >(parent)
+    explicit QtnPropertyUIntBase(QObject *parent)
+        : QtnNumericPropertyBase<QtnSinglePropertyBase<quint32> >(parent)
     {
     }
 
@@ -43,39 +40,37 @@ protected:
     // variant conversion implementation
     bool fromVariantImpl(const QVariant& var) override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyUIntBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyUIntBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyUIntBase, quint32)
+P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyUIntBase, quint32)
 
-class QTN_PE_CORE_EXPORT PropertyUIntCallback: public SinglePropertyCallback<PropertyUIntBase>
+class QTN_PE_CORE_EXPORT QtnPropertyUIntCallback: public QtnSinglePropertyCallback<QtnPropertyUIntBase>
 {
     Q_OBJECT
-    PropertyUIntCallback(const PropertyUIntCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyUIntCallback(const QtnPropertyUIntCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyUIntCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyUIntBase>(parent)
+    explicit QtnPropertyUIntCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyUIntBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyUIntCallback, PropertyUIntBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyUIntCallback, QtnPropertyUIntBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyUInt: public SinglePropertyValue<PropertyUIntBase>
+class QTN_PE_CORE_EXPORT QtnPropertyUInt: public QtnSinglePropertyValue<QtnPropertyUIntBase>
 {
     Q_OBJECT
-    PropertyUInt(const PropertyUInt& other) Q_DECL_EQ_DELETE;
+    QtnPropertyUInt(const QtnPropertyUInt& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyUInt(QObject *parent)
-        : SinglePropertyValue<PropertyUIntBase>(parent)
+    explicit QtnPropertyUInt(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyUIntBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyUInt, PropertyUIntBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyUInt, QtnPropertyUIntBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYUINT_H

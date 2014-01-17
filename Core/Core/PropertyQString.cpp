@@ -18,10 +18,7 @@
 
 #include "PropertyQString.h"
 
-namespace Qtinuum
-{
-
-bool PropertyQStringBase::fromStrImpl(const QString& str)
+bool QtnPropertyQStringBase::fromStrImpl(const QString& str)
 {
     QString strValue = str;
 
@@ -37,10 +34,8 @@ bool PropertyQStringBase::fromStrImpl(const QString& str)
     return setValue(strValue);
 }
 
-bool PropertyQStringBase::toStrImpl(QString& str) const
+bool QtnPropertyQStringBase::toStrImpl(QString& str) const
 {
     str = value();
     return true;
 }
-
-} // end namespace Qtinuum

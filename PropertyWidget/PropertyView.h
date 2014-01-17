@@ -29,62 +29,59 @@
 class QRubberBand;
 class QHelpEvent;
 
-namespace Qtinuum
-{
-
-class QTN_PW_EXPORT PropertyViewFilter
+class QTN_PW_EXPORT QtnPropertyViewFilter
 {
 public:
-    virtual bool accept(const PropertyBase* property) const = 0;
+    virtual bool accept(const QtnPropertyBase* property) const = 0;
 
-    virtual ~PropertyViewFilter() {}
+    virtual ~QtnPropertyViewFilter() {}
 
 protected:
-    PropertyViewFilter() {}
+    QtnPropertyViewFilter() {}
 };
 
-enum PropertyViewStyleFlag
+enum QtnPropertyViewStyleFlag
 {
-    PropertyViewStyleNone = 0x0000,
-    PropertyViewStyleShowRoot = 0x0001,
-    PropertyViewStyleLiveSplit = 0x0002,
-    PropertyViewStyleDblClickActivation = 0x0004
-    //PropertyViewStyle = 0x0008
+    QtnPropertyViewStyleNone = 0x0000,
+    QtnPropertyViewStyleShowRoot = 0x0001,
+    QtnPropertyViewStyleLiveSplit = 0x0002,
+    QtnPropertyViewStyleDblClickActivation = 0x0004
+    //QtnPropertyViewStyle = 0x0008
 };
-Q_DECLARE_FLAGS(PropertyViewStyle, PropertyViewStyleFlag)
-Q_DECLARE_OPERATORS_FOR_FLAGS(PropertyViewStyle)
+Q_DECLARE_FLAGS(QtnPropertyViewStyle, QtnPropertyViewStyleFlag)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyViewStyle)
 
 
-class QTN_PW_EXPORT PropertyView: public QAbstractScrollArea
+class QTN_PW_EXPORT QtnPropertyView: public QAbstractScrollArea
 {
     Q_OBJECT
-    Q_DISABLE_COPY(PropertyView)
+    Q_DISABLE_COPY(QtnPropertyView)
 
 public:
-    explicit PropertyView(QWidget* parent = nullptr, PropertySet* propertySet = nullptr);
-    ~PropertyView();
+    explicit QtnPropertyView(QWidget* parent = nullptr, QtnPropertySet* propertySet = nullptr);
+    ~QtnPropertyView();
 
-    const PropertySet* propertySet() const { return m_propertySet; }
-    PropertySet* propertySet() { return m_propertySet; }
-    void setPropertySet(PropertySet* newPropertySet);
+    const QtnPropertySet* propertySet() const { return m_propertySet; }
+    QtnPropertySet* propertySet() { return m_propertySet; }
+    void setPropertySet(QtnPropertySet* newPropertySet);
 
-    PropertyBase* activeProperty() { return m_activeProperty; }
-    const PropertyBase* activeProperty() const { return m_activeProperty; }
-    bool setActiveProperty(PropertyBase*newActiveProperty);
+    QtnPropertyBase* activeProperty() { return m_activeProperty; }
+    const QtnPropertyBase* activeProperty() const { return m_activeProperty; }
+    bool setActiveProperty(QtnPropertyBase*newActiveProperty);
 
-    bool ensureVisible(const PropertyBase* property);
+    bool ensureVisible(const QtnPropertyBase* property);
 
     float itemHeightRatio() const { return m_itemHeightRatio; }
     bool setItemHeightRatio(float itemHeightRatio);
 
-    PropertyViewStyle propertyViewStyle() const { return m_style; }
-    void setPropertyViewStyle(PropertyViewStyle style);
-    void addPropertyViewStyle(PropertyViewStyle style);
-    void removePropertyViewStyle(PropertyViewStyle style);
+    QtnPropertyViewStyle propertyViewStyle() const { return m_style; }
+    void setPropertyViewStyle(QtnPropertyViewStyle style);
+    void addPropertyViewStyle(QtnPropertyViewStyle style);
+    void removePropertyViewStyle(QtnPropertyViewStyle style);
 
 Q_SIGNALS:
     // emits when active property has changed
-    void activePropertyChanged(PropertyBase* activeProperty);
+    void activePropertyChanged(QtnPropertyBase* activeProperty);
 
 protected:
     void paintEvent(QPaintEvent* e) override;
@@ -102,8 +99,8 @@ private:
 
     struct Item
     {
-        PropertyBase* property;
-        QScopedPointer<PropertyDelegate> delegate;
+        QtnPropertyBase* property;
+        QScopedPointer<QtnPropertyDelegate> delegate;
         int level;
 
         Item *parent;
@@ -115,7 +112,7 @@ private:
               parent(nullptr)
         {}
 
-        bool collapsed() const { return property->stateLocal() & PropertyStateCollapsed; }
+        bool collapsed() const { return property->stateLocal() & QtnPropertyStateCollapsed; }
     };
 
     struct Action
@@ -146,7 +143,7 @@ private:
 
 private:
     void updateItemsTree();
-    static Item* createItemsTree(PropertyBase* rootProperty, const PropertyDelegateFactory& factory);
+    static Item* createItemsTree(QtnPropertyBase* rootProperty, const QtnPropertyDelegateFactory& factory);
 
     void invalidateVisibleItems();
     void validateVisibleItems() const;
@@ -159,7 +156,7 @@ private:
 
     void changeActivePropertyByIndex(int index);
     int visibleItemIndexByPoint(QPoint pos) const;
-    int visibleItemIndexByProperty(const PropertyBase* property) const;
+    int visibleItemIndexByProperty(const QtnPropertyBase* property) const;
     QRect visibleItemRect(int index) const;
 
     bool processItemActionByMouse(int index, QMouseEvent* e);
@@ -173,20 +170,20 @@ private:
     int splitPosition() const;
     void updateSplitRatio(float splitRatio);
 
-    void OnPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason);
+    void OnPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 
 private:
-    PropertySet* m_propertySet;
-    PropertyBase* m_activeProperty;
+    QtnPropertySet* m_propertySet;
+    QtnPropertyBase* m_activeProperty;
 
-    PropertyDelegateFactory m_delegateFactory;
+    QtnPropertyDelegateFactory m_delegateFactory;
 
     QScopedPointer<Item> m_itemsTree;
 
     mutable QList<VisibleItem> m_visibleItems;
     mutable bool m_visibleItemsValid;
 
-    PropertyViewStyle m_style;
+    QtnPropertyViewStyle m_style;
     int m_itemHeight;
     float m_itemHeightRatio;
     int m_leadMargin;
@@ -196,7 +193,5 @@ private:
     float m_splitRatio;
     QRubberBand* m_rubberBand;
 };
-
-} // end namespace Qtinuum
 
 #endif // QTN_PROPERTYVIEW_H

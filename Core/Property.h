@@ -23,38 +23,33 @@
 #include "Auxiliary/PropertyDelegateInfo.h"
 #include <functional>
 
-namespace Qtinuum
-{
+class QtnPropertyDelegateInfoGetter;
 
-class PropertyDelegateInfoGetter;
-
-class QTN_PE_CORE_EXPORT Property: public PropertyBase
+class QTN_PE_CORE_EXPORT QtnProperty: public QtnPropertyBase
 {
     Q_OBJECT
-    Q_DISABLE_COPY(Property)
+    Q_DISABLE_COPY(QtnProperty)
 
 public:
-    virtual ~Property();
+    virtual ~QtnProperty();
 
     // delegates
-    const PropertyDelegateInfo* delegate() const;
-    void setDelegate(const PropertyDelegateInfo& delegate);
-    void setDelegateCallback(const std::function<const PropertyDelegateInfo*()>& callback);
+    const QtnPropertyDelegateInfo* delegate() const;
+    void setDelegate(const QtnPropertyDelegateInfo& delegate);
+    void setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback);
 
     // casts
-    Property* asProperty() override { return this; }
-    const Property* asProperty() const override { return this; }
+    QtnProperty* asProperty() override { return this; }
+    const QtnProperty* asProperty() const override { return this; }
 
 Q_SIGNALS:
-    void propertyValueAccept(const Property* property, PropertyValuePtr valueToAccept, bool* accept);
+    void propertyValueAccept(const QtnProperty* property, QtnPropertyValuePtr valueToAccept, bool* accept);
 
 protected:
-    explicit Property(QObject* parent);
+    explicit QtnProperty(QObject* parent);
 
 private:
-    QScopedPointer<PropertyDelegateInfoGetter> m_delegateInfoGetter;
+    QScopedPointer<QtnPropertyDelegateInfoGetter> m_delegateInfoGetter;
 };
-
-} // end namespace Qtinuum
 
 #endif // QTN_PROPERTY_H

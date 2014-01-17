@@ -22,23 +22,20 @@
 #include "../Auxiliary/PropertyTemplates.h"
 #include "../Enum.h"
 
-namespace Qtinuum
-{
-
 // not unsigned to disable warnings
-typedef /*unsigned*/ qint32 EnumFlagsValueType;
+typedef /*unsigned*/ qint32 QtnEnumFlagsValueType;
 
-class QTN_PE_CORE_EXPORT PropertyEnumFlagsBase: public SinglePropertyBase<EnumFlagsValueType>
+class QTN_PE_CORE_EXPORT QtnPropertyEnumFlagsBase: public QtnSinglePropertyBase<QtnEnumFlagsValueType>
 {
     Q_OBJECT
-    PropertyEnumFlagsBase(const PropertyEnumFlagsBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyEnumFlagsBase(const QtnPropertyEnumFlagsBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyEnumFlagsBase(QObject *parent);
+    explicit QtnPropertyEnumFlagsBase(QObject* parent);
 
-    const EnumInfo *enumInfo() const { return m_enumInfo; }
-    EnumInfo *enumInfo() { return m_enumInfo; }
-    void setEnumInfo(EnumInfo *enumInfo) { m_enumInfo = enumInfo; }
+    const QtnEnumInfo* enumInfo() const { return m_enumInfo; }
+    QtnEnumInfo* enumInfo() { return m_enumInfo; }
+    void setEnumInfo(QtnEnumInfo* enumInfo) { m_enumInfo = enumInfo; }
 
 protected:
     // string conversion implementation
@@ -46,41 +43,39 @@ protected:
     bool toStrImpl(QString& str) const override;
 
 private:
-    EnumInfo *m_enumInfo;
+    QtnEnumInfo* m_enumInfo;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyEnumFlagsBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyEnumFlagsBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyEnumFlagsBase, EnumFlagsValueType)
+P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyEnumFlagsBase, QtnEnumFlagsValueType)
 
-class QTN_PE_CORE_EXPORT PropertyEnumFlagsCallback: public SinglePropertyCallback<PropertyEnumFlagsBase>
+class QTN_PE_CORE_EXPORT QtnPropertyEnumFlagsCallback: public QtnSinglePropertyCallback<QtnPropertyEnumFlagsBase>
 {
     Q_OBJECT
-    PropertyEnumFlagsCallback(const PropertyEnumFlagsCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyEnumFlagsCallback(const QtnPropertyEnumFlagsCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyEnumFlagsCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyEnumFlagsBase>(parent)
+    explicit QtnPropertyEnumFlagsCallback(QObject* parent)
+        : QtnSinglePropertyCallback<QtnPropertyEnumFlagsBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumFlagsCallback, PropertyEnumFlagsBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnumFlagsCallback, QtnPropertyEnumFlagsBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyEnumFlags: public SinglePropertyValue<PropertyEnumFlagsBase>
+class QTN_PE_CORE_EXPORT QtnPropertyEnumFlags: public QtnSinglePropertyValue<QtnPropertyEnumFlagsBase>
 {
     Q_OBJECT
-    PropertyEnumFlags(const PropertyEnumFlags& other) Q_DECL_EQ_DELETE;
+    QtnPropertyEnumFlags(const QtnPropertyEnumFlags& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyEnumFlags(QObject *parent)
-        : SinglePropertyValue<PropertyEnumFlagsBase>(parent)
+    explicit QtnPropertyEnumFlags(QObject* parent)
+        : QtnSinglePropertyValue<QtnPropertyEnumFlagsBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumFlags, PropertyEnumFlagsBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnumFlags, QtnPropertyEnumFlagsBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYENUMFLAGS_H

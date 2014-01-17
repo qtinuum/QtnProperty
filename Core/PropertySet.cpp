@@ -19,48 +19,45 @@
 #include "PropertySet.h"
 #include <QRegularExpression>
 
-namespace Qtinuum
+void qtnAddPropertyAsChild(QObject *parent, QtnPropertyBase* child, bool moveOwnership)
 {
-
-void addPropertyAsChild(QObject *parent, PropertyBase* child, bool moveOwnership)
-{
-    PropertySet* propertySet = qobject_cast<PropertySet*>(parent);
+    QtnPropertySet* propertySet = qobject_cast<QtnPropertySet*>(parent);
     if (propertySet)
         propertySet->addChildProperty(child, moveOwnership);
 }
 
-void removePropertyAsChild(QObject* parent, PropertyBase* child)
+void qtnRemovePropertyAsChild(QObject* parent, QtnPropertyBase* child)
 {
-    PropertySet* propertySet = qobject_cast<PropertySet*>(parent);
+    QtnPropertySet* propertySet = qobject_cast<QtnPropertySet*>(parent);
     if (propertySet)
         propertySet->removeChildProperty(child);
 }
 
-void connectChildProperty(PropertySet* masterProperty, PropertyBase* childProperty)
+void qtnConnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty)
 {
-    QObject::connect(childProperty, &PropertyBase::propertyWillChange, masterProperty, &PropertySet::childPropertyWillChange);
-    QObject::connect(childProperty, &PropertyBase::propertyDidChange, masterProperty, &PropertySet::childPropertyDidChange);
+    QObject::connect(childProperty, &QtnPropertyBase::propertyWillChange, masterProperty, &QtnPropertySet::childPropertyWillChange);
+    QObject::connect(childProperty, &QtnPropertyBase::propertyDidChange, masterProperty, &QtnPropertySet::childPropertyDidChange);
 }
 
-void disconnectChildProperty(PropertySet* masterProperty, PropertyBase* childProperty)
+void qtnDisconnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty)
 {
-    QObject::disconnect(childProperty, &PropertyBase::propertyWillChange, masterProperty, &PropertySet::childPropertyWillChange);
-    QObject::disconnect(childProperty, &PropertyBase::propertyDidChange, masterProperty, &PropertySet::childPropertyDidChange);
+    QObject::disconnect(childProperty, &QtnPropertyBase::propertyWillChange, masterProperty, &QtnPropertySet::childPropertyWillChange);
+    QObject::disconnect(childProperty, &QtnPropertyBase::propertyDidChange, masterProperty, &QtnPropertySet::childPropertyDidChange);
 }
 
-PropertySet::PropertySet(QObject* parent)
-    : PropertyBase(parent)
+QtnPropertySet::QtnPropertySet(QObject* parent)
+    : QtnPropertyBase(parent)
 {
 }
 
-PropertySet::~PropertySet()
+QtnPropertySet::~QtnPropertySet()
 {
     clearChildProperties();
 }
 
-QList<PropertyBase*> PropertySet::findChildProperties(QString name, Qt::FindChildOptions options)
+QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString name, Qt::FindChildOptions options)
 {
-    QList<PropertyBase*> result;
+    QList<QtnPropertyBase*> result;
 
     // normilize name
     name = name.trimmed();
@@ -76,10 +73,10 @@ QList<PropertyBase*> PropertySet::findChildProperties(QString name, Qt::FindChil
         if (nameTail.isEmpty())
             return result;
 
-        QList<PropertyBase*> headResult = findChildProperties(nameHead, options);
-        foreach (PropertyBase* headProperty, headResult)
+        QList<QtnPropertyBase*> headResult = findChildProperties(nameHead, options);
+        foreach (QtnPropertyBase* headProperty, headResult)
         {
-            PropertySet* headPropertySet = headProperty->asPropertySet();
+            QtnPropertySet* headPropertySet = headProperty->asPropertySet();
             if (!headPropertySet)
                 continue;
 
@@ -88,7 +85,7 @@ QList<PropertyBase*> PropertySet::findChildProperties(QString name, Qt::FindChil
     }
     else
     {
-        foreach(PropertyBase* childProperty, m_childProperties)
+        foreach(QtnPropertyBase* childProperty, m_childProperties)
         {
             if (childProperty->name() == name)
                 result.append(childProperty);
@@ -96,9 +93,9 @@ QList<PropertyBase*> PropertySet::findChildProperties(QString name, Qt::FindChil
 
         if (options & Qt::FindChildrenRecursively)
         {
-            foreach(PropertyBase* childProperty, m_childProperties)
+            foreach(QtnPropertyBase* childProperty, m_childProperties)
             {
-                PropertySet* propertySet = childProperty->asPropertySet();
+                QtnPropertySet* propertySet = childProperty->asPropertySet();
                 if (propertySet)
                     propertySet->findChildPropertiesRecursive(name, result);
             }
@@ -108,11 +105,11 @@ QList<PropertyBase*> PropertySet::findChildProperties(QString name, Qt::FindChil
     return result;
 }
 
-QList<PropertyBase*> PropertySet::findChildProperties(const QRegularExpression& re, Qt::FindChildOptions options)
+QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(const QRegularExpression& re, Qt::FindChildOptions options)
 {
-    QList<PropertyBase*> result;
+    QList<QtnPropertyBase*> result;
 
-    foreach(PropertyBase* childProperty, m_childProperties)
+    foreach(QtnPropertyBase* childProperty, m_childProperties)
     {
         if (re.match(childProperty->name()).isValid())
             result.append(childProperty);
@@ -120,9 +117,9 @@ QList<PropertyBase*> PropertySet::findChildProperties(const QRegularExpression& 
 
     if (options & Qt::FindChildrenRecursively)
     {
-        foreach(PropertyBase* childProperty, m_childProperties)
+        foreach(QtnPropertyBase* childProperty, m_childProperties)
         {
-            PropertySet* propertySet = childProperty->asPropertySet();
+            QtnPropertySet* propertySet = childProperty->asPropertySet();
             if (propertySet)
                 propertySet->findChildPropertiesRecursive(re, result);
         }
@@ -131,9 +128,9 @@ QList<PropertyBase*> PropertySet::findChildProperties(const QRegularExpression& 
     return result;
 }
 
-PropertyBase* PropertySet::findChildProperty(PropertyID id)
+QtnPropertyBase* QtnPropertySet::findChildProperty(QtnPropertyID id)
 {
-    foreach(PropertyBase* childProperty, m_childProperties)
+    foreach(QtnPropertyBase* childProperty, m_childProperties)
     {
         if (childProperty->id() == id)
             return childProperty;
@@ -142,35 +139,35 @@ PropertyBase* PropertySet::findChildProperty(PropertyID id)
     return nullptr;
 }
 
-void PropertySet::clearChildProperties()
+void QtnPropertySet::clearChildProperties()
 {
     if (m_childProperties.isEmpty())
         return;
 
-    foreach(PropertyBase* childProperty, m_childProperties)
+    foreach(QtnPropertyBase* childProperty, m_childProperties)
     {
-        disconnectChildProperty(this, childProperty);
+        qtnDisconnectChildProperty(this, childProperty);
     }
 
-    Q_EMIT propertyWillChange(this, this, PropertyChangeReasonChildPropertyRemove, PropertyValuePtr(0));
+    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonChildPropertyRemove, QtnPropertyValuePtr(0));
 
     m_childProperties.clear();
 
-    Q_EMIT propertyDidChange(this, this, PropertyChangeReasonChildPropertyRemove);
+    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonChildPropertyRemove);
 }
 
-bool PropertySet::addChildProperty(PropertyBase* childProperty, bool moveOwnership)
+bool QtnPropertySet::addChildProperty(QtnPropertyBase* childProperty, bool moveOwnership)
 {
     Q_CHECK_PTR(childProperty);
 
-    Q_EMIT propertyWillChange(this, this, PropertyChangeReasonChildPropertyAdd, PropertyValuePtr(childProperty));
+    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonChildPropertyAdd, QtnPropertyValuePtr(childProperty));
 
     m_childProperties.append(childProperty);
-    connectChildProperty(this, childProperty);
+    qtnConnectChildProperty(this, childProperty);
     if (moveOwnership)
         childProperty->setParent(this);
 
-    Q_EMIT propertyDidChange(this, this, PropertyChangeReasonChildPropertyAdd);
+    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonChildPropertyAdd);
 
     m_ignoreChildPropertyChanges = true;
     childProperty->setStateInherited(state());
@@ -179,7 +176,7 @@ bool PropertySet::addChildProperty(PropertyBase* childProperty, bool moveOwnersh
     return true;
 }
 
-bool PropertySet::removeChildProperty(PropertyBase* childProperty)
+bool QtnPropertySet::removeChildProperty(QtnPropertyBase* childProperty)
 {
     Q_CHECK_PTR(childProperty);
 
@@ -189,44 +186,44 @@ bool PropertySet::removeChildProperty(PropertyBase* childProperty)
 
     Q_ASSERT(childPropertyIndex < m_childProperties.size());
 
-    Q_EMIT propertyWillChange(this, this, PropertyChangeReasonChildPropertyRemove, PropertyValuePtr(childProperty));
+    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonChildPropertyRemove, QtnPropertyValuePtr(childProperty));
 
-    disconnectChildProperty(this, childProperty);
+    qtnDisconnectChildProperty(this, childProperty);
     m_childProperties.erase(m_childProperties.begin()+childPropertyIndex);
     if (childProperty->parent() == this)
         childProperty->setParent(nullptr);
 
-    Q_EMIT propertyDidChange(this, this, PropertyChangeReasonChildPropertyRemove);
+    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonChildPropertyRemove);
 
     return true;
 }
 
-PropertySet* PropertySet::createNew(QObject* parentForNew) const
+QtnPropertySet* QtnPropertySet::createNew(QObject* parentForNew) const
 {
     return createNewImpl(parentForNew);
 }
 
-PropertySet* PropertySet::createCopy(QObject* parentForCopy) const
+QtnPropertySet* QtnPropertySet::createCopy(QObject* parentForCopy) const
 {
     return createCopyImpl(parentForCopy);
 }
 
-bool PropertySet::copyValues(PropertySet* propertySetCopyFrom, PropertyState ignoreMask)
+bool QtnPropertySet::copyValues(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
     return copyValuesImpl(propertySetCopyFrom, ignoreMask);
 }
 
-void PropertySet::updateStateInherited(bool force)
+void QtnPropertySet::updateStateInherited(bool force)
 {
     m_ignoreChildPropertyChanges = true;
-    foreach(PropertyBase* childProperty, m_childProperties)
+    foreach(QtnPropertyBase* childProperty, m_childProperties)
     {
         childProperty->setStateInherited(state(), force);
     }
     m_ignoreChildPropertyChanges = false;
 }
 
-bool PropertySet::fromStrImpl(const QString& str)
+bool QtnPropertySet::fromStrImpl(const QString& str)
 {
     static QRegExp parserLine("^\\s*([^=]+)=(.*)$");
 
@@ -248,7 +245,7 @@ bool PropertySet::fromStrImpl(const QString& str)
         QString propertyPath = params[1];
         QString propertyStrValue = params[2];
 
-        QList<PropertyBase*> subProperties = findChildProperties(propertyPath, Qt::FindChildrenRecursively);
+        QList<QtnPropertyBase*> subProperties = findChildProperties(propertyPath, Qt::FindChildrenRecursively);
         if (subProperties.size() != 1)
             continue;
 
@@ -259,14 +256,14 @@ bool PropertySet::fromStrImpl(const QString& str)
     return anySuccess;
 }
 
-bool PropertySet::toStrImpl(QString& str) const
+bool QtnPropertySet::toStrImpl(QString& str) const
 {
     return false;
 }
 
-bool PropertySet::loadImpl(QDataStream& stream)
+bool QtnPropertySet::loadImpl(QDataStream& stream)
 {
-    if (!PropertyBase::loadImpl(stream))
+    if (!QtnPropertyBase::loadImpl(stream))
         return false;
 
     if (stream.status() != QDataStream::Ok)
@@ -280,14 +277,14 @@ bool PropertySet::loadImpl(QDataStream& stream)
 
     forever
     {
-        PropertyID id = PropertyIDInvalid;
+        QtnPropertyID id = QtnPropertyIDInvalid;
         stream >> id;
 
         // no child properties any more
-        if (id == PropertyIDInvalid)
+        if (id == QtnPropertyIDInvalid)
             break;
 
-        PropertyBase *childProperty = findChildProperty(id);
+        QtnPropertyBase *childProperty = findChildProperty(id);
         if (!childProperty)
         {
             // cannot find subproperty -> skip
@@ -296,7 +293,7 @@ bool PropertySet::loadImpl(QDataStream& stream)
             continue;
         }
 
-        if (childProperty->state() & PropertyStateNonSerialized)
+        if (childProperty->state() & QtnPropertyStateNonSerialized)
         {
             // should not load such subproperty
             if (!skipLoad(stream))
@@ -311,9 +308,9 @@ bool PropertySet::loadImpl(QDataStream& stream)
     return stream.status() == QDataStream::Ok;
 }
 
-bool PropertySet::saveImpl(QDataStream& stream) const
+bool QtnPropertySet::saveImpl(QDataStream& stream) const
 {
-    if (!PropertyBase::saveImpl(stream))
+    if (!QtnPropertyBase::saveImpl(stream))
         return false;
 
     if (stream.status() != QDataStream::Ok)
@@ -323,12 +320,12 @@ bool PropertySet::saveImpl(QDataStream& stream) const
     quint8 version = 1;
     stream << version;
 
-    foreach (PropertyBase* childProperty, m_childProperties)
+    foreach (QtnPropertyBase* childProperty, m_childProperties)
     {
-        if (childProperty->state() & PropertyStateNonSerialized)
+        if (childProperty->state() & QtnPropertyStateNonSerialized)
             continue;
 
-        if (childProperty->id() == PropertyIDInvalid)
+        if (childProperty->id() == QtnPropertyIDInvalid)
         {
             // serializable properties should have unique ids
             Q_ASSERT(false && "serializable properties should have unique ids");
@@ -343,38 +340,38 @@ bool PropertySet::saveImpl(QDataStream& stream) const
     }
 
     // mark end of children list
-    stream << PropertyIDInvalid;
+    stream << QtnPropertyIDInvalid;
 
     return stream.status() == QDataStream::Ok;
 }
 
-void PropertySet::findChildPropertiesRecursive(const QString& name, QList<PropertyBase*>& result)
+void QtnPropertySet::findChildPropertiesRecursive(const QString& name, QList<QtnPropertyBase*>& result)
 {
-    foreach(PropertyBase* childProperty, m_childProperties)
+    foreach(QtnPropertyBase* childProperty, m_childProperties)
     {
         if (childProperty->name() == name)
             result.append(childProperty);
 
-        PropertySet* propertySet = childProperty->asPropertySet();
+        QtnPropertySet* propertySet = childProperty->asPropertySet();
         if (propertySet)
             propertySet->findChildPropertiesRecursive(name, result);
     }
 }
 
-void PropertySet::findChildPropertiesRecursive(const QRegularExpression& re, QList<PropertyBase*>& result)
+void QtnPropertySet::findChildPropertiesRecursive(const QRegularExpression& re, QList<QtnPropertyBase*>& result)
 {
-    foreach(PropertyBase* childProperty, m_childProperties)
+    foreach(QtnPropertyBase* childProperty, m_childProperties)
     {
         if (re.match(childProperty->name()).isValid())
             result.append(childProperty);
 
-        PropertySet* propertySet = childProperty->asPropertySet();
+        QtnPropertySet* propertySet = childProperty->asPropertySet();
         if (propertySet)
             propertySet->findChildPropertiesRecursive(re, result);
     }
 }
 
-void PropertySet::childPropertyWillChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue)
+void QtnPropertySet::childPropertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue)
 {
     if (m_ignoreChildPropertyChanges)
         return;
@@ -382,12 +379,10 @@ void PropertySet::childPropertyWillChange(const PropertyBase* changedProperty, c
     Q_EMIT propertyWillChange(changedProperty, this, reason, newValue);
 }
 
-void PropertySet::childPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason)
+void QtnPropertySet::childPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
     if (m_ignoreChildPropertyChanges)
         return;
 
     Q_EMIT propertyDidChange(changedProperty, this, reason);
 }
-
-} // end namespace Qtinuum

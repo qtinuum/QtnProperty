@@ -18,15 +18,12 @@
 
 #include "PropertyDelegateFactory.h"
 
-namespace Qtinuum
-{
-
-PropertyDelegateFactory::PropertyDelegateFactory(const PropertyDelegateFactory* superFactory)
+QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory)
     : m_superFactory(superFactory)
 {
 }
 
-PropertyDelegate* PropertyDelegateFactory::createDelegate(Property& owner) const
+QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnProperty& owner) const
 {
     const QMetaObject* metaObject = owner.metaObject();
     while (metaObject)
@@ -38,7 +35,7 @@ PropertyDelegate* PropertyDelegateFactory::createDelegate(Property& owner) const
         {
             // try to find delegate factory by name
             const CreateItem& createItem = it.value();
-            const PropertyDelegateInfo* propertyDelegate = owner.delegate();
+            const QtnPropertyDelegateInfo* propertyDelegate = owner.delegate();
             QByteArray delegateName;
             if (propertyDelegate)
                 delegateName = propertyDelegate->name;
@@ -70,10 +67,10 @@ PropertyDelegate* PropertyDelegateFactory::createDelegate(Property& owner) const
     if (m_superFactory)
         return m_superFactory->createDelegate(owner);
 
-    return 0;
+    return nullptr;
 }
 
-bool PropertyDelegateFactory::registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)
+bool QtnPropertyDelegateFactory::registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)
 {
     Q_ASSERT(propertyMetaObject);
     Q_ASSERT(createFunction);
@@ -89,7 +86,7 @@ bool PropertyDelegateFactory::registerDelegateDefault(const QMetaObject* propert
     return true;
 }
 
-bool PropertyDelegateFactory::registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)
+bool QtnPropertyDelegateFactory::registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)
 {
     Q_ASSERT(propertyMetaObject);
     Q_ASSERT(createFunction);
@@ -103,11 +100,8 @@ bool PropertyDelegateFactory::registerDelegate(const QMetaObject* propertyMetaOb
     return true;
 }
 
-PropertyDelegateFactory& PropertyDelegateFactory::staticInstance()
+QtnPropertyDelegateFactory& QtnPropertyDelegateFactory::staticInstance()
 {
-    static PropertyDelegateFactory factory;
+    static QtnPropertyDelegateFactory factory;
     return factory;
 }
-
-
-} // end namespace Qtinuum

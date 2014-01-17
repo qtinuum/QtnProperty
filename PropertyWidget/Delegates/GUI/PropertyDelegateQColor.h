@@ -21,28 +21,23 @@
 
 #include "../PropertyDelegate.h"
 
-namespace Qtinuum
-{
+class QtnPropertyQColorBase;
 
-class PropertyQColorBase;
-
-class QTN_PW_EXPORT PropertyDelegateQColor: public PropertyDelegateTyped<PropertyQColorBase>
+class QTN_PW_EXPORT QtnPropertyDelegateQColor: public QtnPropertyDelegateTyped<QtnPropertyQColorBase>
 {
-    Q_DISABLE_COPY(PropertyDelegateQColor)
+    Q_DISABLE_COPY(QtnPropertyDelegateQColor)
 
 public:
-    PropertyDelegateQColor(PropertyQColorBase& owner);
+    QtnPropertyDelegateQColor(QtnPropertyQColorBase& owner);
 
 protected:
-    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
-    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const override;
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStr(QString& strValue) const override;
 
 private:
     quint32 m_shape;
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTY_DELEGATE_QCOLOR_H

@@ -3,29 +3,29 @@
 
 #include "PropertyCore.h"
 
-class PropertySetA: public Qtinuum::PropertySet
+class QtnPropertySetA: public QtnPropertySet
 {
     Q_OBJECT
-    //Q_DISABLE_COPY(PropertySetA)
+    //Q_DISABLE_COPY(QtnPropertySetA)
 
 public:
     // constructor declaration
-    explicit PropertySetA(QObject *parent = 0);
+    explicit QtnPropertySetA(QObject* parent = 0);
     // destructor declaration
-    virtual ~PropertySetA();
+    virtual ~QtnPropertySetA();
     // assignment declaration
-    PropertySetA& operator=(const PropertySetA& other);
+    QtnPropertySetA& operator=(const QtnPropertySetA& other);
     
     // start children declarations
-    Qtinuum::PropertyBool &b;
+    QtnPropertyBool& b;
     // end children declarations
 
 protected:
     // cloning implementation
-    Qtinuum::PropertySet* createNewImpl(QObject* parentForNew) const override;
-    Qtinuum::PropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    QtnPropertySet* createNewImpl(QObject* parentForNew) const override;
+    QtnPropertySet* createCopyImpl(QObject* parentForCopy) const override;
     // copy values implementation
-    bool copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask) override;
+    bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) override;
 
 private:
     void init();

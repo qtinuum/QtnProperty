@@ -21,26 +21,21 @@
 
 #include "../PropertyDelegate.h"
 
-namespace Qtinuum
-{
+class QtnPropertyUIntBase;
 
-class PropertyUIntBase;
-
-class QTN_PW_EXPORT PropertyDelegateUInt: public PropertyDelegateTyped<PropertyUIntBase>
+class QTN_PW_EXPORT QtnPropertyDelegateUInt: public QtnPropertyDelegateTyped<QtnPropertyUIntBase>
 {
-    Q_DISABLE_COPY(PropertyDelegateUInt)
+    Q_DISABLE_COPY(QtnPropertyDelegateUInt)
 
 public:
-    PropertyDelegateUInt(PropertyUIntBase& owner)
-        : PropertyDelegateTyped<PropertyUIntBase>(owner)
+    QtnPropertyDelegateUInt(QtnPropertyUIntBase& owner)
+        : QtnPropertyDelegateTyped<QtnPropertyUIntBase>(owner)
     {
     }
 
 protected:
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStr(QString& strValue) const override;
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTY_DELEGATE_UINT_H

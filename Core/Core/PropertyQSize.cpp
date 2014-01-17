@@ -19,16 +19,13 @@
 #include "PropertyQSize.h"
 #include "PropertyInt.h"
 
-namespace Qtinuum
+QtnPropertyQSizeBase::QtnPropertyQSizeBase(QObject *parent)
+    : QtnSinglePropertyBase<QSize>(parent)
 {
-
-PropertyQSizeBase::PropertyQSizeBase(QObject *parent)
-    : SinglePropertyBase<QSize>(parent)
-{
-    addState(PropertyStateCollapsed);
+    addState(QtnPropertyStateCollapsed);
 }
 
-bool PropertyQSizeBase::fromStrImpl(const QString& str)
+bool QtnPropertyQSizeBase::fromStrImpl(const QString& str)
 {
     static QRegExp parserSize("^\\s*QSize\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
     static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
@@ -59,16 +56,16 @@ bool PropertyQSizeBase::fromStrImpl(const QString& str)
     return setValue(QSize(width, height));
 }
 
-bool PropertyQSizeBase::toStrImpl(QString& str) const
+bool QtnPropertyQSizeBase::toStrImpl(QString& str) const
 {
     QSize v = value();
     str = QString("QSize(%1, %2)").arg(v.width()).arg(v.height());
     return true;
 }
 
-Property* createWidthProperty(QObject *parent, PropertyQSizeBase *propertySize)
+QtnProperty* qtnCreateWidthProperty(QObject *parent, QtnPropertyQSizeBase *propertySize)
 {
-    PropertyIntCallback *widthProperty = new PropertyIntCallback(parent);
+    QtnPropertyIntCallback *widthProperty = new QtnPropertyIntCallback(parent);
     widthProperty->setName(QObject::tr("Width"));
     widthProperty->setDescription(QObject::tr("Width of the %1.").arg(propertySize->name()));
     widthProperty->setCallbackValueGet([propertySize]()->int { return propertySize->value().width(); });
@@ -77,14 +74,14 @@ Property* createWidthProperty(QObject *parent, PropertyQSizeBase *propertySize)
         size.setWidth(newWidth);
         propertySize->setValue(size);
     });
-    PropertyBase::connectMasterState(*propertySize, *widthProperty);
+    QtnPropertyBase::connectMasterState(*propertySize, *widthProperty);
 
     return widthProperty;
 }
 
-Property* createHeightProperty(QObject *parent, PropertyQSizeBase *propertySize)
+QtnProperty* qtnCreateHeightProperty(QObject *parent, QtnPropertyQSizeBase *propertySize)
 {
-    PropertyIntCallback *heightProperty = new PropertyIntCallback(parent);
+    QtnPropertyIntCallback *heightProperty = new QtnPropertyIntCallback(parent);
     heightProperty->setName(QObject::tr("Height"));
     heightProperty->setDescription(QObject::tr("Height of the %1.").arg(propertySize->name()));
     heightProperty->setCallbackValueGet([propertySize]()->int { return propertySize->value().height(); });
@@ -93,9 +90,8 @@ Property* createHeightProperty(QObject *parent, PropertyQSizeBase *propertySize)
         size.setHeight(newHeight);
         propertySize->setValue(size);
     });
-    PropertyBase::connectMasterState(*propertySize, *heightProperty);
+    QtnPropertyBase::connectMasterState(*propertySize, *heightProperty);
 
     return heightProperty;
 }
 
-} // end namespace Qtinuum

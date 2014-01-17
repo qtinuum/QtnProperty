@@ -23,21 +23,18 @@
 #include <QMap>
 #include <QVariant>
 
-namespace Qtinuum
-{
+typedef QMap<QByteArray, QVariant> QtnPropertyDelegateAttributes;
 
-typedef QMap<QByteArray, QVariant> PropertyDelegateAttributes;
-
-struct QTN_PE_CORE_EXPORT PropertyDelegateInfo
+struct QTN_PE_CORE_EXPORT QtnPropertyDelegateInfo
 {
     QByteArray name;
-    PropertyDelegateAttributes attributes;
+    QtnPropertyDelegateAttributes attributes;
 
-    PropertyDelegateInfo()
+    QtnPropertyDelegateInfo()
     {
     }
 
-    PropertyDelegateInfo(const PropertyDelegateInfo& other)
+    QtnPropertyDelegateInfo(const QtnPropertyDelegateInfo& other)
         : name(other.name),
           attributes(other.attributes)
     {
@@ -45,7 +42,7 @@ struct QTN_PE_CORE_EXPORT PropertyDelegateInfo
 };
 
 template <typename T>
-bool getAttribute(const PropertyDelegateAttributes& attributes, const QByteArray& attributeName, T& attributeValue)
+bool qtnGetAttribute(const QtnPropertyDelegateAttributes& attributes, const QByteArray& attributeName, T& attributeValue)
 {
     auto it = attributes.find(attributeName);
     if (it == attributes.end())
@@ -54,7 +51,5 @@ bool getAttribute(const PropertyDelegateAttributes& attributes, const QByteArray
     attributeValue = it.value().value<T>();
     return true;
 }
-
-} // end namespace Qtinuum
 
 #endif // QTN_PROPERTY_DELEGATE_INFO_H

@@ -4,7 +4,7 @@
 
 void TestGeneratedProperty::test1()
 {
-    PropertySetTest1 p;
+    QtnPropertySetTest1 p;
     QVERIFY(p.name() == "Test1");
 
     p.a = 2;
@@ -26,7 +26,7 @@ void TestGeneratedProperty::test1()
 
 void TestGeneratedProperty::test2()
 {
-    PropertySetTest3 n(this);
+    QtnPropertySetTest3 n(this);
     n.setName("SS");
 
     QVERIFY(n.name() == "SS");
@@ -48,7 +48,7 @@ void TestGeneratedProperty::test2()
 
 void TestGeneratedProperty::testAllPropertyTypes()
 {
-    PropertySetAllPropertyTypes p;
+    QtnPropertySetAllPropertyTypes p;
 
     QVERIFY(p.ep == COLOR::BLUE);
     p.ep = COLOR::RED;

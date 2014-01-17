@@ -19,8 +19,6 @@
 #ifndef QTN_COREAPI_H
 #define QTN_COREAPI_H
 
-#include "QtinuumNamespace.h"
-
 #if defined(QTN_PE_CORE_LIBRARY)
 #  define QTN_PE_CORE_EXPORT Q_DECL_EXPORT
 #else

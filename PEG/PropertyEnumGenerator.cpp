@@ -23,17 +23,12 @@
 #include <QSet>
 #include <QStack>
 
-namespace Qtinuum
-{
-
 PEG& peg = PEG::instance();
-
-static QString QTN_NAMESPACE("Qtinuum::");
-
+/*
 bool isPredefinedPropertyType(QString type)
 {
-    static QSet<QString> qtinuumPropertyNames;
-    if (qtinuumPropertyNames.empty())
+    static QSet<QString> qtnPropertyNames;
+    if (qtnPropertyNames.empty())
     {
         QSet<QString> names;
         names.insert("Bool");
@@ -54,14 +49,15 @@ bool isPredefinedPropertyType(QString type)
 
         foreach (QString name, names)
         {
-            qtinuumPropertyNames.insert(name + "Callback");
+            qtnPropertyNames.insert(name + "Callback");
         }
 
-        qtinuumPropertyNames += names;
+        qtnPropertyNames += names;
     }
 
-    return qtinuumPropertyNames.contains(type);
+    return qtnPropertyNames.contains(type);
 }
+*/
 
 static QString decorateStr(QString str, QString prefix, QString postfix = QString())
 {
@@ -83,16 +79,16 @@ static Exceptions setExceptions = createSetExceptions();
 static Signatures createSlotSignatures()
 {
     Signatures _slots;
-    _slots.insert("propertyWillChange",   "const " + QTN_NAMESPACE + "PropertyBase* changedProperty, "
-                                        + "const " + QTN_NAMESPACE + "PropertyBase* firedProperty, "
-                                        + QTN_NAMESPACE + "PropertyChangeReason reason, "
-                                        + QTN_NAMESPACE + "PropertyValuePtr newValue");
-    _slots.insert("propertyDidChange",    "const " + QTN_NAMESPACE + "PropertyBase* changedProperty, "
-                                          + "const " + QTN_NAMESPACE + "PropertyBase* firedProperty, "
-                                          + QTN_NAMESPACE + "PropertyChangeReason reason");
-    _slots.insert("propertyValueAccept",  "const " + QTN_NAMESPACE + "Property *property, "
-                                        + QTN_NAMESPACE + "PropertyValuePtr valueToAccept, "
-                                        + "bool* accept");
+    _slots.insert("propertyWillChange",   "const QtnPropertyBase* changedProperty, "
+                                          "const QtnPropertyBase* firedProperty, "
+                                          "QtnPropertyChangeReason reason, "
+                                          "QtnPropertyValuePtr newValue");
+    _slots.insert("propertyDidChange",      "const QtnPropertyBase* changedProperty, "
+                                            "const QtnPropertyBase* firedProperty, "
+                                            "QtnPropertyChangeReason reason");
+    _slots.insert("propertyValueAccept",  "const QtnProperty *property, "
+                                          "QtnPropertyValuePtr valueToAccept, "
+                                          "bool* accept");
     return _slots;
 }
 static Signatures slotsSignatures = createSlotSignatures();
@@ -184,7 +180,7 @@ static QString slotName(const QString& name, const QString *member1, const QStri
 
 void DelegateInfo::generateCode(TextStreamIndent& s) const
 {
-    s.newLine() << QString("QScopedPointer<%1PropertyDelegateInfo> info(new %1PropertyDelegateInfo());").arg(QTN_NAMESPACE);
+    s.newLine() << QString("QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());");
 
     if (!name.isEmpty())
         s.newLine() << QString("info->name = \"%1\";").arg(name);
@@ -241,7 +237,7 @@ PropertySetCode::PropertySetCode()
 void PropertySetCode::setName(QString _name)
 {
     name = _name;
-    selfType = "PropertySet" + name;
+    selfType = "QtnPropertySet" + name;
 }
 
 void PropertySetCode::setSuperType(const PropertySetCode* parent)
@@ -281,8 +277,7 @@ void PropertySetCode::generateHFile(TextStreamIndent& s) const
 {
     generateSubPropertySetsDeclarations(s);
     s << endl;
-    s.newLine() << QString("class %1: public %2PropertySet").arg(selfType,
-                                                  QTN_NAMESPACE);
+    s.newLine() << QString("class %1: public QtnPropertySet").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << "Q_OBJECT";
@@ -290,7 +285,7 @@ void PropertySetCode::generateHFile(TextStreamIndent& s) const
         s << endl;
     s.newLine(-1) << "public:";
         s.newLine() << "// constructor declaration";
-        s.newLine() << QString("explicit %1(QObject *parent = %2);")
+        s.newLine() << QString("explicit %1(QObject* parent = %2);")
                             .arg(selfType,
                                  valueByName(assignments, "parent", "0"));
         s.newLine() << "// destructor declaration";
@@ -301,10 +296,10 @@ void PropertySetCode::generateHFile(TextStreamIndent& s) const
         s << endl;
     s.newLine(-1) << "protected:";
         s.newLine() << "// cloning implementation";
-        s.newLine() << QString("%1PropertySet* createNewImpl(QObject* parentForNew) const override;").arg(QTN_NAMESPACE);
-        s.newLine() << QString("%1PropertySet* createCopyImpl(QObject* parentForCopy) const override;").arg(QTN_NAMESPACE);
+        s.newLine() << QString("QtnPropertySet* createNewImpl(QObject* parentForNew) const override;");
+        s.newLine() << QString("QtnPropertySet* createCopyImpl(QObject* parentForCopy) const override;");
         s.newLine() << "// copy values implementation";
-        s.newLine() << QString("bool copyValuesImpl(%1PropertySet* propertySetCopyFrom, %1PropertyState ignoreMask) override;").arg(QTN_NAMESPACE);
+        s.newLine() << QString("bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) override;");
         s << endl;
     s.newLine(-1) << "private:";
         s.newLine() << "void init();";
@@ -323,9 +318,9 @@ void PropertySetCode::generateCppFile(TextStreamIndent& s) const
 
     // constructor implementation
     s << endl;
-    s.newLine() << QString("%1::%1(QObject *parent)").arg(selfType);
+    s.newLine() << QString("%1::%1(QObject* parent)").arg(selfType);
     s.addIndent();
-    s.newLine() << QString(": %1PropertySet(parent)").arg(QTN_NAMESPACE);
+    s.newLine() << QString(": QtnPropertySet(parent)");
         generateChildrenInitialization(s);
         generateConstructorInitializationList(s);
     s.delIndent();
@@ -363,14 +358,14 @@ void PropertySetCode::generateCppFile(TextStreamIndent& s) const
 
     // cloning implementation
     s << endl;
-    s.newLine() << QString("%1PropertySet* %2::createNewImpl(QObject* parentForNew) const").arg(QTN_NAMESPACE, selfType);
+    s.newLine() << QString("QtnPropertySet* %1::createNewImpl(QObject* parentForNew) const").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << QString("return new %1(parentForNew);").arg(selfType);
     s.delIndent();
     s.newLine() << "}";
     s << endl;
-    s.newLine() << QString("%1PropertySet* %2::createCopyImpl(QObject* parentForCopy) const").arg(QTN_NAMESPACE, selfType);
+    s.newLine() << QString("QtnPropertySet* %1::createCopyImpl(QObject* parentForCopy) const").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << QString("%1* p = new %1(parentForCopy);").arg(selfType);
@@ -381,7 +376,7 @@ void PropertySetCode::generateCppFile(TextStreamIndent& s) const
 
     // copy values implementation
     s << endl;
-    s.newLine() << QString("bool %2::copyValuesImpl(%1PropertySet* propertySetCopyFrom, %1PropertyState ignoreMask)").arg(QTN_NAMESPACE, selfType);
+    s.newLine() << QString("bool %1::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
         generateCopyValues(s);
@@ -438,7 +433,7 @@ void PropertySetCode::generateChildrenDeclaration(TextStreamIndent& s) const
     s.pushWrapperLines("// start children declarations", "// end children declarations");
     foreach (auto p, members)
     {
-        s.newLine() << p->selfType << " &" << p->name << ";";
+        s.newLine() << p->selfType << "& " << p->name << ";";
     }
     s.popWrapperLines();
 }
@@ -585,7 +580,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent& s) const
 {
     if (!delegateInfo.isNull())
     {
-        s.newLine() << QString("setDelegateCallback([] () -> const %1PropertyDelegateInfo * {").arg(QTN_NAMESPACE);
+        s.newLine() << QString("setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {");
         s.addIndent();
             delegateInfo->generateCode(s);
         s.delIndent();
@@ -596,7 +591,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent& s) const
     {
         if (!p->delegateInfo.isNull())
         {
-            s.newLine() << QString("%1.setDelegateCallback([] () -> const %2PropertyDelegateInfo * {").arg(p->name, QTN_NAMESPACE);
+            s.newLine() << QString("%1.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {").arg(p->name);
             s.addIndent();
                 p->delegateInfo->generateCode(s);
             s.delIndent();
@@ -666,10 +661,9 @@ void PropertySetCode::generateSlotsConnections(TextStreamIndent& s, const QStrin
 {
     for (auto it = slots_code.begin(); it != slots_code.end(); ++it)
     {
-        s.newLine() << QString("QObject::%1(%2, &%3Property::%4, this, &%5::%6);").arg(
+        s.newLine() << QString("QObject::%1(%2, &QtnProperty::%3, this, &%4::%5);").arg(
                                   name
                                 , slotMember(it.value().member)
-                                , QTN_NAMESPACE
                                 , it.key()
                                 , selfType
                                 , slotName(it.key(), &it.value().member, 0));
@@ -682,10 +676,9 @@ void PropertySetCode::generateSlotsConnections(TextStreamIndent& s, const QStrin
 
         for (auto jt = (*it)->slots_code.begin(); jt != (*it)->slots_code.end(); ++jt)
         {
-            s.newLine() << QString("QObject::%1(%2, &%3Property::%4, this, &%5::%6);").arg(
+            s.newLine() << QString("QObject::%1(%2, &QtnProperty::%3, this, &%4::%5);").arg(
                                       name
                                     , slotMember((*it)->name, jt.value().member)
-                                    , QTN_NAMESPACE
                                     , jt.key()
                                     , selfType
                                     , slotName(jt.key(), &(*it)->name, &jt.value().member));
@@ -734,7 +727,7 @@ void EnumCode::generateHFile(TextStreamIndent& s) const
             s.newLine() << "};";
         }
         s.newLine();
-        s.newLine() << "static Qtinuum::EnumInfo& info();";
+        s.newLine() << "static QtnEnumInfo& info();";
         s.newLine() << QString("static const unsigned int values_count = %1;").arg(items.size());
         s.delIndent();
     s.newLine() << "};";
@@ -742,10 +735,10 @@ void EnumCode::generateHFile(TextStreamIndent& s) const
 
 void EnumCode::generateCppFile(TextStreamIndent& s) const
 {
-    s.newLine() << QString("static Qtinuum::EnumInfo& create_%1_info()").arg(name);
+    s.newLine() << QString("static QtnEnumInfo& create_%1_info()").arg(name);
     s.newLine() << "{";
     s.addIndent();
-        s.newLine() << "QVector<Qtinuum::EnumValueInfo> staticValues;";
+        s.newLine() << "QVector<QtnEnumValueInfo> staticValues;";
         foreach(const EnumItemCode& enumItem, items)
         {
             QString states;
@@ -757,26 +750,26 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
                     const QString& state = enumItem.states[i];
                     if (i != 0)
                         states += " | ";
-                    states += "Qtinuum::EnumValueState";
+                    states += "QtnEnumValueState";
                     states += capitalize(state);
                 }
             }
-            s.newLine() << QString("staticValues.append(Qtinuum::EnumValueInfo(%1::%2, %3%4));").arg(
+            s.newLine() << QString("staticValues.append(QtnEnumValueInfo(%1::%2, %3%4));").arg(
                                name
                                , enumItem.name
                                , enumItem.text
                                , states);
         }
         s.newLine();
-        s.newLine() << QString("static Qtinuum::EnumInfo enumInfo(\"%1\", staticValues);").arg(name);
+        s.newLine() << QString("static QtnEnumInfo enumInfo(\"%1\", staticValues);").arg(name);
         s.newLine() << "return enumInfo;";
     s.delIndent();
     s.newLine() << "}";
     s.newLine();
-    s.newLine() << QString("Qtinuum::EnumInfo& %1::info()").arg(name);
+    s.newLine() << QString("QtnEnumInfo& %1::info()").arg(name);
     s.newLine() << "{";
     s.addIndent();
-        s.newLine() << QString("static Qtinuum::EnumInfo& enumInfo = create_%1_info();").arg(name);
+        s.newLine() << QString("static QtnEnumInfo& enumInfo = create_%1_info();").arg(name);
         s.newLine() << "return enumInfo;";
     s.delIndent();
     s.newLine() << "}";
@@ -810,25 +803,22 @@ QString PegContext::currentType() const
 
 QString PegContext::currentPropertyType() const
 {
-    if (currType.namespaceName.isEmpty())
-    {
-        if (isPredefinedPropertyType(currType.name))
-            return QTN_NAMESPACE + "Property" + currType.name;
-        else
-            return currType.name;
-    }
-    else
-    {
-        return currType.namespaceName + "::" + currType.name;
-    }
+    QString res = "QtnProperty" + currType.name;
+
+    if (!currType.namespaceName.isEmpty())
+        res = currType.namespaceName + "::" + res;
+
+    return res;
 }
 
 QString PegContext::currentPropertySetType() const
 {
-    if (currType.namespaceName.isEmpty())
-        return "PropertySet" + currType.name;
-    else
-        return currType.namespaceName + "::" + "PropertySet" + currType.name;
+    QString res = "QtnPropertySet" + currType.name;
+
+    if (!currType.namespaceName.isEmpty())
+        res = currType.namespaceName + "::" + res;
+
+    return res;
 }
 
 void PegContext::startPropertySet()
@@ -1043,4 +1033,3 @@ void PEG::addAssignment(QString name, QString value)
 
 
 */
-} // end namespace Qtinuum

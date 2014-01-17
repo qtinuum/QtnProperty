@@ -21,14 +21,8 @@
 
 #include <QWidget>
 
-namespace Qtinuum
-{
-
-bool startInplaceEdit(QWidget *editor);
-QWidget *getInplaceEdit();
-bool stopInplaceEdit();
-
-
-} // end namespace Qtinuum
+bool qtnStartInplaceEdit(QWidget *editor);
+QWidget *qtnGetInplaceEdit();
+bool qtnStopInplaceEdit();
 
 #endif // INPLACE_EDITING_H

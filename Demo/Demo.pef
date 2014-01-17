@@ -32,13 +32,13 @@ property_set Main
 
         slot propertyDidChange
         {
-            Internal.switchState(qtn::PropertyStateImmutable, !isValid);
+            Internal.switchState(QtnPropertyStateImmutable, !isValid);
         }
     }
 
     property_set Internal Internal
     {
-        state = qtn::PropertyStateImmutable;
+        state = QtnPropertyStateImmutable;
         QString name
         {
             description = "Name of the item.";
@@ -87,7 +87,7 @@ property_set Main
         QColor item9
         {
             value = QColor(100, 100, 100);
-            delegate { shape = qtn::QColorDelegateShapeCircle; }
+            delegate { shape = QtnColorDelegateShapeCircle; }
         }
     }
 

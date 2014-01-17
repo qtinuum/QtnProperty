@@ -42,7 +42,7 @@ private Q_SLOTS:
 
 public Q_SLOTS:
 
-    void checkPropertyStateIsNonSimple(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, Qtinuum::PropertyChangeReason reason, Qtinuum::PropertyValuePtr newValue);
+    void checkPropertyStateIsNonSimple(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
 };
 
 #endif // TEST_PROPERTY_H

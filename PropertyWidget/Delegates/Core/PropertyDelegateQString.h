@@ -21,33 +21,30 @@
 
 #include "../PropertyDelegate.h"
 
-namespace Qtinuum
-{
+class QtnPropertyQStringBase;
 
-class PropertyQStringBase;
-
-class QTN_PW_EXPORT PropertyDelegateQString: public PropertyDelegateTyped<PropertyQStringBase>
+class QTN_PW_EXPORT QtnPropertyDelegateQString: public QtnPropertyDelegateTyped<QtnPropertyQStringBase>
 {
-    Q_DISABLE_COPY(PropertyDelegateQString)
+    Q_DISABLE_COPY(QtnPropertyDelegateQString)
 
 public:
-    PropertyDelegateQString(PropertyQStringBase& owner);
+    QtnPropertyDelegateQString(QtnPropertyQStringBase& owner);
 
 protected:
     bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const override;
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStr(QString& strValue) const override;
 };
 
-class QTN_PW_EXPORT PropertyDelegateQStringInvalidBase: public PropertyDelegateQString
+class QTN_PW_EXPORT QtnPropertyDelegateQStringInvalidBase: public QtnPropertyDelegateQString
 {
-    Q_DISABLE_COPY(PropertyDelegateQStringInvalidBase)
+    Q_DISABLE_COPY(QtnPropertyDelegateQStringInvalidBase)
 
 protected:
-    PropertyDelegateQStringInvalidBase(PropertyQStringBase& owner);
+    QtnPropertyDelegateQStringInvalidBase(QtnPropertyQStringBase& owner);
 
-    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
-    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const override;
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
 
     virtual bool isPropertyValid() const = 0;
 
@@ -55,38 +52,36 @@ private:
     QColor m_invalidColor;
 };
 
-class QTN_PW_EXPORT PropertyDelegateQStringFile: public PropertyDelegateQStringInvalidBase
+class QTN_PW_EXPORT QtnPropertyDelegateQStringFile: public QtnPropertyDelegateQStringInvalidBase
 {
-    Q_DISABLE_COPY(PropertyDelegateQStringFile)
+    Q_DISABLE_COPY(QtnPropertyDelegateQStringFile)
 
 public:
-    PropertyDelegateQStringFile(PropertyQStringBase& owner);
+    QtnPropertyDelegateQStringFile(QtnPropertyQStringBase& owner);
 
 protected:
-    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 
     bool isPropertyValid() const override;
 
 private:
-    PropertyDelegateAttributes m_editorAttributes;
+    QtnPropertyDelegateAttributes m_editorAttributes;
 };
 
-class QTN_PW_EXPORT PropertyDelegateQStringList: public PropertyDelegateQString
+class QTN_PW_EXPORT QtnPropertyDelegateQStringList: public QtnPropertyDelegateQString
 {
-    Q_DISABLE_COPY(PropertyDelegateQStringList)
+    Q_DISABLE_COPY(QtnPropertyDelegateQStringList)
 
 public:
-    PropertyDelegateQStringList(PropertyQStringBase& owner);
+    QtnPropertyDelegateQStringList(QtnPropertyQStringBase& owner);
 
 protected:
-    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 
 private:
     QStringList m_items;
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTY_DELEGATE_QSTRING_H

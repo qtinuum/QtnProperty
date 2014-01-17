@@ -22,55 +22,50 @@
 #include "../Auxiliary/PropertyTemplates.h"
 #include <QtGui/QFont>
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyQFontBase: public SinglePropertyBase<QFont>
+class QTN_PE_CORE_EXPORT QtnPropertyQFontBase: public QtnSinglePropertyBase<QFont>
 {
     Q_OBJECT
-    PropertyQFontBase(const PropertyQFontBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQFontBase(const QtnPropertyQFontBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQFontBase(QObject *parent);
+    explicit QtnPropertyQFontBase(QObject *parent);
 
 protected:
     // string conversion implementation
     bool fromStrImpl(const QString& str) override;
     bool toStrImpl(QString& str) const override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQFontBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQFontBase)
 };
 
-P_PROPERTY_DECL_EQ_OPERATORS(PropertyQFontBase, QFont)
+P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQFontBase, QFont)
 
-class QTN_PE_CORE_EXPORT PropertyQFontCallback: public SinglePropertyCallback<PropertyQFontBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQFontCallback: public QtnSinglePropertyCallback<QtnPropertyQFontBase>
 {
     Q_OBJECT
-    PropertyQFontCallback(const PropertyQFontCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQFontCallback(const QtnPropertyQFontCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQFontCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyQFontBase>(parent)
+    explicit QtnPropertyQFontCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyQFontBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQFontCallback, PropertyQFontBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFontCallback, QtnPropertyQFontBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyQFont: public SinglePropertyValue<PropertyQFontBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQFont: public QtnSinglePropertyValue<QtnPropertyQFontBase>
 {
     Q_OBJECT
-    PropertyQFont(const PropertyQFont& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQFont(const QtnPropertyQFont& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQFont(QObject *parent)
-        : SinglePropertyValue<PropertyQFontBase>(parent)
+    explicit QtnPropertyQFont(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyQFontBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQFont, PropertyQFontBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFont, QtnPropertyQFontBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYFONT_H

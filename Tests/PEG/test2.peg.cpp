@@ -1,42 +1,42 @@
 #include "test2.peg.h"
 
 
-PropertySetA::PropertySetA(QObject *parent)
-    : Qtinuum::PropertySet(parent)
-    , b(*new Qtinuum::PropertyBool(this))
+QtnPropertySetA::QtnPropertySetA(QObject* parent)
+    : QtnPropertySet(parent)
+    , b(*new QtnPropertyBool(this))
 {
     init();
     connectSlots();
     connectDelegates();
 }
 
-PropertySetA::~PropertySetA()
+QtnPropertySetA::~QtnPropertySetA()
 {
     disconnectSlots();
 }
 
-PropertySetA& PropertySetA::operator=(const PropertySetA& other)
+QtnPropertySetA& QtnPropertySetA::operator=(const QtnPropertySetA& other)
 {
     b = other.b;
 
     return *this;
 }
 
-Qtinuum::PropertySet* PropertySetA::createNewImpl(QObject* parentForNew) const
+QtnPropertySet* QtnPropertySetA::createNewImpl(QObject* parentForNew) const
 {
-    return new PropertySetA(parentForNew);
+    return new QtnPropertySetA(parentForNew);
 }
 
-Qtinuum::PropertySet* PropertySetA::createCopyImpl(QObject* parentForCopy) const
+QtnPropertySet* QtnPropertySetA::createCopyImpl(QObject* parentForCopy) const
 {
-    PropertySetA* p = new PropertySetA(parentForCopy);
+    QtnPropertySetA* p = new QtnPropertySetA(parentForCopy);
     *p = *this;
     return p;
 }
 
-bool PropertySetA::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask)
+bool QtnPropertySetA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    PropertySetA* theCopyFrom = qobject_cast<PropertySetA*>(propertySetCopyFrom);
+    QtnPropertySetA* theCopyFrom = qobject_cast<QtnPropertySetA*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -48,7 +48,7 @@ bool PropertySetA::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qti
     return true;
 }
 
-void PropertySetA::init()
+void QtnPropertySetA::init()
 {
     static QString A_name = tr("A");
     setName(A_name);
@@ -62,18 +62,18 @@ void PropertySetA::init()
     // end children initialization
 }
 
-void PropertySetA::connectSlots()
+void QtnPropertySetA::connectSlots()
 {
 }
 
-void PropertySetA::disconnectSlots()
+void QtnPropertySetA::disconnectSlots()
 {
 }
 
-void PropertySetA::connectDelegates()
+void QtnPropertySetA::connectDelegates()
 {
-    b.setDelegateCallback([] () -> const Qtinuum::PropertyDelegateInfo * {
-        QScopedPointer<Qtinuum::PropertyDelegateInfo> info(new Qtinuum::PropertyDelegateInfo());
+    b.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "Combobox";
         info->attributes["labelFalse"] = "Off";
         info->attributes["labelTrue"] = "On";
@@ -81,7 +81,7 @@ void PropertySetA::connectDelegates()
     });
 }
 
-        void PropertySetA::setOwner(int a)
+        void QtnPropertySetA::setOwner(int a)
         {
             b = (bool)a;
         }

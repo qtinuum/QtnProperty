@@ -23,52 +23,47 @@
 #include "../../Core/Property.h"
 #include <QWidget>
 
-namespace Qtinuum
-{
-
-class QTN_PW_EXPORT PropertyEditorHandlerBase: public QObject
+class QTN_PW_EXPORT QtnPropertyEditorHandlerBase: public QObject
 {
 protected:
-    PropertyEditorHandlerBase(Property& property, QWidget& editor);
-    ~PropertyEditorHandlerBase();
+    QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor);
+    ~QtnPropertyEditorHandlerBase();
 
-    virtual Property& propertyBase() = 0;
+    virtual QtnProperty& propertyBase() = 0;
     virtual QWidget& editorBase()  = 0;
     virtual void updateEditor() = 0;
 
 private:
     void onObjectDestroyed(QObject* object);
-    void onPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason);
+    void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 };
 
 template <typename PropertyClass, typename PropertyEditorClass>
-class PropertyEditorHandler: public PropertyEditorHandlerBase
+class QtnPropertyEditorHandler: public QtnPropertyEditorHandlerBase
 {
 protected:
-    typedef PropertyEditorHandler<PropertyClass, PropertyEditorClass> PropertyEditorHandlerType;
+    typedef QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass> QtnPropertyEditorHandlerType;
 
-    PropertyEditorHandler(PropertyClass& property, PropertyEditorClass& editor)
-        : PropertyEditorHandlerBase(property, editor),
+    QtnPropertyEditorHandler(PropertyClass& property, PropertyEditorClass& editor)
+        : QtnPropertyEditorHandlerBase(property, editor),
           m_property(property),
           m_editor(editor)
     {
     }
 
-    ~PropertyEditorHandler()
+    ~QtnPropertyEditorHandler()
     {
     }
 
     PropertyClass& property() { return m_property;  }
     PropertyEditorClass& editor() { return m_editor; }
 
-    Property& propertyBase() override { return property(); }
+    QtnProperty& propertyBase() override { return property(); }
     QWidget& editorBase() override {return editor(); }
 
 private:
     PropertyClass& m_property;
     PropertyEditorClass& m_editor;
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTY_EDITOR_HANDLER_H

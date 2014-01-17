@@ -22,18 +22,12 @@
 #include "Property.h"
 #include "PropertySet.h"
 
-namespace Qtinuum
-{
+typedef std::function<QtnProperty*(QObject*, const QMetaProperty&)> QtnMetaPropertyFactory_t;
+QTN_PE_CORE_EXPORT bool qtnRegisterMetaPropertyFactory(int metaPropertyType, const QtnMetaPropertyFactory_t& factory);
 
-typedef std::function<Property*(QObject*, const QMetaProperty&)> MetaPropertyFactory_t;
-QTN_PE_CORE_EXPORT bool registerMetaPropertyFactory(int metaPropertyType, const MetaPropertyFactory_t& factory);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateQObjectProperty(QObject* object, const QMetaProperty& metaProperty);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateQObjectProperty(QObject* object, const char* propertyName);
 
-QTN_PE_CORE_EXPORT Property* createQObjectProperty(QObject* object, const QMetaProperty& metaProperty);
-QTN_PE_CORE_EXPORT Property* createQObjectProperty(QObject* object, const char* propertyName);
-
-
-QTN_PE_CORE_EXPORT PropertySet* createQObjectPropertySet(QObject* object);
-
-} // end namespace Qtinuum
+QTN_PE_CORE_EXPORT QtnPropertySet* qtnCreateQObjectPropertySet(QObject* object);
 
 #endif // QTN_QOBJECT_PROPERTY_SET_H

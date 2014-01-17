@@ -20,13 +20,10 @@
 #include <QSplitter>
 #include <QMouseEvent>
 
-namespace Qtinuum
-{
-
-class SplitterEventsHandler: public QObject
+class QtnSplitterEventsHandler: public QObject
 {
 public:
-    SplitterEventsHandler(QObject* parent)
+    QtnSplitterEventsHandler(QObject* parent)
         : QObject(parent)
     {
     }
@@ -66,26 +63,26 @@ protected:
     }
 };
 
-PropertyWidget::PropertyWidget(QWidget* parent)
+QtnPropertyWidget::QtnPropertyWidget(QWidget* parent)
     : QWidget(parent),
-      m_parts(PropertyWidgetPartsNone),
+      m_parts(QtnPropertyWidgetPartsNone),
       m_layout(new QVBoxLayout(this)),
       m_toolbar(0),
-      m_propertyView(new PropertyView(this)),
+      m_propertyView(new QtnPropertyView(this)),
       m_descriptionSplitter(0),
       m_descriptionPanel(0)
 {
     m_layout->addWidget(m_propertyView);
 
-    QObject::connect(m_propertyView, &PropertyView::activePropertyChanged, this, &PropertyWidget::setActiveProperty);
+    QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged, this, &QtnPropertyWidget::setActiveProperty);
 }
 
-PropertyWidget::~PropertyWidget()
+QtnPropertyWidget::~QtnPropertyWidget()
 {
 
 }
 
-void PropertyWidget::setParts(PropertyWidgetParts newParts)
+void QtnPropertyWidget::setParts(QtnPropertyWidgetParts newParts)
 {
     if (m_parts == newParts)
         return;
@@ -94,7 +91,7 @@ void PropertyWidget::setParts(PropertyWidgetParts newParts)
     updateParts();
 }
 
-void PropertyWidget::updateParts()
+void QtnPropertyWidget::updateParts()
 {
     // clear layout
     while (!m_layout->isEmpty())
@@ -103,7 +100,7 @@ void PropertyWidget::updateParts()
     // check toolbar
 
     // check description panel
-    if (m_parts & PropertyWidgetPartsDescriptionPanel)
+    if (m_parts & QtnPropertyWidgetPartsDescriptionPanel)
     {
         if (!m_descriptionSplitter)
         {
@@ -127,7 +124,7 @@ void PropertyWidget::updateParts()
             m_descriptionPanel->setSizePolicy(p);
 
             // setup DblClick handler
-            splitter->handle(1)->installEventFilter(new SplitterEventsHandler(splitter));
+            splitter->handle(1)->installEventFilter(new QtnSplitterEventsHandler(splitter));
 
             m_descriptionSplitter = splitter;
         }
@@ -147,7 +144,7 @@ void PropertyWidget::updateParts()
     }
 }
 
-void PropertyWidget::setActiveProperty(const PropertyBase* activeProperty)
+void QtnPropertyWidget::setActiveProperty(const QtnPropertyBase* activeProperty)
 {
     if (m_descriptionPanel)
     {
@@ -161,5 +158,3 @@ void PropertyWidget::setActiveProperty(const PropertyBase* activeProperty)
         }
     }
 }
-
-} // end namespace Qtinuum

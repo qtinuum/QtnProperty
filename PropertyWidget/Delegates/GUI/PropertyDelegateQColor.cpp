@@ -24,14 +24,11 @@
 
 #include <QColorDialog>
 
-namespace Qtinuum
-{
-
-class PropertyQColorLineEditBttnHandler: public PropertyEditorHandler<PropertyQColorBase, LineEditBttn>
+class QtnPropertyQColorLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQColorBase, QtnLineEditBttn>
 {
 public:
-    PropertyQColorLineEditBttnHandler(PropertyQColorBase& property, LineEditBttn& editor)
-        : PropertyEditorHandlerType(property, editor)
+    QtnPropertyQColorLineEditBttnHandler(QtnPropertyQColorBase& property, QtnLineEditBttn& editor)
+        : QtnPropertyEditorHandlerType(property, editor)
     {
         editor.lineEdit->setReadOnly(true);
 
@@ -44,7 +41,7 @@ public:
         updateEditor();
 
         QObject::connect(  editor.toolButton, &QToolButton::clicked
-                         , this, &PropertyQColorLineEditBttnHandler::onToolButtonClicked);
+                         , this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
     }
 
 private:
@@ -63,41 +60,41 @@ private:
     }
 };
 
-static bool regQColorDelegate = PropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&PropertyQColorBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateQColor, PropertyQColorBase>
+static bool regQColorDelegate = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>
                                 , "LineEditBttn");
 
-PropertyDelegateQColor::PropertyDelegateQColor(PropertyQColorBase& owner)
-    : PropertyDelegateTyped<PropertyQColorBase>(owner),
-      m_shape(QColorDelegateShapeSquare)
+QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(QtnPropertyQColorBase& owner)
+    : QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner),
+      m_shape(QtnColorDelegateShapeSquare)
 {
 }
 
-void PropertyDelegateQColor::applyAttributesImpl(const PropertyDelegateAttributes& attributes)
+void QtnPropertyDelegateQColor::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
 {
-    getAttribute(attributes, "shape", m_shape);
+    qtnGetAttribute(attributes, "shape", m_shape);
 }
 
-void PropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     QColor value = owner().value();
 
     QRect textRect = rect;
 
-    if (m_shape != QColorDelegateShapeNone)
+    if (m_shape != QtnColorDelegateShapeNone)
     {
         QRect colorRect = rect;
         colorRect.setRight(colorRect.left() + colorRect.height());
         colorRect.adjust(2, 2, -2, -2);
 
-        if (m_shape == QColorDelegateShapeSquare)
+        if (m_shape == QtnColorDelegateShapeSquare)
         {
             painter.fillRect(colorRect, Qt::black);
             colorRect.adjust(1, 1, -1, -1);
             painter.fillRect(colorRect, value);
         }
-        else if (m_shape == QColorDelegateShapeCircle)
+        else if (m_shape == QtnColorDelegateShapeCircle)
         {
             bool oldAntiAliasing = painter.testRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::Antialiasing);
@@ -115,16 +112,16 @@ void PropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRect& 
 
     if (textRect.isValid())
     {
-        PropertyDelegateTyped<PropertyQColorBase>::drawValueImpl(painter, textRect, state, needTooltip);
+        QtnPropertyDelegateTyped<QtnPropertyQColorBase>::drawValueImpl(painter, textRect, state, needTooltip);
     }
 }
 
-QWidget* PropertyDelegateQColor::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateQColor::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    LineEditBttn* editor = new LineEditBttn(parent);
+    QtnLineEditBttn* editor = new QtnLineEditBttn(parent);
     editor->setGeometry(rect);
 
-    new PropertyQColorLineEditBttnHandler(owner(), *editor);
+    new QtnPropertyQColorLineEditBttnHandler(owner(), *editor);
 
     if (inplaceInfo)
     {
@@ -134,11 +131,8 @@ QWidget* PropertyDelegateQColor::createValueEditorImpl(QWidget* parent, const QR
     return editor;
 }
 
-bool PropertyDelegateQColor::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQColor::propertyValueToStr(QString& strValue) const
 {
     strValue = owner().value().name();
     return true;
 }
-
-} // end namespace Qtinuum
-

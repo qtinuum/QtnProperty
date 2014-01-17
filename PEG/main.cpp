@@ -22,8 +22,6 @@
 #include <QFileInfo>
 #include <QRegExp>
 
-using namespace Qtinuum;
-
 extern int yyparse ();
 extern FILE *yyin;
 extern int yydebug;

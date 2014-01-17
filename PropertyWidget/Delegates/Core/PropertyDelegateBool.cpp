@@ -27,21 +27,18 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-namespace Qtinuum
-{
-
-class PropertyBoolCheckBoxHandler: public PropertyEditorHandler<PropertyBoolBase, QCheckBox>
+class QtnPropertyBoolCheckBoxHandler: public QtnPropertyEditorHandler<QtnPropertyBoolBase, QCheckBox>
 {
 public:
-    PropertyBoolCheckBoxHandler(PropertyBoolBase& property, QCheckBox& editor)
-        : PropertyEditorHandlerType(property, editor)
+    QtnPropertyBoolCheckBoxHandler(QtnPropertyBoolBase& property, QCheckBox& editor)
+        : QtnPropertyEditorHandlerType(property, editor)
     {
         updateEditor();
 
         if (!property.isEditableByUser())
             editor.setDisabled(true);
 
-        QObject::connect(&editor, &QCheckBox::toggled, this, &PropertyBoolCheckBoxHandler::onToggled);
+        QObject::connect(&editor, &QCheckBox::toggled, this, &QtnPropertyBoolCheckBoxHandler::onToggled);
     }
 
 private:
@@ -76,11 +73,11 @@ protected:
     }
 };
 
-class PropertyBoolComboBoxHandler: public PropertyEditorHandler<PropertyBoolBase, QComboBox>
+class QtnPropertyBoolComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyBoolBase, QComboBox>
 {
 public:
-    PropertyBoolComboBoxHandler(PropertyBoolBase& property, QComboBox& editor)
-        : PropertyEditorHandlerType(property, editor)
+    QtnPropertyBoolComboBoxHandler(QtnPropertyBoolBase& property, QComboBox& editor)
+        : QtnPropertyEditorHandlerType(property, editor)
     {
         updateEditor();
 
@@ -88,7 +85,7 @@ public:
             editor.setDisabled(true);
 
         QObject::connect(  &editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
-                         , this, &PropertyBoolComboBoxHandler::onCurrentIndexChanged);
+                         , this, &QtnPropertyBoolComboBoxHandler::onCurrentIndexChanged);
     }
 
 private:
@@ -107,28 +104,28 @@ private:
     }
 };
 
-static bool regBoolDelegate = PropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&PropertyBoolBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateBoolCheck, PropertyBoolBase>
+static bool regBoolDelegate = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyBoolBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateBoolCheck, QtnPropertyBoolBase>
                                 , "CheckBox");
 
-static bool regBoolDelegateLabels = PropertyDelegateFactory::staticInstance()
-                                .registerDelegate(&PropertyBoolBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateBoolLabels, PropertyBoolBase>
+static bool regBoolDelegateLabels = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegate(&QtnPropertyBoolBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateBoolLabels, QtnPropertyBoolBase>
                                 , "ComboBox");
 
-QCheckBox *createPropertyBoolCheckBox(PropertyBoolBase& owner, QWidget* parent, const QRect& rect)
+QCheckBox* createPropertyBoolCheckBox(QtnPropertyBoolBase& owner, QWidget* parent, const QRect& rect)
 {
     QCheckBox *checkBox = new QCheckBoxPropertyBool(parent);
     checkBox->setGeometry(rect);
 
     // connect widget and property
-    new PropertyBoolCheckBoxHandler(owner, *checkBox);
+    new QtnPropertyBoolCheckBoxHandler(owner, *checkBox);
 
     return checkBox;
 }
 
-void PropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     QStyleOptionButton opt;
     opt.rect = rect;
@@ -141,7 +138,7 @@ void PropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const QRec
     painter.drawControl(QStyle::CE_CheckBox, opt);
 }
 
-QWidget* PropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     if (!owner().isEditableByUser())
         return 0;
@@ -154,8 +151,8 @@ QWidget* PropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, const
     return checkBox;
 }
 
-PropertyDelegateBoolLabels::PropertyDelegateBoolLabels(PropertyBoolBase& owner)
-    : PropertyDelegateTyped<PropertyBoolBase>(owner)
+QtnPropertyDelegateBoolLabels::QtnPropertyDelegateBoolLabels(QtnPropertyBoolBase& owner)
+    : QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
 {
     static QString labels[2] = { owner.tr("False"), owner.tr("True")};
 
@@ -163,13 +160,13 @@ PropertyDelegateBoolLabels::PropertyDelegateBoolLabels(PropertyBoolBase& owner)
     m_labels[1] = labels[1];
 }
 
-void PropertyDelegateBoolLabels::applyAttributesImpl(const PropertyDelegateAttributes& attributes)
+void QtnPropertyDelegateBoolLabels::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
 {
-    getAttribute(attributes, "labelFalse", m_labels[0]);
-    getAttribute(attributes, "labelTrue", m_labels[1]);
+    qtnGetAttribute(attributes, "labelFalse", m_labels[0]);
+    qtnGetAttribute(attributes, "labelTrue", m_labels[1]);
 }
 
-QWidget* PropertyDelegateBoolLabels::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateBoolLabels::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     if (owner().isEditableByUser())
     {
@@ -180,7 +177,7 @@ QWidget* PropertyDelegateBoolLabels::createValueEditorImpl(QWidget* parent, cons
         comboBox->setGeometry(rect);
 
         // connect widget and property
-        new PropertyBoolComboBoxHandler(owner(), *comboBox);
+        new QtnPropertyBoolComboBoxHandler(owner(), *comboBox);
 
         if (inplaceInfo)
             comboBox->showPopup();
@@ -199,11 +196,8 @@ QWidget* PropertyDelegateBoolLabels::createValueEditorImpl(QWidget* parent, cons
     }
 }
 
-bool PropertyDelegateBoolLabels::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateBoolLabels::propertyValueToStr(QString& strValue) const
 {
     strValue = m_labels[owner().value()];
     return true;
 }
-
-} // end namespace Qtinuum
-

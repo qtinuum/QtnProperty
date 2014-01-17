@@ -2,7 +2,6 @@
 #include "PEG/test.peg.h"
 #include <QtTest/QtTest>
 
-using namespace Qtinuum;
 void TestEnum::enumValue()
 {
     COLOR::Enum color = COLOR::RED;
@@ -12,7 +11,7 @@ void TestEnum::enumValue()
 void TestEnum::forEachEnumValue()
 {
     unsigned int count = 0;
-    COLOR::info().forEachEnumValue([&count](const EnumValueInfo& value)->bool {
+    COLOR::info().forEachEnumValue([&count](const QtnEnumValueInfo& value)->bool {
         ++count;
         return true;
     });
@@ -29,6 +28,6 @@ void TestEnum::find()
 
 void TestEnum::state()
 {
-    QVERIFY(COLOR::info().findByValue(COLOR::RED)->state() == EnumValueStateNone);
-    QVERIFY(COLOR::info().findByValue(COLOR::BLUE)->state() == (EnumValueStateHidden | EnumValueStateObsolete));
+    QVERIFY(COLOR::info().findByValue(COLOR::RED)->state() == QtnEnumValueStateNone);
+    QVERIFY(COLOR::info().findByValue(COLOR::BLUE)->state() == (QtnEnumValueStateHidden | QtnEnumValueStateObsolete));
 }

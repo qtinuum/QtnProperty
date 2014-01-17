@@ -22,24 +22,21 @@
 #include "../Auxiliary/PropertyTemplates.h"
 #include "../Enum.h"
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyEnumBase: public SinglePropertyBase<EnumValueType>
+class QTN_PE_CORE_EXPORT QtnPropertyEnumBase: public QtnSinglePropertyBase<QtnEnumValueType>
 {
     Q_OBJECT
-    PropertyEnumBase(const PropertyEnumBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyEnumBase(const QtnPropertyEnumBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyEnumBase(QObject *parent)
-        : SinglePropertyBase<EnumValueType>(parent),
+    explicit QtnPropertyEnumBase(QObject* parent)
+        : QtnSinglePropertyBase<QtnEnumValueType>(parent),
           m_enumInfo(nullptr)
     {
     }
 
-    const EnumInfo *enumInfo() const { return m_enumInfo; }
-    EnumInfo *enumInfo() { return m_enumInfo; }
-    void setEnumInfo(EnumInfo *enumInfo) { m_enumInfo = enumInfo; }
+    const QtnEnumInfo* enumInfo() const { return m_enumInfo; }
+    QtnEnumInfo* enumInfo() { return m_enumInfo; }
+    void setEnumInfo(QtnEnumInfo* enumInfo) { m_enumInfo = enumInfo; }
 
 protected:
     // string conversion implementation
@@ -49,41 +46,39 @@ protected:
     bool isValueAcceptedImpl(ValueType valueToAccept) override;
 
 private:
-    EnumInfo *m_enumInfo;
+    QtnEnumInfo* m_enumInfo;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyEnumBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyEnumBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyEnumBase, EnumValueType)
+P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyEnumBase, QtnEnumValueType)
 
-class QTN_PE_CORE_EXPORT PropertyEnumCallback: public SinglePropertyCallback<PropertyEnumBase>
+class QTN_PE_CORE_EXPORT QtnPropertyEnumCallback: public QtnSinglePropertyCallback<QtnPropertyEnumBase>
 {
     Q_OBJECT
-    PropertyEnumCallback(const PropertyEnumCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyEnumCallback(const QtnPropertyEnumCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyEnumCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyEnumBase>(parent)
+    explicit QtnPropertyEnumCallback(QObject* parent)
+        : QtnSinglePropertyCallback<QtnPropertyEnumBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnumCallback, PropertyEnumBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnumCallback, QtnPropertyEnumBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyEnum: public SinglePropertyValue<PropertyEnumBase>
+class QTN_PE_CORE_EXPORT QtnPropertyEnum: public QtnSinglePropertyValue<QtnPropertyEnumBase>
 {
     Q_OBJECT
-    PropertyEnum(const PropertyEnum& other) Q_DECL_EQ_DELETE;
+    QtnPropertyEnum(const QtnPropertyEnum& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyEnum(QObject *parent)
-        : SinglePropertyValue<PropertyEnumBase>(parent)
+    explicit QtnPropertyEnum(QObject* parent)
+        : QtnSinglePropertyValue<QtnPropertyEnumBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyEnum, PropertyEnumBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnum, QtnPropertyEnumBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYENUM_H

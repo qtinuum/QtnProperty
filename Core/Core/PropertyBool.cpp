@@ -18,9 +18,6 @@
 
 #include "PropertyBool.h"
 
-namespace Qtinuum
-{
-
 static QString getBoolText(bool value)
 {
     static QString boolTexts[2] = {QObject::tr("False"), QObject::tr("True")};
@@ -40,7 +37,7 @@ static bool getBoolValue(QString boolText, bool& success)
     return false;
 }
 
-bool PropertyBoolBase::fromStrImpl(const QString& str)
+bool QtnPropertyBoolBase::fromStrImpl(const QString& str)
 {
     bool success = false;
     bool value = getBoolValue(str.trimmed(), success);
@@ -51,11 +48,10 @@ bool PropertyBoolBase::fromStrImpl(const QString& str)
     return setValue(value);
 }
 
-bool PropertyBoolBase::toStrImpl(QString& str) const
+bool QtnPropertyBoolBase::toStrImpl(QString& str) const
 {
     bool boolValue = value();
     str = getBoolText(boolValue);
     return true;
 }
 
-} // end namespace Qtinuum

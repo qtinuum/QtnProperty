@@ -18,24 +18,22 @@
 
 #include "PropertyEnumFlags.h"
 
-namespace Qtinuum
-{
-PropertyEnumFlagsBase::PropertyEnumFlagsBase(QObject *parent)
-    : SinglePropertyBase<EnumFlagsValueType>(parent),
+QtnPropertyEnumFlagsBase::QtnPropertyEnumFlagsBase(QObject *parent)
+    : QtnSinglePropertyBase<QtnEnumFlagsValueType>(parent),
       m_enumInfo(0)
 {
     // collapsed by default
-    addState(PropertyStateCollapsed);
+    addState(QtnPropertyStateCollapsed);
 }
 
-bool PropertyEnumFlagsBase::fromStrImpl(const QString& str)
+bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString& str)
 {
     static QRegExp parserEnumFlags("^\\s*([^|\\s]+)\\s*\\|(.+)$", Qt::CaseInsensitive);
 
     if (!m_enumInfo)
         return false;
 
-    EnumFlagsValueType val = 0;
+    QtnEnumFlagsValueType val = 0;
     QString enumStr = str.trimmed();
 
     if (enumStr != "0")
@@ -46,7 +44,7 @@ bool PropertyEnumFlagsBase::fromStrImpl(const QString& str)
             if (params.size() != 3)
                 return false;
 
-            const EnumValueInfo* enumValue = m_enumInfo->fromStr(params[1]);
+            const QtnEnumValueInfo* enumValue = m_enumInfo->fromStr(params[1]);
             if (!enumValue)
                 return false;
 
@@ -55,7 +53,7 @@ bool PropertyEnumFlagsBase::fromStrImpl(const QString& str)
             enumStr = params[2];
         }
 
-        const EnumValueInfo* enumValue = m_enumInfo->fromStr(enumStr);
+        const QtnEnumValueInfo* enumValue = m_enumInfo->fromStr(enumStr);
         if (!enumValue)
             return false;
 
@@ -65,12 +63,12 @@ bool PropertyEnumFlagsBase::fromStrImpl(const QString& str)
     return setValue(val);
 }
 
-bool PropertyEnumFlagsBase::toStrImpl(QString& str) const
+bool QtnPropertyEnumFlagsBase::toStrImpl(QString& str) const
 {
     if (!m_enumInfo)
         return false;
 
-    EnumFlagsValueType v = value();
+    QtnEnumFlagsValueType v = value();
 
     if (v == 0)
     {
@@ -79,7 +77,7 @@ bool PropertyEnumFlagsBase::toStrImpl(QString& str) const
     }
 
     QString strValues;
-    m_enumInfo->forEachEnumValue([&strValues, v, this](const EnumValueInfo& value)->bool {
+    m_enumInfo->forEachEnumValue([&strValues, v, this](const QtnEnumValueInfo& value)->bool {
         if (v & value.value())
         {
             if (!strValues.isEmpty())
@@ -98,5 +96,3 @@ bool PropertyEnumFlagsBase::toStrImpl(QString& str) const
     str = strValues;
     return true;
 }
-
-} // end namespace Qtinuum

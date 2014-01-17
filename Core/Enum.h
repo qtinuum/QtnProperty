@@ -23,66 +23,63 @@
 #include <QVector>
 #include <QSharedPointer>
 
-namespace Qtinuum
-{
+typedef qint32 QtnEnumValueType;
 
-typedef qint32 EnumValueType;
-
-enum EnumValueStateFlag
+enum QtnEnumValueStateFlag
 {
-    EnumValueStateNone = 0x0000,
-    EnumValueStateHidden = 0x0001,
-    EnumValueStateObsolete = 0x0002,
-    EnumValueStateInvalid = 0x0004
+    QtnEnumValueStateNone = 0x0000,
+    QtnEnumValueStateHidden = 0x0001,
+    QtnEnumValueStateObsolete = 0x0002,
+    QtnEnumValueStateInvalid = 0x0004
 };
-Q_DECLARE_FLAGS(EnumValueState, EnumValueStateFlag)
-Q_DECLARE_OPERATORS_FOR_FLAGS(EnumValueState)
+Q_DECLARE_FLAGS(QtnEnumValueState, QtnEnumValueStateFlag)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QtnEnumValueState)
 
-class QTN_PE_CORE_EXPORT EnumValueInfo
+class QTN_PE_CORE_EXPORT QtnEnumValueInfo
 {
 public:
-    EnumValueInfo()
+    QtnEnumValueInfo()
         : m_value(0),
-          m_state(EnumValueStateInvalid)
+          m_state(QtnEnumValueStateInvalid)
     {
     }
 
-    EnumValueInfo(EnumValueType value, const QString& name, EnumValueState state = EnumValueStateNone)
+    QtnEnumValueInfo(QtnEnumValueType value, const QString& name, QtnEnumValueState state = QtnEnumValueStateNone)
         : m_value(value),
           m_name(name),
           m_state(state)
     {
     }
 
-    ~EnumValueInfo() {}
+    ~QtnEnumValueInfo() {}
 
-    EnumValueType value() const { return m_value; }
+    QtnEnumValueType value() const { return m_value; }
     const QString& name() const { return m_name; }
-    EnumValueState state() const { return m_state; }
+    QtnEnumValueState state() const { return m_state; }
 
 private:
-    EnumValueType m_value;
+    QtnEnumValueType m_value;
     QString m_name;
-    EnumValueState m_state;
+    QtnEnumValueState m_state;
 };
 
-class QTN_PE_CORE_EXPORT EnumInfo
+class QTN_PE_CORE_EXPORT QtnEnumInfo
 {
 public:
-    EnumInfo(const QString& name, QVector<EnumValueInfo>& staticValues);
+    QtnEnumInfo(const QString& name, QVector<QtnEnumValueInfo>& staticValues);
 
     const QString& name() const { return m_name; }
 
     template <typename Pred>
     bool forEachEnumValue(Pred pred) const
     {
-        foreach(const EnumValueInfo& value, m_staticValues)
+        foreach(const QtnEnumValueInfo& value, m_staticValues)
         {
             if (!pred(value))
                 return false;
         }
 
-        foreach(const EnumValueInfo& value, m_dynamicValues)
+        foreach(const QtnEnumValueInfo& value, m_dynamicValues)
         {
             if (!pred(value))
                 return false;
@@ -90,18 +87,16 @@ public:
         return true;
     }
 
-    const EnumValueInfo* findByValue(EnumValueType value) const;
-    const EnumValueInfo* findByName(const QString& name, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
+    const QtnEnumValueInfo* findByValue(QtnEnumValueType value) const;
+    const QtnEnumValueInfo* findByName(const QString& name, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
 
-    const EnumValueInfo* fromStr(const QString& str) const;
-    bool toStr(QString& str, const EnumValueInfo* value) const;
+    const QtnEnumValueInfo* fromStr(const QString& str) const;
+    bool toStr(QString& str, const QtnEnumValueInfo* value) const;
 
 private:
     QString m_name;
-    QVector<EnumValueInfo> m_staticValues;
-    QVector<EnumValueInfo> m_dynamicValues;
+    QVector<QtnEnumValueInfo> m_staticValues;
+    QVector<QtnEnumValueInfo> m_dynamicValues;
 };
-
-} // end namespace Qtinuum
 
 #endif // QTN_ENUM_H

@@ -26,50 +26,45 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-namespace Qtinuum
+enum QtnPropertyWidgetPartsFlag
 {
-
-enum PropertyWidgetPartsFlag
-{
-    PropertyWidgetPartsNone = 0x0000,
-    PropertyWidgetPartsToolbar = 0x0001,
-    PropertyWidgetPartsDescriptionPanel = 0x0002
+    QtnPropertyWidgetPartsNone = 0x0000,
+    QtnPropertyWidgetPartsToolbar = 0x0001,
+    QtnPropertyWidgetPartsDescriptionPanel = 0x0002
 };
-Q_DECLARE_FLAGS(PropertyWidgetParts, PropertyWidgetPartsFlag)
-Q_DECLARE_OPERATORS_FOR_FLAGS(PropertyWidgetParts)
+Q_DECLARE_FLAGS(QtnPropertyWidgetParts, QtnPropertyWidgetPartsFlag)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyWidgetParts)
 
-class QTN_PW_EXPORT PropertyWidget: public QWidget
+class QTN_PW_EXPORT QtnPropertyWidget: public QWidget
 {
     Q_OBJECT
-    Q_DISABLE_COPY(PropertyWidget)
+    Q_DISABLE_COPY(QtnPropertyWidget)
 
 public:
-    explicit PropertyWidget(QWidget* parent = 0);
-    ~PropertyWidget();
+    explicit QtnPropertyWidget(QWidget* parent = 0);
+    ~QtnPropertyWidget();
 
-    PropertyWidgetParts parts() const { return m_parts; }
-    void setParts(PropertyWidgetParts newParts);
+    QtnPropertyWidgetParts parts() const { return m_parts; }
+    void setParts(QtnPropertyWidgetParts newParts);
 
-    const PropertySet* propertySet() const { return m_propertyView->propertySet(); }
-    PropertySet* propertySet() { return m_propertyView->propertySet(); }
-    void setPropertySet(PropertySet* newPropertySet) { m_propertyView->setPropertySet(newPropertySet); }
+    const QtnPropertySet* propertySet() const { return m_propertyView->propertySet(); }
+    QtnPropertySet* propertySet() { return m_propertyView->propertySet(); }
+    void setPropertySet(QtnPropertySet* newPropertySet) { m_propertyView->setPropertySet(newPropertySet); }
 
-    PropertyView *propertyView() { return m_propertyView; }
+    QtnPropertyView* propertyView() { return m_propertyView; }
 
 private:
     void updateParts();
-    void setActiveProperty(const PropertyBase* activeProperty);
+    void setActiveProperty(const QtnPropertyBase* activeProperty);
 
 private:
-    PropertyWidgetParts m_parts;
+    QtnPropertyWidgetParts m_parts;
 
     QVBoxLayout* m_layout;
     QLabel* m_toolbar;
-    PropertyView* m_propertyView;
+    QtnPropertyView* m_propertyView;
     QWidget* m_descriptionSplitter;
     QLabel* m_descriptionPanel;
 };
-
-} // end namespace Qtinuum
 
 #endif // QTN_PROPERTYWIDGET_H

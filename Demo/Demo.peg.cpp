@@ -1,64 +1,64 @@
 #include "Demo.peg.h"
 
 #include <QFileDialog>
-static Qtinuum::EnumInfo& create_COLOR_info()
+static QtnEnumInfo& create_COLOR_info()
 {
-    QVector<Qtinuum::EnumValueInfo> staticValues;
-    staticValues.append(Qtinuum::EnumValueInfo(COLOR::red, "red"));
-    staticValues.append(Qtinuum::EnumValueInfo(COLOR::blue, "blue"));
-    staticValues.append(Qtinuum::EnumValueInfo(COLOR::green, "green"));
+    QVector<QtnEnumValueInfo> staticValues;
+    staticValues.append(QtnEnumValueInfo(COLOR::red, "red"));
+    staticValues.append(QtnEnumValueInfo(COLOR::blue, "blue"));
+    staticValues.append(QtnEnumValueInfo(COLOR::green, "green"));
     
-    static Qtinuum::EnumInfo enumInfo("COLOR", staticValues);
+    static QtnEnumInfo enumInfo("COLOR", staticValues);
     return enumInfo;
 }
 
-Qtinuum::EnumInfo& COLOR::info()
+QtnEnumInfo& COLOR::info()
 {
-    static Qtinuum::EnumInfo& enumInfo = create_COLOR_info();
+    static QtnEnumInfo& enumInfo = create_COLOR_info();
     return enumInfo;
 }
-static Qtinuum::EnumInfo& create_FLAGS_info()
+static QtnEnumInfo& create_FLAGS_info()
 {
-    QVector<Qtinuum::EnumValueInfo> staticValues;
-    staticValues.append(Qtinuum::EnumValueInfo(FLAGS::opt1, "Option1"));
-    staticValues.append(Qtinuum::EnumValueInfo(FLAGS::opt2, "Option2"));
-    staticValues.append(Qtinuum::EnumValueInfo(FLAGS::opt3, "Option3"));
+    QVector<QtnEnumValueInfo> staticValues;
+    staticValues.append(QtnEnumValueInfo(FLAGS::opt1, "Option1"));
+    staticValues.append(QtnEnumValueInfo(FLAGS::opt2, "Option2"));
+    staticValues.append(QtnEnumValueInfo(FLAGS::opt3, "Option3"));
     
-    static Qtinuum::EnumInfo enumInfo("FLAGS", staticValues);
+    static QtnEnumInfo enumInfo("FLAGS", staticValues);
     return enumInfo;
 }
 
-Qtinuum::EnumInfo& FLAGS::info()
+QtnEnumInfo& FLAGS::info()
 {
-    static Qtinuum::EnumInfo& enumInfo = create_FLAGS_info();
+    static QtnEnumInfo& enumInfo = create_FLAGS_info();
     return enumInfo;
 }
 
-PropertySetInternal::PropertySetInternal(QObject *parent)
-    : Qtinuum::PropertySet(parent)
-    , name(*new Qtinuum::PropertyQString(this))
-    , rect(*new Qtinuum::PropertyQRect(this))
-    , item1(*new Qtinuum::PropertyQString(this))
-    , item2(*new Qtinuum::PropertyQString(this))
-    , item3(*new Qtinuum::PropertyQString(this))
-    , item4(*new Qtinuum::PropertyQString(this))
-    , item5(*new Qtinuum::PropertyQString(this))
-    , item6(*new Qtinuum::PropertyBool(this))
-    , item7(*new Qtinuum::PropertyBool(this))
-    , item8(*new Qtinuum::PropertyEnum(this))
-    , item9(*new Qtinuum::PropertyQColor(this))
+QtnPropertySetInternal::QtnPropertySetInternal(QObject* parent)
+    : QtnPropertySet(parent)
+    , name(*new QtnPropertyQString(this))
+    , rect(*new QtnPropertyQRect(this))
+    , item1(*new QtnPropertyQString(this))
+    , item2(*new QtnPropertyQString(this))
+    , item3(*new QtnPropertyQString(this))
+    , item4(*new QtnPropertyQString(this))
+    , item5(*new QtnPropertyQString(this))
+    , item6(*new QtnPropertyBool(this))
+    , item7(*new QtnPropertyBool(this))
+    , item8(*new QtnPropertyEnum(this))
+    , item9(*new QtnPropertyQColor(this))
 {
     init();
     connectSlots();
     connectDelegates();
 }
 
-PropertySetInternal::~PropertySetInternal()
+QtnPropertySetInternal::~QtnPropertySetInternal()
 {
     disconnectSlots();
 }
 
-PropertySetInternal& PropertySetInternal::operator=(const PropertySetInternal& other)
+QtnPropertySetInternal& QtnPropertySetInternal::operator=(const QtnPropertySetInternal& other)
 {
     name = other.name;
     rect = other.rect;
@@ -75,21 +75,21 @@ PropertySetInternal& PropertySetInternal::operator=(const PropertySetInternal& o
     return *this;
 }
 
-Qtinuum::PropertySet* PropertySetInternal::createNewImpl(QObject* parentForNew) const
+QtnPropertySet* QtnPropertySetInternal::createNewImpl(QObject* parentForNew) const
 {
-    return new PropertySetInternal(parentForNew);
+    return new QtnPropertySetInternal(parentForNew);
 }
 
-Qtinuum::PropertySet* PropertySetInternal::createCopyImpl(QObject* parentForCopy) const
+QtnPropertySet* QtnPropertySetInternal::createCopyImpl(QObject* parentForCopy) const
 {
-    PropertySetInternal* p = new PropertySetInternal(parentForCopy);
+    QtnPropertySetInternal* p = new QtnPropertySetInternal(parentForCopy);
     *p = *this;
     return p;
 }
 
-bool PropertySetInternal::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask)
+bool QtnPropertySetInternal::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    PropertySetInternal* theCopyFrom = qobject_cast<PropertySetInternal*>(propertySetCopyFrom);
+    QtnPropertySetInternal* theCopyFrom = qobject_cast<QtnPropertySetInternal*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -151,11 +151,11 @@ bool PropertySetInternal::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFr
     return true;
 }
 
-void PropertySetInternal::init()
+void QtnPropertySetInternal::init()
 {
     static QString Internal_name = tr("Internal");
     setName(Internal_name);
-    setState(qtn::PropertyStateImmutable);
+    setState(QtnPropertyStateImmutable);
     
     // start children initialization
     static QString name_name = tr("name");
@@ -195,56 +195,56 @@ void PropertySetInternal::init()
     // end children initialization
 }
 
-void PropertySetInternal::connectSlots()
+void QtnPropertySetInternal::connectSlots()
 {
 }
 
-void PropertySetInternal::disconnectSlots()
+void QtnPropertySetInternal::disconnectSlots()
 {
 }
 
-void PropertySetInternal::connectDelegates()
+void QtnPropertySetInternal::connectDelegates()
 {
-    item7.setDelegateCallback([] () -> const Qtinuum::PropertyDelegateInfo * {
-        QScopedPointer<Qtinuum::PropertyDelegateInfo> info(new Qtinuum::PropertyDelegateInfo());
+    item7.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "ComboBox";
         return info.take();
     });
-    item9.setDelegateCallback([] () -> const Qtinuum::PropertyDelegateInfo * {
-        QScopedPointer<Qtinuum::PropertyDelegateInfo> info(new Qtinuum::PropertyDelegateInfo());
-        info->attributes["shape"] = qtn::QColorDelegateShapeCircle;
+    item9.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->attributes["shape"] = QtnColorDelegateShapeCircle;
         return info.take();
     });
 }
 
-PropertySetSubProperties::PropertySetSubProperties(QObject *parent)
-    : Qtinuum::PropertySet(parent)
-    , intProp(*new Qtinuum::PropertyInt(this))
-    , uintProp(*new Qtinuum::PropertyUInt(this))
-    , doubleProp(*new Qtinuum::PropertyDouble(this))
-    , floatProp(*new Qtinuum::PropertyFloat(this))
-    , boolProp(*new Qtinuum::PropertyBool(this))
-    , enumProp(*new Qtinuum::PropertyEnum(this))
-    , colorProp(*new Qtinuum::PropertyQColor(this))
-    , flagsProp(*new Qtinuum::PropertyEnumFlags(this))
-    , fileName1(*new Qtinuum::PropertyQString(this))
-    , fileName2(*new Qtinuum::PropertyQString(this))
-    , pointProp(*new Qtinuum::PropertyQPoint(this))
-    , sizeProp(*new Qtinuum::PropertyQSize(this))
-    , fontProp(*new Qtinuum::PropertyQFont(this))
-    , listProp(*new Qtinuum::PropertyQString(this))
+QtnPropertySetSubProperties::QtnPropertySetSubProperties(QObject* parent)
+    : QtnPropertySet(parent)
+    , intProp(*new QtnPropertyInt(this))
+    , uintProp(*new QtnPropertyUInt(this))
+    , doubleProp(*new QtnPropertyDouble(this))
+    , floatProp(*new QtnPropertyFloat(this))
+    , boolProp(*new QtnPropertyBool(this))
+    , enumProp(*new QtnPropertyEnum(this))
+    , colorProp(*new QtnPropertyQColor(this))
+    , flagsProp(*new QtnPropertyEnumFlags(this))
+    , fileName1(*new QtnPropertyQString(this))
+    , fileName2(*new QtnPropertyQString(this))
+    , pointProp(*new QtnPropertyQPoint(this))
+    , sizeProp(*new QtnPropertyQSize(this))
+    , fontProp(*new QtnPropertyQFont(this))
+    , listProp(*new QtnPropertyQString(this))
 {
     init();
     connectSlots();
     connectDelegates();
 }
 
-PropertySetSubProperties::~PropertySetSubProperties()
+QtnPropertySetSubProperties::~QtnPropertySetSubProperties()
 {
     disconnectSlots();
 }
 
-PropertySetSubProperties& PropertySetSubProperties::operator=(const PropertySetSubProperties& other)
+QtnPropertySetSubProperties& QtnPropertySetSubProperties::operator=(const QtnPropertySetSubProperties& other)
 {
     intProp = other.intProp;
     uintProp = other.uintProp;
@@ -264,21 +264,21 @@ PropertySetSubProperties& PropertySetSubProperties::operator=(const PropertySetS
     return *this;
 }
 
-Qtinuum::PropertySet* PropertySetSubProperties::createNewImpl(QObject* parentForNew) const
+QtnPropertySet* QtnPropertySetSubProperties::createNewImpl(QObject* parentForNew) const
 {
-    return new PropertySetSubProperties(parentForNew);
+    return new QtnPropertySetSubProperties(parentForNew);
 }
 
-Qtinuum::PropertySet* PropertySetSubProperties::createCopyImpl(QObject* parentForCopy) const
+QtnPropertySet* QtnPropertySetSubProperties::createCopyImpl(QObject* parentForCopy) const
 {
-    PropertySetSubProperties* p = new PropertySetSubProperties(parentForCopy);
+    QtnPropertySetSubProperties* p = new QtnPropertySetSubProperties(parentForCopy);
     *p = *this;
     return p;
 }
 
-bool PropertySetSubProperties::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask)
+bool QtnPropertySetSubProperties::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    PropertySetSubProperties* theCopyFrom = qobject_cast<PropertySetSubProperties*>(propertySetCopyFrom);
+    QtnPropertySetSubProperties* theCopyFrom = qobject_cast<QtnPropertySetSubProperties*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -355,7 +355,7 @@ bool PropertySetSubProperties::copyValuesImpl(Qtinuum::PropertySet* propertySetC
     return true;
 }
 
-void PropertySetSubProperties::init()
+void QtnPropertySetSubProperties::init()
 {
     static QString Supplementary_name = tr("Supplementary");
     setName(Supplementary_name);
@@ -421,63 +421,63 @@ void PropertySetSubProperties::init()
     // end children initialization
 }
 
-void PropertySetSubProperties::connectSlots()
+void QtnPropertySetSubProperties::connectSlots()
 {
 }
 
-void PropertySetSubProperties::disconnectSlots()
+void QtnPropertySetSubProperties::disconnectSlots()
 {
 }
 
-void PropertySetSubProperties::connectDelegates()
+void QtnPropertySetSubProperties::connectDelegates()
 {
-    boolProp.setDelegateCallback([] () -> const Qtinuum::PropertyDelegateInfo * {
-        QScopedPointer<Qtinuum::PropertyDelegateInfo> info(new Qtinuum::PropertyDelegateInfo());
+    boolProp.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "ComboBox";
         info->attributes["labelFalse"] = "Off";
         info->attributes["labelTrue"] = "On";
         return info.take();
     });
-    fileName1.setDelegateCallback([] () -> const Qtinuum::PropertyDelegateInfo * {
-        QScopedPointer<Qtinuum::PropertyDelegateInfo> info(new Qtinuum::PropertyDelegateInfo());
+    fileName1.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "File";
         return info.take();
     });
-    fileName2.setDelegateCallback([] () -> const Qtinuum::PropertyDelegateInfo * {
-        QScopedPointer<Qtinuum::PropertyDelegateInfo> info(new Qtinuum::PropertyDelegateInfo());
+    fileName2.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "File";
         info->attributes["acceptMode"] = QFileDialog::AcceptSave;
         info->attributes["invalidColor"] = QColor(Qt::blue);
         info->attributes["nameFilters"] = QStringList() << "PDF files (*.pdf)" << "All files (*)";
         return info.take();
     });
-    listProp.setDelegateCallback([] () -> const Qtinuum::PropertyDelegateInfo * {
-        QScopedPointer<Qtinuum::PropertyDelegateInfo> info(new Qtinuum::PropertyDelegateInfo());
+    listProp.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "List";
         info->attributes["items"] = QStringList() << "one" << "two" << "three";
         return info.take();
     });
 }
 
-PropertySetMain::PropertySetMain(QObject *parent)
-    : Qtinuum::PropertySet(parent)
-    , count(*new Qtinuum::PropertyInt(this))
-    , isValid(*new Qtinuum::PropertyBool(this))
-    , Internal(*new PropertySetInternal(this))
-    , flag(*new Qtinuum::PropertyBool(this))
-    , Supplementary(*new PropertySetSubProperties(this))
+QtnPropertySetMain::QtnPropertySetMain(QObject* parent)
+    : QtnPropertySet(parent)
+    , count(*new QtnPropertyInt(this))
+    , isValid(*new QtnPropertyBool(this))
+    , Internal(*new QtnPropertySetInternal(this))
+    , flag(*new QtnPropertyBool(this))
+    , Supplementary(*new QtnPropertySetSubProperties(this))
 {
     init();
     connectSlots();
     connectDelegates();
 }
 
-PropertySetMain::~PropertySetMain()
+QtnPropertySetMain::~QtnPropertySetMain()
 {
     disconnectSlots();
 }
 
-PropertySetMain& PropertySetMain::operator=(const PropertySetMain& other)
+QtnPropertySetMain& QtnPropertySetMain::operator=(const QtnPropertySetMain& other)
 {
     count = other.count;
     isValid = other.isValid;
@@ -488,21 +488,21 @@ PropertySetMain& PropertySetMain::operator=(const PropertySetMain& other)
     return *this;
 }
 
-Qtinuum::PropertySet* PropertySetMain::createNewImpl(QObject* parentForNew) const
+QtnPropertySet* QtnPropertySetMain::createNewImpl(QObject* parentForNew) const
 {
-    return new PropertySetMain(parentForNew);
+    return new QtnPropertySetMain(parentForNew);
 }
 
-Qtinuum::PropertySet* PropertySetMain::createCopyImpl(QObject* parentForCopy) const
+QtnPropertySet* QtnPropertySetMain::createCopyImpl(QObject* parentForCopy) const
 {
-    PropertySetMain* p = new PropertySetMain(parentForCopy);
+    QtnPropertySetMain* p = new QtnPropertySetMain(parentForCopy);
     *p = *this;
     return p;
 }
 
-bool PropertySetMain::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask)
+bool QtnPropertySetMain::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    PropertySetMain* theCopyFrom = qobject_cast<PropertySetMain*>(propertySetCopyFrom);
+    QtnPropertySetMain* theCopyFrom = qobject_cast<QtnPropertySetMain*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -528,7 +528,7 @@ bool PropertySetMain::copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, 
     return true;
 }
 
-void PropertySetMain::init()
+void QtnPropertySetMain::init()
 {
     static QString Main_name = tr("Main");
     setName(Main_name);
@@ -546,7 +546,7 @@ void PropertySetMain::init()
     isValid.setValue(false);
     static QString Internal_name = tr("Internal");
     Internal.setName(Internal_name);
-    Internal.setState(qtn::PropertyStateImmutable);
+    Internal.setState(QtnPropertyStateImmutable);
     static QString flag_name = tr("flag");
     flag.setName(flag_name);
     flag.setValue(false);
@@ -557,27 +557,27 @@ void PropertySetMain::init()
     // end children initialization
 }
 
-void PropertySetMain::connectSlots()
+void QtnPropertySetMain::connectSlots()
 {
-    QObject::connect(&isValid, &Qtinuum::Property::propertyDidChange, this, &PropertySetMain::on_isValid_propertyDidChange);
+    QObject::connect(&isValid, &QtnProperty::propertyDidChange, this, &QtnPropertySetMain::on_isValid_propertyDidChange);
 }
 
-void PropertySetMain::disconnectSlots()
+void QtnPropertySetMain::disconnectSlots()
 {
-    QObject::disconnect(&isValid, &Qtinuum::Property::propertyDidChange, this, &PropertySetMain::on_isValid_propertyDidChange);
+    QObject::disconnect(&isValid, &QtnProperty::propertyDidChange, this, &QtnPropertySetMain::on_isValid_propertyDidChange);
 }
 
-void PropertySetMain::on_isValid_propertyDidChange(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, Qtinuum::PropertyChangeReason reason)
+void QtnPropertySetMain::on_isValid_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
     
-            Internal.switchState(qtn::PropertyStateImmutable, !isValid);
+            Internal.switchState(QtnPropertyStateImmutable, !isValid);
         
 }
 
-void PropertySetMain::connectDelegates()
+void QtnPropertySetMain::connectDelegates()
 {
-    flag.setDelegateCallback([] () -> const Qtinuum::PropertyDelegateInfo * {
-        QScopedPointer<Qtinuum::PropertyDelegateInfo> info(new Qtinuum::PropertyDelegateInfo());
+    flag.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "ComboBox";
         return info.take();
     });

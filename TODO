@@ -10,6 +10,8 @@ Connect to QObject property changed signal
 
 remove namespace!!!
 
+implement QtnPropertySet::toStrImpl
+
 Save/Load via XML
 Save/Load in JSON
 
@@ -20,7 +22,6 @@ PropertyTypes:
 4. Cursor
 5. Icon
 6. Pen
-
 
 
 owner feature????

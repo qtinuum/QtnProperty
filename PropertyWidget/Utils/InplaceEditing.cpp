@@ -21,10 +21,7 @@
 #include <QKeyEvent>
 #include <QDebug>
 
-namespace Qtinuum
-{
-
-class InplaceEditorHandler: public QObject
+class QtnInplaceEditorHandler: public QObject
 {
 public:
 
@@ -34,9 +31,9 @@ public:
 };
 
 static QWidget* g_inplaceEditor = 0;
-static InplaceEditorHandler* g_inplaceEditorHandler = 0;
+static QtnInplaceEditorHandler* g_inplaceEditorHandler = 0;
 
-bool startInplaceEdit(QWidget* editor)
+bool qtnStartInplaceEdit(QWidget* editor)
 {
     if (!editor)
         return false;
@@ -44,7 +41,7 @@ bool startInplaceEdit(QWidget* editor)
     if (g_inplaceEditor)
     {
         Q_ASSERT(false);
-        stopInplaceEdit();
+        qtnStopInplaceEdit();
     }
 
     QCoreApplication* app = QCoreApplication::instance();
@@ -55,7 +52,7 @@ bool startInplaceEdit(QWidget* editor)
     }
 
     g_inplaceEditor = editor;
-    g_inplaceEditorHandler = new InplaceEditorHandler();
+    g_inplaceEditorHandler = new QtnInplaceEditorHandler();
 
     // move focus to editor
     if (QApplication::focusWidget() != g_inplaceEditor->focusWidget())
@@ -63,7 +60,7 @@ bool startInplaceEdit(QWidget* editor)
 
     // connect to editor destroyed signal
     QObject::connect(  g_inplaceEditor, &QObject::destroyed
-                     , g_inplaceEditorHandler, &InplaceEditorHandler::OnEditorDestroyed);
+                     , g_inplaceEditorHandler, &QtnInplaceEditorHandler::OnEditorDestroyed);
 
     // install application event filter
     app->installEventFilter(g_inplaceEditorHandler);
@@ -71,7 +68,7 @@ bool startInplaceEdit(QWidget* editor)
     return true;
 }
 
-QWidget* getInplaceEdit()
+QWidget* qtnGetInplaceEdit()
 {
     return g_inplaceEditor;
 }
@@ -85,7 +82,7 @@ void onInplaceWidgetDestroyed(QObject* object)
         parent->setFocus();
 }
 
-bool stopInplaceEdit()
+bool qtnStopInplaceEdit()
 {
     if (!g_inplaceEditor)
         return false;
@@ -116,7 +113,7 @@ bool hasParent(QObject* child, QObject* parent)
     return hasParent(child->parent(), parent);
 }
 
-bool InplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
+bool QtnInplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
 {
     Q_ASSERT(g_inplaceEditor);
 
@@ -136,7 +133,7 @@ bool InplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
                  << "type: " << event->type();
 
         if (!hasParent(QApplication::focusObject(), g_inplaceEditor))
-            stopInplaceEdit();
+            qtnStopInplaceEdit();
 
         return false;
     }
@@ -163,7 +160,7 @@ bool InplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
     return false;
 }
 
-void InplaceEditorHandler::OnEditorDestroyed(QObject* obj)
+void QtnInplaceEditorHandler::OnEditorDestroyed(QObject* obj)
 {
     Q_ASSERT(obj == g_inplaceEditor);
 
@@ -171,6 +168,4 @@ void InplaceEditorHandler::OnEditorDestroyed(QObject* obj)
     g_inplaceEditorHandler = 0;
     g_inplaceEditor = 0;
 }
-
-} // end namespace Qtinuum
 

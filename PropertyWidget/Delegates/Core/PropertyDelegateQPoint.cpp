@@ -20,33 +20,26 @@
 #include "../../../Core/Core/PropertyQPoint.h"
 #include "../PropertyDelegateFactory.h"
 
-
-namespace Qtinuum
-{
-
-static bool regQPointDelegate = PropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&PropertyQPointBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateQPoint, PropertyQPointBase>
+static bool regQPointDelegate = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyQPointBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>
                                 , "XY");
 
-PropertyDelegateQPoint::PropertyDelegateQPoint(PropertyQPointBase& owner)
-    : PropertyDelegateTypedEx<PropertyQPointBase>(owner)
+QtnPropertyDelegateQPoint::QtnPropertyDelegateQPoint(QtnPropertyQPointBase& owner)
+    : QtnPropertyDelegateTypedEx<QtnPropertyQPointBase>(owner)
 {
-    addSubProperty(createXProperty(0, &owner));
-    addSubProperty(createYProperty(0, &owner));
+    addSubProperty(qtnCreateXProperty(0, &owner));
+    addSubProperty(qtnCreateYProperty(0, &owner));
 }
 
-QWidget* PropertyDelegateQPoint::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateQPoint::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool PropertyDelegateQPoint::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQPoint::propertyValueToStr(QString& strValue) const
 {
     QPoint value = owner().value();
     strValue = QString("%1 x %2").arg(value.x()).arg(value.y());
     return true;
 }
-
-} // end namespace Qtinuum
-

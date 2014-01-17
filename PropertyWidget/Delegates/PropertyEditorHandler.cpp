@@ -20,33 +20,27 @@
 
 #include <QDebug>
 
-namespace Qtinuum
+QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor)
 {
-
-PropertyEditorHandlerBase::PropertyEditorHandlerBase(Property& property, QWidget& editor)
-{
-    QObject::connect(&editor, &QObject::destroyed, this, &PropertyEditorHandlerBase::onObjectDestroyed);
-    QObject::connect(&property, &QObject::destroyed, this, &PropertyEditorHandlerBase::onObjectDestroyed);
-    QObject::connect(&property, &Property::propertyDidChange, this, &PropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
+    QObject::connect(&editor, &QObject::destroyed, this, &QtnPropertyEditorHandlerBase::onObjectDestroyed);
+    QObject::connect(&property, &QObject::destroyed, this, &QtnPropertyEditorHandlerBase::onObjectDestroyed);
+    QObject::connect(&property, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
     qDebug() << "Create editor handler: " << this;
 }
 
-PropertyEditorHandlerBase::~PropertyEditorHandlerBase()
+QtnPropertyEditorHandlerBase::~QtnPropertyEditorHandlerBase()
 {
     qDebug() << "Delete editor handler: " << this;
 }
 
-void PropertyEditorHandlerBase::onObjectDestroyed(QObject *object)
+void QtnPropertyEditorHandlerBase::onObjectDestroyed(QObject *object)
 {
     Q_ASSERT((object == &propertyBase()) || (object == &editorBase()));
     delete this;
 }
 
-void PropertyEditorHandlerBase::onPropertyDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason)
+void QtnPropertyEditorHandlerBase::onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
-    if ((reason & PropertyChangeReasonValue) && (&propertyBase() == firedProperty))
+    if ((reason & QtnPropertyChangeReasonValue) && (&propertyBase() == firedProperty))
         updateEditor();
 }
-
-} // end namespace Qtinuum
-

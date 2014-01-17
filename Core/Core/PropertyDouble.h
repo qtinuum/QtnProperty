@@ -21,17 +21,14 @@
 
 #include "../Auxiliary/PropertyTemplates.h"
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyDoubleBase: public NumericPropertyBase<SinglePropertyBase<double>>
+class QTN_PE_CORE_EXPORT QtnPropertyDoubleBase: public QtnNumericPropertyBase<QtnSinglePropertyBase<double>>
 {
     Q_OBJECT
-    PropertyDoubleBase(const PropertyDoubleBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyDoubleBase(const QtnPropertyDoubleBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyDoubleBase(QObject *parent)
-        : NumericPropertyBase<SinglePropertyBase<double>>(parent)
+    explicit QtnPropertyDoubleBase(QObject *parent)
+        : QtnNumericPropertyBase<QtnSinglePropertyBase<double>>(parent)
     {
     }
 
@@ -43,39 +40,37 @@ protected:
     // variant conversion implementation
     bool fromVariantImpl(const QVariant& var) override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyDoubleBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyDoubleBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyDoubleBase, double)
+P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyDoubleBase, double)
 
-class QTN_PE_CORE_EXPORT PropertyDoubleCallback: public SinglePropertyCallback<PropertyDoubleBase>
+class QTN_PE_CORE_EXPORT QtnPropertyDoubleCallback: public QtnSinglePropertyCallback<QtnPropertyDoubleBase>
 {
     Q_OBJECT
-    PropertyDoubleCallback(const PropertyDoubleCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyDoubleCallback(const QtnPropertyDoubleCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyDoubleCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyDoubleBase>(parent)
+    explicit QtnPropertyDoubleCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyDoubleBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyDoubleCallback, PropertyDoubleBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyDoubleCallback, QtnPropertyDoubleBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyDouble: public SinglePropertyValue<PropertyDoubleBase>
+class QTN_PE_CORE_EXPORT QtnPropertyDouble: public QtnSinglePropertyValue<QtnPropertyDoubleBase>
 {
     Q_OBJECT
-    PropertyDouble(const PropertyDouble& other) Q_DECL_EQ_DELETE;
+    QtnPropertyDouble(const QtnPropertyDouble& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyDouble(QObject *parent)
-        : SinglePropertyValue<PropertyDoubleBase>(parent)
+    explicit QtnPropertyDouble(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyDoubleBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyDouble, PropertyDoubleBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyDouble, QtnPropertyDoubleBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYDOUBLE_H

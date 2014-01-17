@@ -20,20 +20,17 @@
 #include <QRegExp>
 #include <QStringList>
 
-namespace Qtinuum
-{
-
-EnumInfo::EnumInfo(const QString &name, QVector<EnumValueInfo>& staticValues)
+QtnEnumInfo::QtnEnumInfo(const QString &name, QVector<QtnEnumValueInfo>& staticValues)
     : m_name(name)
 {
     m_staticValues.swap(staticValues);
 }
 
-const EnumValueInfo* EnumInfo::findByValue(EnumValueType value) const
+const QtnEnumValueInfo* QtnEnumInfo::findByValue(QtnEnumValueType value) const
 {
-    const EnumValueInfo* result = nullptr;
+    const QtnEnumValueInfo* result = nullptr;
 
-    forEachEnumValue([&result, value](const EnumValueInfo& enumValue)->bool {
+    forEachEnumValue([&result, value](const QtnEnumValueInfo& enumValue)->bool {
         if (enumValue.value() == value)
         {
             result = &enumValue;
@@ -46,11 +43,11 @@ const EnumValueInfo* EnumInfo::findByValue(EnumValueType value) const
     return result;
 }
 
-const EnumValueInfo* EnumInfo::findByName(const QString& name, Qt::CaseSensitivity cs) const
+const QtnEnumValueInfo* QtnEnumInfo::findByName(const QString& name, Qt::CaseSensitivity cs) const
 {
-    const EnumValueInfo* result = nullptr;
+    const QtnEnumValueInfo* result = nullptr;
 
-    forEachEnumValue([&result, &name, cs](const EnumValueInfo& enumValue)->bool {
+    forEachEnumValue([&result, &name, cs](const QtnEnumValueInfo& enumValue)->bool {
         if (QString::compare(enumValue.name(), name, cs) == 0)
         {
             result = &enumValue;
@@ -63,7 +60,7 @@ const EnumValueInfo* EnumInfo::findByName(const QString& name, Qt::CaseSensitivi
     return result;
 }
 
-const EnumValueInfo* EnumInfo::fromStr(const QString& str) const
+const QtnEnumValueInfo* QtnEnumInfo::fromStr(const QString& str) const
 {
     static QRegExp parserEnum("^\\s*([^:\\s]+)::([^:\\s]+)\\s*$", Qt::CaseInsensitive);
 
@@ -81,11 +78,11 @@ const EnumValueInfo* EnumInfo::fromStr(const QString& str) const
         enumStr = params[2];
     }
 
-    const EnumValueInfo* enumValue = findByName(enumStr, Qt::CaseInsensitive);
+    const QtnEnumValueInfo* enumValue = findByName(enumStr, Qt::CaseInsensitive);
     return enumValue;
 }
 
-bool EnumInfo::toStr(QString& str, const EnumValueInfo* value) const
+bool QtnEnumInfo::toStr(QString& str, const QtnEnumValueInfo* value) const
 {
     if (!value)
         return false;
@@ -93,6 +90,3 @@ bool EnumInfo::toStr(QString& str, const EnumValueInfo* value) const
     str = QString("%1::%2").arg(name(), value->name());
     return true;
 }
-
-
-} // end namespace Qtinuum

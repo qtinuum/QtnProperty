@@ -21,24 +21,19 @@
 
 #include "../PropertyDelegate.h"
 
-namespace Qtinuum
-{
+class QtnPropertyQFontBase;
 
-class PropertyQFontBase;
-
-class QTN_PW_EXPORT PropertyDelegateQFont: public PropertyDelegateTypedEx<PropertyQFontBase>
+class QTN_PW_EXPORT QtnPropertyDelegateQFont: public QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>
 {
-    Q_DISABLE_COPY(PropertyDelegateQFont)
+    Q_DISABLE_COPY(QtnPropertyDelegateQFont)
 
 public:
-    PropertyDelegateQFont(PropertyQFontBase& owner);
+    QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner);
 
 protected:
-    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const override;
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStr(QString& strValue) const override;
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTY_DELEGATE_QFONT_H

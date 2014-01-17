@@ -21,23 +21,18 @@
 
 #include "../PropertyDelegate.h"
 
-namespace Qtinuum
-{
+class QtnPropertyQSizeBase;
 
-class PropertyQSizeBase;
-
-class QTN_PW_EXPORT PropertyDelegateQSize: public PropertyDelegateTypedEx<PropertyQSizeBase>
+class QTN_PW_EXPORT QtnPropertyDelegateQSize: public QtnPropertyDelegateTypedEx<QtnPropertyQSizeBase>
 {
-    Q_DISABLE_COPY(PropertyDelegateQSize)
+    Q_DISABLE_COPY(QtnPropertyDelegateQSize)
 
 public:
-    PropertyDelegateQSize(PropertyQSizeBase& owner);
+    QtnPropertyDelegateQSize(QtnPropertyQSizeBase& owner);
 
 protected:
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStr(QString& strValue) const override;
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTY_DELEGATE_QSIZE_H

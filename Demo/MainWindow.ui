@@ -31,7 +31,7 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="Qtinuum::PropertyWidget" name="pw" native="true">
+     <widget class="QtnPropertyWidget" name="pw" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -131,7 +131,7 @@ Internal.item3 = &quot;ssss&quot;</string>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>Qtinuum::PropertyWidget</class>
+   <class>QtnPropertyWidget</class>
    <extends>QWidget</extends>
    <header>PropertyWidget.h</header>
    <container>1</container>

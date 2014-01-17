@@ -26,9 +26,6 @@
 #include <QSharedPointer>
 #include <QTextStream>
 
-namespace Qtinuum
-{
-
 class TextStreamIndent: public QTextStream
 {
 public:
@@ -334,6 +331,5 @@ private:
 };
 extern PegContext pegContext;
 
-} // end namespace Qtinuum
 
 #endif // PROPERTY_ENUM_GENERATOR_H

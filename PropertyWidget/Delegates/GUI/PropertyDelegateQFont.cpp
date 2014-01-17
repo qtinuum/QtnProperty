@@ -29,14 +29,11 @@
 #include <QFontDialog>
 #include <QFontDatabase>
 
-namespace Qtinuum
-{
-
-class PropertyQFontLineEditBttnHandler: public PropertyEditorHandler<PropertyQFontBase, LineEditBttn>
+class QtnPropertyQFontLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQFontBase, QtnLineEditBttn>
 {
 public:
-    PropertyQFontLineEditBttnHandler(PropertyQFontBase& property, LineEditBttn& editor)
-        : PropertyEditorHandlerType(property, editor)
+    QtnPropertyQFontLineEditBttnHandler(QtnPropertyQFontBase& property, QtnLineEditBttn& editor)
+        : QtnPropertyEditorHandlerType(property, editor)
     {
         editor.lineEdit->setReadOnly(true);
 
@@ -49,7 +46,7 @@ public:
         updateEditor();
 
         QObject::connect(  editor.toolButton, &QToolButton::clicked
-                         , this, &PropertyQFontLineEditBttnHandler::onToolButtonClicked);
+                         , this, &QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked);
     }
 
 private:
@@ -69,30 +66,30 @@ private:
     }
 };
 
-static bool regQFontDelegate = PropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&PropertyQFontBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateQFont, PropertyQFontBase>
+static bool regQFontDelegate = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyQFontBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>
                                 , "LineEditBttn");
 
-static EnumInfo* styleStrategyEnum()
+static QtnEnumInfo* styleStrategyEnum()
 {
-    static EnumInfo* enumInfo = 0;
+    static QtnEnumInfo* enumInfo = nullptr;
     if (!enumInfo)
     {
-        QVector<EnumValueInfo> items;
-        items.append(EnumValueInfo(QFont::PreferDefault, "PreferDefault"));
-        items.append(EnumValueInfo(QFont::NoAntialias, "NoAntialias"));
-        items.append(EnumValueInfo(QFont::PreferAntialias, "PreferAntialias"));
-        enumInfo = new EnumInfo("StyleStrategy", items);
+        QVector<QtnEnumValueInfo> items;
+        items.append(QtnEnumValueInfo(QFont::PreferDefault, "PreferDefault"));
+        items.append(QtnEnumValueInfo(QFont::NoAntialias, "NoAntialias"));
+        items.append(QtnEnumValueInfo(QFont::PreferAntialias, "PreferAntialias"));
+        enumInfo = new QtnEnumInfo("StyleStrategy", items);
     }
 
     return enumInfo;
 }
 
-PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
-    : PropertyDelegateTypedEx<PropertyQFontBase>(owner)
+QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
+    : QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>(owner)
 {
-    PropertyQStringCallback* propertyFamily = new PropertyQStringCallback(0);
+    QtnPropertyQStringCallback* propertyFamily = new QtnPropertyQStringCallback(0);
     addSubProperty(propertyFamily);
     propertyFamily->setName(owner.tr("Family"));
     propertyFamily->setDescription(owner.tr("Font Family for %1.").arg(owner.name()));
@@ -104,13 +101,13 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
         font.setFamily(value);
         owner.setValue(font);
     });
-    PropertyDelegateInfo delegate;
+    QtnPropertyDelegateInfo delegate;
     delegate.name = "List";
     QFontDatabase fDB;
     delegate.attributes["items"] = fDB.families();
     propertyFamily->setDelegate(delegate);
 
-    PropertyUIntCallback* propertyPointSize = new PropertyUIntCallback(0);
+    QtnPropertyUIntCallback* propertyPointSize = new QtnPropertyUIntCallback(0);
     addSubProperty(propertyPointSize);
     propertyPointSize->setName(owner.tr("PointSize"));
     propertyPointSize->setDescription(owner.tr("Point size for %1.").arg(owner.name()));
@@ -126,7 +123,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
     propertyPointSize->setMinValue(1);
     propertyPointSize->setMaxValue((quint32)std::numeric_limits<int>::max());
 
-    PropertyBoolCallback* propertyBold = new PropertyBoolCallback(0);
+    QtnPropertyBoolCallback* propertyBold = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyBold);
     propertyBold->setName(owner.tr("Bold"));
     propertyBold->setDescription(owner.tr("Bold flag for %1").arg(owner.name()));
@@ -139,7 +136,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
         owner.setValue(font);
     });
 
-    PropertyBoolCallback* propertyItalic = new PropertyBoolCallback(0);
+    QtnPropertyBoolCallback* propertyItalic = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyItalic);
     propertyItalic->setName(owner.tr("Italic"));
     propertyItalic->setDescription(owner.tr("Italic flag for %1").arg(owner.name()));
@@ -152,7 +149,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
         owner.setValue(font);
     });
 
-    PropertyBoolCallback* propertyUnderline = new PropertyBoolCallback(0);
+    QtnPropertyBoolCallback* propertyUnderline = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyUnderline);
     propertyUnderline->setName(owner.tr("Underline"));
     propertyUnderline->setDescription(owner.tr("Underline flag for %1").arg(owner.name()));
@@ -165,7 +162,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
         owner.setValue(font);
     });
 
-    PropertyBoolCallback* propertyStrikeout = new PropertyBoolCallback(0);
+    QtnPropertyBoolCallback* propertyStrikeout = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyStrikeout);
     propertyStrikeout->setName(owner.tr("Strikeout"));
     propertyStrikeout->setDescription(owner.tr("Strikeout flag for %1").arg(owner.name()));
@@ -178,7 +175,7 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
         owner.setValue(font);
     });
 
-    PropertyBoolCallback* propertyKerning = new PropertyBoolCallback(0);
+    QtnPropertyBoolCallback* propertyKerning = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyKerning);
     propertyKerning->setName(owner.tr("Kerning"));
     propertyKerning->setDescription(owner.tr("Kerning flag for %1").arg(owner.name()));
@@ -191,22 +188,22 @@ PropertyDelegateQFont::PropertyDelegateQFont(PropertyQFontBase& owner)
         owner.setValue(font);
     });
 
-    PropertyEnumCallback* propertyAntialiasing = new PropertyEnumCallback(0);
+    QtnPropertyEnumCallback* propertyAntialiasing = new QtnPropertyEnumCallback(0);
     addSubProperty(propertyAntialiasing);
     propertyAntialiasing->setName(owner.tr("Antialiasing"));
     propertyAntialiasing->setDescription(owner.tr("Antialiasing flag for %1.").arg(owner.name()));
     propertyAntialiasing->setEnumInfo(styleStrategyEnum());
-    propertyAntialiasing->setCallbackValueGet([&owner]()->EnumValueType {
+    propertyAntialiasing->setCallbackValueGet([&owner]()->QtnEnumValueType {
         return owner.value().styleStrategy();
     });
-    propertyAntialiasing->setCallbackValueSet([&owner](EnumValueType value) {
+    propertyAntialiasing->setCallbackValueSet([&owner](QtnEnumValueType value) {
         QFont font = owner.value();
         font.setStyleStrategy((QFont::StyleStrategy)value);
         owner.setValue(font);
     });
 }
 
-void PropertyDelegateQFont::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+void QtnPropertyDelegateQFont::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     QFont value = owner().value();
 
@@ -228,16 +225,16 @@ void PropertyDelegateQFont::drawValueImpl(QStylePainter& painter, const QRect& r
 
     if (textRect.isValid())
     {
-        PropertyDelegateTypedEx<PropertyQFontBase>::drawValueImpl(painter, textRect, state, needTooltip);
+        QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>::drawValueImpl(painter, textRect, state, needTooltip);
     }
 }
 
-QWidget* PropertyDelegateQFont::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateQFont::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    LineEditBttn* editor = new LineEditBttn(parent);
+    QtnLineEditBttn* editor = new QtnLineEditBttn(parent);
     editor->setGeometry(rect);
 
-    new PropertyQFontLineEditBttnHandler(owner(), *editor);
+    new QtnPropertyQFontLineEditBttnHandler(owner(), *editor);
 
     if (inplaceInfo)
     {
@@ -247,13 +244,9 @@ QWidget* PropertyDelegateQFont::createValueEditorImpl(QWidget* parent, const QRe
     return editor;
 }
 
-bool PropertyDelegateQFont::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQFont::propertyValueToStr(QString& strValue) const
 {
     QFont value = owner().value();
     strValue = QString("[%1, %2]").arg(value.family()).arg(value.pointSize());
     return true;
 }
-
-
-} // end namespace Qtinuum
-

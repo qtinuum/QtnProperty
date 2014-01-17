@@ -21,17 +21,14 @@
 
 #include "../Auxiliary/PropertyTemplates.h"
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyBoolBase: public SinglePropertyBase<bool>
+class QTN_PE_CORE_EXPORT QtnPropertyBoolBase: public QtnSinglePropertyBase<bool>
 {
     Q_OBJECT
-    PropertyBoolBase(const PropertyBoolBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyBoolBase(const QtnPropertyBoolBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyBoolBase(QObject *parent)
-        : SinglePropertyBase<bool>(parent)
+    explicit QtnPropertyBoolBase(QObject *parent)
+        : QtnSinglePropertyBase<bool>(parent)
     {
     }
 
@@ -40,39 +37,37 @@ protected:
     bool fromStrImpl(const QString& str) override;
     bool toStrImpl(QString& str) const override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyBoolBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyBoolBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyBoolBase, bool)
+P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyBoolBase, bool)
 
-class QTN_PE_CORE_EXPORT PropertyBoolCallback: public SinglePropertyCallback<PropertyBoolBase>
+class QTN_PE_CORE_EXPORT QtnPropertyBoolCallback: public QtnSinglePropertyCallback<QtnPropertyBoolBase>
 {
     Q_OBJECT
-    PropertyBoolCallback(const PropertyBoolCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyBoolCallback(const QtnPropertyBoolCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyBoolCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyBoolBase>(parent)
+    explicit QtnPropertyBoolCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyBoolBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyBoolCallback, PropertyBoolBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyBoolCallback, QtnPropertyBoolBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyBool: public SinglePropertyValue<PropertyBoolBase>
+class QTN_PE_CORE_EXPORT QtnPropertyBool: public QtnSinglePropertyValue<QtnPropertyBoolBase>
 {
     Q_OBJECT
-    PropertyBool(const PropertyBool& other) Q_DECL_EQ_DELETE;
+    QtnPropertyBool(const QtnPropertyBool& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyBool(QObject *parent)
-        : SinglePropertyValue<PropertyBoolBase>(parent)
+    explicit QtnPropertyBool(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyBoolBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyBool, PropertyBoolBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyBool, QtnPropertyBoolBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYBOOL_H

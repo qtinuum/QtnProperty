@@ -5,24 +5,22 @@
 
 #include "Demo.peg.h"
 
-using namespace qtn;
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    ui->pw->setParts(PropertyWidgetPartsDescriptionPanel);
+    ui->pw->setParts(QtnPropertyWidgetPartsDescriptionPanel);
 
 //#ifdef Q_OS_WIN32
     ui->pw->propertyView()->setItemHeightRatio(1.3f);
 //#endif
 
-    qtn::PropertySet* ps = new PropertySetMain(this);
+    QtnPropertySet* ps = new QtnPropertySetMain(this);
     ui->pw->setPropertySet(ps);
 
-    scriptRegisterPropertyTypes(&jsEngine);
+    qtnScriptRegisterPropertyTypes(&jsEngine);
     jsEngine.globalObject().setProperty("params", jsEngine.newQObject(ps));
 
     dbg.attachTo(&jsEngine);
@@ -35,7 +33,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_editButton_clicked()
 {
-    PropertySet* properties = ui->pw->propertySet();
+    QtnPropertySet* properties = ui->pw->propertySet();
 
     if (!properties)
     {
@@ -44,14 +42,14 @@ void MainWindow::on_editButton_clicked()
     }
 
     // copy of properties
-    PropertySet* cpy = properties->createCopy(this);
+    QtnPropertySet* cpy = properties->createCopy(this);
     Q_ASSERT(cpy);
     // defaults
-    PropertySet* dft = properties->createNew(this);
+    QtnPropertySet* dft = properties->createNew(this);
     MyDialog dlg(this, *cpy, dft);
     if (dlg.exec() == QDialog::Accepted)
     {
-        properties->copyValues(cpy, PropertyStateImmutable|PropertyStateInvisible);
+        properties->copyValues(cpy, QtnPropertyStateImmutable|QtnPropertyStateInvisible);
     }
 }
 
@@ -63,7 +61,7 @@ void MainWindow::on_dbgButton_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
-    PropertySet* properties = ui->pw->propertySet();
+    QtnPropertySet* properties = ui->pw->propertySet();
 
     if (!properties)
     {

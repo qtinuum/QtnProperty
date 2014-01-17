@@ -19,16 +19,13 @@
 #include "PropertyQPoint.h"
 #include "PropertyInt.h"
 
-namespace Qtinuum
+QtnPropertyQPointBase::QtnPropertyQPointBase(QObject *parent)
+    : QtnSinglePropertyBase<QPoint>(parent)
 {
-
-PropertyQPointBase::PropertyQPointBase(QObject *parent)
-    : SinglePropertyBase<QPoint>(parent)
-{
-    addState(PropertyStateCollapsed);
+    addState(QtnPropertyStateCollapsed);
 }
 
-bool PropertyQPointBase::fromStrImpl(const QString& str)
+bool QtnPropertyQPointBase::fromStrImpl(const QString& str)
 {
     static QRegExp parserPoint("^\\s*QPoint\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
     static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
@@ -59,16 +56,16 @@ bool PropertyQPointBase::fromStrImpl(const QString& str)
     return setValue(QPoint(x, y));
 }
 
-bool PropertyQPointBase::toStrImpl(QString& str) const
+bool QtnPropertyQPointBase::toStrImpl(QString& str) const
 {
     QPoint v = value();
     str = QString("QPoint(%1, %2)").arg(v.x()).arg(v.y());
     return true;
 }
 
-Property* createXProperty(QObject *parent, PropertyQPointBase *propertyPoint)
+QtnProperty* qtnCreateXProperty(QObject *parent, QtnPropertyQPointBase *propertyPoint)
 {
-    PropertyIntCallback *xProperty = new PropertyIntCallback(parent);
+    QtnPropertyIntCallback *xProperty = new QtnPropertyIntCallback(parent);
     xProperty->setName(QObject::tr("X"));
     xProperty->setDescription(QObject::tr("X coordinate of the %1.").arg(propertyPoint->name()));
     xProperty->setCallbackValueGet([propertyPoint]()->int { return propertyPoint->value().x(); });
@@ -77,14 +74,14 @@ Property* createXProperty(QObject *parent, PropertyQPointBase *propertyPoint)
         point.setX(newX);
         propertyPoint->setValue(point);
     });
-    PropertyBase::connectMasterState(*propertyPoint, *xProperty);
+    QtnPropertyBase::connectMasterState(*propertyPoint, *xProperty);
 
     return xProperty;
 }
 
-Property* createYProperty(QObject *parent, PropertyQPointBase *propertyPoint)
+QtnProperty* qtnCreateYProperty(QObject *parent, QtnPropertyQPointBase *propertyPoint)
 {
-    PropertyIntCallback *yProperty = new PropertyIntCallback(parent);
+    QtnPropertyIntCallback *yProperty = new QtnPropertyIntCallback(parent);
     yProperty->setName(QObject::tr("Y"));
     yProperty->setDescription(QObject::tr("Y coordinate of the %1.").arg(propertyPoint->name()));
     yProperty->setCallbackValueGet([propertyPoint]()->int { return propertyPoint->value().y(); });
@@ -93,9 +90,7 @@ Property* createYProperty(QObject *parent, PropertyQPointBase *propertyPoint)
         point.setY(newY);
         propertyPoint->setValue(point);
     });
-    PropertyBase::connectMasterState(*propertyPoint, *yProperty);
+    QtnPropertyBase::connectMasterState(*propertyPoint, *yProperty);
 
     return yProperty;
 }
-
-} // end namespace Qtinuum

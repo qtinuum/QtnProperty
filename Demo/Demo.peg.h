@@ -14,7 +14,7 @@ public:
         green = 3
     };
     
-    static Qtinuum::EnumInfo& info();
+    static QtnEnumInfo& info();
     static const unsigned int values_count = 3;
 };
 
@@ -28,43 +28,43 @@ public:
         opt3 = 4
     };
     
-    static Qtinuum::EnumInfo& info();
+    static QtnEnumInfo& info();
     static const unsigned int values_count = 3;
 };
 
-class PropertySetInternal: public Qtinuum::PropertySet
+class QtnPropertySetInternal: public QtnPropertySet
 {
     Q_OBJECT
-    //Q_DISABLE_COPY(PropertySetInternal)
+    //Q_DISABLE_COPY(QtnPropertySetInternal)
 
 public:
     // constructor declaration
-    explicit PropertySetInternal(QObject *parent = 0);
+    explicit QtnPropertySetInternal(QObject* parent = 0);
     // destructor declaration
-    virtual ~PropertySetInternal();
+    virtual ~QtnPropertySetInternal();
     // assignment declaration
-    PropertySetInternal& operator=(const PropertySetInternal& other);
+    QtnPropertySetInternal& operator=(const QtnPropertySetInternal& other);
     
     // start children declarations
-    Qtinuum::PropertyQString &name;
-    Qtinuum::PropertyQRect &rect;
-    Qtinuum::PropertyQString &item1;
-    Qtinuum::PropertyQString &item2;
-    Qtinuum::PropertyQString &item3;
-    Qtinuum::PropertyQString &item4;
-    Qtinuum::PropertyQString &item5;
-    Qtinuum::PropertyBool &item6;
-    Qtinuum::PropertyBool &item7;
-    Qtinuum::PropertyEnum &item8;
-    Qtinuum::PropertyQColor &item9;
+    QtnPropertyQString& name;
+    QtnPropertyQRect& rect;
+    QtnPropertyQString& item1;
+    QtnPropertyQString& item2;
+    QtnPropertyQString& item3;
+    QtnPropertyQString& item4;
+    QtnPropertyQString& item5;
+    QtnPropertyBool& item6;
+    QtnPropertyBool& item7;
+    QtnPropertyEnum& item8;
+    QtnPropertyQColor& item9;
     // end children declarations
 
 protected:
     // cloning implementation
-    Qtinuum::PropertySet* createNewImpl(QObject* parentForNew) const override;
-    Qtinuum::PropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    QtnPropertySet* createNewImpl(QObject* parentForNew) const override;
+    QtnPropertySet* createCopyImpl(QObject* parentForCopy) const override;
     // copy values implementation
-    bool copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask) override;
+    bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) override;
 
 private:
     void init();
@@ -73,42 +73,42 @@ private:
     void connectDelegates();
 };
 
-class PropertySetSubProperties: public Qtinuum::PropertySet
+class QtnPropertySetSubProperties: public QtnPropertySet
 {
     Q_OBJECT
-    //Q_DISABLE_COPY(PropertySetSubProperties)
+    //Q_DISABLE_COPY(QtnPropertySetSubProperties)
 
 public:
     // constructor declaration
-    explicit PropertySetSubProperties(QObject *parent = 0);
+    explicit QtnPropertySetSubProperties(QObject* parent = 0);
     // destructor declaration
-    virtual ~PropertySetSubProperties();
+    virtual ~QtnPropertySetSubProperties();
     // assignment declaration
-    PropertySetSubProperties& operator=(const PropertySetSubProperties& other);
+    QtnPropertySetSubProperties& operator=(const QtnPropertySetSubProperties& other);
     
     // start children declarations
-    Qtinuum::PropertyInt &intProp;
-    Qtinuum::PropertyUInt &uintProp;
-    Qtinuum::PropertyDouble &doubleProp;
-    Qtinuum::PropertyFloat &floatProp;
-    Qtinuum::PropertyBool &boolProp;
-    Qtinuum::PropertyEnum &enumProp;
-    Qtinuum::PropertyQColor &colorProp;
-    Qtinuum::PropertyEnumFlags &flagsProp;
-    Qtinuum::PropertyQString &fileName1;
-    Qtinuum::PropertyQString &fileName2;
-    Qtinuum::PropertyQPoint &pointProp;
-    Qtinuum::PropertyQSize &sizeProp;
-    Qtinuum::PropertyQFont &fontProp;
-    Qtinuum::PropertyQString &listProp;
+    QtnPropertyInt& intProp;
+    QtnPropertyUInt& uintProp;
+    QtnPropertyDouble& doubleProp;
+    QtnPropertyFloat& floatProp;
+    QtnPropertyBool& boolProp;
+    QtnPropertyEnum& enumProp;
+    QtnPropertyQColor& colorProp;
+    QtnPropertyEnumFlags& flagsProp;
+    QtnPropertyQString& fileName1;
+    QtnPropertyQString& fileName2;
+    QtnPropertyQPoint& pointProp;
+    QtnPropertyQSize& sizeProp;
+    QtnPropertyQFont& fontProp;
+    QtnPropertyQString& listProp;
     // end children declarations
 
 protected:
     // cloning implementation
-    Qtinuum::PropertySet* createNewImpl(QObject* parentForNew) const override;
-    Qtinuum::PropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    QtnPropertySet* createNewImpl(QObject* parentForNew) const override;
+    QtnPropertySet* createCopyImpl(QObject* parentForCopy) const override;
     // copy values implementation
-    bool copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask) override;
+    bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) override;
 
 private:
     void init();
@@ -117,33 +117,33 @@ private:
     void connectDelegates();
 };
 
-class PropertySetMain: public Qtinuum::PropertySet
+class QtnPropertySetMain: public QtnPropertySet
 {
     Q_OBJECT
-    //Q_DISABLE_COPY(PropertySetMain)
+    //Q_DISABLE_COPY(QtnPropertySetMain)
 
 public:
     // constructor declaration
-    explicit PropertySetMain(QObject *parent = 0);
+    explicit QtnPropertySetMain(QObject* parent = 0);
     // destructor declaration
-    virtual ~PropertySetMain();
+    virtual ~QtnPropertySetMain();
     // assignment declaration
-    PropertySetMain& operator=(const PropertySetMain& other);
+    QtnPropertySetMain& operator=(const QtnPropertySetMain& other);
     
     // start children declarations
-    Qtinuum::PropertyInt &count;
-    Qtinuum::PropertyBool &isValid;
-    PropertySetInternal &Internal;
-    Qtinuum::PropertyBool &flag;
-    PropertySetSubProperties &Supplementary;
+    QtnPropertyInt& count;
+    QtnPropertyBool& isValid;
+    QtnPropertySetInternal& Internal;
+    QtnPropertyBool& flag;
+    QtnPropertySetSubProperties& Supplementary;
     // end children declarations
 
 protected:
     // cloning implementation
-    Qtinuum::PropertySet* createNewImpl(QObject* parentForNew) const override;
-    Qtinuum::PropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    QtnPropertySet* createNewImpl(QObject* parentForNew) const override;
+    QtnPropertySet* createCopyImpl(QObject* parentForCopy) const override;
     // copy values implementation
-    bool copyValuesImpl(Qtinuum::PropertySet* propertySetCopyFrom, Qtinuum::PropertyState ignoreMask) override;
+    bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) override;
 
 private:
     void init();
@@ -152,7 +152,7 @@ private:
     void connectDelegates();
     
     // start slot declarations
-    void on_isValid_propertyDidChange(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, Qtinuum::PropertyChangeReason reason);
+    void on_isValid_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
     // end slot declarations
 };
 

@@ -21,23 +21,18 @@
 
 #include "../PropertyDelegate.h"
 
-namespace Qtinuum
-{
+class QtnPropertyEnumFlagsBase;
 
-class PropertyEnumFlagsBase;
-
-class QTN_PW_EXPORT PropertyDelegateEnumFlags: public PropertyDelegateTypedEx<PropertyEnumFlagsBase>
+class QTN_PW_EXPORT QtnPropertyDelegateEnumFlags: public QtnPropertyDelegateTypedEx<QtnPropertyEnumFlagsBase>
 {
-    Q_DISABLE_COPY(PropertyDelegateEnumFlags)
+    Q_DISABLE_COPY(QtnPropertyDelegateEnumFlags)
 
 public:
-    PropertyDelegateEnumFlags(PropertyEnumFlagsBase& owner);
+    QtnPropertyDelegateEnumFlags(QtnPropertyEnumFlagsBase& owner);
 
 protected:
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStr(QString& strValue) const override;
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTY_DELEGATE_ENUM_FLAGS_H

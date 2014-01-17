@@ -24,11 +24,8 @@
 #include <limits>
 #include <functional>
 
-namespace Qtinuum
-{
-
 template<typename T, typename EqPred = std::equal_to<T> >
-class SinglePropertyBase: public Property
+class QtnSinglePropertyBase: public QtnProperty
 {
  public:
     typedef T ValueType;
@@ -44,13 +41,13 @@ class SinglePropertyBase: public Property
             return false;
 
         bool accept = true;
-        Q_EMIT propertyValueAccept(this, PropertyValuePtr(&newValue), &accept);
+        Q_EMIT propertyValueAccept(this, QtnPropertyValuePtr(&newValue), &accept);
         if (!accept)
             return false;
 
-        Q_EMIT propertyWillChange(this, this, PropertyChangeReasonNewValue, PropertyValuePtr(&newValue));
+        Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonNewValue, QtnPropertyValuePtr(&newValue));
         setValueImpl(newValue);
-        Q_EMIT propertyDidChange(this, this, PropertyChangeReasonNewValue);
+        Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonNewValue);
 
         return true;
     }
@@ -59,20 +56,20 @@ class SinglePropertyBase: public Property
     {
         return value();
     }
-    SinglePropertyBase<ValueType>& operator=(ValueType newValue)
+    QtnSinglePropertyBase<ValueType>& operator=(ValueType newValue)
     {
         setValue(newValue);
         return *this;
     }
-    SinglePropertyBase<ValueType>& operator=(const SinglePropertyBase<ValueType>& newValue)
+    QtnSinglePropertyBase<ValueType>& operator=(const QtnSinglePropertyBase<ValueType>& newValue)
     {
         setValue(newValue.value());
         return *this;
     }
 
 protected:
-    explicit SinglePropertyBase(QObject *parent)
-        : Property(parent)
+    explicit QtnSinglePropertyBase(QObject *parent)
+        : QtnProperty(parent)
     {
     }
 
@@ -84,7 +81,7 @@ protected:
     // serialization implementation
     bool loadImpl(QDataStream& stream) override
     {
-        if (!Property::loadImpl(stream))
+        if (!QtnProperty::loadImpl(stream))
             return false;
 
         ValueType newValue = ValueType();
@@ -93,16 +90,16 @@ protected:
         if (stream.status() != QDataStream::Ok)
             return false;
 
-        Q_EMIT propertyWillChange(this, this, PropertyChangeReasonLoadedValue, PropertyValuePtr(&newValue));
+        Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonLoadedValue, QtnPropertyValuePtr(&newValue));
         setValueImpl(newValue);
-        Q_EMIT propertyDidChange(this, this, PropertyChangeReasonLoadedValue);
+        Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonLoadedValue);
 
         return stream.status() == QDataStream::Ok;
     }
 
     bool saveImpl(QDataStream& stream) const override
     {
-        if (!Property::saveImpl(stream))
+        if (!QtnProperty::saveImpl(stream))
             return false;
 
         ValueType valueToSave = value();
@@ -128,19 +125,19 @@ protected:
 
 
 private:
-    SinglePropertyBase(const SinglePropertyBase&) Q_DECL_EQ_DELETE;
+    QtnSinglePropertyBase(const QtnSinglePropertyBase&) Q_DECL_EQ_DELETE;
 };
 
-template<typename SinglePropertyType>
-class SinglePropertyValue: public SinglePropertyType
+template<typename QtnSinglePropertyType>
+class QtnSinglePropertyValue: public QtnSinglePropertyType
 {
 public:
-    typedef typename SinglePropertyType::ValueType ValueType;
-    typedef typename SinglePropertyType::ValueTypeStore ValueTypeStore;
+    typedef typename QtnSinglePropertyType::ValueType ValueType;
+    typedef typename QtnSinglePropertyType::ValueTypeStore ValueTypeStore;
 
 protected:
-    explicit SinglePropertyValue(QObject *parent)
-        : SinglePropertyType(parent),
+    explicit QtnSinglePropertyValue(QObject *parent)
+        : QtnSinglePropertyType(parent),
           m_value(ValueTypeStore())
     {
     }
@@ -151,15 +148,15 @@ protected:
 private:
     ValueTypeStore m_value;
 
-    Q_DISABLE_COPY(SinglePropertyValue)
+    Q_DISABLE_COPY(QtnSinglePropertyValue)
 };
 
-template<typename SinglePropertyType>
-class SinglePropertyCallback: public SinglePropertyType
+template<typename QtnSinglePropertyType>
+class QtnSinglePropertyCallback: public QtnSinglePropertyType
 {
 public:
-    typedef typename SinglePropertyType::ValueType ValueType;
-    typedef typename SinglePropertyType::ValueTypeStore ValueTypeStore;
+    typedef typename QtnSinglePropertyType::ValueType ValueType;
+    typedef typename QtnSinglePropertyType::ValueTypeStore ValueTypeStore;
 
     typedef std::function<ValueType()> CallbackValueGet;
     typedef std::function<void(ValueType)> CallbackValueSet;
@@ -172,8 +169,8 @@ public:
     void setCallbackValueEqual(const CallbackValueEqual& callback) { m_callbackValueEqual = callback; }
 
 protected:
-    explicit SinglePropertyCallback(QObject *parent)
-        : SinglePropertyType(parent)
+    explicit QtnSinglePropertyCallback(QObject *parent)
+        : QtnSinglePropertyType(parent)
     {
     }
 
@@ -193,18 +190,18 @@ protected:
         if (m_callbackValueAccepted)
             return m_callbackValueAccepted(valueToAccept);
         else
-            return SinglePropertyType::isValueAcceptedImpl(valueToAccept);
+            return QtnSinglePropertyType::isValueAcceptedImpl(valueToAccept);
     }
     bool isValueEqualImpl(ValueType valueToCompare) override
     {
         if (m_callbackValueEqual)
             return m_callbackValueEqual(valueToCompare);
         else
-            return SinglePropertyType::isValueEqualImpl(valueToCompare);
+            return QtnSinglePropertyType::isValueEqualImpl(valueToCompare);
     }
 
 private:
-    Q_DISABLE_COPY(SinglePropertyCallback)
+    Q_DISABLE_COPY(QtnSinglePropertyCallback)
 
     CallbackValueGet m_callbackValueGet;
     CallbackValueSet m_callbackValueSet;
@@ -212,11 +209,11 @@ private:
     CallbackValueEqual m_callbackValueEqual;
 };
 
-template<typename SinglePropertyType>
-class NumericPropertyBase: public SinglePropertyType
+template<typename QtnSinglePropertyType>
+class QtnNumericPropertyBase: public QtnSinglePropertyType
 {
 public:
-    typedef typename SinglePropertyType::ValueType ValueType;
+    typedef typename QtnSinglePropertyType::ValueType ValueType;
 
     ValueType defaultValue() const { return m_defaultValue; }
     void setDefaultValue(ValueType defaultValue) { m_defaultValue = defaultValue; }
@@ -247,8 +244,8 @@ public:
     }
 
 protected:
-    explicit NumericPropertyBase(QObject *parent)
-        : SinglePropertyType(parent),
+    explicit QtnNumericPropertyBase(QObject *parent)
+        : QtnSinglePropertyType(parent),
           m_defaultValue(ValueType(0)),
           m_minValue(std::numeric_limits<ValueType>::lowest()),
           m_maxValue(std::numeric_limits<ValueType>::max()),
@@ -288,18 +285,18 @@ private:
     ValueType m_maxValue;
     ValueType m_stepValue;
 
-    Q_DISABLE_COPY(NumericPropertyBase)
+    Q_DISABLE_COPY(QtnNumericPropertyBase)
 };
 
-template <typename SinglePropertyType>
-class NumericPropertyValue: public NumericPropertyBase<SinglePropertyType>
+template <typename QtnSinglePropertyType>
+class QtnNumericPropertyValue: public QtnNumericPropertyBase<QtnSinglePropertyType>
 {
   public:
-    typedef typename NumericPropertyBase<SinglePropertyType>::ValueType ValueType;
+    typedef typename QtnNumericPropertyBase<QtnSinglePropertyType>::ValueType ValueType;
 
 protected:
-    explicit NumericPropertyValue(QObject *parent)
-        : NumericPropertyBase<SinglePropertyType>(parent),
+    explicit QtnNumericPropertyValue(QObject *parent)
+        : QtnNumericPropertyBase<QtnSinglePropertyType>(parent),
           m_value(ValueType(0))
     {
     }
@@ -310,9 +307,7 @@ protected:
 private:
     ValueType m_value;
 
-    Q_DISABLE_COPY(NumericPropertyValue)
+    Q_DISABLE_COPY(QtnNumericPropertyValue)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYBASIS_H

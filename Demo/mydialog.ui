@@ -15,7 +15,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="Qtinuum::PropertyWidget" name="widget" native="true"/>
+    <widget class="QtnPropertyWidget" name="widget" native="true"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -31,7 +31,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Qtinuum::PropertyWidget</class>
+   <class>QtnPropertyWidget</class>
    <extends>QWidget</extends>
    <header>PropertyWidget.h</header>
    <container>1</container>

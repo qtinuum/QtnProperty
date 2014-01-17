@@ -24,14 +24,11 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-namespace Qtinuum
-{
-
-class PropertyEnumComboBoxHandler: public PropertyEditorHandler<PropertyEnumBase, QComboBox>
+class QtnPropertyEnumComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyEnumBase, QComboBox>
 {
 public:
-    PropertyEnumComboBoxHandler(PropertyEnumBase& property, QComboBox& editor)
-        : PropertyEditorHandlerType(property, editor)
+    QtnPropertyEnumComboBoxHandler(QtnPropertyEnumBase& property, QComboBox& editor)
+        : QtnPropertyEditorHandlerType(property, editor)
     {
         updateEditor();
 
@@ -39,7 +36,7 @@ public:
             editor.setDisabled(true);
 
         QObject::connect(  &editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
-                         , this, &PropertyEnumComboBoxHandler::onCurrentIndexChanged);
+                         , this, &QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged);
     }
 
 private:
@@ -59,14 +56,14 @@ private:
 };
 
 
-static bool regEnumDelegate = PropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&PropertyEnumBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateEnum, PropertyEnumBase>
+static bool regEnumDelegate = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyEnumBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>
                                 , "ComboBox");
 
-QWidget* PropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    const EnumInfo* info = owner().enumInfo();
+    const QtnEnumInfo* info = owner().enumInfo();
 
     if (!info)
         return 0;
@@ -74,14 +71,14 @@ QWidget* PropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const QRec
     if (owner().isEditableByUser())
     {
         QComboBox* combo = new QComboBox(parent);
-        info->forEachEnumValue([combo](const EnumValueInfo &value)->bool {
+        info->forEachEnumValue([combo](const QtnEnumValueInfo &value)->bool {
             combo->addItem(value.name(), QVariant(value.value()));
             return true;
         });
 
         combo->setGeometry(rect);
 
-        new PropertyEnumComboBoxHandler(owner(), *combo);
+        new QtnPropertyEnumComboBoxHandler(owner(), *combo);
 
         if (inplaceInfo)
             combo->showPopup();
@@ -90,7 +87,7 @@ QWidget* PropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const QRec
     }
     else
     {
-        const EnumValueInfo* valueInfo = info->findByValue(owner());
+        const QtnEnumValueInfo* valueInfo = info->findByValue(owner());
         if (!valueInfo)
             return 0;
 
@@ -105,11 +102,11 @@ QWidget* PropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const QRec
 
 }
 
-bool PropertyDelegateEnum::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateEnum::propertyValueToStr(QString& strValue) const
 {
-    EnumValueType value = owner().value();
-    const EnumInfo* info = owner().enumInfo();
-    const EnumValueInfo* valueInfo = info ? info->findByValue(value) : 0;
+    QtnEnumValueType value = owner().value();
+    const QtnEnumInfo* info = owner().enumInfo();
+    const QtnEnumValueInfo* valueInfo = info ? info->findByValue(value) : 0;
 
     if (!valueInfo)
         return false;
@@ -117,6 +114,3 @@ bool PropertyDelegateEnum::propertyValueToStr(QString& strValue) const
     strValue = valueInfo->name();
     return true;
 }
-
-} // end namespace Qtinuum
-

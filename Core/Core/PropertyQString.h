@@ -21,21 +21,18 @@
 
 #include "../Auxiliary/PropertyTemplates.h"
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyQStringBase: public SinglePropertyBase<QString>
+class QTN_PE_CORE_EXPORT QtnPropertyQStringBase: public QtnSinglePropertyBase<QString>
 {
     Q_OBJECT
-    PropertyQStringBase(const PropertyQStringBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQStringBase(const QtnPropertyQStringBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQStringBase(QObject *parent)
-        : SinglePropertyBase<QString>(parent)
+    explicit QtnPropertyQStringBase(QObject *parent)
+        : QtnSinglePropertyBase<QString>(parent)
     {
     }
 
-    PropertyQStringBase& operator=(const char* newValue)
+    QtnPropertyQStringBase& operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
@@ -46,51 +43,49 @@ protected:
     bool fromStrImpl(const QString& str) override;
     bool toStrImpl(QString& str) const override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQStringBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQStringBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyQStringBase, QString)
+P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyQStringBase, QString)
 
-class QTN_PE_CORE_EXPORT PropertyQStringCallback: public SinglePropertyCallback<PropertyQStringBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQStringCallback: public QtnSinglePropertyCallback<QtnPropertyQStringBase>
 {
     Q_OBJECT
-    PropertyQStringCallback(const PropertyQStringCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQStringCallback(const QtnPropertyQStringCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQStringCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyQStringBase>(parent)
+    explicit QtnPropertyQStringCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyQStringBase>(parent)
     {
     }
 
-    PropertyQStringCallback& operator=(const char* newValue)
+    QtnPropertyQStringCallback& operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQStringCallback, PropertyQStringBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQStringCallback, QtnPropertyQStringBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyQString: public SinglePropertyValue<PropertyQStringBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQString: public QtnSinglePropertyValue<QtnPropertyQStringBase>
 {
     Q_OBJECT
-    PropertyQString(const PropertyQString& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQString(const QtnPropertyQString& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQString(QObject *parent)
-        : SinglePropertyValue<PropertyQStringBase>(parent)
+    explicit QtnPropertyQString(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyQStringBase>(parent)
     {
     }
 
-    PropertyQString& operator=(const char* newValue)
+    QtnPropertyQString& operator=(const char* newValue)
     {
         setValue(QString(newValue));
         return *this;
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQString, PropertyQStringBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQString, QtnPropertyQStringBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYSTRING_H

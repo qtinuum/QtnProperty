@@ -22,32 +22,26 @@
 
 #include <QLineEdit>
 
-namespace Qtinuum
-{
-
-static bool regQSizeDelegate = PropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&PropertyQSizeBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateQSize, PropertyQSizeBase>
+static bool regQSizeDelegate = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyQSizeBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateQSize, QtnPropertyQSizeBase>
                                 , "WH");
 
-PropertyDelegateQSize::PropertyDelegateQSize(PropertyQSizeBase& owner)
-    : PropertyDelegateTypedEx<PropertyQSizeBase>(owner)
+QtnPropertyDelegateQSize::QtnPropertyDelegateQSize(QtnPropertyQSizeBase& owner)
+    : QtnPropertyDelegateTypedEx<QtnPropertyQSizeBase>(owner)
 {
-    addSubProperty(createWidthProperty(0, &owner));
-    addSubProperty(createHeightProperty(0, &owner));
+    addSubProperty(qtnCreateWidthProperty(0, &owner));
+    addSubProperty(qtnCreateHeightProperty(0, &owner));
 }
 
-QWidget* PropertyDelegateQSize::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateQSize::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool PropertyDelegateQSize::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQSize::propertyValueToStr(QString& strValue) const
 {
     QSize value = owner().value();
     strValue = QString("%1 x %2").arg(value.width()).arg(value.height());
     return true;
 }
-
-} // end namespace Qtinuum
-

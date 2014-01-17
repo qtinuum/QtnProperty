@@ -18,10 +18,7 @@
 
 #include "PropertyFloat.h"
 
-namespace Qtinuum
-{
-
-bool PropertyFloatBase::fromStrImpl(const QString& str)
+bool QtnPropertyFloatBase::fromStrImpl(const QString& str)
 {
     bool ok = false;
     ValueType value = str.toFloat(&ok);
@@ -31,13 +28,13 @@ bool PropertyFloatBase::fromStrImpl(const QString& str)
     return setValue(value);
 }
 
-bool PropertyFloatBase::toStrImpl(QString& str) const
+bool QtnPropertyFloatBase::toStrImpl(QString& str) const
 {
     str = QString::number(value());
     return true;
 }
 
-bool PropertyFloatBase::fromVariantImpl(const QVariant& var)
+bool QtnPropertyFloatBase::fromVariantImpl(const QVariant& var)
 {
     bool ok = false;
     ValueType value = var.toFloat(&ok);
@@ -46,5 +43,3 @@ bool PropertyFloatBase::fromVariantImpl(const QVariant& var)
 
     return setValue(value);
 }
-
-} // end namespace Qtinuum

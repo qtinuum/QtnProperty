@@ -21,42 +21,37 @@
 
 #include "../PropertyDelegate.h"
 
-namespace Qtinuum
-{
+class QtnPropertyBoolBase;
 
-class PropertyBoolBase;
-
-class QTN_PW_EXPORT PropertyDelegateBoolCheck: public PropertyDelegateTyped<PropertyBoolBase>
+class QTN_PW_EXPORT QtnPropertyDelegateBoolCheck: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
 {
-    Q_DISABLE_COPY(PropertyDelegateBoolCheck)
+    Q_DISABLE_COPY(QtnPropertyDelegateBoolCheck)
 
 public:
-    PropertyDelegateBoolCheck(PropertyBoolBase& owner)
-        : PropertyDelegateTyped<PropertyBoolBase>(owner)
+    QtnPropertyDelegateBoolCheck(QtnPropertyBoolBase& owner)
+        : QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
     {
     }
 
 protected:
-    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const override;
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 };
 
-class QTN_PW_EXPORT PropertyDelegateBoolLabels: public PropertyDelegateTyped<PropertyBoolBase>
+class QTN_PW_EXPORT QtnPropertyDelegateBoolLabels: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
 {
-    Q_DISABLE_COPY(PropertyDelegateBoolLabels)
+    Q_DISABLE_COPY(QtnPropertyDelegateBoolLabels)
 
 public:
-    PropertyDelegateBoolLabels(PropertyBoolBase& owner);
+    QtnPropertyDelegateBoolLabels(QtnPropertyBoolBase& owner);
 
 protected:
-    void applyAttributesImpl(const PropertyDelegateAttributes& attributes) override;
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) override;
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStr(QString& strValue) const override;
 
 private:
     QString m_labels[2];
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTY_DELEGATE_BOOL_H

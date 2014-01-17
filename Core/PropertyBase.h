@@ -24,20 +24,16 @@
 #include <QVariant>
 
 class QScriptEngine;
+class QtnPropertySet;
+class QtnProperty;
 
-namespace Qtinuum
-{
-
-class PropertySet;
-class Property;
-
-class QTN_PE_CORE_EXPORT PropertyBase: public QObject
+class QTN_PE_CORE_EXPORT QtnPropertyBase: public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(PropertyBase)
+    Q_DISABLE_COPY(QtnPropertyBase)
 
 public:
-    virtual ~PropertyBase();
+    virtual ~QtnPropertyBase();
 
     QString name() const { return objectName(); }
     void setName(const QString& name);
@@ -45,23 +41,23 @@ public:
     QString description() const { return m_description; }
     void setDescription(const QString& description);
 
-    PropertyID id() const { return m_id; }
-    void setId(PropertyID id);
+    QtnPropertyID id() const { return m_id; }
+    void setId(QtnPropertyID id);
 
     // states
-    PropertyState state() const { return m_stateLocal|m_stateInherited; }
-    PropertyState stateLocal() const { return m_stateLocal; }
-    PropertyState stateInherited() const { return m_stateInherited; }
+    QtnPropertyState state() const { return m_stateLocal|m_stateInherited; }
+    QtnPropertyState stateLocal() const { return m_stateLocal; }
+    QtnPropertyState stateInherited() const { return m_stateInherited; }
 
-    void setState(PropertyState stateToSet, bool force = false);
-    void addState(PropertyState stateToAdd, bool force = false);
-    void removeState(PropertyState stateToRemove, bool force = false);
-    void switchState(PropertyState stateToSwitch, bool switchOn, bool force = false);
-    void switchStateAuto(PropertyState stateToSwitch, bool force = false);
+    void setState(QtnPropertyState stateToSet, bool force = false);
+    void addState(QtnPropertyState stateToAdd, bool force = false);
+    void removeState(QtnPropertyState stateToRemove, bool force = false);
+    void switchState(QtnPropertyState stateToSwitch, bool switchOn, bool force = false);
+    void switchStateAuto(QtnPropertyState stateToSwitch, bool force = false);
 
     bool isEditableByUser() const;
     bool isVisible() const;
-    bool isSimple() const { return !m_stateLocal.testFlag(PropertyStateNonSimple); }
+    bool isSimple() const { return !m_stateLocal.testFlag(QtnPropertyStateNonSimple); }
 
     // serialization
     bool load(QDataStream& stream);
@@ -77,28 +73,28 @@ public:
     bool toVariant(QVariant& var) const;
 
     // casts
-    virtual Property* asProperty() { return nullptr; }
-    virtual const Property* asProperty() const { return nullptr; }
-    virtual PropertySet* asPropertySet() { return nullptr; }
-    virtual const PropertySet* asPropertySet() const { return nullptr; }
+    virtual QtnProperty* asProperty() { return nullptr; }
+    virtual const QtnProperty* asProperty() const { return nullptr; }
+    virtual QtnPropertySet* asPropertySet() { return nullptr; }
+    virtual const QtnPropertySet* asPropertySet() const { return nullptr; }
 
-    static QMetaObject::Connection connectMasterState(const PropertyBase& masterProperty, PropertyBase& slaveProperty);
-    static bool disconnectMasterState(const PropertyBase& masterProperty, PropertyBase& slaveProperty);
+    static QMetaObject::Connection connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
+    static bool disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
 
 public: // properties for scripting
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString description READ description)
-    Q_PROPERTY(Qtinuum::PropertyID id READ id)
+    Q_PROPERTY(QtnPropertyID id READ id)
     Q_PROPERTY(bool isEditable READ isEditableByUser)
-    Q_PROPERTY(Qtinuum::PropertyState state READ state)
+    Q_PROPERTY(QtnPropertyState state READ state)
     Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 Q_SIGNALS:
-    void propertyWillChange(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, PropertyChangeReason reason, PropertyValuePtr newValue);
-    void propertyDidChange(const Qtinuum::PropertyBase* changedProperty, const Qtinuum::PropertyBase* firedProperty, PropertyChangeReason reason);
+    void propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
+    void propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 
 protected:
-    PropertyBase(QObject* parent);
+    QtnPropertyBase(QObject* parent);
 
     // serialization implementation
     virtual bool loadImpl(QDataStream& stream);
@@ -114,31 +110,29 @@ protected:
 
     // inherited states support
     virtual void updateStateInherited(bool force) { /* does nothing by default */ }
-    void setStateInherited(PropertyState stateToSet, bool force = false);
+    void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
 private:
-    void masterPropertyStateDidChange(const PropertyBase* changedProperty, const PropertyBase* firedProperty, PropertyChangeReason reason);
+    void masterPropertyStateDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 
     // getter/setter for "value" property
     QVariant valueAsVariant() const;
     void setValueAsVariant(const QVariant& value);
 
     QString m_description;
-    PropertyID m_id;
+    QtnPropertyID m_id;
 
-    PropertyState m_stateLocal;
-    PropertyState m_stateInherited;
+    QtnPropertyState m_stateLocal;
+    QtnPropertyState m_stateInherited;
 
-    friend class PropertySet;
+    friend class QtnPropertySet;
 };
 
-QTN_PE_CORE_EXPORT QDataStream& operator<< (QDataStream& stream, const PropertyBase& property);
-QTN_PE_CORE_EXPORT QDataStream& operator>> (QDataStream& stream, PropertyBase& property);
+QTN_PE_CORE_EXPORT QDataStream& operator<< (QDataStream& stream, const QtnPropertyBase& property);
+QTN_PE_CORE_EXPORT QDataStream& operator>> (QDataStream& stream, QtnPropertyBase& property);
 
-QTN_PE_CORE_EXPORT void scriptRegisterPropertyTypes(QScriptEngine* engine);
+QTN_PE_CORE_EXPORT void qtnScriptRegisterPropertyTypes(QScriptEngine* engine);
 
-} // end namespace Qtinuum
-
-Q_DECLARE_METATYPE(const Qtinuum::PropertyBase*)
+Q_DECLARE_METATYPE(const QtnPropertyBase*)
 
 #endif // QTN_PROPERTY_BASE_H

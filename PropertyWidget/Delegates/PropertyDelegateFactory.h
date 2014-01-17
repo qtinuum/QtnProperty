@@ -22,27 +22,24 @@
 #include "PropertyDelegate.h"
 #include <QMap>
 
-namespace Qtinuum
+class QTN_PW_EXPORT QtnPropertyDelegateFactory
 {
-
-class QTN_PW_EXPORT PropertyDelegateFactory
-{
-    Q_DISABLE_COPY(PropertyDelegateFactory)
+    Q_DISABLE_COPY(QtnPropertyDelegateFactory)
 
 public:
-    typedef PropertyDelegate *CreateFunction(Property&);
+    typedef QtnPropertyDelegate *CreateFunction(QtnProperty&);
 
-    explicit PropertyDelegateFactory(const PropertyDelegateFactory* superFactory = 0);
+    explicit QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory = nullptr);
 
-    PropertyDelegate* createDelegate(Property& owner) const;
+    QtnPropertyDelegate* createDelegate(QtnProperty& owner) const;
 
     bool registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName = "");
     bool registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName);
 
-    static PropertyDelegateFactory& staticInstance();
+    static QtnPropertyDelegateFactory& staticInstance();
 
 private:
-    const PropertyDelegateFactory* m_superFactory;
+    const QtnPropertyDelegateFactory* m_superFactory;
 
     struct CreateItem
     {
@@ -59,7 +56,7 @@ private:
 };
 
 template <typename PropertyDelegateClass, typename PropertyClass>
-PropertyDelegate* createDelegate(Property& owner)
+QtnPropertyDelegate* qtnCreateDelegate(QtnProperty& owner)
 {
     PropertyClass* theOwner = qobject_cast<PropertyClass*>(&owner);
     if (!theOwner)
@@ -67,7 +64,5 @@ PropertyDelegate* createDelegate(Property& owner)
 
     return new PropertyDelegateClass(*theOwner);
 }
-
-} // end namespace Qtinuum
 
 #endif // QTN_PROPERTY_DELEGATE_FACTORY_H

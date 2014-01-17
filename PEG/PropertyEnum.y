@@ -7,8 +7,6 @@ void yyerror(/*YYLTYPE *yylloc, */char const *);
 #define YYLEX_PARAM &yylval, &yylloc
 #define YYPRINT(File, Type, Value) fprintf ((File), "%s", (Value).toLatin1().data())
 
-using namespace Qtinuum;
-
 extern void yy_push_state_cpp_code();
 extern void yy_push_state_initialization_list();
 

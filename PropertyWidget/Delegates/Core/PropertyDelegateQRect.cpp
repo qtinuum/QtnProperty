@@ -22,34 +22,28 @@
 
 #include <QLineEdit>
 
-namespace Qtinuum
-{
-
-static bool regQRectDelegate = PropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&PropertyQRectBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateQRect, PropertyQRectBase>
+static bool regQRectDelegate = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyQRectBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateQRect, QtnPropertyQRectBase>
                                 , "LTWH");
 
-PropertyDelegateQRect::PropertyDelegateQRect(PropertyQRectBase& owner)
-    : PropertyDelegateTypedEx<PropertyQRectBase>(owner)
+QtnPropertyDelegateQRect::QtnPropertyDelegateQRect(QtnPropertyQRectBase& owner)
+    : QtnPropertyDelegateTypedEx<QtnPropertyQRectBase>(owner)
 {
-    addSubProperty(createLeftProperty(0, &owner));
-    addSubProperty(createTopProperty(0, &owner));
-    addSubProperty(createWidthProperty(0, &owner));
-    addSubProperty(createHeightProperty(0, &owner));
+    addSubProperty(qtnCreateLeftProperty(0, &owner));
+    addSubProperty(qtnCreateTopProperty(0, &owner));
+    addSubProperty(qtnCreateWidthProperty(0, &owner));
+    addSubProperty(qtnCreateHeightProperty(0, &owner));
 }
 
-QWidget* PropertyDelegateQRect::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateQRect::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool PropertyDelegateQRect::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQRect::propertyValueToStr(QString& strValue) const
 {
     QRect value = owner().value();
     strValue = QString("[(%1, %2), %3 x %4]").arg(value.left()).arg(value.top()).arg(value.width()).arg(value.height());
     return true;
 }
-
-} // end namespace Qtinuum
-

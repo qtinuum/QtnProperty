@@ -22,58 +22,53 @@
 #include "../Auxiliary/PropertyTemplates.h"
 #include <QPoint>
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyQPointBase: public SinglePropertyBase<QPoint>
+class QTN_PE_CORE_EXPORT QtnPropertyQPointBase: public QtnSinglePropertyBase<QPoint>
 {
     Q_OBJECT
-    PropertyQPointBase(const PropertyQPointBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQPointBase(const QtnPropertyQPointBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQPointBase(QObject *parent);
+    explicit QtnPropertyQPointBase(QObject *parent);
 
 protected:
     // string conversion implementation
     bool fromStrImpl(const QString& str) override;
     bool toStrImpl(QString& str) const override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQPointBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQPointBase)
 };
 
-P_PROPERTY_DECL_EQ_OPERATORS(PropertyQPointBase, QPoint)
+P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQPointBase, QPoint)
 
-QTN_PE_CORE_EXPORT Property* createXProperty(QObject *parent, PropertyQPointBase *propertyPoint);
-QTN_PE_CORE_EXPORT Property* createYProperty(QObject *parent, PropertyQPointBase *propertyPoint);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateXProperty(QObject *parent, QtnPropertyQPointBase *propertyPoint);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateYProperty(QObject *parent, QtnPropertyQPointBase *propertyPoint);
 
-class QTN_PE_CORE_EXPORT PropertyQPointCallback: public SinglePropertyCallback<PropertyQPointBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQPointCallback: public QtnSinglePropertyCallback<QtnPropertyQPointBase>
 {
     Q_OBJECT
-    PropertyQPointCallback(const PropertyQPointCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQPointCallback(const QtnPropertyQPointCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQPointCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyQPointBase>(parent)
+    explicit QtnPropertyQPointCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyQPointBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQPointCallback, PropertyQPointBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQPointCallback, QtnPropertyQPointBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyQPoint: public SinglePropertyValue<PropertyQPointBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQPoint: public QtnSinglePropertyValue<QtnPropertyQPointBase>
 {
     Q_OBJECT
-    PropertyQPoint(const PropertyQPoint& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQPoint(const QtnPropertyQPoint& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQPoint(QObject *parent)
-        : SinglePropertyValue<PropertyQPointBase>(parent)
+    explicit QtnPropertyQPoint(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyQPointBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQPoint, PropertyQPointBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQPoint, QtnPropertyQPointBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYQPOINT_H

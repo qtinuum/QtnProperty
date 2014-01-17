@@ -22,62 +22,57 @@
 #include "../Auxiliary/PropertyTemplates.h"
 #include <QRect>
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyQRectBase: public SinglePropertyBase<QRect>
+class QTN_PE_CORE_EXPORT QtnPropertyQRectBase: public QtnSinglePropertyBase<QRect>
 {
     Q_OBJECT
-    PropertyQRectBase(const PropertyQRectBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQRectBase(const QtnPropertyQRectBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQRectBase(QObject *parent);
+    explicit QtnPropertyQRectBase(QObject *parent);
 
 protected:
     // string conversion implementation
     bool fromStrImpl(const QString& str) override;
     bool toStrImpl(QString& str) const override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQRectBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQRectBase)
 };
 
-P_PROPERTY_DECL_EQ_OPERATORS(PropertyQRectBase, QRect)
+P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQRectBase, QRect)
 
-QTN_PE_CORE_EXPORT Property* createLeftProperty(QObject *parent, PropertyQRectBase *propertyRect);
-QTN_PE_CORE_EXPORT Property* createRightProperty(QObject *parent, PropertyQRectBase *propertyRect);
-QTN_PE_CORE_EXPORT Property* createTopProperty(QObject *parent, PropertyQRectBase *propertyRect);
-QTN_PE_CORE_EXPORT Property* createBottomProperty(QObject *parent, PropertyQRectBase *propertyRect);
-QTN_PE_CORE_EXPORT Property* createWidthProperty(QObject *parent, PropertyQRectBase *propertyRect);
-QTN_PE_CORE_EXPORT Property* createHeightProperty(QObject *parent, PropertyQRectBase *propertyRect);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateLeftProperty(QObject *parent, QtnPropertyQRectBase *propertyRect);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateRightProperty(QObject *parent, QtnPropertyQRectBase *propertyRect);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateTopProperty(QObject *parent, QtnPropertyQRectBase *propertyRect);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateBottomProperty(QObject *parent, QtnPropertyQRectBase *propertyRect);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateWidthProperty(QObject *parent, QtnPropertyQRectBase *propertyRect);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateHeightProperty(QObject *parent, QtnPropertyQRectBase *propertyRect);
 
-class QTN_PE_CORE_EXPORT PropertyQRectCallback: public SinglePropertyCallback<PropertyQRectBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQRectCallback: public QtnSinglePropertyCallback<QtnPropertyQRectBase>
 {
     Q_OBJECT
-    PropertyQRectCallback(const PropertyQRectCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQRectCallback(const QtnPropertyQRectCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQRectCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyQRectBase>(parent)
+    explicit QtnPropertyQRectCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyQRectBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQRectCallback, PropertyQRectBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRectCallback, QtnPropertyQRectBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyQRect: public SinglePropertyValue<PropertyQRectBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQRect: public QtnSinglePropertyValue<QtnPropertyQRectBase>
 {
     Q_OBJECT
-    PropertyQRect(const PropertyQRect& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQRect(const QtnPropertyQRect& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQRect(QObject *parent)
-        : SinglePropertyValue<PropertyQRectBase>(parent)
+    explicit QtnPropertyQRect(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyQRectBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQRect, PropertyQRectBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRect, QtnPropertyQRectBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYQRECT_H

@@ -22,24 +22,21 @@
 #include "../Auxiliary/PropertyTemplates.h"
 #include <QtGui/QColor>
 
-namespace Qtinuum
+enum QtnColorDelegateShape
 {
-
-enum QColorDelegateShape
-{
-    QColorDelegateShapeNone = 0x1,
-    QColorDelegateShapeSquare = 0x2,
-    QColorDelegateShapeCircle = 0x3
+    QtnColorDelegateShapeNone = 0x1,
+    QtnColorDelegateShapeSquare = 0x2,
+    QtnColorDelegateShapeCircle = 0x3
 };
 
-class QTN_PE_CORE_EXPORT PropertyQColorBase: public SinglePropertyBase<QColor>
+class QTN_PE_CORE_EXPORT QtnPropertyQColorBase: public QtnSinglePropertyBase<QColor>
 {
     Q_OBJECT
-    PropertyQColorBase(const PropertyQColorBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQColorBase(const QtnPropertyQColorBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQColorBase(QObject *parent)
-        : SinglePropertyBase<QColor>(parent)
+    explicit QtnPropertyQColorBase(QObject *parent)
+        : QtnSinglePropertyBase<QColor>(parent)
     {
     }
 
@@ -48,39 +45,37 @@ protected:
     bool fromStrImpl(const QString& str) override;
     bool toStrImpl(QString& str) const override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQColorBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQColorBase)
 };
 
-P_PROPERTY_DECL_EQ_OPERATORS(PropertyQColorBase, QColor)
+P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQColorBase, QColor)
 
-class QTN_PE_CORE_EXPORT PropertyQColorCallback: public SinglePropertyCallback<PropertyQColorBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQColorCallback: public QtnSinglePropertyCallback<QtnPropertyQColorBase>
 {
     Q_OBJECT
-    PropertyQColorCallback(const PropertyQColorCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQColorCallback(const QtnPropertyQColorCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQColorCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyQColorBase>(parent)
+    explicit QtnPropertyQColorCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyQColorBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQColorCallback, PropertyQColorBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQColorCallback, QtnPropertyQColorBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyQColor: public SinglePropertyValue<PropertyQColorBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQColor: public QtnSinglePropertyValue<QtnPropertyQColorBase>
 {
     Q_OBJECT
-    PropertyQColor(const PropertyQColor& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQColor(const QtnPropertyQColor& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQColor(QObject *parent)
-        : SinglePropertyValue<PropertyQColorBase>(parent)
+    explicit QtnPropertyQColor(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyQColorBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQColor, PropertyQColorBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQColor, QtnPropertyQColorBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYCOLOR_H

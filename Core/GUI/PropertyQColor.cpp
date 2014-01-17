@@ -18,10 +18,7 @@
 
 #include "PropertyQColor.h"
 
-namespace Qtinuum
-{
-
-bool PropertyQColorBase::fromStrImpl(const QString& str)
+bool QtnPropertyQColorBase::fromStrImpl(const QString& str)
 {
     QColor color(str.trimmed());
     if (!color.isValid())
@@ -30,7 +27,7 @@ bool PropertyQColorBase::fromStrImpl(const QString& str)
     return setValue(color);
 }
 
-bool PropertyQColorBase::toStrImpl(QString& str) const
+bool QtnPropertyQColorBase::toStrImpl(QString& str) const
 {
     QColor v = value();
 
@@ -41,5 +38,3 @@ bool PropertyQColorBase::toStrImpl(QString& str) const
 
     return true;
 }
-
-} // end namespace Qtinuum

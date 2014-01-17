@@ -246,7 +246,7 @@ property_set AllPropertyTypes
     {
         enumInfo = &COLOR::info();
         callbackValueGet = [this]() { return _e; };
-        callbackValueSet = [this](qtn::EnumValueType v) { _e = v; };
+        callbackValueSet = [this](QtnEnumValueType v) { _e = v; };
         id = 20;
     }
 
@@ -260,7 +260,7 @@ property_set AllPropertyTypes
     {
         enumInfo = &MASK::info();
         callbackValueGet = [this]() { return _ef; };
-        callbackValueSet = [this](qtn::EnumFlagsValueType v) { _ef = v; };
+        callbackValueSet = [this](QtnEnumFlagsValueType v) { _ef = v; };
         id = 22;
     }
 
@@ -322,8 +322,8 @@ property_set AllPropertyTypes
         QRect _r;
         QPoint _p;
         QSize _sz;
-        qtn::EnumValueType _e;
-        qtn::EnumFlagsValueType _ef;
+        QtnEnumValueType _e;
+        QtnEnumFlagsValueType _ef;
         QColor _cl;
         QFont _fn;
     }

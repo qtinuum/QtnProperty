@@ -21,7 +21,7 @@ property_set A
 
     code_cpp
     {
-        void PropertySetA::setOwner(int a)
+        void QtnPropertySetA::setOwner(int a)
         {
             b = (bool)a;
         }

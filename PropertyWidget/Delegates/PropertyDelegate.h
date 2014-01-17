@@ -21,85 +21,80 @@
 
 #include "../PropertyWidgetAPI.h"
 #include "../../Core/Property.h"
-//#include "SignalLite.h"
 
 #include <functional>
 #include <QStylePainter>
 
 class QKeyEvent;
+class QtnPropertyDelegateFactory;
 
-namespace Qtinuum
-{
-
-class PropertyDelegateFactory;
-
-class QTN_PW_EXPORT InplaceInfo
+class QTN_PW_EXPORT QtnInplaceInfo
 {
 public:
     QEvent* activationEvent;
 
-    InplaceInfo()
+    QtnInplaceInfo()
         : activationEvent(0)
     {
     }
 };
 
-QTN_PW_EXPORT QString elidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided = 0);
+QTN_PW_EXPORT QString qtnElidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided = 0);
 
-class QTN_PW_EXPORT PropertyDelegate
+class QTN_PW_EXPORT QtnPropertyDelegate
 {
-    Q_DISABLE_COPY(PropertyDelegate)
+    Q_DISABLE_COPY(QtnPropertyDelegate)
 
 public:
-    virtual ~PropertyDelegate() {}
+    virtual ~QtnPropertyDelegate() {}
 
     // for complex properties like PropertyQFont
     int subPropertyCount() const;
-    PropertyBase* subProperty(int index);
+    QtnPropertyBase* subProperty(int index);
 
     // tune up with attributes
-    void applyAttributes(const PropertyDelegateAttributes& attributes);
+    void applyAttributes(const QtnPropertyDelegateAttributes& attributes);
 
-    void drawValue(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const;
+    void drawValue(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;
     QString toolTip() const;
     bool acceptKeyPressedForInplaceEdit(QKeyEvent* keyEvent) const;
-    QWidget* createValueEditor(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0);
+    QWidget* createValueEditor(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr);
 
 protected:
-    PropertyDelegate() {}
+    QtnPropertyDelegate() {}
 
     virtual int subPropertyCountImpl() const { return 0; }
-    virtual PropertyBase* subPropertyImpl(int index) { return nullptr; }
-    virtual void applyAttributesImpl(const PropertyDelegateAttributes& attributes) {}
-    virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0) const;
+    virtual QtnPropertyBase* subPropertyImpl(int index) { return nullptr; }
+    virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) {}
+    virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;
     virtual QString toolTipImpl() const;
     virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const;
-    virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo = 0) = 0;
+    virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) = 0;
 
     // override this if property value can be displayed as string
     virtual bool propertyValueToStr(QString& strValue) const { return false; }
 
     // helper functions
-    static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = 0);
-    QWidget* createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, InplaceInfo* inplaceInfo = 0);
+    static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr);
+    QWidget* createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo = nullptr);
 };
 
 template <typename PropertyClass>
-class PropertyDelegateTyped: public PropertyDelegate
+class QtnPropertyDelegateTyped: public QtnPropertyDelegate
 {
-    Q_DISABLE_COPY(PropertyDelegateTyped)
+    Q_DISABLE_COPY(QtnPropertyDelegateTyped)
 
 public:
     const PropertyClass& owner() const { return m_owner; }
     PropertyClass& owner() { return m_owner; }
 
 protected:
-    PropertyDelegateTyped(PropertyClass& owner)
+    QtnPropertyDelegateTyped(PropertyClass& owner)
         : m_owner(owner)
     {
     }
 
-    ~PropertyDelegateTyped()
+    ~QtnPropertyDelegateTyped()
     {
     }
 
@@ -108,36 +103,34 @@ private:
 };
 
 template <typename PropertyClass>
-class PropertyDelegateTypedEx: public PropertyDelegateTyped<PropertyClass>
+class QtnPropertyDelegateTypedEx: public QtnPropertyDelegateTyped<PropertyClass>
 {
-    Q_DISABLE_COPY(PropertyDelegateTypedEx)
+    Q_DISABLE_COPY(QtnPropertyDelegateTypedEx)
 
 protected:
-    PropertyDelegateTypedEx(PropertyClass& owner)
-        : PropertyDelegateTyped<PropertyClass>(owner)
+    QtnPropertyDelegateTypedEx(PropertyClass& owner)
+        : QtnPropertyDelegateTyped<PropertyClass>(owner)
     {
     }
 
-    ~PropertyDelegateTypedEx()
+    ~QtnPropertyDelegateTypedEx()
     {
     }
 
     int subPropertyCountImpl() const override { return m_subProperties.size(); }
-    Property* subPropertyImpl(int index) override { return m_subProperties[index].data(); }
+    QtnPropertyBase* subPropertyImpl(int index) override { return m_subProperties[index].data(); }
 
-    void addSubProperty(Property* subProperty)
+    void addSubProperty(QtnPropertyBase* subProperty)
     {
         Q_ASSERT(subProperty);
         if (!subProperty)
             return;
 
-        m_subProperties.append(QSharedPointer<Property>(subProperty));
+        m_subProperties.append(QSharedPointer<QtnPropertyBase>(subProperty));
     }
 
 private:
-    QList<QSharedPointer<Property>> m_subProperties;
+    QList<QSharedPointer<QtnPropertyBase>> m_subProperties;
 };
-
-} // end namespace Qtinuum
 
 #endif // QTN_PROPERTY_DELEGATE_H

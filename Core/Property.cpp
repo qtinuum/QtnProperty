@@ -18,48 +18,45 @@
 
 #include "Property.h"
 
-namespace Qtinuum
+class QtnPropertyDelegateInfoGetter
 {
-
-class PropertyDelegateInfoGetter
-{
-    Q_DISABLE_COPY(PropertyDelegateInfoGetter)
+    Q_DISABLE_COPY(QtnPropertyDelegateInfoGetter)
 
 public:
-    virtual const PropertyDelegateInfo* delegate() const = 0;
+    virtual const QtnPropertyDelegateInfo* delegate() const = 0;
 
-    virtual ~PropertyDelegateInfoGetter() {}
+    virtual ~QtnPropertyDelegateInfoGetter() {}
 
 protected:
-    PropertyDelegateInfoGetter() {}
+    QtnPropertyDelegateInfoGetter() {}
 };
 
-class PropertyDelegateInfoGetterValue: public PropertyDelegateInfoGetter
+class QtnPropertyDelegateInfoGetterValue: public QtnPropertyDelegateInfoGetter
 {
 public:
-    PropertyDelegateInfoGetterValue(const PropertyDelegateInfo& delegate)
+    QtnPropertyDelegateInfoGetterValue(const QtnPropertyDelegateInfo& delegate)
         : m_delegate(delegate)
     {
     }
 
-    const PropertyDelegateInfo* delegate() const override
+    const QtnPropertyDelegateInfo* delegate() const override
     {
         return &m_delegate;
     }
 
 private:
-    PropertyDelegateInfo m_delegate;
+    QtnPropertyDelegateInfo m_delegate;
 };
 
-class PropertyDelegateInfoGetterCallback: public PropertyDelegateInfoGetter
+class QtnPropertyDelegateInfoGetterCallback: public QtnPropertyDelegateInfoGetter
 {
 public:
-    PropertyDelegateInfoGetterCallback(const std::function<const PropertyDelegateInfo* ()>& callback)
+    QtnPropertyDelegateInfoGetterCallback(const std::function<const QtnPropertyDelegateInfo* ()>& callback)
         : m_callback(callback)
     {
     }
 
-    const PropertyDelegateInfo* delegate() const override
+    const QtnPropertyDelegateInfo* delegate() const override
     {
         if (m_delegate.isNull())
         {
@@ -70,20 +67,20 @@ public:
     }
 
 private:
-    std::function<const PropertyDelegateInfo* ()> m_callback;
-    mutable QScopedPointer<const PropertyDelegateInfo> m_delegate;
+    std::function<const QtnPropertyDelegateInfo* ()> m_callback;
+    mutable QScopedPointer<const QtnPropertyDelegateInfo> m_delegate;
 };
 
-Property::Property(QObject* parent)
-    : PropertyBase(parent)
+QtnProperty::QtnProperty(QObject* parent)
+    : QtnPropertyBase(parent)
 {
 }
 
-Property::~Property()
+QtnProperty::~QtnProperty()
 {
 }
 
-const PropertyDelegateInfo* Property::delegate() const
+const QtnPropertyDelegateInfo* QtnProperty::delegate() const
 {
     if (m_delegateInfoGetter.isNull())
         return 0;
@@ -91,14 +88,12 @@ const PropertyDelegateInfo* Property::delegate() const
     return m_delegateInfoGetter->delegate();
 }
 
-void Property::setDelegate(const PropertyDelegateInfo& delegate)
+void QtnProperty::setDelegate(const QtnPropertyDelegateInfo& delegate)
 {
-    m_delegateInfoGetter.reset(new PropertyDelegateInfoGetterValue(delegate));
+    m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterValue(delegate));
 }
 
-void Property::setDelegateCallback(const std::function<const PropertyDelegateInfo*()>& callback)
+void QtnProperty::setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback)
 {
-    m_delegateInfoGetter.reset(new PropertyDelegateInfoGetterCallback(callback));
+    m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterCallback(callback));
 }
-
-} // end namespace Qtinuum

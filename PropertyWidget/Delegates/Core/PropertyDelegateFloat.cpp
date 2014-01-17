@@ -23,14 +23,11 @@
 
 #include <QDoubleSpinBox>
 
-namespace Qtinuum
-{
-
-class PropertyFloatSpinBoxHandler: public PropertyEditorHandler<PropertyFloatBase, QDoubleSpinBox>
+class QtnPropertyFloatSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyFloatBase, QDoubleSpinBox>
 {
 public:
-    PropertyFloatSpinBoxHandler(PropertyFloatBase& property, QDoubleSpinBox& editor)
-        : PropertyEditorHandlerType(property, editor)
+    QtnPropertyFloatSpinBoxHandler(QtnPropertyFloatBase& property, QDoubleSpinBox& editor)
+        : QtnPropertyEditorHandlerType(property, editor)
     {
         if (!property.isEditableByUser())
             editor.setReadOnly(true);
@@ -42,7 +39,7 @@ public:
         updateEditor();
 
         QObject::connect(  &editor, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged)
-                         , this, &PropertyFloatSpinBoxHandler::onValueChanged);
+                         , this, &QtnPropertyFloatSpinBoxHandler::onValueChanged);
     }
 
 private:
@@ -57,17 +54,17 @@ private:
     }
 };
 
-static bool regFloatDelegate = PropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&PropertyFloatBase::staticMetaObject
-                                , &createDelegate<PropertyDelegateFloat, PropertyFloatBase>
+static bool regFloatDelegate = QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyFloatBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateFloat, QtnPropertyFloatBase>
                                 , "SpinBox");
 
-QWidget* PropertyDelegateFloat::createValueEditorImpl(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateFloat::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     QDoubleSpinBox *spinBox = new QDoubleSpinBox(parent);
     spinBox->setGeometry(rect);
 
-    new PropertyFloatSpinBoxHandler(owner(), *spinBox);
+    new QtnPropertyFloatSpinBoxHandler(owner(), *spinBox);
 
     if (inplaceInfo)
     {
@@ -77,11 +74,8 @@ QWidget* PropertyDelegateFloat::createValueEditorImpl(QWidget* parent, const QRe
     return spinBox;
 }
 
-bool PropertyDelegateFloat::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateFloat::propertyValueToStr(QString& strValue) const
 {
     strValue = QString::number(owner().value());
     return true;
 }
-
-} // end namespace Qtinuum
-

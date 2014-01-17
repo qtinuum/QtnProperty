@@ -25,24 +25,18 @@
 #include <QToolButton>
 
 class QKeyEvent;
+class QtnInplaceInfo;
 
-namespace Qtinuum
-{
-
-class InplaceInfo;
-
-class QTN_PW_EXPORT LineEditBttn: public QWidget
+class QTN_PW_EXPORT QtnLineEditBttn: public QWidget
 {
 public:
-    LineEditBttn(QWidget *parent);
+    QtnLineEditBttn(QWidget *parent);
 
     QLineEdit *lineEdit;
     QToolButton *toolButton;
 };
 
-QTN_PW_EXPORT bool acceptForLineEdit(QKeyEvent *keyEvent);
-QTN_PW_EXPORT void initLineEdit(QLineEdit *lineEdit, InplaceInfo *inplaceInfo);
-
-} // end namespace Qtinuum
+QTN_PW_EXPORT bool qtnAcceptForLineEdit(QKeyEvent *keyEvent);
+QTN_PW_EXPORT void qtnInitLineEdit(QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo);
 
 #endif // PROPERTY_EDITOR_AUX_H

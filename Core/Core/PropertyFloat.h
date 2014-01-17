@@ -21,17 +21,14 @@
 
 #include "../Auxiliary/PropertyTemplates.h"
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyFloatBase: public NumericPropertyBase<SinglePropertyBase<float> >
+class QTN_PE_CORE_EXPORT QtnPropertyFloatBase: public QtnNumericPropertyBase<QtnSinglePropertyBase<float> >
 {
     Q_OBJECT
-    PropertyFloatBase(const PropertyFloatBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyFloatBase(const QtnPropertyFloatBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyFloatBase(QObject *parent)
-        : NumericPropertyBase<SinglePropertyBase<float> >(parent)
+    explicit QtnPropertyFloatBase(QObject *parent)
+        : QtnNumericPropertyBase<QtnSinglePropertyBase<float> >(parent)
     {
     }
 
@@ -43,39 +40,37 @@ protected:
     // variant conversion implementation
     bool fromVariantImpl(const QVariant& var) override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyFloatBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyFloatBase)
 };
 
-P_PROPERTY_DECL_ALL_OPERATORS(PropertyFloatBase, float)
+P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyFloatBase, float)
 
-class QTN_PE_CORE_EXPORT PropertyFloatCallback: public SinglePropertyCallback<PropertyFloatBase>
+class QTN_PE_CORE_EXPORT QtnPropertyFloatCallback: public QtnSinglePropertyCallback<QtnPropertyFloatBase>
 {
     Q_OBJECT
-    PropertyFloatCallback(const PropertyFloatCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyFloatCallback(const QtnPropertyFloatCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyFloatCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyFloatBase>(parent)
+    explicit QtnPropertyFloatCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyFloatBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyFloatCallback, PropertyFloatBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyFloatCallback, QtnPropertyFloatBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyFloat: public SinglePropertyValue<PropertyFloatBase>
+class QTN_PE_CORE_EXPORT QtnPropertyFloat: public QtnSinglePropertyValue<QtnPropertyFloatBase>
 {
     Q_OBJECT
-    PropertyFloat(const PropertyFloat& other) Q_DECL_EQ_DELETE;
+    QtnPropertyFloat(const QtnPropertyFloat& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyFloat(QObject *parent)
-        : SinglePropertyValue<PropertyFloatBase>(parent)
+    explicit QtnPropertyFloat(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyFloatBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyFloat, PropertyFloatBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyFloat, QtnPropertyFloatBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYFLOAT_H

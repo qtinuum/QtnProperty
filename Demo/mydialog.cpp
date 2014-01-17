@@ -1,9 +1,7 @@
 #include "mydialog.h"
 #include "ui_mydialog.h"
 
-using namespace qtn;
-
-MyDialog::MyDialog(QWidget* parent, PropertySet& propertySet, const PropertySet* defaultProperty) :
+MyDialog::MyDialog(QWidget* parent, QtnPropertySet& propertySet, const QtnPropertySet* defaultProperty) :
     QDialog(parent),
     ui(new Ui::MyDialog),
     m_defaultProperty(defaultProperty)

@@ -21,11 +21,7 @@
 #include <QLineEdit>
 #include <QKeyEvent>
 
-
-namespace Qtinuum
-{
-
-QString elidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided)
+QString qtnElidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided)
 {
     QString newText = painter.fontMetrics().elidedText(text, Qt::ElideRight, rect.width());
 
@@ -35,42 +31,42 @@ QString elidedText(const QPainter& painter, const QString& text, const QRect& re
     return newText;
 }
 
-int PropertyDelegate::subPropertyCount() const
+int QtnPropertyDelegate::subPropertyCount() const
 {
     return subPropertyCountImpl();
 }
 
-PropertyBase* PropertyDelegate::subProperty(int index)
+QtnPropertyBase* QtnPropertyDelegate::subProperty(int index)
 {
     return subPropertyImpl(index);
 }
 
-void PropertyDelegate::applyAttributes(const PropertyDelegateAttributes& attributes)
+void QtnPropertyDelegate::applyAttributes(const QtnPropertyDelegateAttributes& attributes)
 {
     applyAttributesImpl(attributes);
 }
 
-void PropertyDelegate::drawValue(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+void QtnPropertyDelegate::drawValue(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     drawValueImpl(painter, rect, state, needTooltip);
 }
 
-QString PropertyDelegate::toolTip() const
+QString QtnPropertyDelegate::toolTip() const
 {
     return toolTipImpl();
 }
 
-bool PropertyDelegate::acceptKeyPressedForInplaceEdit(QKeyEvent* keyEvent) const
+bool QtnPropertyDelegate::acceptKeyPressedForInplaceEdit(QKeyEvent* keyEvent) const
 {
     return acceptKeyPressedForInplaceEditImpl(keyEvent);
 }
 
-QWidget* PropertyDelegate::createValueEditor(QWidget* parent, const QRect& rect, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegate::createValueEditor(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     return createValueEditorImpl(parent, rect, inplaceInfo);
 }
 
-void PropertyDelegate::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+void QtnPropertyDelegate::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     QString strValue;
     if (propertyValueToStr(strValue))
@@ -79,29 +75,29 @@ void PropertyDelegate::drawValueImpl(QStylePainter& painter, const QRect& rect, 
     }
 }
 
-QString PropertyDelegate::toolTipImpl() const
+QString QtnPropertyDelegate::toolTipImpl() const
 {
     QString strValue;
     propertyValueToStr(strValue);
     return strValue;
 }
 
-bool PropertyDelegate::acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const
+bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const
 {
     int key = keyEvent->key();
     return (key == Qt::Key_F2) || (key == Qt::Key_Space) || (key == Qt::Key_Return);
 }
 
-void PropertyDelegate::drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State &state, bool* needTooltip)
+void QtnPropertyDelegate::drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State &state, bool* needTooltip)
 {
     if (text.isEmpty())
         return;
 
     painter.drawText(rect, Qt::AlignLeading | Qt::AlignVCenter
-                     , elidedText(painter, text, rect, needTooltip));
+                     , qtnElidedText(painter, text, rect, needTooltip));
 }
 
-QWidget* PropertyDelegate::createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, InplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegate::createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo)
 {
     QLineEdit* lineEdit = new QLineEdit(parent);
     lineEdit->setGeometry(rect);
@@ -118,6 +114,4 @@ QWidget* PropertyDelegate::createValueEditorLineEdit(QWidget* parent, const QRec
 
     return lineEdit;
 }
-
-} // end namespace Qtinuum
 

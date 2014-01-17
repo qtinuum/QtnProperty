@@ -18,10 +18,7 @@
 
 #include "PropertyUInt.h"
 
-namespace Qtinuum
-{
-
-bool PropertyUIntBase::fromStrImpl(const QString& str)
+bool QtnPropertyUIntBase::fromStrImpl(const QString& str)
 {
     bool ok = false;
     ValueType value = str.toUInt(&ok);
@@ -31,13 +28,13 @@ bool PropertyUIntBase::fromStrImpl(const QString& str)
     return setValue(value);
 }
 
-bool PropertyUIntBase::toStrImpl(QString& str) const
+bool QtnPropertyUIntBase::toStrImpl(QString& str) const
 {
     str = QString::number(value());
     return true;
 }
 
-bool PropertyUIntBase::fromVariantImpl(const QVariant& var)
+bool QtnPropertyUIntBase::fromVariantImpl(const QVariant& var)
 {
     bool ok = false;
     ValueType value = var.toUInt(&ok);
@@ -46,5 +43,3 @@ bool PropertyUIntBase::fromVariantImpl(const QVariant& var)
 
     return setValue(value);
 }
-
-} // end namespace Qtinuum

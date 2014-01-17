@@ -19,16 +19,13 @@
 #include "PropertyQFont.h"
 #include <QFontDatabase>
 
-namespace Qtinuum
+QtnPropertyQFontBase::QtnPropertyQFontBase(QObject *parent)
+    : QtnSinglePropertyBase<QFont>(parent)
 {
-
-PropertyQFontBase::PropertyQFontBase(QObject *parent)
-    : SinglePropertyBase<QFont>(parent)
-{
-    addState(PropertyStateCollapsed);
+    addState(QtnPropertyStateCollapsed);
 }
 
-bool PropertyQFontBase::fromStrImpl(const QString& str)
+bool QtnPropertyQFontBase::fromStrImpl(const QString& str)
 {
     QFont font;
     if (!font.fromString(str.trimmed()))
@@ -37,11 +34,9 @@ bool PropertyQFontBase::fromStrImpl(const QString& str)
     return setValue(font);
 }
 
-bool PropertyQFontBase::toStrImpl(QString& str) const
+bool QtnPropertyQFontBase::toStrImpl(QString& str) const
 {
     QFont v = value();
     str = v.toString();
     return true;
 }
-
-} // end namespace Qtinuum

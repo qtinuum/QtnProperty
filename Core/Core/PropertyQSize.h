@@ -22,58 +22,53 @@
 #include "../Auxiliary/PropertyTemplates.h"
 #include <QSize>
 
-namespace Qtinuum
-{
-
-class QTN_PE_CORE_EXPORT PropertyQSizeBase: public SinglePropertyBase<QSize>
+class QTN_PE_CORE_EXPORT QtnPropertyQSizeBase: public QtnSinglePropertyBase<QSize>
 {
     Q_OBJECT
-    PropertyQSizeBase(const PropertyQSizeBase& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQSizeBase(const QtnPropertyQSizeBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQSizeBase(QObject *parent);
+    explicit QtnPropertyQSizeBase(QObject *parent);
 
 protected:
     // string conversion implementation
     bool fromStrImpl(const QString& str) override;
     bool toStrImpl(QString& str) const override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(PropertyQSizeBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQSizeBase)
 };
 
-P_PROPERTY_DECL_EQ_OPERATORS(PropertyQSizeBase, QSize)
+P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQSizeBase, QSize)
 
-QTN_PE_CORE_EXPORT Property* createWidthProperty(QObject *parent, PropertyQSizeBase *propertySize);
-QTN_PE_CORE_EXPORT Property* createHeightProperty(QObject *parent, PropertyQSizeBase *propertySize);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateWidthProperty(QObject* parent, QtnPropertyQSizeBase* propertySize);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateHeightProperty(QObject* parent, QtnPropertyQSizeBase* propertySize);
 
-class QTN_PE_CORE_EXPORT PropertyQSizeCallback: public SinglePropertyCallback<PropertyQSizeBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQSizeCallback: public QtnSinglePropertyCallback<QtnPropertyQSizeBase>
 {
     Q_OBJECT
-    PropertyQSizeCallback(const PropertyQSizeCallback& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQSizeCallback(const QtnPropertyQSizeCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQSizeCallback(QObject *parent)
-        : SinglePropertyCallback<PropertyQSizeBase>(parent)
+    explicit QtnPropertyQSizeCallback(QObject *parent)
+        : QtnSinglePropertyCallback<QtnPropertyQSizeBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQSizeCallback, PropertyQSizeBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSizeCallback, QtnPropertyQSizeBase)
 };
 
-class QTN_PE_CORE_EXPORT PropertyQSize: public SinglePropertyValue<PropertyQSizeBase>
+class QTN_PE_CORE_EXPORT QtnPropertyQSize: public QtnSinglePropertyValue<QtnPropertyQSizeBase>
 {
     Q_OBJECT
-    PropertyQSize(const PropertyQSize& other) Q_DECL_EQ_DELETE;
+    QtnPropertyQSize(const QtnPropertyQSize& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit PropertyQSize(QObject *parent)
-        : SinglePropertyValue<PropertyQSizeBase>(parent)
+    explicit QtnPropertyQSize(QObject *parent)
+        : QtnSinglePropertyValue<QtnPropertyQSizeBase>(parent)
     {
     }
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(PropertyQSize, PropertyQSizeBase)
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSize, QtnPropertyQSizeBase)
 };
-
-} // end namespace Qtinuum
 
 #endif // PROPERTYQSIZE_H

@@ -22,10 +22,7 @@
 #include <QHBoxLayout>
 #include <QKeyEvent>
 
-namespace Qtinuum
-{
-
-LineEditBttn::LineEditBttn(QWidget *parent)
+QtnLineEditBttn::QtnLineEditBttn(QWidget *parent)
     : QWidget(parent)
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -44,7 +41,7 @@ LineEditBttn::LineEditBttn(QWidget *parent)
     setAutoFillBackground(true);
 }
 
-bool acceptForLineEdit(QKeyEvent *keyEvent)
+bool qtnAcceptForLineEdit(QKeyEvent *keyEvent)
 {
     if (keyEvent->type() != QEvent::KeyPress)
         return false;
@@ -54,7 +51,7 @@ bool acceptForLineEdit(QKeyEvent *keyEvent)
     return (text.size() == 1 && text[0].isPrint());
 }
 
-void initLineEdit(QLineEdit *lineEdit, InplaceInfo *inplaceInfo)
+void qtnInitLineEdit(QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo)
 {
     if (!lineEdit || !inplaceInfo)
         return;
@@ -62,7 +59,7 @@ void initLineEdit(QLineEdit *lineEdit, InplaceInfo *inplaceInfo)
     if (!lineEdit->isReadOnly() && (inplaceInfo->activationEvent->type() == QEvent::KeyPress))
     {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(inplaceInfo->activationEvent);
-        if (acceptForLineEdit(keyEvent))
+        if (qtnAcceptForLineEdit(keyEvent))
         {
             lineEdit->setText(keyEvent->text());
             return;
@@ -73,6 +70,3 @@ void initLineEdit(QLineEdit *lineEdit, InplaceInfo *inplaceInfo)
         lineEdit->selectAll();
     }
 }
-
-} // end namespace Qtinuum
-
