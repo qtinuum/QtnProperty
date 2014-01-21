@@ -1433,7 +1433,7 @@ void TestProperty::qObjectProperty()
         QtnPropertyQStringBase* ps = qobject_cast<QtnPropertyQStringBase*>(p);
         QVERIFY(ps);
         QCOMPARE(ps->value(), tr("Item1"));
-        QCOMPARE(ps->state(), QtnPropertyStateImmutable);
+        QCOMPARE(ps->state(), QtnPropertyStateNone);
         ps->setValue("NewItemName");
         QCOMPARE(obj.objectName(), tr("NewItemName"));
         QCOMPARE(ps->value(), tr("NewItemName"));

@@ -4,6 +4,8 @@ TARGET = qtn_property_core
 TEMPLATE = lib
 VERSION = 1.0.1
 
+QT += script
+
 DEFINES += QTN_PE_CORE_LIBRARY
 
 SOURCES += PropertyBase.cpp \
