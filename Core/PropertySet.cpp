@@ -258,7 +258,7 @@ bool QtnPropertySet::fromStrImpl(const QString& str)
 
 bool QtnPropertySet::toStrImpl(QString& str) const
 {
-    return false;
+    return toStrWithPrefix(str, QString());
 }
 
 bool QtnPropertySet::loadImpl(QDataStream& stream)
@@ -385,4 +385,42 @@ void QtnPropertySet::childPropertyDidChange(const QtnPropertyBase* changedProper
         return;
 
     Q_EMIT propertyDidChange(changedProperty, this, reason);
+}
+
+bool QtnPropertySet::toStrWithPrefix(QString& str, const QString& prefix) const
+{
+#ifdef Q_OS_WIN32
+    static QString lineEnd("\r\n");
+#else
+    static QString lineEnd("\n");
+#endif
+
+    foreach(QtnPropertyBase* childPropertyBase, m_childProperties)
+    {
+        QtnProperty* childProperty = childPropertyBase->asProperty();
+        if (childProperty)
+        {
+            QString strValue;
+            if (!childProperty->toStr(strValue))
+                return false;
+
+            str.append(QString("%1%2 = %3%4").arg(prefix, childProperty->name(), strValue, lineEnd));
+        }
+        else
+        {
+            QtnPropertySet* childPropertySet = childPropertyBase->asPropertySet();
+            if (childPropertySet)
+            {
+                if (!childPropertySet->toStrWithPrefix(str, QString("%1%2.").arg(prefix, childPropertySet->name())))
+                    return false;
+            }
+            else
+            {
+                // no property neither propertyset
+                Q_ASSERT(false);
+            }
+        }
+    }
+
+    return true;
 }

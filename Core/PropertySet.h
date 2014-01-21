@@ -76,6 +76,8 @@ private:
     void childPropertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
     void childPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 
+    bool toStrWithPrefix(QString& str, const QString& prefix) const;
+
 private:
     QList<QtnPropertyBase*> m_childProperties;
 

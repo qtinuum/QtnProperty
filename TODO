@@ -8,8 +8,6 @@ Make wrapper propertyset for QObject derived classes (implement Enum and EnumFla
 Add reset button
 Connect to QObject property changed signal
 
-implement QtnPropertySet::toStrImpl
-
 Save/Load via XML
 Save/Load in JSON
 
@@ -26,6 +24,7 @@ owner feature????
 How to define default PropertySet?
 
 command line parameters for PEG
+refactor PEG to support bison 3.0
 QtDesigner plugin
 Help
 pef files syntax highlight
