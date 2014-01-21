@@ -94,7 +94,7 @@ QtnProperty* qtnCreateQObjectProperty(QObject* object, const QMetaProperty& meta
         return property;
 
     property->setName(metaProperty.name());
-    if (!metaProperty.isEditable(object))
+    if (!metaProperty.isDesignable(object))
         property->addState(QtnPropertyStateImmutable);
 
     return property;

@@ -71,8 +71,8 @@ public:
 
     bool ensureVisible(const QtnPropertyBase* property);
 
-    float itemHeightRatio() const { return m_itemHeightRatio; }
-    bool setItemHeightRatio(float itemHeightRatio);
+    quint32 itemHeightSpacing() const { return m_itemHeightSpacing; }
+    bool setItemHeightSpacing(quint32 itemHeightSpacing);
 
     QtnPropertyViewStyle propertyViewStyle() const { return m_style; }
     void setPropertyViewStyle(QtnPropertyViewStyle style);
@@ -185,7 +185,7 @@ private:
 
     QtnPropertyViewStyle m_style;
     int m_itemHeight;
-    float m_itemHeightRatio;
+    quint32 m_itemHeightSpacing;
     int m_leadMargin;
     QColor m_linesColor;
     QColor m_propertySetBackdroundColor;

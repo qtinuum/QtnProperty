@@ -4,11 +4,9 @@ Implement PropertySetForm - property widgets on form
 
 AutoValue feature
 
-Make wrapper propertyset for QObject derived classes
+Make wrapper propertyset for QObject derived classes (implement Enum and EnumFlags cases)
 Add reset button
 Connect to QObject property changed signal
-
-remove namespace!!!
 
 implement QtnPropertySet::toStrImpl
 

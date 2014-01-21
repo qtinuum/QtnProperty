@@ -78,7 +78,7 @@ QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
       m_visibleItemsValid(false),
       m_style(QtnPropertyViewStyleLiveSplit),
       m_itemHeight(0),
-      m_itemHeightRatio(1.f),
+      m_itemHeightSpacing(0),
       m_leadMargin(0),
       m_splitRatio(0.5f),
       m_rubberBand(nullptr)
@@ -142,12 +142,9 @@ bool QtnPropertyView::ensureVisible(const QtnPropertyBase* property)
     return ensureVisibleItemByIndex(index);
 }
 
-bool QtnPropertyView::setItemHeightRatio(float itemHeightRatio)
+bool QtnPropertyView::setItemHeightSpacing(quint32 itemHeightSpacing)
 {
-    if (itemHeightRatio <= 0.f)
-        return false;
-
-    m_itemHeightRatio = itemHeightRatio;
+    m_itemHeightSpacing = itemHeightSpacing;
     updateStyleStuff();
     return true;
 }
@@ -962,12 +959,15 @@ void QtnPropertyView::updateVScrollbar() const
 void QtnPropertyView::updateStyleStuff()
 {
     QStyleOptionViewItem opt;
-    opt.init(this);
+    opt.initFrom(this);
+    opt.text = "Yy";
+    opt.features |= QStyleOptionViewItem::HasCheckIndicator|QStyleOptionViewItem::HasDisplay;
+
     m_itemHeight = style()->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(0, 0), this).height();
     if (m_itemHeight == 0)
         m_itemHeight = opt.fontMetrics.height();
 
-    m_itemHeight = (int)((float)m_itemHeight * m_itemHeightRatio);
+    m_itemHeight += m_itemHeightSpacing;
 
     m_propertySetBackdroundColor = m_linesColor = palette().color(QPalette::Button);
     //style()->styleHint(QStyle::SH_Table_GridLineColor, &opt, this, 0);

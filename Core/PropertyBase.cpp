@@ -92,8 +92,10 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
     qScriptRegisterMetaType(engine, qtnPropertyChangeReasonToScriptValue, qtnPropertyChangeReasonFromScriptValue);
     qScriptRegisterMetaType(engine, qtnPropertyValuePtrToScriptValue, qtnPropertyValuePtrFromScriptValue);
     qScriptRegisterMetaType(engine, qtnPropertyBasePtrToScriptValue, qtnPropertyBasePtrFromScriptValue);
-/*
-    QScriptValue obj = engine->newObject();
+
+    QScriptValue obj = engine->globalObject();
+
+//    QScriptValue obj = engine->newObject();
 
     obj.setProperty("QtnPropertyStateNone", QtnPropertyStateNone, QScriptValue::ReadOnly|QScriptValue::Undeletable);
     obj.setProperty("QtnPropertyStateNonSimple", QtnPropertyStateNonSimple, QScriptValue::ReadOnly|QScriptValue::Undeletable);
@@ -115,8 +117,7 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
     obj.setProperty("QtnPropertyChangeReasonChildPropertyRemove", QtnPropertyChangeReasonChildPropertyRemove, QScriptValue::ReadOnly|QScriptValue::Undeletable);
     obj.setProperty("QtnPropertyChangeReasonChildren", QtnPropertyChangeReasonChildren, QScriptValue::ReadOnly|QScriptValue::Undeletable);
 
-    engine->globalObject().setProperty("Qtinuum", obj);
-    */
+//    engine->globalObject().setProperty("Qtinuum", obj);
 }
 
 QtnPropertyBase::QtnPropertyBase(QObject *parent)

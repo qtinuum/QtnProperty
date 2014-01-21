@@ -3,6 +3,7 @@
 #include "mydialog.h"
 #include <QMessageBox>
 
+#include "QObjectPropertySet.h"
 #include "Demo.peg.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -14,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pw->setParts(QtnPropertyWidgetPartsDescriptionPanel);
 
 //#ifdef Q_OS_WIN32
-    ui->pw->propertyView()->setItemHeightRatio(1.3f);
+    ui->pw->propertyView()->setItemHeightSpacing(6);
 //#endif
 
     QtnPropertySet* ps = new QtnPropertySetMain(this);
@@ -78,4 +79,40 @@ void MainWindow::on_pushButton_clicked()
     }
 
     ui->plainTextEdit->clear();
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    QtnPropertySet* properties = ui->pw->propertySet();
+
+    if (!properties)
+    {
+        QMessageBox::warning(this, "Demo", "Property is not set.");
+        return;
+    }
+
+    QString text;
+    if (!properties->toStr(text))
+    {
+        QMessageBox::warning(this, "Demo", "Cannot get string from Propertyset.");
+        return;
+    }
+
+    ui->plainTextEdit->setPlainText(text);
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QtnPropertySet* bttnProperties = qtnCreateQObjectPropertySet(ui->pushButton_2);
+    QtnPropertySet* editProperties = qtnCreateQObjectPropertySet(ui->plainTextEdit);
+    QtnPropertySet properties(this);
+
+    if (bttnProperties)
+        properties.addChildProperty(bttnProperties);
+
+    if (editProperties)
+        properties.addChildProperty(editProperties);
+
+    MyDialog dlg(this, properties);
+    dlg.exec();
 }

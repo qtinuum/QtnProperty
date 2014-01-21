@@ -111,6 +111,20 @@ Internal.item3 = &quot;ssss&quot;</string>
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="pushButton_3">
+        <property name="text">
+         <string>to string</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>edit QObject properties</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
