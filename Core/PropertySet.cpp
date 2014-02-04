@@ -416,7 +416,7 @@ bool QtnPropertySet::toStrWithPrefix(QString& str, const QString& prefix) const
             }
             else
             {
-                // no property neither propertyset
+                // neither property no propertyset
                 Q_ASSERT(false);
             }
         }

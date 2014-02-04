@@ -35,8 +35,7 @@ public:
     }
 
     const QtnEnumInfo* enumInfo() const { return m_enumInfo; }
-    QtnEnumInfo* enumInfo() { return m_enumInfo; }
-    void setEnumInfo(QtnEnumInfo* enumInfo) { m_enumInfo = enumInfo; }
+    void setEnumInfo(const QtnEnumInfo* enumInfo) { m_enumInfo = enumInfo; }
 
 protected:
     // string conversion implementation
@@ -46,7 +45,7 @@ protected:
     bool isValueAcceptedImpl(ValueType valueToAccept) override;
 
 private:
-    QtnEnumInfo* m_enumInfo;
+    const QtnEnumInfo* m_enumInfo;
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyEnumBase)
 };

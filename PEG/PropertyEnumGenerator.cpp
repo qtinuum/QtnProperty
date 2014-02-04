@@ -727,7 +727,7 @@ void EnumCode::generateHFile(TextStreamIndent& s) const
             s.newLine() << "};";
         }
         s.newLine();
-        s.newLine() << "static QtnEnumInfo& info();";
+        s.newLine() << "static const QtnEnumInfo& info();";
         s.newLine() << QString("static const unsigned int values_count = %1;").arg(items.size());
         s.delIndent();
     s.newLine() << "};";
@@ -766,7 +766,7 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
     s.delIndent();
     s.newLine() << "}";
     s.newLine();
-    s.newLine() << QString("QtnEnumInfo& %1::info()").arg(name);
+    s.newLine() << QString("const QtnEnumInfo& %1::info()").arg(name);
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << QString("static QtnEnumInfo& enumInfo = create_%1_info();").arg(name);

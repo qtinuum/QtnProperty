@@ -958,19 +958,10 @@ void QtnPropertyView::updateVScrollbar() const
 
 void QtnPropertyView::updateStyleStuff()
 {
-    QStyleOptionViewItem opt;
-    opt.initFrom(this);
-    opt.text = "Yy";
-    opt.features |= QStyleOptionViewItem::HasCheckIndicator|QStyleOptionViewItem::HasDisplay;
-
-    m_itemHeight = style()->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(0, 0), this).height();
-    if (m_itemHeight == 0)
-        m_itemHeight = opt.fontMetrics.height();
-
-    m_itemHeight += m_itemHeightSpacing;
+    QFontMetrics fm(font());
+    m_itemHeight = fm.height() + m_itemHeightSpacing;
 
     m_propertySetBackdroundColor = m_linesColor = palette().color(QPalette::Button);
-    //style()->styleHint(QStyle::SH_Table_GridLineColor, &opt, this, 0);
 
     m_leadMargin = style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
 }

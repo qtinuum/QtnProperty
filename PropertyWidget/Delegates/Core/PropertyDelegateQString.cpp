@@ -307,6 +307,17 @@ void QtnPropertyDelegateQStringList::applyAttributesImpl(const QtnPropertyDelega
 
 QWidget* QtnPropertyDelegateQStringList::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
+    if (!owner().isEditableByUser())
+    {
+        QLineEdit *lineEdit = new QLineEdit(parent);
+        lineEdit->setReadOnly(true);
+        lineEdit->setText(owner().value());
+
+        lineEdit->setGeometry(rect);
+
+        return lineEdit;
+    }
+
     QComboBox* editor = new QComboBox(parent);
     editor->setGeometry(rect);
 

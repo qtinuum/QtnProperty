@@ -18,11 +18,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pw->propertyView()->setItemHeightSpacing(6);
 //#endif
 
-    QtnPropertySet* ps = new QtnPropertySetMain(this);
+    QtnPropertySet* ps = new QtnPropertySetSamplePS(this);
     ui->pw->setPropertySet(ps);
 
     qtnScriptRegisterPropertyTypes(&jsEngine);
-    jsEngine.globalObject().setProperty("params", jsEngine.newQObject(ps));
+    jsEngine.globalObject().setProperty("samplePS", jsEngine.newQObject(ps));
 
     dbg.attachTo(&jsEngine);
 }
