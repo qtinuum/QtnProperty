@@ -1,10 +1,10 @@
 include(../Common.pri)
 
-QT       += core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui widgets
 
-TARGET = qtn_property_widget
+TARGET = QtnPropertyWidget
 TEMPLATE = lib
+VERSION = 1.0.0
 
 DEFINES += QTN_PE_PROPERTYWIDGET_LIBRARY
 
@@ -35,7 +35,6 @@ HEADERS += PropertyWidgetAPI.h \
     Utils/InplaceEditing.h \
     Delegates/PropertyDelegate.h \
     Delegates/PropertyDelegateFactory.h \
-    Delegates/PropertyDelegateCore.h \
     Delegates/Core/PropertyDelegateBool.h \
     Delegates/Core/PropertyDelegateInt.h \
     Delegates/Core/PropertyDelegateUInt.h \
@@ -52,5 +51,5 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/Core/PropertyDelegateQPoint.h \
     Delegates/GUI/PropertyDelegateQFont.h
 
-LIBS += -L$$BIN_DIR -lqtn_property_core
+LIBS += -L$$BIN_DIR -lQtnPropertyCore
 

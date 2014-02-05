@@ -109,9 +109,9 @@ static bool regBoolDelegate = QtnPropertyDelegateFactory::staticInstance()
                                 , &qtnCreateDelegate<QtnPropertyDelegateBoolCheck, QtnPropertyBoolBase>
                                 , "CheckBox");
 
-static bool regBoolDelegateLabels = QtnPropertyDelegateFactory::staticInstance()
+static bool regBoolDelegateCombobox = QtnPropertyDelegateFactory::staticInstance()
                                 .registerDelegate(&QtnPropertyBoolBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateBoolLabels, QtnPropertyBoolBase>
+                                , &qtnCreateDelegate<QtnPropertyDelegateBoolCombobox, QtnPropertyBoolBase>
                                 , "ComboBox");
 
 QCheckBox* createPropertyBoolCheckBox(QtnPropertyBoolBase& owner, QWidget* parent, const QRect& rect)
@@ -151,7 +151,7 @@ QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, co
     return checkBox;
 }
 
-QtnPropertyDelegateBoolLabels::QtnPropertyDelegateBoolLabels(QtnPropertyBoolBase& owner)
+QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner)
     : QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
 {
     static QString labels[2] = { owner.tr("False"), owner.tr("True")};
@@ -160,13 +160,13 @@ QtnPropertyDelegateBoolLabels::QtnPropertyDelegateBoolLabels(QtnPropertyBoolBase
     m_labels[1] = labels[1];
 }
 
-void QtnPropertyDelegateBoolLabels::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
+void QtnPropertyDelegateBoolCombobox::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
 {
     qtnGetAttribute(attributes, "labelFalse", m_labels[0]);
     qtnGetAttribute(attributes, "labelTrue", m_labels[1]);
 }
 
-QWidget* QtnPropertyDelegateBoolLabels::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateBoolCombobox::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     if (owner().isEditableByUser())
     {
@@ -196,7 +196,7 @@ QWidget* QtnPropertyDelegateBoolLabels::createValueEditorImpl(QWidget* parent, c
     }
 }
 
-bool QtnPropertyDelegateBoolLabels::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(QString& strValue) const
 {
     strValue = m_labels[owner().value()];
     return true;

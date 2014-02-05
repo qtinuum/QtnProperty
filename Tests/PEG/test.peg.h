@@ -221,7 +221,7 @@ public:
         ENG = 3
     };
     
-    static QtnEnumInfo& info();
+    static const QtnEnumInfo& info();
     static const unsigned int values_count = 1;
 };
 
@@ -229,7 +229,7 @@ class TYPE
 {
 public:
     
-    static QtnEnumInfo& info();
+    static const QtnEnumInfo& info();
     static const unsigned int values_count = 0;
 };
 
@@ -243,7 +243,7 @@ public:
         YELLOW = 1
     };
     
-    static QtnEnumInfo& info();
+    static const QtnEnumInfo& info();
     static const unsigned int values_count = 3;
 };
 
@@ -257,7 +257,7 @@ public:
         FOUR = 4
     };
     
-    static QtnEnumInfo& info();
+    static const QtnEnumInfo& info();
     static const unsigned int values_count = 3;
 };
 

@@ -1,19 +1,15 @@
 include(../Common.pri)
-PEG_TOOL = $$BIN_DIR/peg
+PEG_TOOL = $$BIN_DIR/QtnPEG
 include(../PEG.pri)
 
-QT       += core
-QT       += script
-QT       += testlib
+QT += core script testlib
 
-TARGET = property_tests
+TARGET = QtnPropertyTests
 
 CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
-
-#DEFINES += DISABLE_QTINUUM_NAMESPACE
 
 HEADERS += \
     TestProperty.h \
@@ -26,11 +22,11 @@ SOURCES += main.cpp \
     TestEnum.cpp
 
 PEG_SOURCES += PEG/test.pef \
-                PEG/test2.pef
+               PEG/test2.pef
 
 OTHER_FILES += $$PEG_SOURCES
 
-LIBS += -L$$BIN_DIR -lqtn_property_core
+LIBS += -L$$BIN_DIR -lQtnPropertyCore
 win32 {
 } else:unix {
     QMAKE_LFLAGS += -Wl,-rpath,$$BIN_DIR

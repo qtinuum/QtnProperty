@@ -107,7 +107,7 @@ QtnProperty* qtnCreateTopProperty(QObject *parent, QtnPropertyQRectBase *propert
 {
     QtnPropertyIntCallback *topProperty = new QtnPropertyIntCallback(parent);
     topProperty->setName(QObject::tr("Top"));
-    topProperty->setDescription(QObject::tr("Top side of the %1.").arg(propertyRect->name()));
+    topProperty->setDescription(QObject::tr("Top of the %1.").arg(propertyRect->name()));
     topProperty->setCallbackValueGet([propertyRect]()->int { return propertyRect->value().top(); });
     topProperty->setCallbackValueSet([propertyRect](int newTop) {
         QRect rect = propertyRect->value();
@@ -123,7 +123,7 @@ QtnProperty* qtnCreateBottomProperty(QObject *parent, QtnPropertyQRectBase *prop
 {
     QtnPropertyIntCallback *bottomProperty = new QtnPropertyIntCallback(parent);
     bottomProperty->setName(QObject::tr("Bottom"));
-    bottomProperty->setDescription(QObject::tr("Bottom side of the %1.").arg(propertyRect->name()));
+    bottomProperty->setDescription(QObject::tr("Bottom of the %1.").arg(propertyRect->name()));
     bottomProperty->setCallbackValueGet([propertyRect]()->int { return propertyRect->value().bottom(); });
     bottomProperty->setCallbackValueSet([propertyRect](int newBottom) {
         QRect rect = propertyRect->value();
@@ -139,7 +139,7 @@ QtnProperty* qtnCreateWidthProperty(QObject *parent, QtnPropertyQRectBase *prope
 {
     QtnPropertyIntCallback *widthProperty = new QtnPropertyIntCallback(parent);
     widthProperty->setName(QObject::tr("Width"));
-    widthProperty->setDescription(QObject::tr("Bottom of the %1.").arg(propertyRect->name()));
+    widthProperty->setDescription(QObject::tr("Width of the %1.").arg(propertyRect->name()));
     widthProperty->setCallbackValueGet([propertyRect]()->int { return propertyRect->value().width(); });
     widthProperty->setCallbackValueSet([propertyRect](int newWidth) {
         QRect rect = propertyRect->value();

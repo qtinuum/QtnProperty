@@ -1,4 +1,8 @@
 # define PEG_TOOL before including PEG.pri file in your pro file
+isEmpty(PEG_TOOL) {
+PEG_TOOL = QtnPEG
+}
+
 peg.name = PropertyEnum generator ${QMAKE_FILE_IN}
 peg.input = PEG_SOURCES
 peg.output = ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.peg.cpp

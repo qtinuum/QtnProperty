@@ -14,10 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->pw->setParts(QtnPropertyWidgetPartsDescriptionPanel);
 
-//#ifdef Q_OS_WIN32
-    ui->pw->propertyView()->setItemHeightSpacing(6);
-//#endif
-
     QtnPropertySet* ps = new QtnPropertySetSamplePS(this);
     ui->pw->setPropertySet(ps);
 

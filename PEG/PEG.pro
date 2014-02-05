@@ -2,15 +2,16 @@ include(../Common.pri)
 include(Bison.pri)
 include(Flex.pri)
 
-QT       += core
-QT       -= gui
+QT += core
+QT -= gui
 
-TARGET = peg
+TARGET = QtnPEG
 
-CONFIG   += console
-CONFIG   -= app_bundle
+CONFIG += console
+CONFIG -= app_bundle
 
 TEMPLATE = app
+VERSION = 1.0.0
 
 SOURCES += main.cpp \
     PropertyEnumGenerator.cpp

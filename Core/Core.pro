@@ -1,8 +1,8 @@
 include(../Common.pri)
 
-TARGET = qtn_property_core
+TARGET = QtnPropertyCore
 TEMPLATE = lib
-VERSION = 1.0.1
+VERSION = 1.0.0
 
 QT += script
 

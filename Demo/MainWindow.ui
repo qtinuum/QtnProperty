@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>567</width>
+    <width>742</width>
     <height>417</height>
    </rect>
   </property>
@@ -65,9 +65,9 @@
         </property>
         <property name="text">
          <string>Script examples:
-params.count.value = 6;
-print(params.Internal.state);
-params.count.propertyDidChange.connect(
+samplePS.IntProperty.value = 15;
+print(samplePS.SubPropertySet.SwitchProperty.state);
+samplePS.UIntProperty.propertyDidChange.connect(
     function(p1, p2) {
         print(p2.name+&quot; is &quot;+p2.value+&quot; now&quot;);
 });</string>
@@ -91,9 +91,9 @@ params.count.propertyDidChange.connect(
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>String examples:
-count = 3
-isValid = true
-Internal.item3 = &quot;ssss&quot;</string>
+EnumProperty = blue
+EnableSubPropertySet = true
+SubPropertySet.FolderNameProperty = &quot;/home/my&quot;</string>
         </property>
         <property name="textFormat">
          <enum>Qt::PlainText</enum>

@@ -78,7 +78,7 @@ QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
       m_visibleItemsValid(false),
       m_style(QtnPropertyViewStyleLiveSplit),
       m_itemHeight(0),
-      m_itemHeightSpacing(0),
+      m_itemHeightSpacing(6),
       m_leadMargin(0),
       m_splitRatio(0.5f),
       m_rubberBand(nullptr)
@@ -763,6 +763,18 @@ void QtnPropertyView::keyPressEvent(QKeyEvent* e)
     }
 }
 
+static QString qtnGetPropertyTooltip(const QtnPropertyBase* property)
+{
+    if (!property)
+        return QString();
+
+    QString tooltipText = property->description();
+    if (tooltipText.isEmpty())
+        tooltipText = property->name();
+
+    return tooltipText;
+}
+
 void QtnPropertyView::tooltipEvent(QHelpEvent* e)
 {
     int index = visibleItemIndexByPoint(e->pos());
@@ -778,13 +790,13 @@ void QtnPropertyView::tooltipEvent(QHelpEvent* e)
         // propertyset case
         if (!vItem.item->delegate)
         {
-            tooltipText = vItem.item->property->description();
+            tooltipText = qtnGetPropertyTooltip(vItem.item->property);
         }
         // name sub rect
         else if (e->x() < splitPos)
         {
             rect.setRight(splitPos);
-            tooltipText = vItem.item->property->description();
+            tooltipText = qtnGetPropertyTooltip(vItem.item->property);
         }
         // value sub rect
         else if (vItem.needTooltip)
@@ -793,10 +805,7 @@ void QtnPropertyView::tooltipEvent(QHelpEvent* e)
             tooltipText = vItem.item->delegate->toolTip();
         }
 
-        QToolTip::showText(  e->globalPos()
-                           , tooltipText
-                           , this
-                           , rect);
+        QToolTip::showText(e->globalPos(), tooltipText, this, rect);
     }
     else
     {

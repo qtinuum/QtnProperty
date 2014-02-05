@@ -568,7 +568,7 @@ static QtnEnumInfo& create_LANGUAGE_info()
     return enumInfo;
 }
 
-QtnEnumInfo& LANGUAGE::info()
+const QtnEnumInfo& LANGUAGE::info()
 {
     static QtnEnumInfo& enumInfo = create_LANGUAGE_info();
     return enumInfo;
@@ -581,7 +581,7 @@ static QtnEnumInfo& create_TYPE_info()
     return enumInfo;
 }
 
-QtnEnumInfo& TYPE::info()
+const QtnEnumInfo& TYPE::info()
 {
     static QtnEnumInfo& enumInfo = create_TYPE_info();
     return enumInfo;
@@ -597,7 +597,7 @@ static QtnEnumInfo& create_COLOR_info()
     return enumInfo;
 }
 
-QtnEnumInfo& COLOR::info()
+const QtnEnumInfo& COLOR::info()
 {
     static QtnEnumInfo& enumInfo = create_COLOR_info();
     return enumInfo;
@@ -613,7 +613,7 @@ static QtnEnumInfo& create_MASK_info()
     return enumInfo;
 }
 
-QtnEnumInfo& MASK::info()
+const QtnEnumInfo& MASK::info()
 {
     static QtnEnumInfo& enumInfo = create_MASK_info();
     return enumInfo;

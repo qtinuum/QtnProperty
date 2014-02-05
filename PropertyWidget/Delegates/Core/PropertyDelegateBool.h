@@ -38,12 +38,12 @@ protected:
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 };
 
-class QTN_PW_EXPORT QtnPropertyDelegateBoolLabels: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
+class QTN_PW_EXPORT QtnPropertyDelegateBoolCombobox: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
 {
-    Q_DISABLE_COPY(QtnPropertyDelegateBoolLabels)
+    Q_DISABLE_COPY(QtnPropertyDelegateBoolCombobox)
 
 public:
-    QtnPropertyDelegateBoolLabels(QtnPropertyBoolBase& owner);
+    QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner);
 
 protected:
     void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
