@@ -32,6 +32,6 @@ win32 {
     QMAKE_LFLAGS += -Wl,-rpath,$$BIN_DIR
 }
 
-INCLUDEPATH += $$ROOT_DIR/Core/
+INCLUDEPATH += $$TOP_SRC_DIR/Core/
 
 

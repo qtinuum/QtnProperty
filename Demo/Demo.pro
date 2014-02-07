@@ -19,8 +19,8 @@ FORMS    += MainWindow.ui \
 
 PEG_SOURCES += Demo.pef
 
-INCLUDEPATH += $$ROOT_DIR/Core
-INCLUDEPATH += $$ROOT_DIR/PropertyWidget
+INCLUDEPATH += $$TOP_SRC_DIR/Core
+INCLUDEPATH += $$TOP_SRC_DIR/PropertyWidget
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCore -lQtnPropertyWidget
 
