@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2013, the Qtinuum project.
+ * Copyright (c) 2012 - 2014, the Qtinuum project.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3,
@@ -732,8 +732,6 @@ void QtnPropertyView::keyPressEvent(QKeyEvent* e)
                 const QScopedPointer<QtnPropertyDelegate>& delegate = m_visibleItems[index].item->delegate;
                 if (!delegate.isNull() && delegate->acceptKeyPressedForInplaceEdit(e))
                 {
-                    qDebug() << "PropertyView Key event: " << e;
-
                     QtnInplaceInfo inplaceInfo;
                     inplaceInfo.activationEvent = e;
 

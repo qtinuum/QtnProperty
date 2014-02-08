@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2013, the Qtinuum project.
+ * Copyright (c) 2012 - 2014, the Qtinuum project.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3,
@@ -24,9 +24,7 @@
 class QtnInplaceEditorHandler: public QObject
 {
 public:
-
     bool eventFilter(QObject* watched, QEvent* event) override;
-
     void OnEditorDestroyed(QObject* obj);
 };
 
@@ -92,18 +90,14 @@ bool qtnStopInplaceEdit()
 
     QObject::connect(g_inplaceEditor, &QObject::destroyed, &onInplaceWidgetDestroyed);
 
-//    delete g_inplaceEditor;
     g_inplaceEditor->deleteLater();
     g_inplaceEditor = 0;
-
-    qDebug() << "stopInplaceEdit";
 
     return true;
 }
 
 bool hasParent(QObject* child, QObject* parent)
 {
-//    qDebug() << "hasParent(" << child << ", " << parent << ")";
     if (!child)
         return false;
 
@@ -126,37 +120,12 @@ bool QtnInplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
 
     if (event->type() == QEvent::FocusIn)
     {
-        qDebug() << "FocusEvent: "
-                 << "watched: " << watched << "; "
-                 << "inplace: " << g_inplaceEditor << "; "
-                 << "focus: " << QApplication::focusObject() << "; "
-                 << "type: " << event->type();
-
         if (!hasParent(QApplication::focusObject(), g_inplaceEditor))
             qtnStopInplaceEdit();
 
         return false;
     }
-/*
-    if (event->type() == QEvent::KeyPress)
-    {
-        qDebug() << "EditorHandler KeyEvent: " << event
-                 << "watched: " << watched << "; ";
 
-        if (hasParent(watched, g_inplaceEditor))
-        {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-             if (keyEvent->key() == Qt::Key_Escape
-                     || keyEvent->key() == Qt::Key_Enter
-                     || keyEvent->key() == Qt::Key_Return)
-             {
-                 // stop edititng
-                 g_inplaceEditor->deleteLater();
-             }
-        }
-        return false;
-    }
-*/
     return false;
 }
 
