@@ -1,5 +1,5 @@
 #QtnProperty
-This is user and programmist friendly properties in Qt
+This is user and programmist friendly properties for Qt framework
 #Overview
 There are some limitations of standard Qt property system.
 This project is an attempt to make better properties for programmist and user.
@@ -52,9 +52,10 @@ QtnProperty project consisit of five submodules:
 
 1. Write pef file with propertyset declaration. For example:
   
-        \#include "Core/PropertyCore.h"
+'''C++
+        #include "Core/PropertyCore.h"
         
-        property_set TextEditorParams
+        property_set TextEditor
         {
             Bool enableWrapping
             {
@@ -80,17 +81,19 @@ QtnProperty project consisit of five submodules:
                 value = 4;
             }
         }
+'''
     
 2. Generate C++ classes by running command
   
-        ./QtnPEG TextEditorParams.pef
+        ./QtnPEG TextEditor.pef
     
-3. Include generated TextEditorParams.peg.h and TextEditorParams.peg.cpp files into 
+3. Include generated TextEditor.peg.h and TextEditor.peg.cpp files into 
 your project.
-4. Now you can use QtnPropertySetTextEditorParams class (defined in generated files) in your C++ code like this:
-
-        QtnPropertySetTextEditorParams params;
+4. Now you can use QtnPropertySetTextEditor class (defined in generated files) in your C++ code like this:
+'''C++
+        QtnPropertySetTextEditor params;
         params.enableWrapping = false;
         if (params.replaceTabsWithSpaces)
-            replaceTabsWithSpaces(text, params.tabSize);
+            document.replaceTabsWithSpaces(params.tabSize);
+'''
 
