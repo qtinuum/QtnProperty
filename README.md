@@ -53,37 +53,37 @@ QtnProperty project consisit of five submodules:
 1. Write pef file with propertyset declaration. For example TextEditor.pef:
   
 ```C++
-    #include "Core/PropertyCore.h"
-    
-    property_set TextEditor
+#include "Core/PropertyCore.h"
+
+property_set TextEditor
+{
+    Bool enableWrapping
     {
-        Bool enableWrapping
+        description = "Enable/disable text wrapping";
+        value = true;
+    }
+    
+    Bool replaceTabsWithSpaces
+    {
+        description = "Automatically replace tabs with spaces";
+        value = false;
+            
+        slot propertyDidChange
         {
-            description = "Enable/disable text wrapping";
-            value = true;
-        }
-        
-        Bool replaceTabsWithSpaces
-        {
-            description = "Automatically replace tabs with spaces";
-            value = false;
-                
-            slot propertyDidChange
-            {
-                tabSize.switchState(QtnPropertyStateImmutable, !replaceTabsWithSpaces);
-            }
-        }
-        
-        UInt tabSize
-        {
-            description = "Number of spaces to be placed.";
-            state = QtnPropertyStateImmutable;
-            value = 4;
+            tabSize.switchState(QtnPropertyStateImmutable, !replaceTabsWithSpaces);
         }
     }
+    
+    UInt tabSize
+    {
+        description = "Number of spaces to be placed.";
+        state = QtnPropertyStateImmutable;
+        value = 4;
+    }
+}
 ```
     
-2. Generate C++ classes by running command
+2. Generate C++ classes by running command (to use pef files in your project see [PEG.pri](PEG.pri))
 
     ./QtnPEG TextEditor.pef
     
