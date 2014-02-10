@@ -1,7 +1,7 @@
 # To use *.pef files in your project you should:
 # 1. Include this PEG.pri file to your project file
 # 2. List your *.pef files in PEG_SOURCES variable
-# define PEG_TOOL to point to QtnPEG before including
+# 3. Define PEG_TOOL to point to QtnPEG before including
 # PEG.pri file in your pro file
 
 isEmpty(PEG_TOOL) {
