@@ -26,5 +26,3 @@ OTHER_FILES += \
 HEADERS += \
     PropertyEnumGeneratorCommon.h \
     PropertyEnumGenerator.h
-
-#LIBS += -L$$BIN_DIR -lProperty

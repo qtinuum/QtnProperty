@@ -5,3 +5,4 @@
 *.parser.*
 *~
 *.directory
+*.autosave
