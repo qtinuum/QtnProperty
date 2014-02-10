@@ -52,7 +52,7 @@ QtnProperty project consisit of five submodules:
 
 1. Write pef file with propertyset declaration. For example:
   
-'''C++
+```C++
         #include "Core/PropertyCore.h"
         
         property_set TextEditor
@@ -81,7 +81,7 @@ QtnProperty project consisit of five submodules:
                 value = 4;
             }
         }
-'''
+```
     
 2. Generate C++ classes by running command
   
@@ -90,10 +90,10 @@ QtnProperty project consisit of five submodules:
 3. Include generated TextEditor.peg.h and TextEditor.peg.cpp files into 
 your project.
 4. Now you can use QtnPropertySetTextEditor class (defined in generated files) in your C++ code like this:
-'''C++
+```C++
         QtnPropertySetTextEditor params;
         params.enableWrapping = false;
         if (params.replaceTabsWithSpaces)
             document.replaceTabsWithSpaces(params.tabSize);
-'''
+```
 
