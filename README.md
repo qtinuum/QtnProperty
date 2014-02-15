@@ -16,8 +16,9 @@ The key features are:
 * Delegates to customize look and feel properties in property widget
 * PEG (property/enum generator) - it's tool like Qt moc which generates properties hierarchy from JSON like files.
 
-This is screenshot of the Demo application:
-![Demo_screenshot](Docs/img/Demo1.png)
+Here are screenshots of the Demo application:
+![Demo_screenshot_linux](Docs/img/Demo1.png)
+![Demo_screenshot_win](Docs/img/DemoWin.png)
 
 #How to build
 **Requirements:**

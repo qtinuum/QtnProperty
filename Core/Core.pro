@@ -1,10 +1,12 @@
 include(../Common.pri)
 
+QT += script
+
 TARGET = QtnPropertyCore
 TEMPLATE = lib
 VERSION = 1.0.0
 
-QT += script
+
 
 DEFINES += QTN_PE_CORE_LIBRARY
 
@@ -55,7 +57,4 @@ HEADERS += CoreAPI.h\
 
 win32 {
     TARGET_EXT = .dll
-} else:unix {
-    target.path = /usr/lib
-    INSTALLS += target
 }

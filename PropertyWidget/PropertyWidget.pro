@@ -1,10 +1,10 @@
 include(../Common.pri)
 
-QT += core gui widgets
-
 TARGET = QtnPropertyWidget
 TEMPLATE = lib
 VERSION = 1.0.0
+
+QT += core gui widgets
 
 DEFINES += QTN_PE_PROPERTYWIDGET_LIBRARY
 
@@ -53,3 +53,6 @@ HEADERS += PropertyWidgetAPI.h \
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCore
 
+win32 {
+    TARGET_EXT = .dll
+}
