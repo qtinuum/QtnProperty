@@ -23,7 +23,7 @@ Here are screenshots of the Demo application:
 #How to build
 **Requirements:**
 
-1. Qt5 framework
+1. Qt 5.2 framework
 2. Flex 2.5.37 and Bison 2.7 (for Windows can be found [here](http://sourceforge.net/projects/winflexbison/))
 
 **To build:**
