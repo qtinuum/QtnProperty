@@ -26,7 +26,7 @@ LIBS += -L$$BIN_DIR -lQtnPropertyCore -lQtnPropertyWidget
 
 win32 {
 } else:unix {
-    QMAKE_LFLAGS += -Wl,-rpath,$$BIN_DIR
+    QMAKE_LFLAGS += -Wl,-rpath,\'\$$ORIGIN\'
 }
 
 OTHER_FILES += \

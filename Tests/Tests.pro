@@ -29,7 +29,7 @@ OTHER_FILES += $$PEG_SOURCES
 LIBS += -L$$BIN_DIR -lQtnPropertyCore
 win32 {
 } else:unix {
-    QMAKE_LFLAGS += -Wl,-rpath,$$BIN_DIR
+    QMAKE_LFLAGS += -Wl,-rpath,\'\$$ORIGIN\'
 }
 
 INCLUDEPATH += $$TOP_SRC_DIR/Core/
