@@ -34,7 +34,7 @@ Here are screenshots of the Demo application:
     make
 
 Generated libraries and executables will be placed into the 'path\_to\_build/bin' folder.
-Precomiled libraries and Demo application can be found ![here](http://sourceforge.net/projects/qtnproperty/)
+Precomiled libraries and Demo application you can download [here](http://sourceforge.net/projects/qtnproperty/)
   
 **To run tests and demo:**
 
