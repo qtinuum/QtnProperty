@@ -14,7 +14,7 @@ The key features are:
 * Set/Get property value to/from QVariant and QString
 * Scripting support
 * Delegates to customize look and feel properties in property widget
-* PEG (property/enum generator) - it's tool like Qt moc which generates properties hierarchy from JSON like files.
+* PEG (property/enum generator) - it's tool like Qt moc which generates properties hierarchy from QML like files.
 
 Here are screenshots of the Demo application:
 ![Demo_screenshot_linux](Docs/img/Demo1.png)
@@ -46,13 +46,13 @@ QtnProperty project consisit of five submodules:
 
 1. **QtnPropertyCore** library - property classes (non GUI stuff)
 2. **QtnPropertyWidget** library - QtnPropertyWidget, QtnPropertyView and property delegates (GUI stuff)
-3. **QtnPEG** tool - executable to generate C++ code for propert sets from simple JSON like files (*.pef files)
+3. **QtnPEG** tool - executable to generate C++ code for propert sets from simple QML like files (*.pef files)
 4. **QtnPropertyTests** - tests for QtnPropertyCore library
 5. **QtnPropertyDemo** - demo application
 
 #How to use
 
-1. Write pef file with propertyset declaration. For example TextEditor.pef:
+1. Write *.pef file with propertyset declaration. For example TextEditor.pef:
   
 ```C++
 #include "Core/PropertyCore.h"
@@ -85,7 +85,7 @@ property_set TextEditor
 }
 ```
     
-2. Generate C++ classes by running command (to use pef files in your project see [PEG.pri](PEG.pri))
+2. Generate C++ classes by running command (to use *.pef files in your project see [PEG.pri](PEG.pri))
 
     ./QtnPEG TextEditor.pef
     
