@@ -99,3 +99,5 @@ your project.
         document.replaceTabsWithSpaces(params.tabSize);
 ```
 
+Video of GUI testing using Froglogic (c) Squish test framework is [here](https://www.youtube.com/watch?v=lCmM13vPWBU).
+
