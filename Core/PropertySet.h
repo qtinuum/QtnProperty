@@ -28,6 +28,7 @@ public:
     explicit QtnPropertySet(QObject* parent);
     virtual ~QtnPropertySet();
 
+public slots:
     // sub properties
     bool hasChildProperties() const { return !m_childProperties.empty(); }
     const QList<QtnPropertyBase*>& childProperties() const { return m_childProperties; }
@@ -84,5 +85,7 @@ private:
     friend void qtnConnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty);
     friend void qtnDisconnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty);
 };
+
+Q_DECLARE_METATYPE(QtnPropertySet*)
 
 #endif // QTN_PROPERTY_SET_H

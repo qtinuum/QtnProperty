@@ -794,6 +794,15 @@ void TestProperty::propertyScripting()
         val = eng.evaluate("b.isEditable");
         QCOMPARE(val.toBool(), false);
 
+        val = eng.evaluate("b.state");
+        QCOMPARE(val.toUInt32(), 2u);
+
+        val = eng.evaluate("b.state == QtnPropertyStateInvisible");
+        QCOMPARE(val.toBool(), true);
+
+        val = eng.evaluate("b.state == QtnPropertyStateNonSerialized");
+        QCOMPARE(val.toBool(), false);
+
         val = eng.evaluate("b.value");
         QCOMPARE(val.toBool(), false);
 
@@ -803,6 +812,9 @@ void TestProperty::propertyScripting()
 
         val = eng.evaluate("b.value = false");
         QCOMPARE(b.value(), true);
+
+        eng.evaluate("b.state = 0");
+        QCOMPARE(b.state(), QtnPropertyStateInvisible);
 
         b.setState(QtnPropertyStateNone);
         val = eng.evaluate("b.value = false");

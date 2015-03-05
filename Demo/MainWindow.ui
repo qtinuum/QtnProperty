@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>742</width>
-    <height>417</height>
+    <height>468</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,7 +51,7 @@
       <item>
        <widget class="QPushButton" name="editButton">
         <property name="text">
-         <string>Edit in modal dialog</string>
+         <string>Edit in modal dialog...</string>
         </property>
        </widget>
       </item>
