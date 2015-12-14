@@ -1032,6 +1032,7 @@ void QtnPropertyView::OnPropertyDidChange(const QtnPropertyBase* changedProperty
     {
         // regrow tree
         updateItemsTree();
+		viewport()->update();
     }
     else if (reason & QtnPropertyChangeReasonState)
     {
