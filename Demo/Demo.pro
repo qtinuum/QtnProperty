@@ -31,3 +31,11 @@ win32 {
 
 OTHER_FILES += \
     Demo.pef
+
+
+DYNAMIC_LIBS.files += $$BIN_DIR/libQtnPropertyCore.1.dylib
+DYNAMIC_LIBS.files += $$BIN_DIR/libQtnPropertyWidget.1.dylib
+
+DYNAMIC_LIBS.path = "Contents/MacOS"
+
+QMAKE_BUNDLE_DATA += DYNAMIC_LIBS
