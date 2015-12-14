@@ -64,6 +64,7 @@ private:
 class QTN_PE_CORE_EXPORT QtnEnumInfo
 {
 public:
+	QtnEnumInfo();
     QtnEnumInfo(const QString& name, QVector<QtnEnumValueInfo>& staticValues);
 
     const QString& name() const { return m_name; }
@@ -71,30 +72,30 @@ public:
     template <typename Pred>
     bool forEachEnumValue(Pred pred) const
     {
-        foreach(const QtnEnumValueInfo& value, m_staticValues)
+		foreach(const QtnEnumValueInfo& value, m_values)
         {
             if (!pred(value))
                 return false;
         }
 
-        foreach(const QtnEnumValueInfo& value, m_dynamicValues)
-        {
-            if (!pred(value))
-                return false;
-        }
         return true;
     }
 
     const QtnEnumValueInfo* findByValue(QtnEnumValueType value) const;
-    const QtnEnumValueInfo* findByName(const QString& name, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
+	const QtnEnumValueInfo* findByName(const QString& name) const;
 
     const QtnEnumValueInfo* fromStr(const QString& str) const;
     bool toStr(QString& str, const QtnEnumValueInfo* value) const;
 
+	Qt::CaseSensitivity getCaseSensitivity() const;
+	void setCaseSensitivity(Qt::CaseSensitivity value);
+
+	QVector<QtnEnumValueInfo> &getVector();
+
 private:
+	Qt::CaseSensitivity m_case_sensitivity;
     QString m_name;
-    QVector<QtnEnumValueInfo> m_staticValues;
-    QVector<QtnEnumValueInfo> m_dynamicValues;
+	QVector<QtnEnumValueInfo> m_values;
 };
 
 #endif // QTN_ENUM_H
