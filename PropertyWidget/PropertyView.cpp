@@ -81,7 +81,8 @@ QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
       m_itemHeightSpacing(6),
       m_leadMargin(0),
       m_splitRatio(0.5f),
-      m_rubberBand(nullptr)
+      m_rubberBand(nullptr),
+      m_accessibilityProxy(nullptr)
 {
   set_smaller_text_osx(this);
   
@@ -96,6 +97,15 @@ QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
 QtnPropertyView::~QtnPropertyView()
 {
 }
+
+QtnAccessibilityProxy *QtnPropertyView::accessibilityProxy()
+{
+    if (!m_accessibilityProxy)
+        m_accessibilityProxy = new QtnAccessibilityProxy(this);
+
+    return m_accessibilityProxy;
+}
+
 
 void QtnPropertyView::setPropertySet(QtnPropertySet* newPropertySet)
 {

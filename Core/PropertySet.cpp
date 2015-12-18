@@ -17,6 +17,9 @@
 #include "PropertySet.h"
 #include <QRegularExpression>
 
+static int qtnPropertySetPtrId = qRegisterMetaType<QtnPropertySet*>("QtnPropertySet*");
+
+
 void qtnAddPropertyAsChild(QObject *parent, QtnPropertyBase* child, bool moveOwnership)
 {
     QtnPropertySet* propertySet = qobject_cast<QtnPropertySet*>(parent);

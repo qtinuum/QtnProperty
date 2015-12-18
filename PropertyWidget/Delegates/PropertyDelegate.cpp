@@ -61,7 +61,12 @@ bool QtnPropertyDelegate::acceptKeyPressedForInplaceEdit(QKeyEvent* keyEvent) co
 
 QWidget* QtnPropertyDelegate::createValueEditor(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    return createValueEditorImpl(parent, rect, inplaceInfo);
+    QWidget* valueEditor = createValueEditorImpl(parent, rect, inplaceInfo);
+    if (!valueEditor)
+        return valueEditor;
+
+    valueEditor->setObjectName("QtnPropertyValueEditor");
+    return valueEditor;
 }
 
 void QtnPropertyDelegate::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const

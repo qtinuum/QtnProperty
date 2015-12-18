@@ -20,10 +20,13 @@
 
 #include <QLineEdit>
 
-static bool regQSizeDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyQSizeBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateQSize, QtnPropertyQSizeBase>
-                                , "WH");
+bool regQSizeDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyQSizeBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateQSize, QtnPropertyQSizeBase>
+			     , "WH");
+  return true;
+}
 
 QtnPropertyDelegateQSize::QtnPropertyDelegateQSize(QtnPropertyQSizeBase& owner)
     : QtnPropertyDelegateTypedEx<QtnPropertyQSizeBase>(owner)

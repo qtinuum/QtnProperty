@@ -20,6 +20,7 @@
 #include "PropertyWidgetAPI.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "../Core/PropertySet.h"
+#include "Utils/AccessibilityProxy.h"
 
 #include <QAbstractScrollArea>
 #include <QScopedPointer>
@@ -76,6 +77,9 @@ public:
     void setPropertyViewStyle(QtnPropertyViewStyle style);
     void addPropertyViewStyle(QtnPropertyViewStyle style);
     void removePropertyViewStyle(QtnPropertyViewStyle style);
+
+public slots:
+    QtnAccessibilityProxy* accessibilityProxy();
 
 Q_SIGNALS:
     // emits when active property has changed
@@ -190,6 +194,9 @@ private:
 
     float m_splitRatio;
     QRubberBand* m_rubberBand;
+
+    friend class QtnAccessibilityProxy;
+    QtnAccessibilityProxy* m_accessibilityProxy;
 };
 
 #endif // QTN_PROPERTYVIEW_H

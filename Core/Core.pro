@@ -1,6 +1,7 @@
-include(../Common.pri)
+include(../Config.pri)
 
 QT += script
+CONFIG += staticlib
 
 TARGET = QtnPropertyCore
 TEMPLATE = lib
@@ -8,6 +9,9 @@ VERSION = 1.0.0
 
 
 
+CONFIG(staticlib) {
+  DEFINES += STATICLIB
+}
 DEFINES += QTN_PE_CORE_LIBRARY
 
 SOURCES += PropertyBase.cpp \
@@ -54,7 +58,3 @@ HEADERS += CoreAPI.h\
     Core/PropertyQPoint.h \
     GUI/PropertyQColor.h \
     GUI/PropertyQFont.h
-
-win32 {
-    TARGET_EXT = .dll
-}
