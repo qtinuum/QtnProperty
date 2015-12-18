@@ -89,8 +89,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 {
     QtnPropertyQStringCallback* propertyFamily = new QtnPropertyQStringCallback(0);
     addSubProperty(propertyFamily);
-    propertyFamily->setName(owner.tr("Family"));
-    propertyFamily->setDescription(owner.tr("Font Family for %1.").arg(owner.name()));
+	propertyFamily->setName(QtnPropertyQFont::getFamilyLabel());
+	propertyFamily->setDescription(QtnPropertyQFont::getFamilyDescription(owner.name()));
     propertyFamily->setCallbackValueGet([&owner]()->QString {
         return owner.value().family();
     });
@@ -107,8 +107,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
     QtnPropertyUIntCallback* propertyPointSize = new QtnPropertyUIntCallback(0);
     addSubProperty(propertyPointSize);
-    propertyPointSize->setName(owner.tr("PointSize"));
-    propertyPointSize->setDescription(owner.tr("Point size for %1.").arg(owner.name()));
+	propertyPointSize->setName(QtnPropertyQFont::getPointSizeLabel());
+	propertyPointSize->setDescription(QtnPropertyQFont::getPointSizeDescription(owner.name()));
     propertyPointSize->setCallbackValueGet([&owner]()->quint32 {
         int ps = owner.value().pointSize();
         return ps != -1 ? ps : 1;
@@ -123,8 +123,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
     QtnPropertyBoolCallback* propertyBold = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyBold);
-    propertyBold->setName(owner.tr("Bold"));
-    propertyBold->setDescription(owner.tr("Bold flag for %1").arg(owner.name()));
+	propertyBold->setName(QtnPropertyQFont::getBoldLabel());
+	propertyBold->setDescription(QtnPropertyQFont::getBoldDescription(owner.name()));
     propertyBold->setCallbackValueGet([&owner]()->bool {
         return owner.value().bold();
     });
@@ -136,8 +136,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
     QtnPropertyBoolCallback* propertyItalic = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyItalic);
-    propertyItalic->setName(owner.tr("Italic"));
-    propertyItalic->setDescription(owner.tr("Italic flag for %1").arg(owner.name()));
+	propertyItalic->setName(QtnPropertyQFont::getItalicLabel());
+	propertyItalic->setDescription(QtnPropertyQFont::getItalicDescription(owner.name()));
     propertyItalic->setCallbackValueGet([&owner]()->bool {
         return owner.value().italic();
     });
@@ -149,8 +149,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
     QtnPropertyBoolCallback* propertyUnderline = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyUnderline);
-    propertyUnderline->setName(owner.tr("Underline"));
-    propertyUnderline->setDescription(owner.tr("Underline flag for %1").arg(owner.name()));
+	propertyUnderline->setName(QtnPropertyQFont::getUnderlineLabel());
+	propertyUnderline->setDescription(QtnPropertyQFont::getUnderlineDescription(owner.name()));
     propertyUnderline->setCallbackValueGet([&owner]()->bool {
         return owner.value().underline();
     });
@@ -162,8 +162,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
     QtnPropertyBoolCallback* propertyStrikeout = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyStrikeout);
-    propertyStrikeout->setName(owner.tr("Strikeout"));
-    propertyStrikeout->setDescription(owner.tr("Strikeout flag for %1").arg(owner.name()));
+	propertyStrikeout->setName(QtnPropertyQFont::getStrikeoutLabel());
+	propertyStrikeout->setDescription(QtnPropertyQFont::getStrikeoutDescription(owner.name()));
     propertyStrikeout->setCallbackValueGet([&owner]()->bool {
         return owner.value().strikeOut();
     });
@@ -175,8 +175,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
     QtnPropertyBoolCallback* propertyKerning = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyKerning);
-    propertyKerning->setName(owner.tr("Kerning"));
-    propertyKerning->setDescription(owner.tr("Kerning flag for %1").arg(owner.name()));
+	propertyKerning->setName(QtnPropertyQFont::getKerningLabel());
+	propertyKerning->setDescription(QtnPropertyQFont::getKerningDescription(owner.name()));
     propertyKerning->setCallbackValueGet([&owner]()->bool {
         return owner.value().kerning();
     });
@@ -188,8 +188,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
     QtnPropertyEnumCallback* propertyAntialiasing = new QtnPropertyEnumCallback(0);
     addSubProperty(propertyAntialiasing);
-    propertyAntialiasing->setName(owner.tr("Antialiasing"));
-    propertyAntialiasing->setDescription(owner.tr("Antialiasing flag for %1.").arg(owner.name()));
+	propertyAntialiasing->setName(QtnPropertyQFont::getAntialiasingLabel());
+	propertyAntialiasing->setDescription(QtnPropertyQFont::getAntialiasingDescription(owner.name()));
     propertyAntialiasing->setEnumInfo(styleStrategyEnum());
     propertyAntialiasing->setCallbackValueGet([&owner]()->QtnEnumValueType {
         return owner.value().styleStrategy();

@@ -4,7 +4,7 @@ QT += script
 
 TARGET = QtnPropertyCore
 TEMPLATE = lib
-VERSION = 1.0.0
+VERSION = 1.0.1
 
 
 
@@ -58,3 +58,11 @@ HEADERS += CoreAPI.h\
 win32 {
     TARGET_EXT = .dll
 }
+
+TRANSLATIONS = \
+    Translations/QtnProperty_en.ts \
+    Translations/QtnProperty_ru.ts
+
+for(tr, TRANSLATIONS):system($$[QT_INSTALL_BINS]/lrelease $$_PRO_FILE_PWD_/$${tr})
+
+RESOURCES = QtnProperty.qrc

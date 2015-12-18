@@ -26,14 +26,13 @@ class QTN_PW_EXPORT QtnPropertyDelegateFloat: public QtnPropertyDelegateTyped<Qt
     Q_DISABLE_COPY(QtnPropertyDelegateFloat)
 
 public:
-    QtnPropertyDelegateFloat(QtnPropertyFloatBase& owner)
-        : QtnPropertyDelegateTyped<QtnPropertyFloatBase>(owner)
-    {
-    }
+	QtnPropertyDelegateFloat(QtnPropertyFloatBase& owner);
 
 protected:
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStr(QString& strValue) const override;
+
+	bool percent_suffix;
 };
 
 #endif // PROPERTY_DELEGATE_FLOAT_H

@@ -64,8 +64,8 @@ bool QtnPropertyQSizeBase::toStrImpl(QString& str) const
 QtnProperty* qtnCreateWidthProperty(QObject *parent, QtnPropertyQSizeBase *propertySize)
 {
     QtnPropertyIntCallback *widthProperty = new QtnPropertyIntCallback(parent);
-    widthProperty->setName(QObject::tr("Width"));
-    widthProperty->setDescription(QObject::tr("Width of the %1.").arg(propertySize->name()));
+	widthProperty->setName(QtnPropertyQSize::tr("Width"));
+	widthProperty->setDescription(QtnPropertyQSize::tr("Width of the %1").arg(propertySize->name()));
     widthProperty->setCallbackValueGet([propertySize]()->int { return propertySize->value().width(); });
     widthProperty->setCallbackValueSet([propertySize](int newWidth) {
         QSize size = propertySize->value();
@@ -80,8 +80,8 @@ QtnProperty* qtnCreateWidthProperty(QObject *parent, QtnPropertyQSizeBase *prope
 QtnProperty* qtnCreateHeightProperty(QObject *parent, QtnPropertyQSizeBase *propertySize)
 {
     QtnPropertyIntCallback *heightProperty = new QtnPropertyIntCallback(parent);
-    heightProperty->setName(QObject::tr("Height"));
-    heightProperty->setDescription(QObject::tr("Height of the %1.").arg(propertySize->name()));
+	heightProperty->setName(QtnPropertyQSize::tr("Height"));
+	heightProperty->setDescription(QtnPropertyQSize::tr("Height of the %1").arg(propertySize->name()));
     heightProperty->setCallbackValueGet([propertySize]()->int { return propertySize->value().height(); });
     heightProperty->setCallbackValueSet([propertySize](int newHeight) {
         QSize size = propertySize->value();
@@ -93,3 +93,18 @@ QtnProperty* qtnCreateHeightProperty(QObject *parent, QtnPropertyQSizeBase *prop
     return heightProperty;
 }
 
+
+QtnPropertyQSize::QtnPropertyQSize(QObject *parent)
+	: QtnSinglePropertyValue<QtnPropertyQSizeBase>(parent)
+{
+}
+
+QString QtnPropertyQSize::getToStringFormat()
+{
+	return tr("%1 x %2");
+}
+
+QtnPropertyQSizeCallback::QtnPropertyQSizeCallback(QObject *parent)
+	: QtnSinglePropertyCallback<QtnPropertyQSizeBase>(parent)
+{
+}

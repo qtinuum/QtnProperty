@@ -19,6 +19,7 @@
 #include "../PropertyDelegateFactory.h"
 
 #include <QLineEdit>
+#include <QLocale>
 
 static bool regQRectDelegate = QtnPropertyDelegateFactory::staticInstance()
                                 .registerDelegateDefault(&QtnPropertyQRectBase::staticMetaObject
@@ -41,7 +42,13 @@ QWidget* QtnPropertyDelegateQRect::createValueEditorImpl(QWidget* parent, const 
 
 bool QtnPropertyDelegateQRect::propertyValueToStr(QString& strValue) const
 {
-    QRect value = owner().value();
-    strValue = QString("[(%1, %2), %3 x %4]").arg(value.left()).arg(value.top()).arg(value.width()).arg(value.height());
-    return true;
+	auto value = owner().value();
+
+	QLocale locale;
+	strValue = QtnPropertyQRect::getToStringFormat().arg(locale.toString(value.left()),
+														 locale.toString(value.top()),
+														 locale.toString(value.width()),
+														 locale.toString(value.height()));
+
+	return true;
 }

@@ -19,7 +19,9 @@
 #include "../PropertyDelegateFactory.h"
 #include "../PropertyEditorHandler.h"
 
-#include <QDoubleSpinBox>
+#include "Utils/DoubleSpinBox.h"
+
+#include <QLocale>
 
 class QtnPropertyDoubleSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, QDoubleSpinBox>
 {
@@ -32,7 +34,7 @@ public:
 
         editor.setRange(property.minValue(), property.maxValue());
         editor.setSingleStep(property.stepValue());
-        editor.setDecimals(12);
+		editor.setDecimals(12);
 
         updateEditor();
 
@@ -57,9 +59,16 @@ static bool regDoubleDelegate = QtnPropertyDelegateFactory::staticInstance()
                                 , &qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>
                                 , "SpinBox");
 
+QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(QtnPropertyDoubleBase &owner)
+	: QtnPropertyDelegateTyped<QtnPropertyDoubleBase>(owner)
+	, percent_suffix(false)
+{
+}
+
 QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QDoubleSpinBox* spinBox = new QDoubleSpinBox(parent);
+	auto spinBox = new QtnDoubleSpinBox(parent);
+	spinBox->setHavePercentSuffix(percent_suffix);
     spinBox->setGeometry(rect);
 
     new QtnPropertyDoubleSpinBoxHandler(owner(), *spinBox);
@@ -74,6 +83,9 @@ QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget* parent, const
 
 bool QtnPropertyDelegateDouble::propertyValueToStr(QString& strValue) const
 {
-    strValue = QString::number(owner().value());
-    return true;
+	QLocale locale;
+	strValue = locale.toString(owner().value(), 'g', 10);
+	if (percent_suffix)
+		strValue.append(locale.percent());
+	return true;
 }

@@ -16,12 +16,18 @@
 
 #include "PropertyInt.h"
 
+#include <QLocale>
+
 bool QtnPropertyIntBase::fromStrImpl(const QString& str)
 {
     bool ok = false;
     ValueType value = str.toInt(&ok);
     if (!ok)
-        return false;
+	{
+		value = QLocale().toInt(str, &ok);
+		if (!ok)
+			return false;
+	}
 
     return setValue(value);
 }

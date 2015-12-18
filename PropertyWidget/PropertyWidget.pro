@@ -2,7 +2,7 @@ include(../Common.pri)
 
 TARGET = QtnPropertyWidget
 TEMPLATE = lib
-VERSION = 1.0.0
+VERSION = 1.0.1
 
 QT += core gui widgets
 
@@ -28,7 +28,8 @@ SOURCES += PropertyWidget.cpp \
     Delegates/Core/PropertyDelegateQSize.cpp \
     Delegates/Core/PropertyDelegateQPoint.cpp \
     Delegates/GUI/PropertyDelegateQFont.cpp \
-    Utils/AccessibilityProxy.cpp
+    Utils/AccessibilityProxy.cpp \
+    Utils/DoubleSpinBox.cpp
 
 HEADERS += PropertyWidgetAPI.h \
     PropertyWidget.h \
@@ -51,7 +52,8 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/Core/PropertyDelegateQSize.h \
     Delegates/Core/PropertyDelegateQPoint.h \
     Delegates/GUI/PropertyDelegateQFont.h \
-    Utils/AccessibilityProxy.h
+    Utils/AccessibilityProxy.h \
+    Utils/DoubleSpinBox.h
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCore
 

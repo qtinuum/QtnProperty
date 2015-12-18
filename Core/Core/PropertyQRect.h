@@ -51,10 +51,7 @@ class QTN_PE_CORE_EXPORT QtnPropertyQRectCallback: public QtnSinglePropertyCallb
     QtnPropertyQRectCallback(const QtnPropertyQRectCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit QtnPropertyQRectCallback(QObject *parent)
-        : QtnSinglePropertyCallback<QtnPropertyQRectBase>(parent)
-    {
-    }
+	explicit QtnPropertyQRectCallback(QObject *parent);
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRectCallback, QtnPropertyQRectBase)
 };
@@ -65,10 +62,9 @@ class QTN_PE_CORE_EXPORT QtnPropertyQRect: public QtnSinglePropertyValue<QtnProp
     QtnPropertyQRect(const QtnPropertyQRect& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit QtnPropertyQRect(QObject *parent)
-        : QtnSinglePropertyValue<QtnPropertyQRectBase>(parent)
-    {
-    }
+	explicit QtnPropertyQRect(QObject *parent);
+
+	static QString getToStringFormat();
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRect, QtnPropertyQRectBase)
 };

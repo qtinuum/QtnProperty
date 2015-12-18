@@ -88,7 +88,7 @@ QString QtnPropertyDelegate::toolTipImpl() const
 bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const
 {
     int key = keyEvent->key();
-    return (key == Qt::Key_F2) || (key == Qt::Key_Space) || (key == Qt::Key_Return);
+	return (key == Qt::Key_Space || key == Qt::Key_Return);
 }
 
 void QtnPropertyDelegate::drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State &state, bool* needTooltip)

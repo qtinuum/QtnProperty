@@ -86,7 +86,7 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(QtnPropertyEnumFlagsB
 
                 QtnPropertyBoolCallback *flagProperty = new QtnPropertyBoolCallback(0);
                 flagProperty->setName(e.name());
-                flagProperty->setDescription(owner.tr("%1 flag for %2.").arg(e.name(), owner.name()));
+				flagProperty->setDescription(QtnPropertyEnumFlags::getFlagLabelDescription(e.name(), owner.name()));
                 flagProperty->setCallbackValueGet([&_owner, enum_value]()->bool {
                     return _owner.value() & enum_value;
                 });

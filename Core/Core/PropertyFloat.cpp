@@ -16,20 +16,26 @@
 
 #include "PropertyFloat.h"
 
+#include <QLocale>
+
 bool QtnPropertyFloatBase::fromStrImpl(const QString& str)
 {
     bool ok = false;
-    ValueType value = str.toFloat(&ok);
-    if (!ok)
-        return false;
+	ValueType value = str.toFloat(&ok);
+	if (!ok)
+	{
+		value = QLocale().toFloat(str, &ok);
+		if (!ok)
+			return false;
+	}
 
     return setValue(value);
 }
 
 bool QtnPropertyFloatBase::toStrImpl(QString& str) const
 {
-    str = QString::number(value());
-    return true;
+	str = QString::number(value(), 'f', 6);
+	return true;
 }
 
 bool QtnPropertyFloatBase::fromVariantImpl(const QVariant& var)

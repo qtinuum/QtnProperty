@@ -18,6 +18,8 @@
 #include "../../../Core/Core/PropertyQPoint.h"
 #include "../PropertyDelegateFactory.h"
 
+#include <QLocale>
+
 static bool regQPointDelegate = QtnPropertyDelegateFactory::staticInstance()
                                 .registerDelegateDefault(&QtnPropertyQPointBase::staticMetaObject
                                 , &qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>
@@ -37,7 +39,11 @@ QWidget* QtnPropertyDelegateQPoint::createValueEditorImpl(QWidget* parent, const
 
 bool QtnPropertyDelegateQPoint::propertyValueToStr(QString& strValue) const
 {
-    QPoint value = owner().value();
-    strValue = QString("%1 x %2").arg(value.x()).arg(value.y());
-    return true;
+	auto value = owner().value();
+
+	QLocale locale;
+	strValue = QtnPropertyQPoint::getToStringFormat().arg(locale.toString(value.x()),
+														  locale.toString(value.y()));
+
+	return true;
 }

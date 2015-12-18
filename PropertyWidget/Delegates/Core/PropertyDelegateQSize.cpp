@@ -19,6 +19,7 @@
 #include "../PropertyDelegateFactory.h"
 
 #include <QLineEdit>
+#include <QLocale>
 
 static bool regQSizeDelegate = QtnPropertyDelegateFactory::staticInstance()
                                 .registerDelegateDefault(&QtnPropertyQSizeBase::staticMetaObject
@@ -39,7 +40,11 @@ QWidget* QtnPropertyDelegateQSize::createValueEditorImpl(QWidget* parent, const 
 
 bool QtnPropertyDelegateQSize::propertyValueToStr(QString& strValue) const
 {
-    QSize value = owner().value();
-    strValue = QString("%1 x %2").arg(value.width()).arg(value.height());
-    return true;
+	auto value = owner().value();
+
+	QLocale locale;
+	strValue = QtnPropertyQSize::getToStringFormat().arg(locale.toString(value.width()),
+														 locale.toString(value.height()));
+
+	return true;
 }

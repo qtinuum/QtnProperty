@@ -64,8 +64,8 @@ bool QtnPropertyQPointBase::toStrImpl(QString& str) const
 QtnProperty* qtnCreateXProperty(QObject *parent, QtnPropertyQPointBase *propertyPoint)
 {
     QtnPropertyIntCallback *xProperty = new QtnPropertyIntCallback(parent);
-    xProperty->setName(QObject::tr("X"));
-    xProperty->setDescription(QObject::tr("X coordinate of the %1.").arg(propertyPoint->name()));
+	xProperty->setName(QtnPropertyQPoint::tr("X"));
+	xProperty->setDescription(QtnPropertyQPoint::tr("X coordinate of the %1").arg(propertyPoint->name()));
     xProperty->setCallbackValueGet([propertyPoint]()->int { return propertyPoint->value().x(); });
     xProperty->setCallbackValueSet([propertyPoint](int newX) {
         QPoint point = propertyPoint->value();
@@ -80,8 +80,8 @@ QtnProperty* qtnCreateXProperty(QObject *parent, QtnPropertyQPointBase *property
 QtnProperty* qtnCreateYProperty(QObject *parent, QtnPropertyQPointBase *propertyPoint)
 {
     QtnPropertyIntCallback *yProperty = new QtnPropertyIntCallback(parent);
-    yProperty->setName(QObject::tr("Y"));
-    yProperty->setDescription(QObject::tr("Y coordinate of the %1.").arg(propertyPoint->name()));
+	yProperty->setName(QtnPropertyQPoint::tr("Y"));
+	yProperty->setDescription(QtnPropertyQPoint::tr("Y coordinate of the %1").arg(propertyPoint->name()));
     yProperty->setCallbackValueGet([propertyPoint]()->int { return propertyPoint->value().y(); });
     yProperty->setCallbackValueSet([propertyPoint](int newY) {
         QPoint point = propertyPoint->value();
@@ -91,4 +91,19 @@ QtnProperty* qtnCreateYProperty(QObject *parent, QtnPropertyQPointBase *property
     QtnPropertyBase::connectMasterState(*propertyPoint, *yProperty);
 
     return yProperty;
+}
+
+QtnPropertyQPoint::QtnPropertyQPoint(QObject *parent)
+	: QtnSinglePropertyValue<QtnPropertyQPointBase>(parent)
+{
+}
+
+QString QtnPropertyQPoint::getToStringFormat()
+{
+	return tr("%1, %2");
+}
+
+QtnPropertyQPointCallback::QtnPropertyQPointCallback(QObject *parent)
+	: QtnSinglePropertyCallback<QtnPropertyQPointBase>(parent)
+{
 }

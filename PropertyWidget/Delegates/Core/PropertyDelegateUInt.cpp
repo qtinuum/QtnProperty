@@ -21,6 +21,8 @@
 
 #include <QSpinBox>
 
+#include <QLocale>
+
 const quint32 qtn_u_2 = std::numeric_limits<quint32>::max() / 2 + 1;
 static qint32 qtn_u2i(quint32 val)
 {
@@ -103,6 +105,6 @@ QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget* parent, const Q
 
 bool QtnPropertyDelegateUInt::propertyValueToStr(QString& strValue) const
 {
-    strValue = QString::number(owner().value());
-    return true;
+	strValue = QLocale().toString(owner().value());
+	return true;
 }
