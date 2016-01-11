@@ -93,6 +93,8 @@ bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent
 
 void QtnPropertyDelegate::drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State &state, bool* needTooltip)
 {
+    Q_UNUSED(state);
+
     if (text.isEmpty())
         return;
 

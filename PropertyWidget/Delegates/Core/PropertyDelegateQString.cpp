@@ -179,6 +179,8 @@ private:
 
     void onToolButtonClicked(bool checked)
     {
+        Q_UNUSED(checked);
+
         m_dlg.selectFile(property().value());
         if (m_dlg.exec() == QDialog::Accepted)
         {

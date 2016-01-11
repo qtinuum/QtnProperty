@@ -374,6 +374,8 @@ void QtnPropertySet::findChildPropertiesRecursive(const QRegularExpression& re, 
 
 void QtnPropertySet::childPropertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue)
 {
+    Q_UNUSED(firedProperty);
+
     if (m_ignoreChildPropertyChanges)
         return;
 
@@ -382,6 +384,8 @@ void QtnPropertySet::childPropertyWillChange(const QtnPropertyBase* changedPrope
 
 void QtnPropertySet::childPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
+    Q_UNUSED(firedProperty);
+
     if (m_ignoreChildPropertyChanges)
         return;
 

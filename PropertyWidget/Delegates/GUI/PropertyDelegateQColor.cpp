@@ -50,6 +50,8 @@ private:
 
     void onToolButtonClicked(bool checked)
     {
+        Q_UNUSED(checked);
+
         QColorDialog dlg(property(), &editor());
         if (dlg.exec() == QDialog::Accepted)
         {

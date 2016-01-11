@@ -37,6 +37,8 @@ void QtnPropertyEditorHandlerBase::onObjectDestroyed(QObject *object)
 
 void QtnPropertyEditorHandlerBase::onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
+    Q_UNUSED(changedProperty);
+
     if ((reason & QtnPropertyChangeReasonValue) && (&propertyBase() == firedProperty))
         updateEditor();
 }

@@ -55,6 +55,8 @@ QtnPropertySetSubPropertySetType::~QtnPropertySetSubPropertySetType()
 
 QtnPropertySetSubPropertySetType& QtnPropertySetSubPropertySetType::operator=(const QtnPropertySetSubPropertySetType& other)
 {
+    Q_UNUSED(other);
+
     SwitchProperty = other.SwitchProperty;
     ReadOnlyString = other.ReadOnlyString;
     FileNameProperty = other.FileNameProperty;
@@ -79,6 +81,8 @@ QtnPropertySet* QtnPropertySetSubPropertySetType::createCopyImpl(QObject* parent
 
 bool QtnPropertySetSubPropertySetType::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetSubPropertySetType* theCopyFrom = qobject_cast<QtnPropertySetSubPropertySetType*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
@@ -240,6 +244,8 @@ QtnPropertySetSamplePS::~QtnPropertySetSamplePS()
 
 QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSamplePS& other)
 {
+    Q_UNUSED(other);
+
     BoolProperty = other.BoolProperty;
     DoubleProperty = other.DoubleProperty;
     FloatProperty = other.FloatProperty;
@@ -274,6 +280,8 @@ QtnPropertySet* QtnPropertySetSamplePS::createCopyImpl(QObject* parentForCopy) c
 
 bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetSamplePS* theCopyFrom = qobject_cast<QtnPropertySetSamplePS*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
@@ -465,6 +473,7 @@ void QtnPropertySetSamplePS::disconnectSlots()
 
 void QtnPropertySetSamplePS::on_EnableSubPropertySet_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
+    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason);
     
             SubPropertySet.switchState(QtnPropertyStateImmutable, !EnableSubPropertySet);
         

@@ -19,6 +19,8 @@ QtnPropertySetTest1::~QtnPropertySetTest1()
 
 QtnPropertySetTest1& QtnPropertySetTest1::operator=(const QtnPropertySetTest1& other)
 {
+    Q_UNUSED(other);
+
     a = other.a;
     text = other.text;
 
@@ -39,6 +41,8 @@ QtnPropertySet* QtnPropertySetTest1::createCopyImpl(QObject* parentForCopy) cons
 
 bool QtnPropertySetTest1::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetTest1* theCopyFrom = qobject_cast<QtnPropertySetTest1*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
@@ -109,6 +113,8 @@ QtnPropertySetTest2::~QtnPropertySetTest2()
 
 QtnPropertySetTest2& QtnPropertySetTest2::operator=(const QtnPropertySetTest2& other)
 {
+    Q_UNUSED(other);
+
 
     return *this;
 }
@@ -127,6 +133,8 @@ QtnPropertySet* QtnPropertySetTest2::createCopyImpl(QObject* parentForCopy) cons
 
 bool QtnPropertySetTest2::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetTest2* theCopyFrom = qobject_cast<QtnPropertySetTest2*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
@@ -169,6 +177,8 @@ QtnPropertySetYY::~QtnPropertySetYY()
 
 QtnPropertySetYY& QtnPropertySetYY::operator=(const QtnPropertySetYY& other)
 {
+    Q_UNUSED(other);
+
     rect = other.rect;
     s = other.s;
 
@@ -189,6 +199,8 @@ QtnPropertySet* QtnPropertySetYY::createCopyImpl(QObject* parentForCopy) const
 
 bool QtnPropertySetYY::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetYY* theCopyFrom = qobject_cast<QtnPropertySetYY*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
@@ -249,6 +261,8 @@ QtnPropertySetAA::~QtnPropertySetAA()
 
 QtnPropertySetAA& QtnPropertySetAA::operator=(const QtnPropertySetAA& other)
 {
+    Q_UNUSED(other);
+
 
     return *this;
 }
@@ -267,6 +281,8 @@ QtnPropertySet* QtnPropertySetAA::createCopyImpl(QObject* parentForCopy) const
 
 bool QtnPropertySetAA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetAA* theCopyFrom = qobject_cast<QtnPropertySetAA*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
@@ -312,6 +328,8 @@ QtnPropertySetSS::~QtnPropertySetSS()
 
 QtnPropertySetSS& QtnPropertySetSS::operator=(const QtnPropertySetSS& other)
 {
+    Q_UNUSED(other);
+
     a = other.a;
     aa = other.aa;
 
@@ -332,6 +350,8 @@ QtnPropertySet* QtnPropertySetSS::createCopyImpl(QObject* parentForCopy) const
 
 bool QtnPropertySetSS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetSS* theCopyFrom = qobject_cast<QtnPropertySetSS*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
@@ -395,6 +415,8 @@ QtnPropertySetTest3::~QtnPropertySetTest3()
 
 QtnPropertySetTest3& QtnPropertySetTest3::operator=(const QtnPropertySetTest3& other)
 {
+    Q_UNUSED(other);
+
     yy = other.yy;
     iis = other.iis;
     u = other.u;
@@ -421,6 +443,8 @@ QtnPropertySet* QtnPropertySetTest3::createCopyImpl(QObject* parentForCopy) cons
 
 bool QtnPropertySetTest3::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetTest3* theCopyFrom = qobject_cast<QtnPropertySetTest3*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
@@ -486,7 +510,7 @@ void QtnPropertySetTest3::init()
                 return false;
             }
         });
-    bc.setCallbackValueEqual([](bool value)->bool { return false; });
+    bc.setCallbackValueEqual([](bool)->bool { return false; });
     bc.setCallbackValueGet([this]()->bool {
                 return ww;
         });
@@ -516,6 +540,7 @@ void QtnPropertySetTest3::disconnectSlots()
 
 void QtnPropertySetTest3::on_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
+    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason);
     
         // this propertyDidChange
     
@@ -523,6 +548,7 @@ void QtnPropertySetTest3::on_propertyDidChange(const QtnPropertyBase* changedPro
 
 void QtnPropertySetTest3::on_u_propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue)
 {
+    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason); Q_UNUSED(newValue);
     
         // u.propertyWillChange code
     
@@ -530,6 +556,7 @@ void QtnPropertySetTest3::on_u_propertyWillChange(const QtnPropertyBase* changed
 
 void QtnPropertySetTest3::on_u_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
+    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason);
     
             // sub u propertyDidChange
         
@@ -537,6 +564,7 @@ void QtnPropertySetTest3::on_u_propertyDidChange(const QtnPropertyBase* changedP
 
 void QtnPropertySetTest3::on_s_a_propertyValueAccept(const QtnProperty *property, QtnPropertyValuePtr valueToAccept, bool* accept)
 {
+    Q_UNUSED(property); Q_UNUSED(valueToAccept); Q_UNUSED(accept);
     
             // s.a.propertyValueAccept
         
@@ -544,6 +572,7 @@ void QtnPropertySetTest3::on_s_a_propertyValueAccept(const QtnProperty *property
 
 void QtnPropertySetTest3::on_s_propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue)
 {
+    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason); Q_UNUSED(newValue);
     
             yy.rect = QRect(1, 1, 1, 1);
             // ss propertyWillChange
@@ -678,6 +707,8 @@ QtnPropertySetAllPropertyTypes::~QtnPropertySetAllPropertyTypes()
 
 QtnPropertySetAllPropertyTypes& QtnPropertySetAllPropertyTypes::operator=(const QtnPropertySetAllPropertyTypes& other)
 {
+    Q_UNUSED(other);
+
     bp = other.bp;
     bpc = other.bpc;
     ip = other.ip;
@@ -722,6 +753,8 @@ QtnPropertySet* QtnPropertySetAllPropertyTypes::createCopyImpl(QObject* parentFo
 
 bool QtnPropertySetAllPropertyTypes::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetAllPropertyTypes* theCopyFrom = qobject_cast<QtnPropertySetAllPropertyTypes*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;

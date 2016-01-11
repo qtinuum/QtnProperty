@@ -73,7 +73,7 @@ protected:
 
     virtual ValueType valueImpl() const = 0;
     virtual void setValueImpl(ValueType newValue) = 0;
-    virtual bool isValueAcceptedImpl(ValueType valueToAccept) { return true; }
+    virtual bool isValueAcceptedImpl(ValueType valueToAccept) { Q_UNUSED(valueToAccept); return true; }
     virtual bool isValueEqualImpl(ValueType valueToCompare) { return EqPred()(valueToCompare, value()); }
 
     // serialization implementation

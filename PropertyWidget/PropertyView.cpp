@@ -252,6 +252,8 @@ void QtnPropertyView::drawBranchNode(QStylePainter& painter, QRect& rect, const 
 
         QtnPropertyBase* property = vItem.item->property;
         branch.action = [property](QEvent* e, QRect rect)->bool {
+            Q_UNUSED(rect);
+
             if (e->type() == QEvent::MouseButtonPress)
             {
                 property->switchStateAuto(QtnPropertyStateCollapsed);
@@ -470,6 +472,8 @@ bool QtnPropertyView::processItemActionByMouse(int index, QMouseEvent* e)
 
 void QtnPropertyView::resizeEvent(QResizeEvent* e)
 {
+    Q_UNUSED(e);
+
     qtnStopInplaceEdit();
     invalidateVisibleItemsActions();
     updateVScrollbar();
@@ -1028,6 +1032,9 @@ void QtnPropertyView::updateSplitRatio(float splitRatio)
 
 void QtnPropertyView::OnPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
+    Q_UNUSED(changedProperty);
+    Q_UNUSED(firedProperty);
+
     if (reason & QtnPropertyChangeReasonChildren)
     {
         // regrow tree

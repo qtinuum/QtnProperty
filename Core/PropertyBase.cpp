@@ -27,6 +27,7 @@ void qtnRemovePropertyAsChild(QObject* parent, QtnPropertyBase* child);
 
 static QScriptValue qtnPropertyChangeReasonToScriptValue(QScriptEngine* engine, const QtnPropertyChangeReason& val)
 {
+    Q_UNUSED(engine);
     QScriptValue obj((QtnPropertyChangeReason::Int)val);
     return obj;
 }
@@ -38,12 +39,16 @@ static void qtnPropertyChangeReasonFromScriptValue(const QScriptValue& obj, QtnP
 
 static QScriptValue qtnPropertyValuePtrToScriptValue(QScriptEngine* engine, const QtnPropertyValuePtr& val)
 {
+    Q_UNUSED(engine);
+    Q_UNUSED(val);
     // no sutable conversion
     return QScriptValue();
 }
 
 static void qtnPropertyValuePtrFromScriptValue(const QScriptValue& obj, QtnPropertyValuePtr& val)
 {
+    Q_UNUSED(obj);
+    Q_UNUSED(val);
     // no sutable conversion
 }
 

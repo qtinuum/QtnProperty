@@ -17,6 +17,8 @@ QtnPropertySetA::~QtnPropertySetA()
 
 QtnPropertySetA& QtnPropertySetA::operator=(const QtnPropertySetA& other)
 {
+    Q_UNUSED(other);
+
     b = other.b;
 
     return *this;
@@ -36,6 +38,8 @@ QtnPropertySet* QtnPropertySetA::createCopyImpl(QObject* parentForCopy) const
 
 bool QtnPropertySetA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
+    Q_UNUSED(ignoreMask);
+
     QtnPropertySetA* theCopyFrom = qobject_cast<QtnPropertySetA*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
