@@ -75,6 +75,23 @@ QtnPropertyWidget::QtnPropertyWidget(QWidget* parent)
     QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged, this, &QtnPropertyWidget::setActiveProperty);
 }
 
+QtnPropertyWidget::QtnPropertyWidget(QtnPropertyView *propertyView, QWidget* parent)
+    : QWidget(parent),
+      m_parts(QtnPropertyWidgetPartsNone),
+      m_layout(new QVBoxLayout(this)),
+      m_toolbar(0),
+      m_propertyView(propertyView),
+      m_descriptionSplitter(0),
+      m_descriptionPanel(0)
+{
+    Q_ASSERT(propertyView);
+    propertyView->setParent(this);
+
+    m_layout->addWidget(m_propertyView);
+
+    QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged, this, &QtnPropertyWidget::setActiveProperty);
+}
+
 QtnPropertyWidget::~QtnPropertyWidget()
 {
 

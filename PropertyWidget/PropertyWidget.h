@@ -40,6 +40,7 @@ class QTN_PW_EXPORT QtnPropertyWidget: public QWidget
 
 public:
     explicit QtnPropertyWidget(QWidget* parent = 0);
+    QtnPropertyWidget(QtnPropertyView* propertyView, QWidget* parent = 0);
     ~QtnPropertyWidget();
 
     QtnPropertyWidgetParts parts() const { return m_parts; }
