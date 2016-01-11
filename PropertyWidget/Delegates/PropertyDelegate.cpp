@@ -29,6 +29,16 @@ QString qtnElidedText(const QPainter& painter, const QString& text, const QRect&
     return newText;
 }
 
+QtnPropertyBase* QtnPropertyDelegate::property()
+{
+    return propertyImpl();
+}
+
+const QtnPropertyBase* QtnPropertyDelegate::propertyImmutable() const
+{
+    return propertyImmutableImpl();
+}
+
 int QtnPropertyDelegate::subPropertyCount() const
 {
     return subPropertyCountImpl();

@@ -97,6 +97,21 @@ protected:
     void keyPressEvent(QKeyEvent* e) override;
     void tooltipEvent(QHelpEvent* e);
 
+    // override these functions to customize UI
+    //
+    // draws branch sign and returns it's width
+    virtual int drawBranchNodeImpl(QStylePainter& painter, const QRect& rect, const QtnPropertyBase* property) const;
+    // draws background of the property set
+    virtual void drawPropertySetBackgroundImpl(QStylePainter &painter, const QRect &rect, const QtnPropertyBase* property) const;
+    // draws name region of the property set
+    virtual void drawPropertySetNameImpl(QStylePainter &painter, const QRect &rect, const QtnPropertyBase* property) const;
+    // draws background of the property
+    virtual void drawPropertyBackgroundImpl(QStylePainter &painter, const QRect &rect, const QtnPropertyBase* property) const;
+    // draws name region of the property
+    virtual void drawPropertyNameImpl(QStylePainter& painter, const QRect& rect, const QtnPropertyBase* property) const;
+    // draws value region of the property set
+    virtual void drawPropertyValueImpl(QStylePainter& painter, const QRect& rect, const QtnPropertyDelegate* delegate, bool* needTooltip) const;
+
 private:
 
     struct Item
@@ -152,9 +167,9 @@ private:
     void fillVisibleItems(Item* item, int level) const;
     bool acceptItem(Item& item) const;
 
-    void drawBranchNode(QStylePainter& painter, QRect& rect, const VisibleItem& vItem);
-    void drawPropertySetItem(QStylePainter &painter, const QRect &rect, const VisibleItem& vItem);
-    void drawPropertyItem(QStylePainter& painter, const QRect& rect, const VisibleItem& vItem);
+    void drawBranchNode(QStylePainter& painter, QRect& rect, const VisibleItem& vItem) const;
+    void drawPropertySetItem(QStylePainter &painter, const QRect &rect, const VisibleItem& vItem) const;
+    void drawPropertyItem(QStylePainter& painter, const QRect& rect, const VisibleItem& vItem) const;
 
     void changeActivePropertyByIndex(int index);
     int visibleItemIndexByPoint(QPoint pos) const;

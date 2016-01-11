@@ -46,6 +46,9 @@ class QTN_PW_EXPORT QtnPropertyDelegate
 public:
     virtual ~QtnPropertyDelegate() {}
 
+    QtnPropertyBase* property();
+    const QtnPropertyBase* propertyImmutable() const;
+
     // for complex properties like PropertyQFont
     int subPropertyCount() const;
     QtnPropertyBase* subProperty(int index);
@@ -61,6 +64,8 @@ public:
 protected:
     QtnPropertyDelegate() {}
 
+    virtual QtnPropertyBase* propertyImpl() = 0;
+    virtual const QtnPropertyBase* propertyImmutableImpl() const = 0;
     virtual int subPropertyCountImpl() const { return 0; }
     virtual QtnPropertyBase* subPropertyImpl(int index) { Q_UNUSED(index); return nullptr; }
     virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) { Q_UNUSED(attributes); }
@@ -95,6 +100,9 @@ protected:
     ~QtnPropertyDelegateTyped()
     {
     }
+
+    QtnPropertyBase* propertyImpl() override { return &m_owner; }
+    const QtnPropertyBase* propertyImmutableImpl() const override { return &m_owner; }
 
 private:
     PropertyClass& m_owner;
