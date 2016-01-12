@@ -15,37 +15,16 @@
 */
 
 #include "PropertyBase.h"
+#include <QDebug>
 #include <QtScript/QScriptEngine>
 
 static int qtnPropertyChangeReasonMetaId = qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
-static int qtnPropertyStateMetaId = qRegisterMetaType<QtnPropertyState>("QtnPropertyState");
+static int qtnPropertyPtrId = qRegisterMetaType<QtnPropertyBase*>("QtnPropertyBase*");
 static quint16 qtnPropertyMagicNumber = 0x1984;
 
 // extern declaration
 void qtnAddPropertyAsChild(QObject* parent, QtnPropertyBase* child, bool moveOwnership);
 void qtnRemovePropertyAsChild(QObject* parent, QtnPropertyBase* child);
-
-static QScriptValue qtnPropertyIdToScriptValue(QScriptEngine* engine, const QtnPropertyID& val)
-{
-    QScriptValue obj((int)val);
-    return obj;
-}
-
-static void qtnPropertyIdFromScriptValue(const QScriptValue& obj, QtnPropertyID& val)
-{
-    val = obj.toInt32();
-}
-
-static QScriptValue qtnPropertyStateToScriptValue(QScriptEngine* engine, const QtnPropertyState& val)
-{
-    QScriptValue obj((QtnPropertyState::Int)val);
-    return obj;
-}
-
-static void qtnPropertyStateFromScriptValue(const QScriptValue& obj, QtnPropertyState& val)
-{
-    val = (QtnPropertyState::enum_type)obj.toInt32();
-}
 
 static QScriptValue qtnPropertyChangeReasonToScriptValue(QScriptEngine* engine, const QtnPropertyChangeReason& val)
 {
@@ -87,13 +66,14 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
 {
     qScriptRegisterMetaType(engine, qtnPropertyIdToScriptValue, qtnPropertyIdFromScriptValue);
     qScriptRegisterMetaType(engine, qtnPropertyStateToScriptValue, qtnPropertyStateFromScriptValue);
+
     qScriptRegisterMetaType(engine, qtnPropertyChangeReasonToScriptValue, qtnPropertyChangeReasonFromScriptValue);
     qScriptRegisterMetaType(engine, qtnPropertyValuePtrToScriptValue, qtnPropertyValuePtrFromScriptValue);
     qScriptRegisterMetaType(engine, qtnPropertyBasePtrToScriptValue, qtnPropertyBasePtrFromScriptValue);
 
     QScriptValue obj = engine->globalObject();
 
-//    QScriptValue obj = engine->newObject();
+    // QScriptValue obj = engine->newObject();
 
     obj.setProperty("QtnPropertyStateNone", QtnPropertyStateNone, QScriptValue::ReadOnly|QScriptValue::Undeletable);
     obj.setProperty("QtnPropertyStateNonSimple", QtnPropertyStateNonSimple, QScriptValue::ReadOnly|QScriptValue::Undeletable);

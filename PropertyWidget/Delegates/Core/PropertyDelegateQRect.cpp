@@ -20,10 +20,13 @@
 
 #include <QLineEdit>
 
-static bool regQRectDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyQRectBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateQRect, QtnPropertyQRectBase>
-                                , "LTWH");
+bool regQRectDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyQRectBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateQRect, QtnPropertyQRectBase>
+			     , "LTWH");
+  return true;
+}
 
 QtnPropertyDelegateQRect::QtnPropertyDelegateQRect(QtnPropertyQRectBase& owner)
     : QtnPropertyDelegateTypedEx<QtnPropertyQRectBase>(owner)

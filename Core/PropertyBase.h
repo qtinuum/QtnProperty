@@ -82,9 +82,9 @@ public:
 public: // properties for scripting
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString description READ description)
-    Q_PROPERTY(QtnPropertyID id READ id)
+    Q_PROPERTY(qint32 id READ id)
     Q_PROPERTY(bool isEditable READ isEditableByUser)
-    Q_PROPERTY(QtnPropertyState state READ state)
+    Q_PROPERTY(quint32 state READ state)
     Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 Q_SIGNALS:
@@ -132,5 +132,6 @@ QTN_PE_CORE_EXPORT QDataStream& operator>> (QDataStream& stream, QtnPropertyBase
 QTN_PE_CORE_EXPORT void qtnScriptRegisterPropertyTypes(QScriptEngine* engine);
 
 Q_DECLARE_METATYPE(const QtnPropertyBase*)
+Q_DECLARE_METATYPE(QtnPropertyBase*)
 
 #endif // QTN_PROPERTY_BASE_H

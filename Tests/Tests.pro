@@ -1,8 +1,9 @@
-include(../Common.pri)
+
+include(../Config.pri)
 PEG_TOOL = $$BIN_DIR/QtnPEG
 include(../PEG.pri)
 
-QT += core script testlib
+QT += core widgets script testlib
 
 TARGET = QtnPropertyTests
 

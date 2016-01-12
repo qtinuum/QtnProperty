@@ -20,6 +20,7 @@
 #include "../PropertyDelegateFactory.h"
 #include "../PropertyEditorHandler.h"
 
+#include <QDebug>
 #include <QStyleOption>
 #include <QCheckBox>
 #include <QComboBox>
@@ -102,15 +103,21 @@ private:
     }
 };
 
-static bool regBoolDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyBoolBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateBoolCheck, QtnPropertyBoolBase>
-                                , "CheckBox");
+bool regBoolDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyBoolBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateBoolCheck, QtnPropertyBoolBase>
+			     , "CheckBox");
+  return true;
+}
 
-static bool regBoolDelegateCombobox = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegate(&QtnPropertyBoolBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateBoolCombobox, QtnPropertyBoolBase>
-                                , "ComboBox");
+bool regBoolDelegateCombobox() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegate(&QtnPropertyBoolBase::staticMetaObject
+		      , &qtnCreateDelegate<QtnPropertyDelegateBoolCombobox, QtnPropertyBoolBase>
+		      , "ComboBox");
+  return true;
+}
 
 QCheckBox* createPropertyBoolCheckBox(QtnPropertyBoolBase& owner, QWidget* parent, const QRect& rect)
 {

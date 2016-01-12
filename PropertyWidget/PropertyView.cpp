@@ -68,6 +68,8 @@ static void updateVisibleProperties(const QtnPropertyBase* property, unsigned in
     }
 }
 
+extern void set_smaller_text_osx(QWidget *w);
+
 QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
     : QAbstractScrollArea(parent),
       m_propertySet(propertySet),
@@ -79,19 +81,31 @@ QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
       m_itemHeightSpacing(6),
       m_leadMargin(0),
       m_splitRatio(0.5f),
-      m_rubberBand(nullptr)
+      m_rubberBand(nullptr),
+      m_accessibilityProxy(nullptr)
 {
-    setFocusPolicy(Qt::StrongFocus);
-    viewport()->setMouseTracking(true);
+  set_smaller_text_osx(this);
+  
+  setFocusPolicy(Qt::StrongFocus);
+  viewport()->setMouseTracking(true);
 
-    updateStyleStuff();
+  updateStyleStuff();
 
-    updateItemsTree();
+  updateItemsTree();
 }
 
 QtnPropertyView::~QtnPropertyView()
 {
 }
+
+QtnAccessibilityProxy *QtnPropertyView::accessibilityProxy()
+{
+    if (!m_accessibilityProxy)
+        m_accessibilityProxy = new QtnAccessibilityProxy(this);
+
+    return m_accessibilityProxy;
+}
+
 
 void QtnPropertyView::setPropertySet(QtnPropertySet* newPropertySet)
 {
@@ -269,7 +283,7 @@ void QtnPropertyView::drawPropertySetItem(QStylePainter& painter, const QRect& r
     painter.fillRect(rect, selected ? palette().color(QPalette::Highlight) : m_propertySetBackdroundColor);
 
     QRect nameRect = rect;
-
+    
     // skip levels indent
     nameRect.setLeft(nameRect.left() + m_leadMargin + nameRect.height() * vItem.level);
     if (!nameRect.isValid())

@@ -17,6 +17,7 @@
 #include "QObjectPropertySet.h"
 #include "PropertyCore.h"
 #include "PropertyGUI.h"
+#include <QDebug>
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QMap>
@@ -55,10 +56,11 @@ QtnMetaPropertyFactory_t qtnCreateFactory()
 
 bool qtnRegisterDefaultMetaPropertyFactory()
 {
+    qDebug() << Q_FUNC_INFO;
     qtnRegisterMetaPropertyFactory(QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::String, qtnCreateFactory<QtnPropertyQStringCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::Double, qtnCreateFactory<QtnPropertyDoubleCallback>());
-//    qtnRegisterMetaPropertyFactory(QVariant::Float, qtnCreateFactory<QtnPropertyFloatCallback>());
+    // qtnRegisterMetaPropertyFactory(QVariant::Float, qtnCreateFactory<QtnPropertyFloatCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::Int, qtnCreateFactory<QtnPropertyIntCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::UInt, qtnCreateFactory<QtnPropertyUIntCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::Point, qtnCreateFactory<QtnPropertyQPointCallback>());

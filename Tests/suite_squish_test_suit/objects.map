@@ -1,0 +1,4 @@
+:PropertyWidget Demo.QtnPropertyValueEditor_QComboBox	{name='QtnPropertyValueEditor' type='QComboBox' visible='1' window=':PropertyWidget Demo_MainWindow'}
+:PropertyWidget Demo_MainWindow	{name='MainWindow' type='MainWindow' visible='1' windowTitle='PropertyWidget Demo'}
+:PropertyWidget Demo_QtnPropertyView	{type='QtnPropertyView' unnamed='1' visible='1' window=':PropertyWidget Demo_MainWindow'}
+:unnamed	unnamed

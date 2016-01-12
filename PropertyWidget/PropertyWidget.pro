@@ -1,11 +1,15 @@
-include(../Common.pri)
+include(../Config.pri)
 
 TARGET = QtnPropertyWidget
 TEMPLATE = lib
 VERSION = 1.0.0
 
-QT += core gui widgets
+QT += core gui widgets script
+CONFIG += staticlib
 
+CONFIG(staticlib) {
+  DEFINES += STATICLIB
+}
 DEFINES += QTN_PE_PROPERTYWIDGET_LIBRARY
 
 SOURCES += PropertyWidget.cpp \
@@ -27,7 +31,8 @@ SOURCES += PropertyWidget.cpp \
     Delegates/PropertyEditorAux.cpp \
     Delegates/Core/PropertyDelegateQSize.cpp \
     Delegates/Core/PropertyDelegateQPoint.cpp \
-    Delegates/GUI/PropertyDelegateQFont.cpp
+    Delegates/GUI/PropertyDelegateQFont.cpp \
+    Utils/AccessibilityProxy.cpp
 
 HEADERS += PropertyWidgetAPI.h \
     PropertyWidget.h \
@@ -49,10 +54,7 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/PropertyEditorAux.h \
     Delegates/Core/PropertyDelegateQSize.h \
     Delegates/Core/PropertyDelegateQPoint.h \
-    Delegates/GUI/PropertyDelegateQFont.h
+    Delegates/GUI/PropertyDelegateQFont.h \
+    Utils/AccessibilityProxy.h
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCore
-
-win32 {
-    TARGET_EXT = .dll
-}

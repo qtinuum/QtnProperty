@@ -17,10 +17,6 @@
 #ifndef QTN_COREAPI_H
 #define QTN_COREAPI_H
 
-#if defined(QTN_PE_CORE_LIBRARY)
-#  define QTN_PE_CORE_EXPORT Q_DECL_EXPORT
-#else
-#  define QTN_PE_CORE_EXPORT Q_DECL_IMPORT
-#endif
+#define QTN_PE_CORE_EXPORT
 
 #endif // QTN_COREAPI_H

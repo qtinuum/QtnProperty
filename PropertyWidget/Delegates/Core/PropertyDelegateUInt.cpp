@@ -81,10 +81,14 @@ protected:
     }
 };
 
-static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
+bool regUIntDelegate()
+{
+  QtnPropertyDelegateFactory::staticInstance()
                                 .registerDelegateDefault(&QtnPropertyUIntBase::staticMetaObject
                                 , &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
                                 , "SpinBox");
+  return true;                                
+}
 
 QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {

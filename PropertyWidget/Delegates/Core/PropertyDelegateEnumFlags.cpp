@@ -53,10 +53,10 @@ public:
     QtnPropertyEnumFlagsLineEditHandler(QtnPropertyEnumFlagsBase& property, QLineEdit& editor)
         : QtnPropertyEditorHandlerType(property, editor)
     {
-//        if (!property.isEditableByUser())
-            editor.setReadOnly(true);
+      // if (!property.isEditableByUser())
+      editor.setReadOnly(true);
 
-        updateEditor();
+      updateEditor();
     }
 
 private:
@@ -66,10 +66,13 @@ private:
     }
 };
 
-static bool regEnumFlagsDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyEnumFlagsBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateEnumFlags, QtnPropertyEnumFlagsBase>
-                                , "FlagsList");
+bool regEnumFlagsDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyEnumFlagsBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateEnumFlags, QtnPropertyEnumFlagsBase>
+			     , "FlagsList");
+  return true;
+}
 
 QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(QtnPropertyEnumFlagsBase& owner)
     : QtnPropertyDelegateTypedEx<QtnPropertyEnumFlagsBase>(owner)

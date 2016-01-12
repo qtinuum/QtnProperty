@@ -53,11 +53,13 @@ private:
     }
 };
 
-
-static bool regEnumDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyEnumBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>
-                                , "ComboBox");
+bool regEnumDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyEnumBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>
+			     , "ComboBox");
+  return true;
+}
 
 QWidget* QtnPropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {

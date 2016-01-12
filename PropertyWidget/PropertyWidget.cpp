@@ -61,6 +61,24 @@ protected:
     }
 };
 
+// It's safe to call this function on any platform.
+// It will only have an effect on the Mac.
+void set_smaller_text_osx(QWidget *w)
+{
+    Q_ASSERT(w != 0);
+
+    // By default, none of these size attributes are set.
+    // If any has been set explicitly, we'll leave the widget alone.
+    if (!w->testAttribute(Qt::WA_MacMiniSize) &&
+        !w->testAttribute(Qt::WA_MacSmallSize) &&
+        !w->testAttribute(Qt::WA_MacNormalSize) &&
+        !w->testAttribute(Qt::WA_MacVariableSize))
+    {
+      // make the text the 'normal' size
+      w->setAttribute(Qt::WA_MacSmallSize);
+    }
+}
+
 QtnPropertyWidget::QtnPropertyWidget(QWidget* parent)
     : QWidget(parent),
       m_parts(QtnPropertyWidgetPartsNone),
@@ -70,9 +88,11 @@ QtnPropertyWidget::QtnPropertyWidget(QWidget* parent)
       m_descriptionSplitter(0),
       m_descriptionPanel(0)
 {
-    m_layout->addWidget(m_propertyView);
+  set_smaller_text_osx(this);
+  
+  m_layout->addWidget(m_propertyView);
 
-    QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged, this, &QtnPropertyWidget::setActiveProperty);
+  QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged, this, &QtnPropertyWidget::setActiveProperty);
 }
 
 QtnPropertyWidget::~QtnPropertyWidget()

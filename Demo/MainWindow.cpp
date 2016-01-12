@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 #include "mydialog.h"
 #include <QMessageBox>
+#include <QDesktopWidget>
 
 #include "QObjectPropertySet.h"
 #include "Demo.peg.h"
@@ -21,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     jsEngine.globalObject().setProperty("samplePS", jsEngine.newQObject(ps));
 
     dbg.attachTo(&jsEngine);
+
+    move(QApplication::desktop()->availableGeometry().center() - rect().center());
 }
 
 MainWindow::~MainWindow()
