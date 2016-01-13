@@ -1,4 +1,4 @@
-
+TOP = ..
 include(../Config.pri)
 PEG_TOOL = $$BIN_DIR/QtnPEG
 include(../PEG.pri)
@@ -24,6 +24,7 @@ INCLUDEPATH += $$TOP_SRC_DIR/Core
 INCLUDEPATH += $$TOP_SRC_DIR/PropertyWidget
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCore -lQtnPropertyWidget
+INCLUDEPATH += $$TOP/Core $$TOP/PropertyWidget
 
 unix:PRE_TARGETDEPS += $$BIN_DIR/libQtnPropertyCore.a $$BIN_DIR/libQtnPropertyWidget.a
 else:PRE_TARGETDEPS += $$BIN_DIR/QtnPropertyCore.lib  $$BIN_DIR/QtnPropertyWidget.lib

@@ -1,4 +1,4 @@
-
+TOP = ..
 include(../Config.pri)
 PEG_TOOL = $$BIN_DIR/QtnPEG
 include(../PEG.pri)
@@ -33,6 +33,4 @@ win32 {
     QMAKE_LFLAGS += -Wl,-rpath,\'\$$ORIGIN\'
 }
 
-INCLUDEPATH += $$TOP_SRC_DIR/Core/
-
-
+INCLUDEPATH += $$TOP/Core/

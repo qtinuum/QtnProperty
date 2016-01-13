@@ -5,7 +5,7 @@
 # PEG.pri file in your pro file
 
 isEmpty(PEG_TOOL) {
-mac:PEG_TOOL = $$PWD/bin-osx/QtnPEG
+macx:PEG_TOOL = $$PWD/bin-osx/QtnPEG
 else:win:PEG_TOOL = $$PWD/bin-win/QtnPEG
 else:linux:PEG_TOOL = $$PWD/bin-linux/QtnPEG
 else:PEG_TOOL = QtnPEG
