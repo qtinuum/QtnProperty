@@ -69,9 +69,6 @@ static void qtnPropertyBasePtrFromScriptValue(const QScriptValue& obj, QtnProper
 
 void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
 {
-    qScriptRegisterMetaType(engine, qtnPropertyIdToScriptValue, qtnPropertyIdFromScriptValue);
-    qScriptRegisterMetaType(engine, qtnPropertyStateToScriptValue, qtnPropertyStateFromScriptValue);
-
     qScriptRegisterMetaType(engine, qtnPropertyChangeReasonToScriptValue, qtnPropertyChangeReasonFromScriptValue);
     qScriptRegisterMetaType(engine, qtnPropertyValuePtrToScriptValue, qtnPropertyValuePtrFromScriptValue);
     qScriptRegisterMetaType(engine, qtnPropertyBasePtrToScriptValue, qtnPropertyBasePtrFromScriptValue);
