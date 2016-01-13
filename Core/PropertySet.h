@@ -54,11 +54,11 @@ protected:
     void updateStateInherited(bool force) override;
 
     // cloning implementation
-    virtual QtnPropertySet* createNewImpl(QObject* parentForNew) const { return nullptr; }
-    virtual QtnPropertySet* createCopyImpl(QObject* parentForCopy) const { return nullptr; }
+    virtual QtnPropertySet* createNewImpl(QObject* parentForNew) const { Q_UNUSED(parentForNew); return nullptr; }
+    virtual QtnPropertySet* createCopyImpl(QObject* parentForCopy) const { Q_UNUSED(parentForCopy); return nullptr; }
 
     // copy values
-    virtual bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) { return false; }
+    virtual bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) { Q_UNUSED(propertySetCopyFrom); Q_UNUSED(ignoreMask); return false; }
 
     // string conversion implementation
     bool fromStrImpl(const QString& str) override;

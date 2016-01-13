@@ -145,13 +145,19 @@ struct AssignInfo
     QString value;
 };
 
+struct SignatureInfo
+{
+    QString arguments;
+    QString unusedCode;
+};
+
 // key - setter name (without set)
 // value - setter parameter
 typedef QMap<QString, AssignInfo> Assignments;
 // key - slot name
 // values - slot code
 typedef QMap<QString, AssignInfo> Slots;
-typedef QMap<QString, QString> Signatures;
+typedef QMap<QString, SignatureInfo> Signatures;
 // key - name exception
 typedef QSet<QString> Exceptions;
 

@@ -29,6 +29,16 @@ QString qtnElidedText(const QPainter& painter, const QString& text, const QRect&
     return newText;
 }
 
+QtnPropertyBase* QtnPropertyDelegate::property()
+{
+    return propertyImpl();
+}
+
+const QtnPropertyBase* QtnPropertyDelegate::propertyImmutable() const
+{
+    return propertyImmutableImpl();
+}
+
 int QtnPropertyDelegate::subPropertyCount() const
 {
     return subPropertyCountImpl();
@@ -93,6 +103,8 @@ bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent
 
 void QtnPropertyDelegate::drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State &state, bool* needTooltip)
 {
+    Q_UNUSED(state);
+
     if (text.isEmpty())
         return;
 

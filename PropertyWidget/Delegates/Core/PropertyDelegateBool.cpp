@@ -132,6 +132,8 @@ QCheckBox* createPropertyBoolCheckBox(QtnPropertyBoolBase& owner, QWidget* paren
 
 void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
+    Q_UNUSED(needTooltip);
+
     QStyleOptionButton opt;
     opt.rect = rect;
     opt.state = state;

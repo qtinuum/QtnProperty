@@ -185,11 +185,11 @@ void TestProperty::state()
     QCOMPARE(ps.state(), QtnPropertyStateNone);
 
     int call_count = 0;
-    QObject::connect(&ps, &QtnPropertyBase::propertyWillChange, [&call_count](const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue) {
+    QObject::connect(&ps, &QtnPropertyBase::propertyWillChange, [&call_count](const QtnPropertyBase*, const QtnPropertyBase*, QtnPropertyChangeReason, QtnPropertyValuePtr) {
         ++call_count;
     });
 
-    QObject::connect(&ps, &QtnPropertyBase::propertyDidChange, [&call_count](const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason) {
+    QObject::connect(&ps, &QtnPropertyBase::propertyDidChange, [&call_count](const QtnPropertyBase*, const QtnPropertyBase*, QtnPropertyChangeReason) {
         ++call_count;
     });
 

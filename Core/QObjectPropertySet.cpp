@@ -45,6 +45,7 @@ QtnMetaPropertyFactory_t qtnCreateFactory()
 
         PropertyCallbackType* propertyPtr = property.data();
         property->setCallbackValueAccepted([propertyPtr] (ValueType value)->bool {
+            Q_UNUSED(value);
             return propertyPtr->isEditableByUser();
         });
 

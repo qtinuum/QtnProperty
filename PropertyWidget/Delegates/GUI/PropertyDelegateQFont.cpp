@@ -56,6 +56,8 @@ private:
 
     void onToolButtonClicked(bool checked)
     {
+        Q_UNUSED(checked);
+
         QFontDialog dlg(property(), &editor());
         if (dlg.exec() == QDialog::Accepted)
         {

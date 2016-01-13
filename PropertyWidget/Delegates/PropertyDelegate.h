@@ -46,6 +46,9 @@ class QTN_PW_EXPORT QtnPropertyDelegate
 public:
     virtual ~QtnPropertyDelegate() {}
 
+    QtnPropertyBase* property();
+    const QtnPropertyBase* propertyImmutable() const;
+
     // for complex properties like PropertyQFont
     int subPropertyCount() const;
     QtnPropertyBase* subProperty(int index);
@@ -61,16 +64,18 @@ public:
 protected:
     QtnPropertyDelegate() {}
 
+    virtual QtnPropertyBase* propertyImpl() = 0;
+    virtual const QtnPropertyBase* propertyImmutableImpl() const = 0;
     virtual int subPropertyCountImpl() const { return 0; }
-    virtual QtnPropertyBase* subPropertyImpl(int index) { return nullptr; }
-    virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) {}
+    virtual QtnPropertyBase* subPropertyImpl(int index) { Q_UNUSED(index); return nullptr; }
+    virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) { Q_UNUSED(attributes); }
     virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;
     virtual QString toolTipImpl() const;
     virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const;
     virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) = 0;
 
     // override this if property value can be displayed as string
-    virtual bool propertyValueToStr(QString& strValue) const { return false; }
+    virtual bool propertyValueToStr(QString& strValue) const { Q_UNUSED(strValue); return false; }
 
     // helper functions
     static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr);
@@ -95,6 +100,9 @@ protected:
     ~QtnPropertyDelegateTyped()
     {
     }
+
+    QtnPropertyBase* propertyImpl() override { return &m_owner; }
+    const QtnPropertyBase* propertyImmutableImpl() const override { return &m_owner; }
 
 private:
     PropertyClass& m_owner;
