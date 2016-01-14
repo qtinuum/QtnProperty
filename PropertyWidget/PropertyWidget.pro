@@ -1,4 +1,3 @@
-TOP = ..
 include(../Config.pri)
 
 TARGET = QtnPropertyWidget
@@ -59,4 +58,4 @@ HEADERS += PropertyWidgetAPI.h \
     Utils/AccessibilityProxy.h
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCore
-INCLUDEPATH += $$TOP/Core
+INCLUDEPATH += $$TOP_SRC_DIR/Core

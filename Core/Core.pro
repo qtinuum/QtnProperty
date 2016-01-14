@@ -1,4 +1,3 @@
-TOP = ..
 include(../Config.pri)
 
 QT += quick

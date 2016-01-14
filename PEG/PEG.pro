@@ -1,4 +1,3 @@
-TOP = ..
 include(../Config.pri)
 include(Bison.pri)
 include(Flex.pri)
