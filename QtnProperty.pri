@@ -31,6 +31,7 @@ SOURCES += PropertyBase.cpp \
 SOURCES += PropertyWidget.cpp \
     PropertyView.cpp \
     Utils/InplaceEditing.cpp \
+    Utils/AccessibilityProxy.cpp \
     Delegates/PropertyDelegateFactory.cpp \
     Delegates/Core/PropertyDelegateBool.cpp \
     Delegates/Core/PropertyDelegateInt.cpp \
@@ -79,6 +80,7 @@ HEADERS += PropertyWidgetAPI.h \
     PropertyWidget.h \
     PropertyView.h \
     Utils/InplaceEditing.h \
+    Utils/AccessibilityProxy.h \
     Delegates/PropertyDelegate.h \
     Delegates/PropertyDelegateFactory.h \
     Delegates/Core/PropertyDelegateBool.h \
