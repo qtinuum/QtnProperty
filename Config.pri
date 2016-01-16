@@ -8,11 +8,12 @@ isEmpty(BIN_DIR):MESSAGE(CRITICAL, "Only mac/win32/linux supported")
 else:DESTDIR = $$BIN_DIR
 
 
-debug: DBG = -dgb
+debug: DBG = dgb-
+else: DBG = rel-
 
-OBJECTS_DIR = $$TOP_SRC_DIR/workdir/$$DBG-$$[QMAKE_SPEC]/$$TARGET/obj
-MOC_DIR = $$TOP_SRC_DIR/workdir/$$DBG-$$[QMAKE_SPEC]/$$TARGET/obj
-UI_DIR = $$TOP_SRC_DIR/workdir/$$DBG-$$[QMAKE_SPEC]/$$TARGET/obj
-RCC_DIR = $$TOP_SRC_DIR/workdir/$$DBG-$$[QMAKE_SPEC]/$$TARGET/obj
+OBJECTS_DIR = $$TOP_SRC_DIR/workdir/$$DBG$$[QMAKE_SPEC]/$$TARGET/obj
+MOC_DIR = $$TOP_SRC_DIR/workdir/$$DBG$$[QMAKE_SPEC]/$$TARGET/obj
+UI_DIR = $$TOP_SRC_DIR/workdir/$$DBG$$[QMAKE_SPEC]/$$TARGET/obj
+RCC_DIR = $$TOP_SRC_DIR/workdir/$$DBG$$[QMAKE_SPEC]/$$TARGET/obj
 
 include("Common.pri")
