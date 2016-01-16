@@ -1,5 +1,6 @@
 include(Common.pri)
 
+CONFIG += unity_build
 QT += script widgets
 
 QTNPROPVERSION = 1.0.0
@@ -9,7 +10,7 @@ INCLUDEPATH += $$PWD $$PWD/Core $$PWD/PropertyWidget
 DEFINES += STATICLIB QTN_PE_CORE_LIBRARY QTN_PE_PROPERTYWIDGET_LIBRARY
 VPATH += $$PWD/Core $$PWD/PropertyWidget
 
-SOURCES += PropertyBase.cpp \
+SOURCES_CORE += PropertyBase.cpp \
     Property.cpp \
     PropertySet.cpp \
     Enum.cpp \
@@ -26,9 +27,10 @@ SOURCES += PropertyBase.cpp \
     Core/PropertyQSize.cpp \
     Core/PropertyQPoint.cpp \
     GUI/PropertyQColor.cpp \
+    GUI/PropertyQAction.cpp \
     GUI/PropertyQFont.cpp
 
-SOURCES += PropertyWidget.cpp \
+SOURCES_WIDGET += PropertyWidget.cpp \
     PropertyView.cpp \
     Utils/InplaceEditing.cpp \
     Utils/AccessibilityProxy.cpp \
@@ -42,13 +44,17 @@ SOURCES += PropertyWidget.cpp \
     Delegates/Core/PropertyDelegateEnum.cpp \
     Delegates/Core/PropertyDelegateQRect.cpp \
     Delegates/PropertyEditorHandler.cpp \
-    Delegates/GUI/PropertyDelegateQColor.cpp \
     Delegates/Core/PropertyDelegateEnumFlags.cpp \
     Delegates/PropertyDelegate.cpp \
     Delegates/PropertyEditorAux.cpp \
     Delegates/Core/PropertyDelegateQSize.cpp \
     Delegates/Core/PropertyDelegateQPoint.cpp \
-    Delegates/GUI/PropertyDelegateQFont.cpp
+    Delegates/GUI/PropertyDelegateQFont.cpp \
+    Delegates/GUI/PropertyDelegateQColor.cpp \
+    Delegates/GUI/PropertyDelegateQAction.cpp
+
+unity_build: SOURCES += $$PWD/Unity.cpp
+else: SOURCES += SOURCES_CORE $$SOURCES_WIDGET
 
 HEADERS += CoreAPI.h\
     PropertyBase.h \

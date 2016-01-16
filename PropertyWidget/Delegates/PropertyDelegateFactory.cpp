@@ -123,7 +123,7 @@ bool regQRectDelegate();
 bool regQColorDelegate();
 bool regQFontDelegate();
 
-static bool success = 
+static bool __ID(success) = 
   regBoolDelegate() && regBoolDelegateCombobox()
   && regDoubleDelegate() && regFloatDelegate()
   && regEnumDelegate()
