@@ -18,12 +18,12 @@
 #include "../../../Core/Core/PropertyQPoint.h"
 #include "../PropertyDelegateFactory.h"
 
-bool regQPointDelegate() {
+void regQPointDelegates()
+{
   QtnPropertyDelegateFactory::staticInstance()
     .registerDelegateDefault(&QtnPropertyQPointBase::staticMetaObject
 			     , &qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>
 			     , "XY");
-  return true;
 }
 
 QtnPropertyDelegateQPoint::QtnPropertyDelegateQPoint(QtnPropertyQPointBase& owner)

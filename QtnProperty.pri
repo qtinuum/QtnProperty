@@ -53,7 +53,7 @@ SOURCES_WIDGET += PropertyWidget.cpp \
     Delegates/GUI/PropertyDelegateQColor.cpp \
     Delegates/GUI/PropertyDelegateQAction.cpp
 
-unity_build: SOURCES += $$PWD/Unity.cpp
+unity_build: SOURCES += $$PWD/QtnPropertyUnity.cpp
 else: SOURCES += SOURCES_CORE $$SOURCES_WIDGET
 
 HEADERS += CoreAPI.h\

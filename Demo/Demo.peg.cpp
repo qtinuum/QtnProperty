@@ -486,7 +486,7 @@ void QtnPropertySetSamplePS::on_QColorProperty_propertyDidChange(const QtnProper
 {
     Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason);
     
-            qDebug() << Q_FUNC_INFO << "Poperty has changed: " << this;
+            qDebug() << Q_FUNC_INFO << "Property has changed: " << &QColorProperty;
         
 }
 

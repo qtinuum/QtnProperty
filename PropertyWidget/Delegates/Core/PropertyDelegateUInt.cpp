@@ -21,6 +21,14 @@
 
 #include <QSpinBox>
 
+void regUIntDelegates()
+{
+  QtnPropertyDelegateFactory::staticInstance()
+                                .registerDelegateDefault(&QtnPropertyUIntBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
+                                , "SpinBox");
+}
+
 const quint32 qtn_u_2 = std::numeric_limits<quint32>::max() / 2 + 1;
 static qint32 qtn_u2i(quint32 val)
 {
@@ -80,15 +88,6 @@ protected:
         return locale().toString(qtn_i2u(val));
     }
 };
-
-bool regUIntDelegate()
-{
-  QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyUIntBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
-                                , "SpinBox");
-  return true;                                
-}
 
 QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {

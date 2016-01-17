@@ -6,13 +6,15 @@ VERSION = 1.0.0
 
 QT += core gui widgets script
 CONFIG += staticlib
+CONFIG += unity_build
 
 CONFIG(staticlib) {
   DEFINES += STATICLIB
 }
 DEFINES += QTN_PE_PROPERTYWIDGET_LIBRARY
 
-SOURCES += PropertyWidget.cpp \
+unity_build: SOURCES += QtnPropertyWidgetUnity.cpp
+else: SOURCES += PropertyWidget.cpp \
     PropertyView.cpp \
     Utils/InplaceEditing.cpp \
     Delegates/PropertyDelegateFactory.cpp \

@@ -1,12 +1,13 @@
 include(../Config.pri)
 
 QT += quick
+QT += script
 CONFIG += staticlib
+CONFIG += unity_build
 
 TARGET = QtnPropertyCore
 TEMPLATE = lib
 VERSION = 1.0.0
-
 
 
 CONFIG(staticlib) {
@@ -14,7 +15,8 @@ CONFIG(staticlib) {
 }
 DEFINES += QTN_PE_CORE_LIBRARY
 
-SOURCES += PropertyBase.cpp \
+unity_build: SOURCES += QtnCoreUnity.cpp
+else: SOURCES += PropertyBase.cpp \
     Property.cpp \
     PropertySet.cpp \
     Enum.cpp \

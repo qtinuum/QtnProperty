@@ -21,6 +21,15 @@
 
 #include <QDoubleSpinBox>
 
+
+void regDoubleDelegates()
+{
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyDoubleBase::staticMetaObject
+                 , &qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>
+                 , "SpinBox");
+}
+
 class QtnPropertyDoubleSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, QDoubleSpinBox>
 {
 public:
@@ -51,14 +60,6 @@ private:
         property() = value;
     }
 };
-
-bool regDoubleDelegate() {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyDoubleBase::staticMetaObject
-			     , &qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>
-			     , "SpinBox");
-  return true;
-}
 
 QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {

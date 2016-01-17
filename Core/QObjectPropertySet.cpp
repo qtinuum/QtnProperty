@@ -73,7 +73,6 @@ bool qtnRegisterDefaultMetaPropertyFactory()
 }
 
 static QMap<int, QtnMetaPropertyFactory_t> qtnFactoryMap;
-static bool __ID(success) = qtnRegisterDefaultMetaPropertyFactory();
 
 bool qtnRegisterMetaPropertyFactory(int metaPropertyType, const QtnMetaPropertyFactory_t& factory)
 {
@@ -88,6 +87,11 @@ bool qtnRegisterMetaPropertyFactory(int metaPropertyType, const QtnMetaPropertyF
 
 QtnProperty* qtnCreateQObjectProperty(QObject* object, const QMetaProperty& metaProperty)
 {
+    static bool registerDefaultMetaPropertyFactory = qtnRegisterDefaultMetaPropertyFactory();
+
+    if (!registerDefaultMetaPropertyFactory)
+        return nullptr;
+
     if (!object)
         return nullptr;
 

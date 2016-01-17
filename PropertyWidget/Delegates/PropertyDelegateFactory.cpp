@@ -106,29 +106,44 @@ QtnPropertyDelegateFactory& QtnPropertyDelegateFactory::staticInstance()
     return factory;
 }
 
-bool regBoolDelegate();
-bool regBoolDelegateCombobox();
-bool regDoubleDelegate();
-bool regFloatDelegate();
-bool regEnumDelegate();
-bool regEnumFlagsDelegate();
-bool regIntDelegate();
-bool regUIntDelegate();
-bool regQStringDelegate();
-bool regQStringFileDelegate();
-bool regQStringListDelegate();
-bool regQPointDelegate();
-bool regQSizeDelegate();
-bool regQRectDelegate();
-bool regQColorDelegate();
-bool regQFontDelegate();
+void regBoolDelegates();
+void regDoubleDelegates();
+void regEnumDelegates();
+void regEnumFlagsDelegates();
+void regFloatDelegates();
+void regIntDelegates();
+void regQPointDelegates();
+void regQRectDelegates();
+void regQSizeDelegates();
+void regQStringDelegates();
+void regUIntDelegates();
+void regQColorDelegates();
+void regQFontDelegates();
 
-static bool __ID(success) = 
-  regBoolDelegate() && regBoolDelegateCombobox()
-  && regDoubleDelegate() && regFloatDelegate()
-  && regEnumDelegate()
-  && regEnumFlagsDelegate()
-  && regIntDelegate() && regUIntDelegate()
-  && regQStringDelegate() && regQStringFileDelegate() && regQStringListDelegate()
-  && regQPointDelegate() && regQSizeDelegate() && regQRectDelegate() 
-  && regQColorDelegate() && regQFontDelegate();
+bool initQtnPropertyWidget()
+{
+    static bool initialized = false;
+
+    if (initialized)
+        return false;
+
+    regBoolDelegates();
+    regDoubleDelegates();
+    regEnumDelegates();
+    regEnumFlagsDelegates();
+    regFloatDelegates();
+    regIntDelegates();
+    regQPointDelegates();
+    regQRectDelegates();
+    regQSizeDelegates();
+    regQStringDelegates();
+    regUIntDelegates();
+    regQColorDelegates();
+    regQFontDelegates();
+
+    initialized = true;
+    return true;
+}
+
+bool initializeQtnPropertyWidget = initQtnPropertyWidget();
+

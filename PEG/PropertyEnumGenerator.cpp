@@ -742,7 +742,7 @@ void EnumCode::generateHFile(TextStreamIndent& s) const
             s.newLine() << "enum Enum";
             s.newLine() << "{";
             s.addIndent();
-                for (size_t i = 0, n = items.size(); i < n; ++i)
+                for (int i = 0, n = items.size(); i < n; ++i)
                 {
                     const EnumItemCode& enumItem = items[i];
                     s.newLine() << QString("%1 = %2").arg(enumItem.name).arg(enumItem.id);
@@ -771,7 +771,7 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
             if (!enumItem.states.isEmpty())
             {
                 states += ", ";
-                for (size_t i = 0, n = enumItem.states.size(); i < n; ++i)
+                for (int i = 0, n = enumItem.states.size(); i < n; ++i)
                 {
                     const QString& state = enumItem.states[i];
                     if (i != 0)

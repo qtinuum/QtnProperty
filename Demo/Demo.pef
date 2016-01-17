@@ -184,7 +184,7 @@ property_set SamplePS
         value = Qt::blue;
         slot propertyDidChange
         {
-            qDebug() << Q_FUNC_INFO << "Poperty has changed: " << this;
+            qDebug() << Q_FUNC_INFO << "Property has changed: " << &QColorProperty;
         }
     }
 

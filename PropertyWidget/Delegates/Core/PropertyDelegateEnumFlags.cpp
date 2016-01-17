@@ -22,6 +22,14 @@
 #include "../../../Core/Core/PropertyBool.h"
 #include <QLineEdit>
 
+void regEnumFlagsDelegates()
+{
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyEnumFlagsBase::staticMetaObject
+                 , &qtnCreateDelegate<QtnPropertyDelegateEnumFlags, QtnPropertyEnumFlagsBase>
+                 , "FlagsList");
+}
+
 static QString enumFlagsProperty2Str(const QtnPropertyEnumFlagsBase& property)
 {
     QString text;
@@ -65,14 +73,6 @@ private:
         editor().setText(enumFlagsProperty2Str(property()));
     }
 };
-
-bool regEnumFlagsDelegate() {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyEnumFlagsBase::staticMetaObject
-			     , &qtnCreateDelegate<QtnPropertyDelegateEnumFlags, QtnPropertyEnumFlagsBase>
-			     , "FlagsList");
-  return true;
-}
 
 QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(QtnPropertyEnumFlagsBase& owner)
     : QtnPropertyDelegateTypedEx<QtnPropertyEnumFlagsBase>(owner)

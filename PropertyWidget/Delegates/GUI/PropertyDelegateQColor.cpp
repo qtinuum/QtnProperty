@@ -22,6 +22,14 @@
 
 #include <QColorDialog>
 
+void regQColorDelegates()
+{
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
+                 , &qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>
+                 , "LineEditBttn");
+}
+
 class QtnPropertyQColorLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQColorBase, QtnLineEditBttn>
 {
 public:
@@ -59,14 +67,6 @@ private:
         }
     }
 };
-
-bool regQColorDelegate() {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
-			     , &qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>
-			     , "LineEditBttn");
-  return true;
-}
 
 QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(QtnPropertyQColorBase& owner)
     : QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner),

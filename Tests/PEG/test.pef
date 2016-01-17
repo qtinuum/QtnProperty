@@ -121,7 +121,7 @@ property_set Test3 {
             }
         };
 
-        callbackValueEqual = [](bool value)->bool { return false; };
+        callbackValueEqual = [](bool)->bool { return false; };
 
         callbackValueSet = [this](bool value) {
             m_s = value;

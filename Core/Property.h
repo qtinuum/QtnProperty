@@ -50,10 +50,4 @@ private:
     QScopedPointer<QtnPropertyDelegateInfoGetter> m_delegateInfoGetter;
 };
 
-#ifndef __ID
-# define __IDT(v,y) v##y
-# define __ID2(v,y) __IDT(x,y)
-# define __ID(v) __ID2(v, __LINE__)
-#endif
-
 #endif // QTN_PROPERTY_H

@@ -3,4 +3,6 @@
 
 #define QTN_PW_EXPORT
 
+QTN_PW_EXPORT bool initQtnPropertyWidget();
+
 #endif // QTN_PROPERTYWIDGETAPI_H
