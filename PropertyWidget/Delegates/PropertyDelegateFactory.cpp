@@ -31,14 +31,14 @@ QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnProperty& own
 
         if (it != m_createItems.end())
         {
-            // try to find delegate factory by name
+            // try to find delegate factory by delegate name
             const CreateItem& createItem = it.value();
             const QtnPropertyDelegateInfo* propertyDelegate = owner.delegate();
             QByteArray delegateName;
             if (propertyDelegate)
                 delegateName = propertyDelegate->name;
 
-            CreateFunction* createFunction = 0;
+            CreateFunction* createFunction = nullptr;
 
             if (delegateName.isEmpty())
             {
@@ -53,7 +53,7 @@ QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnProperty& own
             }
 
             if (!createFunction)
-                return 0;
+                return nullptr;
 
             // call factory function
             return (*createFunction)(owner);

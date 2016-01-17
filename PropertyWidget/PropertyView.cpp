@@ -402,11 +402,15 @@ void QtnPropertyView::drawPropertyItem(QStylePainter& painter, const QRect& rect
 
 void QtnPropertyView::drawPropertyBackgroundImpl(QStylePainter &painter, const QRect &rect, const QtnPropertyBase* property) const
 {
-    // highlight background if active
-    if (m_activeProperty == property)
-        painter.fillRect(rect, palette().color(QPalette::Highlight));
-
     int splitPos = splitPosition();
+
+    // highlight background if active property
+    if (m_activeProperty == property)
+    {
+        QRect nameRect = rect;
+        nameRect.setRight(splitPos);
+        painter.fillRect(nameRect, palette().color(QPalette::Highlight));
+    }
 
     QtnPainterState pState(painter);
 
