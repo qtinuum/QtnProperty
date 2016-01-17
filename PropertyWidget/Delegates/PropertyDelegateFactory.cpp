@@ -15,6 +15,7 @@
 */
 
 #include "PropertyDelegateFactory.h"
+#include <QDebug>
 
 QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory)
     : m_superFactory(superFactory)
@@ -98,8 +99,36 @@ bool QtnPropertyDelegateFactory::registerDelegate(const QMetaObject* propertyMet
     return true;
 }
 
+
 QtnPropertyDelegateFactory& QtnPropertyDelegateFactory::staticInstance()
 {
     static QtnPropertyDelegateFactory factory;
     return factory;
 }
+
+bool regBoolDelegate();
+bool regBoolDelegateCombobox();
+bool regDoubleDelegate();
+bool regFloatDelegate();
+bool regEnumDelegate();
+bool regEnumFlagsDelegate();
+bool regIntDelegate();
+bool regUIntDelegate();
+bool regQStringDelegate();
+bool regQStringFileDelegate();
+bool regQStringListDelegate();
+bool regQPointDelegate();
+bool regQSizeDelegate();
+bool regQRectDelegate();
+bool regQColorDelegate();
+bool regQFontDelegate();
+
+static bool __ID(success) = 
+  regBoolDelegate() && regBoolDelegateCombobox()
+  && regDoubleDelegate() && regFloatDelegate()
+  && regEnumDelegate()
+  && regEnumFlagsDelegate()
+  && regIntDelegate() && regUIntDelegate()
+  && regQStringDelegate() && regQStringFileDelegate() && regQStringListDelegate()
+  && regQPointDelegate() && regQSizeDelegate() && regQRectDelegate() 
+  && regQColorDelegate() && regQFontDelegate();

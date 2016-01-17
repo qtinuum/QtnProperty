@@ -27,20 +27,29 @@
 #include <QComboBox>
 #include <QDebug>
 
-static bool regQStringDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyQStringBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateQString, QtnPropertyQStringBase>
-                                , "LineEdit");
+bool regQStringDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyQStringBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateQString, QtnPropertyQStringBase>
+			     , "LineEdit");
+  return true;
+}
 
-static bool regQStringFileDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegate(&QtnPropertyQStringBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateQStringFile, QtnPropertyQStringBase>
-                                , "File");
+bool regQStringFileDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegate(&QtnPropertyQStringBase::staticMetaObject
+		      , &qtnCreateDelegate<QtnPropertyDelegateQStringFile, QtnPropertyQStringBase>
+		      , "File");
+  return true;
+}
 
-static bool regQStringListDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegate(&QtnPropertyQStringBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateQStringList, QtnPropertyQStringBase>
-                                , "List");
+bool regQStringListDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegate(&QtnPropertyQStringBase::staticMetaObject
+		      , &qtnCreateDelegate<QtnPropertyDelegateQStringList, QtnPropertyQStringBase>
+		      , "List");
+  return true;
+}
 
 class QtnPropertyQStringLineEditHandler: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QLineEdit>
 {

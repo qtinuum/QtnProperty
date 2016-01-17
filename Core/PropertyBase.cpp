@@ -15,6 +15,7 @@
 */
 
 #include "PropertyBase.h"
+#include <QDebug>
 #include <QtScript/QScriptEngine>
 
 static int qtnPropertyChangeReasonMetaId = qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
@@ -74,7 +75,7 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
 
     QScriptValue obj = engine->globalObject();
 
-//    QScriptValue obj = engine->newObject();
+    // QScriptValue obj = engine->newObject();
 
     obj.setProperty("QtnPropertyStateNone", QtnPropertyStateNone, QScriptValue::ReadOnly|QScriptValue::Undeletable);
     obj.setProperty("QtnPropertyStateNonSimple", QtnPropertyStateNonSimple, QScriptValue::ReadOnly|QScriptValue::Undeletable);

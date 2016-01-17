@@ -60,10 +60,13 @@ private:
     }
 };
 
-static bool regQColorDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>
-                                , "LineEditBttn");
+bool regQColorDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>
+			     , "LineEditBttn");
+  return true;
+}
 
 QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(QtnPropertyQColorBase& owner)
     : QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner),

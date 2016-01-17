@@ -5,7 +5,10 @@
 # PEG.pri file in your pro file
 
 isEmpty(PEG_TOOL) {
-PEG_TOOL = QtnPEG
+macx:PEG_TOOL = $$PWD/bin-osx/QtnPEG
+else:win:PEG_TOOL = $$PWD/bin-win/QtnPEG
+else:linux:PEG_TOOL = $$PWD/bin-linux/QtnPEG
+else:PEG_TOOL = QtnPEG
 }
 
 peg.name = PropertyEnum generator ${QMAKE_FILE_IN}

@@ -37,8 +37,8 @@ public:
 
         if (!property.isEditableByUser())
         {
-//            editor.lineEdit->setReadOnly(true);
-            editor.toolButton->setEnabled(false);
+	  // editor.lineEdit->setReadOnly(true);
+	  editor.toolButton->setEnabled(false);
         }
 
         updateEditor();
@@ -66,10 +66,13 @@ private:
     }
 };
 
-static bool regQFontDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyQFontBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>
-                                , "LineEditBttn");
+bool regQFontDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyQFontBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>
+			     , "LineEditBttn");
+  return true;
+}
 
 static QtnEnumInfo* styleStrategyEnum()
 {

@@ -1,6 +1,7 @@
 #include "Demo.peg.h"
 
 #include <QFileDialog>
+#include <QDebug>
 static QtnEnumInfo& create_COLOR_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
@@ -464,11 +465,13 @@ void QtnPropertySetSamplePS::init()
 void QtnPropertySetSamplePS::connectSlots()
 {
     QObject::connect(&EnableSubPropertySet, &QtnProperty::propertyDidChange, this, &QtnPropertySetSamplePS::on_EnableSubPropertySet_propertyDidChange);
+    QObject::connect(&QColorProperty, &QtnProperty::propertyDidChange, this, &QtnPropertySetSamplePS::on_QColorProperty_propertyDidChange);
 }
 
 void QtnPropertySetSamplePS::disconnectSlots()
 {
     QObject::disconnect(&EnableSubPropertySet, &QtnProperty::propertyDidChange, this, &QtnPropertySetSamplePS::on_EnableSubPropertySet_propertyDidChange);
+    QObject::disconnect(&QColorProperty, &QtnProperty::propertyDidChange, this, &QtnPropertySetSamplePS::on_QColorProperty_propertyDidChange);
 }
 
 void QtnPropertySetSamplePS::on_EnableSubPropertySet_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
@@ -476,6 +479,14 @@ void QtnPropertySetSamplePS::on_EnableSubPropertySet_propertyDidChange(const Qtn
     Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason);
     
             SubPropertySet.switchState(QtnPropertyStateImmutable, !EnableSubPropertySet);
+        
+}
+
+void QtnPropertySetSamplePS::on_QColorProperty_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+{
+    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason);
+    
+            qDebug() << Q_FUNC_INFO << "Poperty has changed: " << this;
         
 }
 

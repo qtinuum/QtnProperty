@@ -2,6 +2,7 @@
 #include "../Core/PropertyGUI.h"
 
 #include_cpp <QFileDialog>
+#include_cpp <QDebug>
 
 enum COLOR
 {
@@ -181,6 +182,10 @@ property_set SamplePS
     {
         description = "Property to hold QColor value.";
         value = Qt::blue;
+        slot propertyDidChange
+        {
+            qDebug() << Q_FUNC_INFO << "Poperty has changed: " << this;
+        }
     }
 
     QFont QFontProperty

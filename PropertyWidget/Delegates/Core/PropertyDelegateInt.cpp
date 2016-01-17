@@ -51,10 +51,13 @@ private:
     }
 };
 
-static bool regIntDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyIntBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>
-                                , "SpinBox");
+bool regIntDelegate() {
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyIntBase::staticMetaObject
+			     , &qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>
+			     , "SpinBox");
+  return true;
+}
 
 QWidget* QtnPropertyDelegateInt::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
