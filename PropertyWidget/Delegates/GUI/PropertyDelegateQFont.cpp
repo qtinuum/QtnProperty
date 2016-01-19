@@ -247,7 +247,7 @@ QWidget* QtnPropertyDelegateQFont::createValueEditorImpl(QWidget* parent, const 
     return editor;
 }
 
-bool QtnPropertyDelegateQFont::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQFont::propertyValueToStrImpl(QString& strValue) const
 {
     QFont value = owner().value();
     strValue = QString("[%1, %2]").arg(value.family()).arg(value.pointSize());

@@ -102,7 +102,7 @@ QWidget* QtnPropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const Q
 
 }
 
-bool QtnPropertyDelegateEnum::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateEnum::propertyValueToStrImpl(QString& strValue) const
 {
     QtnEnumValueType value = owner().value();
     const QtnEnumInfo* info = owner().enumInfo();

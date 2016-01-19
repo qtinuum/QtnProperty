@@ -22,7 +22,7 @@ QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(const QtnPropertyDelegate
 {
 }
 
-QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnProperty& owner) const
+QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnPropertyBase &owner) const
 {
     const QMetaObject* metaObject = owner.metaObject();
     while (metaObject)
@@ -106,6 +106,7 @@ QtnPropertyDelegateFactory& QtnPropertyDelegateFactory::staticInstance()
     return factory;
 }
 
+void regPropertySetDelegates();
 void regBoolDelegates();
 void regDoubleDelegates();
 void regEnumDelegates();
@@ -120,13 +121,14 @@ void regUIntDelegates();
 void regQColorDelegates();
 void regQFontDelegates();
 
-bool initQtnPropertyWidget()
+bool initQtnPropertyWidgetLibrary()
 {
     static bool initialized = false;
 
     if (initialized)
         return false;
 
+    regPropertySetDelegates();
     regBoolDelegates();
     regDoubleDelegates();
     regEnumDelegates();
@@ -145,5 +147,5 @@ bool initQtnPropertyWidget()
     return true;
 }
 
-bool initializeQtnPropertyWidget = initQtnPropertyWidget();
+bool initializeQtnPropertyWidgetLibrary = initQtnPropertyWidgetLibrary();
 

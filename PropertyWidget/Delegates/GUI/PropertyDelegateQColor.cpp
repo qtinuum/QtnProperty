@@ -134,7 +134,7 @@ QWidget* QtnPropertyDelegateQColor::createValueEditorImpl(QWidget* parent, const
     return editor;
 }
 
-bool QtnPropertyDelegateQColor::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQColor::propertyValueToStrImpl(QString& strValue) const
 {
     strValue = owner().value().name();
     return true;

@@ -200,7 +200,7 @@ QWidget* QtnPropertyDelegateBoolCombobox::createValueEditorImpl(QWidget* parent,
     }
 }
 
-bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateBoolCombobox::propertyValueToStrImpl(QString& strValue) const
 {
     strValue = m_labels[owner().value()];
     return true;

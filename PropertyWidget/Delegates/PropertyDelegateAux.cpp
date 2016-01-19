@@ -14,23 +14,5 @@
    limitations under the License.
 */
 
-#ifndef PROPERTY_DELEGATE_QRECT_H
-#define PROPERTY_DELEGATE_QRECT_H
+#include "PropertyDelegateAux.h"
 
-#include "../PropertyDelegate.h"
-
-class QtnPropertyQRectBase;
-
-class QTN_PW_EXPORT QtnPropertyDelegateQRect: public QtnPropertyDelegateTypedEx<QtnPropertyQRectBase>
-{
-    Q_DISABLE_COPY(QtnPropertyDelegateQRect)
-
-public:
-    QtnPropertyDelegateQRect(QtnPropertyQRectBase& owner);
-
-protected:
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-    bool propertyValueToStrImpl(QString& strValue) const override;
-};
-
-#endif // PROPERTY_DELEGATE_QRECT_H

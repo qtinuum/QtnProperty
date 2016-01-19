@@ -19,25 +19,9 @@
 
 #include "../PropertyWidgetAPI.h"
 #include "../../Core/Property.h"
+#include "PropertyDelegateAux.h"
 
-#include <functional>
-#include <QStylePainter>
-
-class QKeyEvent;
-class QtnPropertyDelegateFactory;
-
-class QTN_PW_EXPORT QtnInplaceInfo
-{
-public:
-    QEvent* activationEvent;
-
-    QtnInplaceInfo()
-        : activationEvent(0)
-    {
-    }
-};
-
-QTN_PW_EXPORT QString qtnElidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided = 0);
+class QtnInplaceInfo;
 
 class QTN_PW_EXPORT QtnPropertyDelegate
 {
@@ -56,10 +40,7 @@ public:
     // tune up with attributes
     void applyAttributes(const QtnPropertyDelegateAttributes& attributes);
 
-    void drawValue(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;
-    QString toolTip() const;
-    bool acceptKeyPressedForInplaceEdit(QKeyEvent* keyEvent) const;
-    QWidget* createValueEditor(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr);
+    void createSubItems(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
 
 protected:
     QtnPropertyDelegate() {}
@@ -68,22 +49,37 @@ protected:
     virtual const QtnPropertyBase* propertyImmutableImpl() const = 0;
     virtual int subPropertyCountImpl() const { return 0; }
     virtual QtnPropertyBase* subPropertyImpl(int index) { Q_UNUSED(index); return nullptr; }
+
     virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) { Q_UNUSED(attributes); }
+
+    virtual void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) = 0;
+
+    // helper functions
+    static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr);
+};
+
+class QTN_PW_EXPORT QtnPropertyDelegateValued: public QtnPropertyDelegate
+{
+    Q_DISABLE_COPY(QtnPropertyDelegateValued)
+
+protected:
+    QtnPropertyDelegateValued() {}
+
+    void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
+
     virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;
     virtual QString toolTipImpl() const;
     virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const;
     virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) = 0;
 
-    // override this if property value can be displayed as string
-    virtual bool propertyValueToStr(QString& strValue) const { Q_UNUSED(strValue); return false; }
+    // override if property value can be displayed as string
+    virtual bool propertyValueToStrImpl(QString& strValue) const { Q_UNUSED(strValue); return false; }
 
-    // helper functions
-    static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr);
     QWidget* createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo = nullptr);
 };
 
-template <typename PropertyClass>
-class QtnPropertyDelegateTyped: public QtnPropertyDelegate
+template <typename PropertyClass, typename DelegateClass = QtnPropertyDelegateValued>
+class QtnPropertyDelegateTyped: public DelegateClass
 {
     Q_DISABLE_COPY(QtnPropertyDelegateTyped)
 
@@ -108,8 +104,8 @@ private:
     PropertyClass& m_owner;
 };
 
-template <typename PropertyClass>
-class QtnPropertyDelegateTypedEx: public QtnPropertyDelegateTyped<PropertyClass>
+template <typename PropertyClass, typename DelegateClass = QtnPropertyDelegateValued>
+class QtnPropertyDelegateTypedEx: public QtnPropertyDelegateTyped<PropertyClass, DelegateClass>
 {
     Q_DISABLE_COPY(QtnPropertyDelegateTypedEx)
 
@@ -138,5 +134,20 @@ protected:
 private:
     QList<QSharedPointer<QtnPropertyBase>> m_subProperties;
 };
+
+
+class QTN_PW_EXPORT QtnInplaceInfo
+{
+public:
+    QEvent* activationEvent;
+
+    QtnInplaceInfo()
+        : activationEvent(0)
+    {
+    }
+};
+
+QTN_PW_EXPORT QString qtnElidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided = 0);
+
 
 #endif // QTN_PROPERTY_DELEGATE_H

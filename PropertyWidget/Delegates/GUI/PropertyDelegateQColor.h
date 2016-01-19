@@ -32,7 +32,7 @@ protected:
     void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
     void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-    bool propertyValueToStr(QString& strValue) const override;
+    bool propertyValueToStrImpl(QString& strValue) const override;
 
 private:
     quint32 m_shape;

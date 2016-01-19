@@ -46,7 +46,7 @@ public:
 protected:
     void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-    bool propertyValueToStr(QString& strValue) const override;
+    bool propertyValueToStrImpl(QString& strValue) const override;
 
 private:
     QString m_labels[2];

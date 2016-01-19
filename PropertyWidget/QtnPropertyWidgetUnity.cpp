@@ -14,6 +14,8 @@
 #include "Delegates/PropertyEditorHandler.cpp"
 #include "Delegates/Core/PropertyDelegateEnumFlags.cpp"
 #include "Delegates/PropertyDelegate.cpp"
+#include "Delegates/PropertyDelegateAux.cpp"
+#include "Delegates/PropertyDelegatePropertySet.cpp"
 #include "Delegates/PropertyEditorAux.cpp"
 #include "Delegates/Core/PropertyDelegateQSize.cpp"
 #include "Delegates/Core/PropertyDelegateQPoint.cpp"

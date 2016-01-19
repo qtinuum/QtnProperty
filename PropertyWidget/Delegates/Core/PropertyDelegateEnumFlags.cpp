@@ -123,7 +123,7 @@ QWidget* QtnPropertyDelegateEnumFlags::createValueEditorImpl(QWidget* parent, co
     return lineEdit;
 }
 
-bool QtnPropertyDelegateEnumFlags::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateEnumFlags::propertyValueToStrImpl(QString& strValue) const
 {
     strValue = enumFlagsProperty2Str(owner());
     return true;

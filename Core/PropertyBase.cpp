@@ -18,6 +18,60 @@
 #include <QDebug>
 #include <QtScript/QScriptEngine>
 
+class QtnPropertyDelegateInfoGetter
+{
+    Q_DISABLE_COPY(QtnPropertyDelegateInfoGetter)
+
+public:
+    virtual const QtnPropertyDelegateInfo* delegate() const = 0;
+
+    virtual ~QtnPropertyDelegateInfoGetter() {}
+
+protected:
+    QtnPropertyDelegateInfoGetter() {}
+};
+
+class QtnPropertyDelegateInfoGetterValue: public QtnPropertyDelegateInfoGetter
+{
+public:
+    QtnPropertyDelegateInfoGetterValue(const QtnPropertyDelegateInfo& delegate)
+        : m_delegate(delegate)
+    {
+    }
+
+    const QtnPropertyDelegateInfo* delegate() const override
+    {
+        return &m_delegate;
+    }
+
+private:
+    QtnPropertyDelegateInfo m_delegate;
+};
+
+class QtnPropertyDelegateInfoGetterCallback: public QtnPropertyDelegateInfoGetter
+{
+public:
+    QtnPropertyDelegateInfoGetterCallback(const std::function<const QtnPropertyDelegateInfo* ()>& callback)
+        : m_callback(callback)
+    {
+    }
+
+    const QtnPropertyDelegateInfo* delegate() const override
+    {
+        if (m_delegate.isNull())
+        {
+            m_delegate.reset(m_callback());
+        }
+
+        return m_delegate.data();
+    }
+
+private:
+    std::function<const QtnPropertyDelegateInfo* ()> m_callback;
+    mutable QScopedPointer<const QtnPropertyDelegateInfo> m_delegate;
+};
+
+
 static int qtnPropertyChangeReasonMetaId = qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
 static int qtnPropertyPtrId = qRegisterMetaType<QtnPropertyBase*>("QtnPropertyBase*");
 static quint16 qtnPropertyMagicNumber = 0x1984;
@@ -393,6 +447,24 @@ bool QtnPropertyBase::toVariantImpl(QVariant& var) const
 
     var.setValue<QString>(str);
     return true;
+}
+
+const QtnPropertyDelegateInfo* QtnPropertyBase::delegate() const
+{
+    if (m_delegateInfoGetter.isNull())
+        return 0;
+
+    return m_delegateInfoGetter->delegate();
+}
+
+void QtnPropertyBase::setDelegate(const QtnPropertyDelegateInfo& delegate)
+{
+    m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterValue(delegate));
+}
+
+void QtnPropertyBase::setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback)
+{
+    m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterCallback(callback));
 }
 
 QMetaObject::Connection QtnPropertyBase::connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)

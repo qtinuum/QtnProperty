@@ -97,21 +97,6 @@ protected:
     void keyPressEvent(QKeyEvent* e) override;
     void tooltipEvent(QHelpEvent* e);
 
-    // override these functions to customize UI
-    //
-    // draws branch sign and returns it's width
-    virtual int drawBranchNodeImpl(QStylePainter& painter, const QRect& rect, const QtnPropertyBase* property) const;
-    // draws background of the property set
-    virtual void drawPropertySetBackgroundImpl(QStylePainter &painter, const QRect &rect, const QtnPropertyBase* property) const;
-    // draws name region of the property set
-    virtual void drawPropertySetNameImpl(QStylePainter &painter, const QRect &rect, const QtnPropertyBase* property) const;
-    // draws background of the property
-    virtual void drawPropertyBackgroundImpl(QStylePainter &painter, const QRect &rect, const QtnPropertyBase* property) const;
-    // draws name region of the property
-    virtual void drawPropertyNameImpl(QStylePainter& painter, const QRect& rect, const QtnPropertyBase* property) const;
-    // draws value region of the property set
-    virtual void drawPropertyValueImpl(QStylePainter& painter, const QRect& rect, const QtnPropertyDelegate* delegate, bool* needTooltip) const;
-
 private:
 
     struct Item
@@ -132,30 +117,24 @@ private:
         bool collapsed() const { return property->stateLocal() & QtnPropertyStateCollapsed; }
     };
 
-    struct Action
-    {
-        QRect rect;
-        std::function<bool(QEvent *, QRect)> action;
-    };
-
     struct VisibleItem
     {
         Item *item;
         int level;
         bool hasChildren;
 
-        mutable QList<Action> actions;
-        mutable bool actionsValid;
-        mutable bool needTooltip;
+        mutable QList<QtnPropertyDelegateSubItem> subItems;
+        mutable bool subItemsValid;
 
         VisibleItem()
             : item(nullptr),
               level(0),
               hasChildren(false),
-              actionsValid(false),
-              needTooltip(false)
+              subItemsValid(false)
         {
         }
+
+        bool handleEvent(QtnPropertyDelegateEventContext& context) const;
     };
 
 private:
@@ -167,9 +146,7 @@ private:
     void fillVisibleItems(Item* item, int level) const;
     bool acceptItem(Item& item) const;
 
-    void drawBranchNode(QStylePainter& painter, QRect& rect, const VisibleItem& vItem) const;
-    void drawPropertySetItem(QStylePainter &painter, const QRect &rect, const VisibleItem& vItem) const;
-    void drawPropertyItem(QStylePainter& painter, const QRect& rect, const VisibleItem& vItem) const;
+    void drawItem(QStylePainter& painter, const QRect& rect, const VisibleItem& vItem) const;
 
     void changeActivePropertyByIndex(int index);
     int visibleItemIndexByPoint(QPoint pos) const;
@@ -182,12 +159,12 @@ private:
     void updateStyleStuff();
 
     bool ensureVisibleItemByIndex(int index);
-    void invalidateVisibleItemsActions();
+    void invalidateSubItems();
 
     int splitPosition() const;
     void updateSplitRatio(float splitRatio);
 
-    void OnPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+    void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 
 private:
     QtnPropertySet* m_propertySet;

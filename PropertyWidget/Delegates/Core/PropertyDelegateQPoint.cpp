@@ -38,7 +38,7 @@ QWidget* QtnPropertyDelegateQPoint::createValueEditorImpl(QWidget* parent, const
     return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool QtnPropertyDelegateQPoint::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQPoint::propertyValueToStrImpl(QString& strValue) const
 {
     QPoint value = owner().value();
     strValue = QString("%1 x %2").arg(value.x()).arg(value.y());

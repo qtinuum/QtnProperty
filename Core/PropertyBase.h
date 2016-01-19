@@ -18,12 +18,15 @@
 #define QTN_PROPERTY_BASE_H
 
 #include "Auxiliary/PropertyAux.h"
+#include "Auxiliary/PropertyDelegateInfo.h"
 #include <QDataStream>
 #include <QVariant>
+#include <functional>
 
 class QScriptEngine;
 class QtnPropertySet;
 class QtnProperty;
+class QtnPropertyDelegateInfoGetter;
 
 class QTN_PE_CORE_EXPORT QtnPropertyBase: public QObject
 {
@@ -76,6 +79,11 @@ public:
     virtual QtnPropertySet* asPropertySet() { return nullptr; }
     virtual const QtnPropertySet* asPropertySet() const { return nullptr; }
 
+    // delegates
+    const QtnPropertyDelegateInfo* delegate() const;
+    void setDelegate(const QtnPropertyDelegateInfo& delegate);
+    void setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback);
+
     static QMetaObject::Connection connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
     static bool disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
 
@@ -122,6 +130,8 @@ private:
 
     QtnPropertyState m_stateLocal;
     QtnPropertyState m_stateInherited;
+
+    QScopedPointer<QtnPropertyDelegateInfoGetter> m_delegateInfoGetter;
 
     friend class QtnPropertySet;
 };

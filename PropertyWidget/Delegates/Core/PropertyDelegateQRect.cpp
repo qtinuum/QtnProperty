@@ -42,7 +42,7 @@ QWidget* QtnPropertyDelegateQRect::createValueEditorImpl(QWidget* parent, const 
     return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool QtnPropertyDelegateQRect::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQRect::propertyValueToStrImpl(QString& strValue) const
 {
     QRect value = owner().value();
     strValue = QString("[(%1, %2), %3 x %4]").arg(value.left()).arg(value.top()).arg(value.width()).arg(value.height());

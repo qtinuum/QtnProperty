@@ -25,11 +25,11 @@ class QTN_PW_EXPORT QtnPropertyDelegateFactory
     Q_DISABLE_COPY(QtnPropertyDelegateFactory)
 
 public:
-    typedef QtnPropertyDelegate *CreateFunction(QtnProperty&);
+    typedef QtnPropertyDelegate *CreateFunction(QtnPropertyBase&);
 
     explicit QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory = nullptr);
 
-    QtnPropertyDelegate* createDelegate(QtnProperty& owner) const;
+    QtnPropertyDelegate* createDelegate(QtnPropertyBase& owner) const;
 
     bool registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName = "");
     bool registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName);
@@ -54,7 +54,7 @@ private:
 };
 
 template <typename PropertyDelegateClass, typename PropertyClass>
-QtnPropertyDelegate* qtnCreateDelegate(QtnProperty& owner)
+QtnPropertyDelegate* qtnCreateDelegate(QtnPropertyBase& owner)
 {
     PropertyClass* theOwner = qobject_cast<PropertyClass*>(&owner);
     if (!theOwner)

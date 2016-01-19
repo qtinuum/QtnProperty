@@ -31,7 +31,7 @@ public:
 protected:
     void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-    bool propertyValueToStr(QString& strValue) const override;
+    bool propertyValueToStrImpl(QString& strValue) const override;
 };
 
 #endif // PROPERTY_DELEGATE_QFONT_H

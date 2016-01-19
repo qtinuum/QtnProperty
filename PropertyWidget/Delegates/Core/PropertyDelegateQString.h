@@ -31,7 +31,7 @@ public:
 protected:
     bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const override;
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-    bool propertyValueToStr(QString& strValue) const override;
+    bool propertyValueToStrImpl(QString& strValue) const override;
 };
 
 class QTN_PW_EXPORT QtnPropertyDelegateQStringInvalidBase: public QtnPropertyDelegateQString

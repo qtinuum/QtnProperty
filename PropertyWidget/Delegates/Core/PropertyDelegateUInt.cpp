@@ -104,7 +104,7 @@ QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget* parent, const Q
     return spinBox;
 }
 
-bool QtnPropertyDelegateUInt::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateUInt::propertyValueToStrImpl(QString& strValue) const
 {
     strValue = QString::number(owner().value());
     return true;

@@ -2,7 +2,7 @@ include(../Config.pri)
 
 TARGET = QtnPropertyWidget
 TEMPLATE = lib
-VERSION = 1.0.0
+VERSION = 1.1.0
 
 QT += core gui widgets script
 CONFIG += staticlib
@@ -30,6 +30,8 @@ else: SOURCES += PropertyWidget.cpp \
     Delegates/GUI/PropertyDelegateQColor.cpp \
     Delegates/Core/PropertyDelegateEnumFlags.cpp \
     Delegates/PropertyDelegate.cpp \
+    Delegates/PropertyDelegateAux.cpp \
+    Delegates/PropertyDelegatePropertySet.cpp \
     Delegates/PropertyEditorAux.cpp \
     Delegates/Core/PropertyDelegateQSize.cpp \
     Delegates/Core/PropertyDelegateQPoint.cpp \
@@ -41,6 +43,8 @@ HEADERS += PropertyWidgetAPI.h \
     PropertyView.h \
     Utils/InplaceEditing.h \
     Delegates/PropertyDelegate.h \
+    Delegates/PropertyDelegatePropertySet.h \
+    Delegates/PropertyDelegateAux.h \
     Delegates/PropertyDelegateFactory.h \
     Delegates/Core/PropertyDelegateBool.h \
     Delegates/Core/PropertyDelegateInt.h \

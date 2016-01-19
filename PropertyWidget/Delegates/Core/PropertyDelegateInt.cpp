@@ -75,7 +75,7 @@ QWidget* QtnPropertyDelegateInt::createValueEditorImpl(QWidget* parent, const QR
     return spinBox;
 }
 
-bool QtnPropertyDelegateInt::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateInt::propertyValueToStrImpl(QString& strValue) const
 {
     strValue = QString::number(owner().value());
     return true;

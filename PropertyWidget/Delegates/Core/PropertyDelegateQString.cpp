@@ -116,7 +116,7 @@ QWidget* QtnPropertyDelegateQString::createValueEditorImpl(QWidget* parent, cons
     return lineEdit;
 }
 
-bool QtnPropertyDelegateQString::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQString::propertyValueToStrImpl(QString& strValue) const
 {
     strValue = owner().value();
     return true;
