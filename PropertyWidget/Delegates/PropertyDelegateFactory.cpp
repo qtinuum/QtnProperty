@@ -120,6 +120,7 @@ void regQStringDelegates();
 void regUIntDelegates();
 void regQColorDelegates();
 void regQFontDelegates();
+void regButtonDelegates();
 
 bool initQtnPropertyWidgetLibrary()
 {
@@ -142,6 +143,7 @@ bool initQtnPropertyWidgetLibrary()
     regUIntDelegates();
     regQColorDelegates();
     regQFontDelegates();
+    regButtonDelegates();
 
     initialized = true;
     return true;

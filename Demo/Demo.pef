@@ -26,6 +26,18 @@ property_set SamplePS
         value = false;
     }
 
+    Button ButtonProperty
+    {
+        clickHandler = [](const QtnPropertyButton* bttn) {
+            qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
+        };
+        
+        delegate
+        {
+            title = "Click me";
+        }
+    }
+
     Double DoubleProperty
     {
         description = "Property to hold double values in range [10, 20].";

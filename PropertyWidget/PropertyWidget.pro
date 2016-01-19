@@ -27,7 +27,6 @@ else: SOURCES += PropertyWidget.cpp \
     Delegates/Core/PropertyDelegateEnum.cpp \
     Delegates/Core/PropertyDelegateQRect.cpp \
     Delegates/PropertyEditorHandler.cpp \
-    Delegates/GUI/PropertyDelegateQColor.cpp \
     Delegates/Core/PropertyDelegateEnumFlags.cpp \
     Delegates/PropertyDelegate.cpp \
     Delegates/PropertyDelegateAux.cpp \
@@ -36,6 +35,8 @@ else: SOURCES += PropertyWidget.cpp \
     Delegates/Core/PropertyDelegateQSize.cpp \
     Delegates/Core/PropertyDelegateQPoint.cpp \
     Delegates/GUI/PropertyDelegateQFont.cpp \
+    Delegates/GUI/PropertyDelegateQColor.cpp \
+    Delegates/GUI/PropertyDelegateButton.cpp \
     Utils/AccessibilityProxy.cpp
 
 HEADERS += PropertyWidgetAPI.h \
@@ -55,12 +56,13 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/Core/PropertyDelegateEnum.h \
     Delegates/Core/PropertyDelegateQRect.h \
     Delegates/PropertyEditorHandler.h \
-    Delegates/GUI/PropertyDelegateQColor.h \
     Delegates/Core/PropertyDelegateEnumFlags.h \
     Delegates/PropertyEditorAux.h \
     Delegates/Core/PropertyDelegateQSize.h \
     Delegates/Core/PropertyDelegateQPoint.h \
     Delegates/GUI/PropertyDelegateQFont.h \
+    Delegates/GUI/PropertyDelegateQColor.h \
+    Delegates/GUI/PropertyDelegateButton.h \
     Utils/AccessibilityProxy.h
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCore

@@ -4,5 +4,6 @@
 #include "PropertySet.h"
 #include "GUI/PropertyQColor.h"
 #include "GUI/PropertyQFont.h"
+#include "GUI/PropertyButton.h"
 
 #endif // PROPERTYGUI_H

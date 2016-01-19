@@ -47,6 +47,11 @@ public:
 
     const bool isActive;
     const bool hasChildren;
+
+    QStyle* style() const;
+    void initStyleOption(QStyleOption& option) const;
+    const QPalette& palette() const;
+    QPalette::ColorGroup colorGroup() const;
 };
 
 struct QTN_PW_EXPORT QtnPropertyDelegateEventContext

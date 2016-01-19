@@ -217,6 +217,7 @@ void QtnPropertySetSubPropertySetType::connectDelegates()
 QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
+    , ButtonProperty(*new QtnPropertyButton(this))
     , DoubleProperty(*new QtnPropertyDouble(this))
     , FloatProperty(*new QtnPropertyFloat(this))
     , IntProperty(*new QtnPropertyInt(this))
@@ -248,6 +249,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     Q_UNUSED(other);
 
     BoolProperty = other.BoolProperty;
+    ButtonProperty = other.ButtonProperty;
     DoubleProperty = other.DoubleProperty;
     FloatProperty = other.FloatProperty;
     IntProperty = other.IntProperty;
@@ -290,6 +292,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->BoolProperty.state() & ignoreMask))
     {
         BoolProperty = theCopyFrom->BoolProperty;
+    }
+
+    if (!(theCopyFrom->ButtonProperty.state() & ignoreMask))
+    {
+        ButtonProperty = theCopyFrom->ButtonProperty;
     }
 
     if (!(theCopyFrom->DoubleProperty.state() & ignoreMask))
@@ -375,6 +382,11 @@ void QtnPropertySetSamplePS::init()
     static QString BoolProperty_description = "Property to hold boolean values.";
     BoolProperty.setDescription(BoolProperty_description);
     BoolProperty.setValue(false);
+    static QString ButtonProperty_name = tr("ButtonProperty");
+    ButtonProperty.setName(ButtonProperty_name);
+    ButtonProperty.setClickHandler([](const QtnPropertyButton* bttn) {
+            qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
+        });
     static QString DoubleProperty_name = tr("DoubleProperty");
     DoubleProperty.setName(DoubleProperty_name);
     static QString DoubleProperty_description = "Property to hold double values in range [10, 20].";
@@ -492,4 +504,9 @@ void QtnPropertySetSamplePS::on_QColorProperty_propertyDidChange(const QtnProper
 
 void QtnPropertySetSamplePS::connectDelegates()
 {
+    ButtonProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->attributes["title"] = "Click me";
+        return info.take();
+    });
 }

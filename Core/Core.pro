@@ -33,6 +33,7 @@ else: SOURCES += PropertyBase.cpp \
     Core/PropertyQSize.cpp \
     Core/PropertyQPoint.cpp \
     GUI/PropertyQColor.cpp \
+    GUI/PropertyButton.cpp \
     GUI/PropertyQFont.cpp
 
 HEADERS += CoreAPI.h\
@@ -59,4 +60,5 @@ HEADERS += CoreAPI.h\
     Core/PropertyQSize.h \
     Core/PropertyQPoint.h \
     GUI/PropertyQColor.h \
+    GUI/PropertyButton.h \
     GUI/PropertyQFont.h

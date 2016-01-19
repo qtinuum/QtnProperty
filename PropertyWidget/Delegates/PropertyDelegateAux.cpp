@@ -15,4 +15,31 @@
 */
 
 #include "PropertyDelegateAux.h"
+#include "PropertyView.h"
 
+QStyle* QtnPropertyDelegateDrawContext::style() const
+{
+    return widget->style();
+}
+
+void QtnPropertyDelegateDrawContext::initStyleOption(QStyleOption& option) const
+{
+    option.initFrom(widget);
+    // State_MouseOver should be set explicitly
+    option.state &= ~QStyle::State_MouseOver;
+}
+
+const QPalette& QtnPropertyDelegateDrawContext::palette() const
+{
+    return widget->palette();
+}
+
+QPalette::ColorGroup QtnPropertyDelegateDrawContext::colorGroup() const
+{
+    if (!widget->isEnabled())
+        return QPalette::Disabled;
+    else if (!widget->hasFocus())
+        return QPalette::Inactive;
+    else
+        return QPalette::Active;
+}

@@ -21,4 +21,4 @@
 #include "Delegates/Core/PropertyDelegateQPoint.cpp"
 #include "Delegates/GUI/PropertyDelegateQFont.cpp"
 #include "Delegates/GUI/PropertyDelegateQColor.cpp"
-//#include "Delegates/GUI/PropertyDelegateQAction.cpp"
+#include "Delegates/GUI/PropertyDelegateButton.cpp"
