@@ -218,6 +218,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
     , ButtonProperty(*new QtnPropertyButton(this))
+    , RGBColor(*new QtnPropertyQColor(this))
     , DoubleProperty(*new QtnPropertyDouble(this))
     , FloatProperty(*new QtnPropertyFloat(this))
     , IntProperty(*new QtnPropertyInt(this))
@@ -250,6 +251,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
 
     BoolProperty = other.BoolProperty;
     ButtonProperty = other.ButtonProperty;
+    RGBColor = other.RGBColor;
     DoubleProperty = other.DoubleProperty;
     FloatProperty = other.FloatProperty;
     IntProperty = other.IntProperty;
@@ -297,6 +299,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->ButtonProperty.state() & ignoreMask))
     {
         ButtonProperty = theCopyFrom->ButtonProperty;
+    }
+
+    if (!(theCopyFrom->RGBColor.state() & ignoreMask))
+    {
+        RGBColor = theCopyFrom->RGBColor;
     }
 
     if (!(theCopyFrom->DoubleProperty.state() & ignoreMask))
@@ -387,6 +394,11 @@ void QtnPropertySetSamplePS::init()
     ButtonProperty.setClickHandler([](const QtnPropertyButton* bttn) {
             qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
         });
+    static QString RGBColor_name = tr("RGBColor");
+    RGBColor.setName(RGBColor_name);
+    static QString RGBColor_description = "QColor property with RGB components";
+    RGBColor.setDescription(RGBColor_description);
+    RGBColor.setValue(QColor(123, 150, 10));
     static QString DoubleProperty_name = tr("DoubleProperty");
     DoubleProperty.setName(DoubleProperty_name);
     static QString DoubleProperty_description = "Property to hold double values in range [10, 20].";
@@ -507,6 +519,11 @@ void QtnPropertySetSamplePS::connectDelegates()
     ButtonProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["title"] = "Click me";
+        return info.take();
+    });
+    RGBColor.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->attributes["rgbSubItems"] = true;
         return info.take();
     });
 }

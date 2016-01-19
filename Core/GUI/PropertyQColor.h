@@ -48,6 +48,10 @@ protected:
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQColorBase, QColor)
 
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateRedProperty(QObject *parent, QtnPropertyQColorBase *propertyColor);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateGreenProperty(QObject *parent, QtnPropertyQColorBase *propertyColor);
+QTN_PE_CORE_EXPORT QtnProperty* qtnCreateBlueProperty(QObject *parent, QtnPropertyQColorBase *propertyColor);
+
 class QTN_PE_CORE_EXPORT QtnPropertyQColorCallback: public QtnSinglePropertyCallback<QtnPropertyQColorBase>
 {
     Q_OBJECT

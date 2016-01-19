@@ -84,6 +84,7 @@ public:
     // start children declarations
     QtnPropertyBool& BoolProperty;
     QtnPropertyButton& ButtonProperty;
+    QtnPropertyQColor& RGBColor;
     QtnPropertyDouble& DoubleProperty;
     QtnPropertyFloat& FloatProperty;
     QtnPropertyInt& IntProperty;

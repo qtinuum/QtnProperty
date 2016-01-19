@@ -32,10 +32,14 @@ property_set SamplePS
             qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
         };
         
-        delegate
-        {
-            title = "Click me";
-        }
+        delegate { title = "Click me"; }
+    }
+
+    QColor RGBColor
+    {
+        description = "QColor property with RGB components";
+        value = QColor(123, 150, 10);
+        delegate { rgbSubItems = true; }
     }
 
     Double DoubleProperty

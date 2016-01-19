@@ -69,7 +69,7 @@ private:
 };
 
 QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(QtnPropertyQColorBase& owner)
-    : QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner),
+    : QtnPropertyDelegateTypedEx<QtnPropertyQColorBase>(owner),
       m_shape(QtnColorDelegateShapeSquare)
 {
 }
@@ -77,6 +77,15 @@ QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(QtnPropertyQColorBase& owne
 void QtnPropertyDelegateQColor::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
 {
     qtnGetAttribute(attributes, "shape", m_shape);
+
+    bool rgbSubItems = false;
+    qtnGetAttribute(attributes, "rgbSubItems", rgbSubItems);
+    if (rgbSubItems)
+    {
+        addSubProperty(qtnCreateRedProperty(0, &owner()));
+        addSubProperty(qtnCreateGreenProperty(0, &owner()));
+        addSubProperty(qtnCreateBlueProperty(0, &owner()));
+    }
 }
 
 void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
