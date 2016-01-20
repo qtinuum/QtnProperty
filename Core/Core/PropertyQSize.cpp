@@ -20,7 +20,6 @@
 QtnPropertyQSizeBase::QtnPropertyQSizeBase(QObject *parent)
     : QtnSinglePropertyBase<QSize>(parent)
 {
-    addState(QtnPropertyStateCollapsed);
 }
 
 bool QtnPropertyQSizeBase::fromStrImpl(const QString& str)

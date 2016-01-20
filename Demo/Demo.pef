@@ -42,6 +42,17 @@ property_set SamplePS
         delegate { rgbSubItems = true; }
     }
 
+    Float FloatPropertySliderBox
+    {
+        description = "Property to hold float values in range [0, 10].";
+        value = 1.f;
+        minValue = 0;
+        maxValue = 10.f;
+        stepValue = 0.1f;
+        
+        delegate SliderBox;
+    }
+
     Double DoubleProperty
     {
         description = "Property to hold double values in range [10, 20].";

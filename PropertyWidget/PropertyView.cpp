@@ -79,7 +79,7 @@ QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
       m_style(QtnPropertyViewStyleLiveSplit),
       m_itemHeight(0),
       m_itemHeightSpacing(6),
-      m_leadMargin(0),
+      m_valueLeftMargin(0),
       m_splitRatio(0.5f),
       m_rubberBand(nullptr),
       m_accessibilityProxy(nullptr)
@@ -176,6 +176,11 @@ void QtnPropertyView::removePropertyViewStyle(QtnPropertyViewStyle style)
     setPropertyViewStyle(propertyViewStyle() & ~style);
 }
 
+int QtnPropertyView::valueLeftMargin() const
+{
+    return m_valueLeftMargin;
+}
+
 void QtnPropertyView::paintEvent(QPaintEvent* e)
 {
     Q_UNUSED(e);
@@ -212,7 +217,7 @@ void QtnPropertyView::drawItem(QStylePainter& painter, const QRect& rect, const 
         return;
     }
 
-    QMargins margins(m_leadMargin + rect.height() * vItem.level, 0, 0, 0);
+    QMargins margins(m_valueLeftMargin + rect.height() * vItem.level, 0, 0, 0);
     bool isActive = (m_activeProperty == vItem.item->property);
 
     QtnPropertyDelegateDrawContext drawContext{&painter, this,
@@ -789,7 +794,7 @@ void QtnPropertyView::updateStyleStuff()
 
     m_propertySetBackdroundColor = m_linesColor = palette().color(QPalette::Button);
 
-    m_leadMargin = style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
+    m_valueLeftMargin = style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
 }
 
 bool QtnPropertyView::ensureVisibleItemByIndex(int index)

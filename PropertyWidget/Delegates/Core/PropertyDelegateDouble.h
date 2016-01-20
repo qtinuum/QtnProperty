@@ -21,7 +21,7 @@
 
 class QtnPropertyDoubleBase;
 
-class QTN_PW_EXPORT QtnPropertyDelegateDouble: public QtnPropertyDelegateTyped<QtnPropertyDoubleBase, QtnPropertyDelegateValued>
+class QTN_PW_EXPORT QtnPropertyDelegateDouble: public QtnPropertyDelegateTyped<QtnPropertyDoubleBase>
 {
     Q_DISABLE_COPY(QtnPropertyDelegateDouble)
 

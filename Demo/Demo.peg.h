@@ -85,6 +85,7 @@ public:
     QtnPropertyBool& BoolProperty;
     QtnPropertyButton& ButtonProperty;
     QtnPropertyQColor& RGBColor;
+    QtnPropertyFloat& FloatPropertySliderBox;
     QtnPropertyDouble& DoubleProperty;
     QtnPropertyFloat& FloatProperty;
     QtnPropertyInt& IntProperty;

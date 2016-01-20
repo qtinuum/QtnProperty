@@ -20,7 +20,6 @@
 QtnPropertyQRectBase::QtnPropertyQRectBase(QObject *parent)
     : QtnSinglePropertyBase<QRect>(parent)
 {
-    addState(QtnPropertyStateCollapsed);
 }
 
 bool QtnPropertyQRectBase::fromStrImpl(const QString& str)

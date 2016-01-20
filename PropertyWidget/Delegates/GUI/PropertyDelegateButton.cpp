@@ -93,7 +93,7 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContex
         context.painter->restore();
     };
 
-    buttonItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item) -> bool {
+    buttonItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
         bool doClick = false;
         switch (context.event->type())
         {

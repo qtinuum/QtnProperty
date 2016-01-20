@@ -14,8 +14,8 @@
    limitations under the License.
 */
 
-#ifndef PROPERTYBASIS_H
-#define PROPERTYBASIS_H
+#ifndef PROPERTY_TEMPLATES_H
+#define PROPERTY_TEMPLATES_H
 
 #include "../Property.h"
 #include "PropertyMacro.h"
@@ -238,6 +238,12 @@ public:
     void incrementValue(int steps = 1)
     {
         ValueType newValue = this->value() + (stepValue() * (ValueType)steps);
+
+        if (newValue < minValue())
+            newValue = minValue();
+        else if (newValue > maxValue())
+            newValue = maxValue();
+
         this->setValue(newValue);
     }
 
@@ -308,4 +314,4 @@ private:
     Q_DISABLE_COPY(QtnNumericPropertyValue)
 };
 
-#endif // PROPERTYBASIS_H
+#endif // PROPERTY_TEMPLATES_H

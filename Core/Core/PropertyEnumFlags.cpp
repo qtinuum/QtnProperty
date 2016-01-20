@@ -20,8 +20,6 @@ QtnPropertyEnumFlagsBase::QtnPropertyEnumFlagsBase(QObject *parent)
     : QtnSinglePropertyBase<QtnEnumFlagsValueType>(parent),
       m_enumInfo(0)
 {
-    // collapsed by default
-    addState(QtnPropertyStateCollapsed);
 }
 
 bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString& str)

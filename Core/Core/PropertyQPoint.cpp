@@ -20,7 +20,6 @@
 QtnPropertyQPointBase::QtnPropertyQPointBase(QObject *parent)
     : QtnSinglePropertyBase<QPoint>(parent)
 {
-    addState(QtnPropertyStateCollapsed);
 }
 
 bool QtnPropertyQPointBase::fromStrImpl(const QString& str)

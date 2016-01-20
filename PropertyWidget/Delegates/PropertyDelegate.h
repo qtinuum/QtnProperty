@@ -55,30 +55,53 @@ protected:
     virtual void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) = 0;
 
     // helper functions
-    static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr);
+    QStyle::State state(bool isActive) const;
+    static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, QStyle::State state, bool* needTooltip = nullptr);
 };
 
-class QTN_PW_EXPORT QtnPropertyDelegateValued: public QtnPropertyDelegate
+class QTN_PW_EXPORT QtnPropertyDelegateWithValue: public QtnPropertyDelegate
 {
-    Q_DISABLE_COPY(QtnPropertyDelegateValued)
+    Q_DISABLE_COPY(QtnPropertyDelegateWithValue)
 
 protected:
-    QtnPropertyDelegateValued() {}
+    QtnPropertyDelegateWithValue() {}
 
     void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
 
-    virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;
-    virtual QString toolTipImpl() const;
-    virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const;
-    virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) = 0;
+    // override to define value part of property item
+    virtual bool createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue) = 0;
 
+    // sub-items functions
+    void addSubItemBackground(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
+    void addSubItemSelection(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
+    void addSubItemBranchNode(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
+    void addSubItemName(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
+    void addSubItemValue(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
+};
+
+class QTN_PW_EXPORT QtnPropertyDelegateWithValueEditor: public QtnPropertyDelegateWithValue
+{
+    Q_DISABLE_COPY(QtnPropertyDelegateWithValueEditor)
+
+protected:
+    QtnPropertyDelegateWithValueEditor() {}
+
+    bool createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue) override;
+
+    // override to draw property value or override propertyValueToStrImpl to draw value as text
+    virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;
+//    virtual QString toolTipImpl() const;
     // override if property value can be displayed as string
     virtual bool propertyValueToStrImpl(QString& strValue) const { Q_UNUSED(strValue); return false; }
+    // override to filter key events that will activate property Editor
+    virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const;
+    // override to implement property Editor
+    virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) = 0;
 
     QWidget* createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo = nullptr);
 };
 
-template <typename PropertyClass, typename DelegateClass = QtnPropertyDelegateValued>
+template <typename PropertyClass, typename DelegateClass = QtnPropertyDelegateWithValueEditor>
 class QtnPropertyDelegateTyped: public DelegateClass
 {
     Q_DISABLE_COPY(QtnPropertyDelegateTyped)
@@ -104,7 +127,7 @@ private:
     PropertyClass& m_owner;
 };
 
-template <typename PropertyClass, typename DelegateClass = QtnPropertyDelegateValued>
+template <typename PropertyClass, typename DelegateClass = QtnPropertyDelegateWithValueEditor>
 class QtnPropertyDelegateTypedEx: public QtnPropertyDelegateTyped<PropertyClass, DelegateClass>
 {
     Q_DISABLE_COPY(QtnPropertyDelegateTypedEx)

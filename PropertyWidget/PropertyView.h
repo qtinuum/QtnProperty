@@ -78,6 +78,8 @@ public:
     void addPropertyViewStyle(QtnPropertyViewStyle style);
     void removePropertyViewStyle(QtnPropertyViewStyle style);
 
+    int valueLeftMargin() const;
+
 public slots:
     QtnAccessibilityProxy* accessibilityProxy();
 
@@ -180,7 +182,7 @@ private:
     QtnPropertyViewStyle m_style;
     int m_itemHeight;
     quint32 m_itemHeightSpacing;
-    int m_leadMargin;
+    int m_valueLeftMargin;
     QColor m_linesColor;
     QColor m_propertySetBackdroundColor;
 

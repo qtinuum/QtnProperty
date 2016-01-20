@@ -10,13 +10,13 @@ QTN_PW_EXPORT bool initQtnPropertyWidgetLibrary();
 template<typename T, typename R, class... Types>
 std::function<R(Types...)> qtnMemFn(T* t, R(T::*memFn)(Types...) const)
 {
-    return [t, memFn](Types... args) { return std::invoke(memFn, t, std::forward<Types>(args)...); };
+    return [t, memFn](Types... args) { return std::mem_fn(memFn)(t, std::forward<Types>(args)...); };
 }
 
 template<typename T, typename R, class... Types>
 std::function<R(Types...)> qtnMemFn(T* t, R(T::*memFn)(Types...))
 {
-    return [t, memFn](Types... args) { return std::invoke(memFn, t, std::forward<Types>(args)...); };
+    return [t, memFn](Types... args) { return std::mem_fn(memFn)(t, std::forward<Types>(args)...); };
 }
 
 

@@ -219,6 +219,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , BoolProperty(*new QtnPropertyBool(this))
     , ButtonProperty(*new QtnPropertyButton(this))
     , RGBColor(*new QtnPropertyQColor(this))
+    , FloatPropertySliderBox(*new QtnPropertyFloat(this))
     , DoubleProperty(*new QtnPropertyDouble(this))
     , FloatProperty(*new QtnPropertyFloat(this))
     , IntProperty(*new QtnPropertyInt(this))
@@ -252,6 +253,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     BoolProperty = other.BoolProperty;
     ButtonProperty = other.ButtonProperty;
     RGBColor = other.RGBColor;
+    FloatPropertySliderBox = other.FloatPropertySliderBox;
     DoubleProperty = other.DoubleProperty;
     FloatProperty = other.FloatProperty;
     IntProperty = other.IntProperty;
@@ -304,6 +306,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->RGBColor.state() & ignoreMask))
     {
         RGBColor = theCopyFrom->RGBColor;
+    }
+
+    if (!(theCopyFrom->FloatPropertySliderBox.state() & ignoreMask))
+    {
+        FloatPropertySliderBox = theCopyFrom->FloatPropertySliderBox;
     }
 
     if (!(theCopyFrom->DoubleProperty.state() & ignoreMask))
@@ -399,6 +406,14 @@ void QtnPropertySetSamplePS::init()
     static QString RGBColor_description = "QColor property with RGB components";
     RGBColor.setDescription(RGBColor_description);
     RGBColor.setValue(QColor(123, 150, 10));
+    static QString FloatPropertySliderBox_name = tr("FloatPropertySliderBox");
+    FloatPropertySliderBox.setName(FloatPropertySliderBox_name);
+    static QString FloatPropertySliderBox_description = "Property to hold float values in range [0, 10].";
+    FloatPropertySliderBox.setDescription(FloatPropertySliderBox_description);
+    FloatPropertySliderBox.setMaxValue(10.f);
+    FloatPropertySliderBox.setMinValue(0);
+    FloatPropertySliderBox.setStepValue(0.1f);
+    FloatPropertySliderBox.setValue(1.f);
     static QString DoubleProperty_name = tr("DoubleProperty");
     DoubleProperty.setName(DoubleProperty_name);
     static QString DoubleProperty_description = "Property to hold double values in range [10, 20].";
@@ -524,6 +539,11 @@ void QtnPropertySetSamplePS::connectDelegates()
     RGBColor.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["rgbSubItems"] = true;
+        return info.take();
+    });
+    FloatPropertySliderBox.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->name = "SliderBox";
         return info.take();
     });
 }

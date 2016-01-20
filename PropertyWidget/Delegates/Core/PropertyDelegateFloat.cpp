@@ -20,13 +20,19 @@
 #include "../PropertyEditorHandler.h"
 
 #include <QDoubleSpinBox>
+#include <QKeyEvent>
 
 void regFloatDelegates()
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyFloatBase::staticMetaObject
-                 , &qtnCreateDelegate<QtnPropertyDelegateFloat, QtnPropertyFloatBase>
-                 , "SpinBox");
+    QtnPropertyDelegateFactory::staticInstance()
+        .registerDelegateDefault(&QtnPropertyFloatBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateFloat, QtnPropertyFloatBase>
+                                , "SpinBox");
+
+    QtnPropertyDelegateFactory::staticInstance()
+        .registerDelegate(&QtnPropertyFloatBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateFloatSlideBox, QtnPropertyFloatBase>
+                                , "SliderBox");
 }
 
 class QtnPropertyFloatSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyFloatBase, QDoubleSpinBox>
@@ -80,3 +86,66 @@ bool QtnPropertyDelegateFloat::propertyValueToStrImpl(QString& strValue) const
     strValue = QString::number(owner().value());
     return true;
 }
+
+bool QtnPropertyDelegateFloatSlideBox::createSubItemValueImpl(QtnPropertyDelegateDrawContext&, QtnPropertyDelegateSubItem& subItemValue)
+{
+    subItemValue.drawHandler = qtnMemFn(this, &QtnPropertyDelegateFloatSlideBox::draw);
+    subItemValue.eventHandler = qtnMemFn(this, &QtnPropertyDelegateFloatSlideBox::event);
+    return true;
+}
+
+void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item)
+{
+    float valueInterval = owner().maxValue() - owner().minValue();
+    if (valueInterval <= 0)
+        return;
+
+    float valuePart = (owner().value() - owner().minValue())/valueInterval;
+
+    auto boxBorderColor = m_boxFillColor.darker();
+
+    auto boxRect = item.rect;
+    boxRect.adjust(1, 1, -1, -1);
+
+    auto valueRect = boxRect;
+    valueRect.setRight(valueRect.left() + int(valuePart * valueRect.width()));
+
+    auto& painter = *context.painter;
+
+    painter.save();
+
+    painter.fillRect(valueRect, m_boxFillColor);
+
+    painter.setPen(boxBorderColor);
+    painter.drawRect(valueRect);
+    painter.drawRect(boxRect);
+
+    painter.restore();
+
+    boxRect.adjust(context.widget->valueLeftMargin(), 0, 0, 0);
+    auto strValue = QString::number(owner().value());
+    drawValueText(strValue, painter, boxRect, state(context.isActive), nullptr);
+}
+
+bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item)
+{
+    switch (context.event->type())
+    {
+    case QEvent::KeyPress:
+    {
+        QKeyEvent* keyEvent = (QKeyEvent*)context.event;
+        if (keyEvent->key() == Qt::Key_Plus)
+            owner().incrementValue(1);
+        else if (keyEvent->key() == Qt::Key_Minus)
+            owner().incrementValue(-1);
+        else
+            return false;
+        return true;
+    }
+
+    default:
+        return false;
+    }
+}
+
+

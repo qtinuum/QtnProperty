@@ -20,7 +20,6 @@
 QtnPropertyQFontBase::QtnPropertyQFontBase(QObject *parent)
     : QtnSinglePropertyBase<QFont>(parent)
 {
-    addState(QtnPropertyStateCollapsed);
 }
 
 bool QtnPropertyQFontBase::fromStrImpl(const QString& str)
