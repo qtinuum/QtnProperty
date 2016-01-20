@@ -544,6 +544,7 @@ void QtnPropertySetSamplePS::connectDelegates()
     FloatPropertySliderBox.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "SliderBox";
+        info->attributes["fillColor"] = QColor::fromRgb(170, 170, 255);
         return info.take();
     });
 }

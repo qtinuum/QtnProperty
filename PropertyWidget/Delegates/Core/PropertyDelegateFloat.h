@@ -48,6 +48,7 @@ public:
     }
 
 protected:
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
     bool createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue) override;
 
 private:

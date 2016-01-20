@@ -87,6 +87,11 @@ bool QtnPropertyDelegateFloat::propertyValueToStrImpl(QString& strValue) const
     return true;
 }
 
+void QtnPropertyDelegateFloatSlideBox::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
+{
+    qtnGetAttribute(attributes, "fillColor", m_boxFillColor);
+}
+
 bool QtnPropertyDelegateFloatSlideBox::createSubItemValueImpl(QtnPropertyDelegateDrawContext&, QtnPropertyDelegateSubItem& subItemValue)
 {
     subItemValue.drawHandler = qtnMemFn(this, &QtnPropertyDelegateFloatSlideBox::draw);
