@@ -1,5 +1,6 @@
 #include "../Core/PropertyCore.h"
 #include "../Core/PropertyGUI.h"
+#include "AB/PropertyABColor.h"
 
 #include_cpp <QFileDialog>
 #include_cpp <QDebug>
@@ -35,10 +36,15 @@ property_set SamplePS
         delegate { title = "Click me"; }
     }
 
-    QColor RGBColor
+    ABColor RGBColor
     {
-        description = "QColor property with RGB components";
+        description = "ABColor property with RGB components";
         value = QColor(123, 150, 10);
+
+        clickHandler = [](const QtnPropertyABColor* color) {
+            qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
+        };
+
         delegate { rgbSubItems = true; }
     }
 

@@ -218,7 +218,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
     , ButtonProperty(*new QtnPropertyButton(this))
-    , RGBColor(*new QtnPropertyQColor(this))
+    , RGBColor(*new QtnPropertyABColor(this))
     , FloatPropertySliderBox(*new QtnPropertyFloat(this))
     , DoubleProperty(*new QtnPropertyDouble(this))
     , FloatProperty(*new QtnPropertyFloat(this))
@@ -403,7 +403,10 @@ void QtnPropertySetSamplePS::init()
         });
     static QString RGBColor_name = tr("RGBColor");
     RGBColor.setName(RGBColor_name);
-    static QString RGBColor_description = "QColor property with RGB components";
+    RGBColor.setClickHandler([](const QtnPropertyABColor* color) {
+            qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
+        });
+    static QString RGBColor_description = "ABColor property with RGB components";
     RGBColor.setDescription(RGBColor_description);
     RGBColor.setValue(QColor(123, 150, 10));
     static QString FloatPropertySliderBox_name = tr("FloatPropertySliderBox");

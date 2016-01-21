@@ -8,10 +8,14 @@ TARGET = QtnPropertyDemo
 TEMPLATE = app
 
 SOURCES +=  main.cpp\
+            AB/PropertyABColor.cpp \
+            AB/PropertyDelegateABColor.cpp \
             MainWindow.cpp \
             mydialog.cpp
 
 HEADERS  += MainWindow.h \
+            AB/PropertyABColor.h \
+            AB/PropertyDelegateABColor.h \
             mydialog.h
 
 FORMS    += MainWindow.ui \

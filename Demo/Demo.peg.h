@@ -3,6 +3,7 @@
 
 #include "../Core/PropertyCore.h"
 #include "../Core/PropertyGUI.h"
+#include "AB/PropertyABColor.h"
 
 class COLOR
 {
@@ -84,7 +85,7 @@ public:
     // start children declarations
     QtnPropertyBool& BoolProperty;
     QtnPropertyButton& ButtonProperty;
-    QtnPropertyQColor& RGBColor;
+    QtnPropertyABColor& RGBColor;
     QtnPropertyFloat& FloatPropertySliderBox;
     QtnPropertyDouble& DoubleProperty;
     QtnPropertyFloat& FloatProperty;
