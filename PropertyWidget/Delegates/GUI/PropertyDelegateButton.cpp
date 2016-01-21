@@ -84,7 +84,8 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContex
 
         int bttnMargin = style->pixelMetric(QStyle::PM_ButtonMargin);
         QRect contentRect = item.rect.marginsRemoved(QMargins(bttnMargin, 0, bttnMargin, 0));
-        drawValueText(m_title, *context.painter, contentRect, option.state);
+        context.painter->drawText(contentRect, Qt::AlignHCenter | Qt::AlignVCenter
+                         , qtnElidedText(*context.painter, m_title, contentRect));
 
         // restore sub-view's origin if button has pressed
         if (option.state & QStyle::State_Sunken)
@@ -95,14 +96,14 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContex
 
     buttonItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
         bool doClick = false;
-        switch (context.event->type())
+        switch (context.eventType())
         {
         case QEvent::MouseButtonRelease:
             doClick = true;
             break;
 
         case QEvent::KeyPress:
-            int key = ((QKeyEvent*)context.event)->key();
+            int key = context.eventAs<QKeyEvent>()->key();
             doClick = (key == Qt::Key_Space) || (key == Qt::Key_Return);
             break;
         }

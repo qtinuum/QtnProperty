@@ -100,7 +100,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
             };
 
             brItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
-                if (context.event->type() == QEvent::MouseButtonPress)
+                if (context.eventType() == QEvent::MouseButtonPress)
                 {
                     property()->switchStateAuto(QtnPropertyStateCollapsed);
                     return true;

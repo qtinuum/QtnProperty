@@ -21,8 +21,8 @@
 
 #include <functional>
 #include <QStylePainter>
+#include <QEvent>
 
-class QEvent;
 class QtnPropertyView;
 struct QtnPropertyDelegateDrawContext;
 struct QtnPropertyDelegateEventContext;
@@ -59,6 +59,10 @@ struct QTN_PW_EXPORT QtnPropertyDelegateEventContext
 public:
     QEvent* event;
     const QtnPropertyView* widget;
+
+    QEvent::Type eventType() const { return event->type(); }
+    template <class EventT>
+    EventT* eventAs() { return static_cast<EventT*>(event); }
 };
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H

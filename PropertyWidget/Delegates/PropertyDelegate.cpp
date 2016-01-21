@@ -175,7 +175,7 @@ void QtnPropertyDelegateWithValue::addSubItemBranchNode(QtnPropertyDelegateDrawC
     };
 
     brItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
-        if (context.event->type() == QEvent::MouseButtonPress)
+        if (context.eventType() == QEvent::MouseButtonPress)
         {
             property()->switchStateAuto(QtnPropertyStateCollapsed);
             return true;
@@ -229,7 +229,7 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(QtnPropertyDeleg
 
     subItemValue.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item) -> bool {
         bool doEdit = false;
-        switch (context.event->type())
+        switch (context.eventType())
         {
         case QEvent::MouseButtonDblClick:
             doEdit = (context.widget->propertyViewStyle() & QtnPropertyViewStyleDblClickActivation);
@@ -240,7 +240,7 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(QtnPropertyDeleg
             break;
 
         case QEvent::KeyPress:
-            doEdit = acceptKeyPressedForInplaceEditImpl((QKeyEvent*)context.event);
+            doEdit = acceptKeyPressedForInplaceEditImpl(context.eventAs<QKeyEvent>());
             break;
         }
 

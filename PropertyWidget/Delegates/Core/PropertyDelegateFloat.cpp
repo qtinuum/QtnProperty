@@ -132,20 +132,42 @@ void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& cont
     drawValueText(strValue, painter, boxRect, state(context.isActive), nullptr);
 }
 
-bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& /*item*/)
+bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item)
 {
-    switch (context.event->type())
+    switch (context.eventType())
     {
     case QEvent::KeyPress:
     {
-        QKeyEvent* keyEvent = (QKeyEvent*)context.event;
-        if (keyEvent->key() == Qt::Key_Plus)
+        int key = context.eventAs<QKeyEvent>()->key();
+
+        if ((key == Qt::Key_Plus) || (key == Qt::Key_Equal))
             owner().incrementValue(1);
-        else if (keyEvent->key() == Qt::Key_Minus)
+        else if ((key == Qt::Key_Minus) || (key == Qt::Key_Underscore))
             owner().incrementValue(-1);
         else
             return false;
+
         return true;
+    }
+
+    case QEvent::Wheel:
+    {
+        int steps = context.eventAs<QWheelEvent>()->angleDelta().y()/120;
+        owner().incrementValue(steps);
+        return true;
+    }
+
+    case QEvent::MouseButtonPress:
+//    case QEvent::MouseButtonDblClick:
+    {
+        int x = context.eventAs<QMouseEvent>()->x();
+        if (item.rect.left() <= x && x <= item.rect.right())
+        {
+            float valuePart = float(x - item.rect.left()) / item.rect.width();
+            float value = owner().minValue() + valuePart * (owner().maxValue() - owner().minValue());
+            owner().setValue(value);
+            return true;
+        }
     }
 
     default:

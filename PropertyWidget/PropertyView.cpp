@@ -280,7 +280,7 @@ QRect QtnPropertyView::visibleItemRect(int index) const
     return rect;
 }
 
-bool QtnPropertyView::processItemActionByMouse(int index, QMouseEvent* e)
+bool QtnPropertyView::processItemActionByMouse(int index, QEvent* e)
 {
     if (index < 0)
         return false;
@@ -395,7 +395,7 @@ bool QtnPropertyView::viewportEvent(QEvent* e)
 
     case QEvent::ToolTip:
         {
-            QHelpEvent* helpEvent = static_cast<QHelpEvent *>(e);
+            QHelpEvent* helpEvent = static_cast<QHelpEvent*>(e);
             tooltipEvent(helpEvent);
         }
         break;
@@ -576,6 +576,15 @@ void QtnPropertyView::keyPressEvent(QKeyEvent* e)
     }
 }
 
+void QtnPropertyView::wheelEvent(QWheelEvent *e)
+{
+    bool processed = processItemActionByMouse(visibleItemIndexByPoint(e->pos()), e);
+    if (processed)
+        return;
+
+    QAbstractScrollArea::wheelEvent(e);
+}
+
 static QString qtnGetPropertyTooltip(const QtnPropertyBase* property)
 {
     if (!property)
@@ -633,25 +642,19 @@ bool QtnPropertyView::VisibleItem::handleEvent(QtnPropertyDelegateEventContext& 
     if (!subItemsValid)
         return false;
 
-    if (context.event->type() >= QEvent::MouseButtonPress && context.event->type() <= QEvent::MouseMove)
+    QPoint pos;
+
+    if (context.eventType() >= QEvent::MouseButtonPress && context.eventType() <= QEvent::MouseMove)
+        pos = context.eventAs<QMouseEvent>()->pos();
+    else if (context.eventType() == QEvent::Wheel)
+        pos = context.eventAs<QWheelEvent>()->pos();
+
+    for (const auto& subItem: subItems)
     {
-        auto e = (QMouseEvent*)context.event;
-        for (const auto& subItem: subItems)
+        if (subItem.eventHandler && (pos.isNull() || subItem.rect.contains(pos)))
         {
-            if (subItem.rect.contains(e->pos()) && subItem.eventHandler)
-            {
-                return subItem.eventHandler(context, subItem);
-            }
-        }
-    }
-    else
-    {
-        for (const auto& subItem: subItems)
-        {
-            if (subItem.eventHandler)
-            {
-                return subItem.eventHandler(context, subItem);
-            }
+            if (subItem.eventHandler(context, subItem))
+                return true;
         }
     }
 

@@ -97,6 +97,7 @@ protected:
     bool viewportEvent(QEvent* e) override;
     void scrollContentsBy(int dx, int dy) override;
     void keyPressEvent(QKeyEvent* e) override;
+    void wheelEvent(QWheelEvent *e) override;
     void tooltipEvent(QHelpEvent* e);
 
 private:
@@ -155,7 +156,7 @@ private:
     int visibleItemIndexByProperty(const QtnPropertyBase* property) const;
     QRect visibleItemRect(int index) const;
 
-    bool processItemActionByMouse(int index, QMouseEvent* e);
+    bool processItemActionByMouse(int index, QEvent *e);
 
     void updateVScrollbar() const;
     void updateStyleStuff();
