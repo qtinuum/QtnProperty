@@ -25,6 +25,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QMouseEvent>
 
 void regBoolDelegates()
 {
@@ -145,14 +146,27 @@ void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const Q
 QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
     if (!owner().isEditableByUser())
-        return 0;
+        return nullptr;
 
+    if (inplaceInfo && inplaceInfo->activationEvent->type() == QEvent::MouseButtonRelease)
+    {
+        auto mouseEvent = static_cast<QMouseEvent*>(inplaceInfo->activationEvent);
+        QRect r = rect;
+        r.setRight(r.left() + parent->style()->pixelMetric(QStyle::PM_IndicatorWidth));
+        if (!r.contains(mouseEvent->pos()))
+            return nullptr;
+    }
+
+    owner().setValue(!owner().value());
+    return nullptr;
+/*
     QCheckBox *checkBox = createPropertyBoolCheckBox(owner(), parent, rect);
 
     if (inplaceInfo)
         checkBox->setAutoFillBackground(true);
 
     return checkBox;
+    */
 }
 
 QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner)
