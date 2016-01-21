@@ -132,7 +132,7 @@ void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& cont
     drawValueText(strValue, painter, boxRect, state(context.isActive), nullptr);
 }
 
-bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item)
+bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& /*item*/)
 {
     switch (context.event->type())
     {

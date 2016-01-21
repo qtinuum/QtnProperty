@@ -39,7 +39,7 @@ public:
 
     // tune up with attributes
     void applyAttributes(const QtnPropertyDelegateAttributes& attributes);
-
+    // create GUI sub elements to present property on PropertyView
     void createSubItems(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
 
 protected:
