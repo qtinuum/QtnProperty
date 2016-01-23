@@ -235,10 +235,7 @@ void QtnPropertyView::drawItem(QStylePainter& painter, const QRect& rect, const 
     // draw sub-items
     for (const auto& subItem : vItem.subItems)
     {
-        if (!subItem.drawHandler)
-            continue;
-
-        subItem.drawHandler(drawContext, subItem);
+        subItem.draw(drawContext);
     }
 }
 
@@ -280,14 +277,16 @@ QRect QtnPropertyView::visibleItemRect(int index) const
     return rect;
 }
 
-bool QtnPropertyView::processItemActionByMouse(int index, QEvent* e)
+bool QtnPropertyView::handleMouseEvent(int index, QEvent* e, QPoint mousePos)
 {
     if (index < 0)
+    {
+        deactivateSubItems();
         return false;
+    }
 
-    const auto& vItem = m_visibleItems[index];
     QtnPropertyDelegateEventContext context{e, this};
-    return vItem.handleEvent(context);
+    return handleEvent(context, m_visibleItems[index], mousePos);
 }
 
 void QtnPropertyView::resizeEvent(QResizeEvent* e)
@@ -320,7 +319,7 @@ void QtnPropertyView::mousePressEvent(QMouseEvent* e)
         if (index >= 0)
         {
             changeActivePropertyByIndex(index);
-            processItemActionByMouse(index, e);
+            handleMouseEvent(index, e, e->pos());
         }
     }
 }
@@ -338,7 +337,7 @@ void QtnPropertyView::mouseReleaseEvent(QMouseEvent* e)
     }
     else
     {
-        processItemActionByMouse(visibleItemIndexByPoint(e->pos()), e);
+        handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos());
     }
 }
 
@@ -367,13 +366,10 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent* e)
         setCursor(Qt::ArrowCursor);
 
         int index = visibleItemIndexByPoint(e->pos());
-        if (index >= 0)
-        {
-            if (e->buttons() & Qt::LeftButton)
-                changeActivePropertyByIndex(index);
-            else
-                processItemActionByMouse(index, e);
-        }
+       if (e->buttons() & Qt::LeftButton)
+            changeActivePropertyByIndex(index);
+        else
+            handleMouseEvent(index, e, e->pos());
     }
 }
 
@@ -381,7 +377,7 @@ void QtnPropertyView::mouseDoubleClickEvent(QMouseEvent* e)
 {
     if (!m_rubberBand)
     {
-       processItemActionByMouse(visibleItemIndexByPoint(e->pos()), e);
+       handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos());
     }
 }
 
@@ -398,6 +394,11 @@ bool QtnPropertyView::viewportEvent(QEvent* e)
             QHelpEvent* helpEvent = static_cast<QHelpEvent*>(e);
             tooltipEvent(helpEvent);
         }
+        break;
+
+    //case QEvent::Enter:
+    case QEvent::Leave:
+        deactivateSubItems();
         break;
 
     default:
@@ -562,7 +563,7 @@ void QtnPropertyView::keyPressEvent(QKeyEvent* e)
             if (index >= 0)
             {
                 QtnPropertyDelegateEventContext context{e, this};
-                if (m_visibleItems[index].handleEvent(context))
+                if (handleEvent(context, m_visibleItems[index], QPoint()))
                 {
                     // eat event
                     e->accept();
@@ -578,7 +579,7 @@ void QtnPropertyView::keyPressEvent(QKeyEvent* e)
 
 void QtnPropertyView::wheelEvent(QWheelEvent *e)
 {
-    bool processed = processItemActionByMouse(visibleItemIndexByPoint(e->pos()), e);
+    bool processed = handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos());
     if (processed)
         return;
 
@@ -637,25 +638,40 @@ void QtnPropertyView::tooltipEvent(QHelpEvent* e)
     }
 }
 
-bool QtnPropertyView::VisibleItem::handleEvent(QtnPropertyDelegateEventContext& context) const
+bool QtnPropertyView::handleEvent(QtnPropertyDelegateEventContext& context, VisibleItem& vItem, QPoint mousePos)
 {
-    if (!subItemsValid)
+    if (!vItem.subItemsValid)
         return false;
 
-    QPoint pos;
-
-    if (context.eventType() >= QEvent::MouseButtonPress && context.eventType() <= QEvent::MouseMove)
-        pos = context.eventAs<QMouseEvent>()->pos();
-    else if (context.eventType() == QEvent::Wheel)
-        pos = context.eventAs<QWheelEvent>()->pos();
-
-    for (const auto& subItem: subItems)
+    //if (m_activeSubItems.isEmpty() || (context.eventType() == QEvent::MouseMove))
     {
-        if (subItem.eventHandler && (pos.isNull() || subItem.rect.contains(pos)))
+        QList<QtnPropertyDelegateSubItem*> activeSubItems;
+
+        // make list of new active sub items
+        for (auto& subItem: vItem.subItems)
         {
-            if (subItem.eventHandler(context, subItem))
-                return true;
+            if (mousePos.isNull() || subItem.rect.contains(mousePos))
+            {
+                subItem.activate(this);
+                activeSubItems.append(&subItem);
+            }
         }
+
+        // deactivate old sub items
+        for (auto activeSubItem : m_activeSubItems)
+        {
+            activeSubItem->deactivate(this);
+        }
+
+        // adopt new active sub items
+        m_activeSubItems.swap(activeSubItems);
+    }
+
+    // process event
+    for (auto activeSubItem : m_activeSubItems)
+    {
+        if (activeSubItem->event(context))
+            return true;
     }
 
     return false;
@@ -704,6 +720,8 @@ QtnPropertyView::Item* QtnPropertyView::createItemsTree(QtnPropertyBase* rootPro
 void QtnPropertyView::invalidateVisibleItems()
 {
     m_visibleItemsValid = false;
+    m_visibleItems.clear();
+    m_activeSubItems.clear();
     update();
 }
 
@@ -712,7 +730,7 @@ void QtnPropertyView::validateVisibleItems() const
     if (m_visibleItemsValid)
         return;
 
-    m_visibleItems.clear();
+    //m_visibleItems.clear();
     fillVisibleItems(m_itemsTree.data(), (m_style & QtnPropertyViewStyleShowRoot) ? 0 : -1);
 
     updateVScrollbar();
@@ -829,6 +847,14 @@ void QtnPropertyView::invalidateSubItems()
         item.subItemsValid = false;
         item.subItems.clear();
     }
+    m_activeSubItems.clear();
+}
+
+void QtnPropertyView::deactivateSubItems()
+{
+    for (auto subItem : m_activeSubItems)
+        subItem->deactivate(this);
+    m_activeSubItems.clear();
 }
 
 int QtnPropertyView::splitPosition() const

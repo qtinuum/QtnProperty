@@ -60,7 +60,7 @@ void QtnPropertyDelegate::createSubItems(QtnPropertyDelegateDrawContext& context
     createSubItemsImpl(context, subItems);
 }
 
-QStyle::State QtnPropertyDelegate::state(bool isActive) const
+QStyle::State QtnPropertyDelegate::state(bool isActive, QtnPropertyDelegateSubItemState subState) const
 {
     QStyle::State state = QStyle::State_Active;
     if (propertyImmutable()->isEditableByUser())
@@ -70,6 +70,10 @@ QStyle::State QtnPropertyDelegate::state(bool isActive) const
         state |= QStyle::State_Selected;
         state |= QStyle::State_HasFocus;
     }
+
+    if (subState == QtnSubItemStateUnderCursor)
+        state |= QStyle::State_MouseOver;
+
     return state;
 }
 
@@ -133,7 +137,7 @@ void QtnPropertyDelegateWithValue::addSubItemBranchNode(QtnPropertyDelegateDrawC
     if (!context.hasChildren)
         return;
 
-    QtnPropertyDelegateSubItem brItem;
+    QtnPropertyDelegateSubItem brItem(true);
     brItem.rect = context.rect.marginsRemoved(context.margins);
     brItem.rect.setRight(brItem.rect.left() + brItem.rect.height());
     context.margins.setLeft(context.margins.left() + brItem.rect.height());
@@ -145,6 +149,13 @@ void QtnPropertyDelegateWithValue::addSubItemBranchNode(QtnPropertyDelegateDrawC
         auto& painter = *context.painter;
         QRectF branchRect = item.rect;
         qreal side = branchRect.height() / 3.5f;
+        QColor fillClr = context.widget->palette().color(QPalette::Text);
+        QColor outlineClr = (item.state() == QtnSubItemStateUnderCursor)
+                    ? Qt::blue
+                    : context.widget->palette().color(QPalette::Text);
+
+        painter.save();
+        painter.setPen(outlineClr);
 
         QPainterPath branchPath;
         if (propertyImmutable()->stateLocal() & QtnPropertyStateCollapsed)
@@ -164,18 +175,22 @@ void QtnPropertyDelegateWithValue::addSubItemBranchNode(QtnPropertyDelegateDrawC
 
         if (painter.testRenderHint(QPainter::Antialiasing))
         {
-            painter.fillPath(branchPath, context.widget->palette().color(QPalette::Text));
+            painter.fillPath(branchPath, fillClr);
+            painter.drawPath(branchPath);
         }
         else
         {
             painter.setRenderHint(QPainter::Antialiasing, true);
-            painter.fillPath(branchPath, context.widget->palette().color(QPalette::Text));
+            painter.fillPath(branchPath, fillClr);
+            painter.drawPath(branchPath);
             painter.setRenderHint(QPainter::Antialiasing, false);
         }
+
+        painter.restore();
     };
 
     brItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
-        if (context.eventType() == QEvent::MouseButtonPress)
+        if ((context.eventType() == QEvent::MouseButtonPress) || (context.eventType() == QEvent::MouseButtonDblClick))
         {
             property()->switchStateAuto(QtnPropertyStateCollapsed);
             return true;
@@ -197,14 +212,15 @@ void QtnPropertyDelegateWithValue::addSubItemName(QtnPropertyDelegateDrawContext
         return;
 
     nameItem.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
+        context.painter->save();
+
         QPalette::ColorGroup cg = property()->isEditableByUser() ? QPalette::Active : QPalette::Disabled;
-        QPen oldPen = context.painter->pen();
         context.painter->setPen(context.widget->palette().color(cg, (context.isActive) ? QPalette::HighlightedText : QPalette::Text));
 
         context.painter->drawText(item.rect, Qt::AlignLeading|Qt::AlignVCenter|Qt::TextSingleLine
                                 , qtnElidedText(*context.painter, property()->name(), item.rect));
 
-        context.painter->setPen(oldPen);
+        context.painter->restore();
     };
 
     subItems.append(nameItem);
@@ -222,9 +238,12 @@ void QtnPropertyDelegateWithValue::addSubItemValue(QtnPropertyDelegateDrawContex
 
 bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(QtnPropertyDelegateDrawContext&, QtnPropertyDelegateSubItem& subItemValue)
 {
+    if (trackStateImpl())
+        subItemValue.trackState();
+
     subItemValue.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
         // draw property value
-       drawValueImpl(*context.painter, item.rect, state(context.isActive), nullptr);
+       drawValueImpl(*context.painter, item.rect, state(context.isActive, item.state()), nullptr);
     };
 
     subItemValue.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item) -> bool {

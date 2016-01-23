@@ -40,8 +40,8 @@ void QtnPropertyDelegateButton::applyAttributesImpl(const QtnPropertyDelegateAtt
 
 void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems)
 {
-    QtnPropertyDelegateSubItem buttonItem;
-    buttonItem.rect = context.rect;//.marginsRemoved(context.margins);
+    QtnPropertyDelegateSubItem buttonItem(true);
+    buttonItem.rect = context.rect;
 
     buttonItem.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
 
@@ -52,15 +52,7 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContex
         QStyleOptionButton option;
         context.initStyleOption(option);
 
-        option.state = QStyle::State_Active;
-        if (property()->isEditableByUser())
-            option.state |= QStyle::State_Enabled;
-        if (context.isActive)
-        {
-            option.state |= QStyle::State_Selected;
-            option.state |= QStyle::State_HasFocus;
-            option.state |= QStyle::State_MouseOver;
-        }
+        option.state = state(context.isActive, item.state());
 
         // dont initialize styleObject from widget for QWindowsVistaStyle
         // this disables buggous animations

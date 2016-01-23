@@ -136,8 +136,6 @@ private:
               subItemsValid(false)
         {
         }
-
-        bool handleEvent(QtnPropertyDelegateEventContext& context) const;
     };
 
 private:
@@ -156,13 +154,15 @@ private:
     int visibleItemIndexByProperty(const QtnPropertyBase* property) const;
     QRect visibleItemRect(int index) const;
 
-    bool processItemActionByMouse(int index, QEvent *e);
+    bool handleMouseEvent(int index, QEvent *e, QPoint mousePos);
+    bool handleEvent(QtnPropertyDelegateEventContext& context, VisibleItem& vItem, QPoint mousePos);
 
     void updateVScrollbar() const;
     void updateStyleStuff();
 
     bool ensureVisibleItemByIndex(int index);
     void invalidateSubItems();
+    void deactivateSubItems();
 
     int splitPosition() const;
     void updateSplitRatio(float splitRatio);
@@ -179,6 +179,8 @@ private:
 
     mutable QList<VisibleItem> m_visibleItems;
     mutable bool m_visibleItemsValid;
+
+    QList<QtnPropertyDelegateSubItem*> m_activeSubItems;
 
     QtnPropertyViewStyle m_style;
     int m_itemHeight;

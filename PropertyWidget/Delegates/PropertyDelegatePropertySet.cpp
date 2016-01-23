@@ -59,7 +59,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
     // branch node sign
     if (context.hasChildren)
     {
-        QtnPropertyDelegateSubItem brItem;
+        QtnPropertyDelegateSubItem brItem(true);
         brItem.rect = context.rect.marginsRemoved(context.margins);
         brItem.rect.setRight(brItem.rect.left() + brItem.rect.height());
         context.margins.setLeft(context.margins.left() + brItem.rect.height());
@@ -70,6 +70,13 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
                 auto& painter = *context.painter;
                 QRectF branchRect = item.rect;
                 qreal side = branchRect.height() / 3.5f;
+                QColor fillClr = context.widget->palette().color(QPalette::Text);
+                QColor outlineClr = (item.state() == QtnSubItemStateUnderCursor)
+                            ? Qt::blue
+                            : context.widget->palette().color(QPalette::Text);
+
+                painter.save();
+                painter.setPen(outlineClr);
 
                 QPainterPath branchPath;
                 if (propertyImmutable()->stateLocal() & QtnPropertyStateCollapsed)
@@ -89,18 +96,22 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
 
                 if (painter.testRenderHint(QPainter::Antialiasing))
                 {
-                    painter.fillPath(branchPath, context.widget->palette().color(QPalette::Text));
+                    painter.fillPath(branchPath, fillClr);
+                    painter.drawPath(branchPath);
                 }
                 else
                 {
                     painter.setRenderHint(QPainter::Antialiasing, true);
-                    painter.fillPath(branchPath, context.widget->palette().color(QPalette::Text));
+                    painter.fillPath(branchPath, fillClr);
+                    painter.drawPath(branchPath);
                     painter.setRenderHint(QPainter::Antialiasing, false);
                 }
+
+                painter.restore();
             };
 
             brItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
-                if (context.eventType() == QEvent::MouseButtonPress)
+                if ((context.eventType() == QEvent::MouseButtonPress) || (context.eventType() == QEvent::MouseButtonDblClick))
                 {
                     property()->switchStateAuto(QtnPropertyStateCollapsed);
                     return true;

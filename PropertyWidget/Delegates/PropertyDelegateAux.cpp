@@ -17,6 +17,67 @@
 #include "PropertyDelegateAux.h"
 #include "PropertyView.h"
 
+QtnPropertyDelegateSubItem::QtnPropertyDelegateSubItem(bool trackState)
+    : m_trackState(trackState),
+      m_activeCount(0),
+      m_state(QtnSubItemStateNone)
+{
+}
+
+bool QtnPropertyDelegateSubItem::activate(QtnPropertyView *widget)
+{
+    if (!m_trackState)
+        return false;
+
+    Q_ASSERT(m_activeCount <= 1);
+    if (m_activeCount > 1)
+        return false;
+
+    ++m_activeCount;
+
+    if (m_state != QtnSubItemStateUnderCursor)
+    {
+        m_state = QtnSubItemStateUnderCursor;
+        widget->viewport()->update();
+     }
+
+    return true;
+}
+
+bool QtnPropertyDelegateSubItem::deactivate(QtnPropertyView *widget)
+{
+    if (!m_trackState)
+        return false;
+
+    Q_ASSERT(m_activeCount > 0);
+    if (m_activeCount == 0)
+        return false;
+
+    --m_activeCount;
+
+    if ((m_activeCount == 0) && (m_state != QtnSubItemStateNone))
+    {
+        m_state = QtnSubItemStateNone;
+        widget->viewport()->update();
+    }
+
+    return true;
+}
+
+void QtnPropertyDelegateSubItem::draw(QtnPropertyDelegateDrawContext& context) const
+{
+    if (drawHandler)
+        drawHandler(context, *this);
+}
+
+bool QtnPropertyDelegateSubItem::event(QtnPropertyDelegateEventContext& context) const
+{
+    if (eventHandler)
+        return eventHandler(context, *this);
+
+    return false;
+}
+
 QStyle* QtnPropertyDelegateDrawContext::style() const
 {
     return widget->style();

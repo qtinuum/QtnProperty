@@ -27,12 +27,37 @@ class QtnPropertyView;
 struct QtnPropertyDelegateDrawContext;
 struct QtnPropertyDelegateEventContext;
 
+enum QtnPropertyDelegateSubItemState
+{
+    QtnSubItemStateNone,
+    QtnSubItemStateUnderCursor,
+    QtnSubItemStatePushed
+};
+
 struct QTN_PW_EXPORT QtnPropertyDelegateSubItem
 {
+    QtnPropertyDelegateSubItem(bool trackState = false);
+
     QRect rect;
 
     std::function<void(QtnPropertyDelegateDrawContext&, const QtnPropertyDelegateSubItem&)> drawHandler;
     std::function<bool(QtnPropertyDelegateEventContext&, const QtnPropertyDelegateSubItem&)> eventHandler;
+
+    QtnPropertyDelegateSubItemState state() const { return m_state; }
+    void trackState() { m_trackState = true; }
+
+private:
+    bool activate(QtnPropertyView* widget);
+    bool deactivate(QtnPropertyView* widget);
+
+    void draw(QtnPropertyDelegateDrawContext& context) const;
+    bool event(QtnPropertyDelegateEventContext& context) const;
+
+    bool m_trackState;
+    quint8 m_activeCount;
+    QtnPropertyDelegateSubItemState m_state;
+
+    friend class QtnPropertyView;
 };
 
 struct QTN_PW_EXPORT QtnPropertyDelegateDrawContext
@@ -63,6 +88,8 @@ public:
     QEvent::Type eventType() const { return event->type(); }
     template <class EventT>
     EventT* eventAs() { return static_cast<EventT*>(event); }
+
+    bool grabMouse(const QtnPropertyDelegateSubItem& subItem);
 };
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H

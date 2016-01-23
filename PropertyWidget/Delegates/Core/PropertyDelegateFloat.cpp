@@ -94,6 +94,7 @@ void QtnPropertyDelegateFloatSlideBox::applyAttributesImpl(const QtnPropertyDele
 
 bool QtnPropertyDelegateFloatSlideBox::createSubItemValueImpl(QtnPropertyDelegateDrawContext&, QtnPropertyDelegateSubItem& subItemValue)
 {
+    subItemValue.trackState();
     subItemValue.drawHandler = qtnMemFn(this, &QtnPropertyDelegateFloatSlideBox::draw);
     subItemValue.eventHandler = qtnMemFn(this, &QtnPropertyDelegateFloatSlideBox::event);
     return true;
@@ -107,7 +108,7 @@ void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& cont
 
     float valuePart = (owner().value() - owner().minValue())/valueInterval;
 
-    auto boxBorderColor = m_boxFillColor.darker();
+    auto boxBorderColor = (item.state() == QtnSubItemStateNone) ? m_boxFillColor : m_boxFillColor.darker(150);
 
     auto boxRect = item.rect;
     boxRect.adjust(1, 1, -1, -1);
@@ -129,7 +130,7 @@ void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& cont
 
     boxRect.adjust(context.widget->valueLeftMargin(), 0, 0, 0);
     auto strValue = QString::number(owner().value());
-    drawValueText(strValue, painter, boxRect, state(context.isActive), nullptr);
+    drawValueText(strValue, painter, boxRect, state(context.isActive, item.state()), nullptr);
 }
 
 bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item)
