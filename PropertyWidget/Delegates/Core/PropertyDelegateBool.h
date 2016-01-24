@@ -21,20 +21,20 @@
 
 class QtnPropertyBoolBase;
 
-class QTN_PW_EXPORT QtnPropertyDelegateBoolCheck: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
+class QTN_PW_EXPORT QtnPropertyDelegateBoolCheck: public QtnPropertyDelegateTyped<QtnPropertyBoolBase, QtnPropertyDelegateWithValue>
 {
     Q_DISABLE_COPY(QtnPropertyDelegateBoolCheck)
 
 public:
     QtnPropertyDelegateBoolCheck(QtnPropertyBoolBase& owner)
-        : QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
+        : QtnPropertyDelegateTyped<QtnPropertyBoolBase, QtnPropertyDelegateWithValue>(owner)
     {
     }
 
 protected:
-    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
-    bool trackStateImpl() const { return true; }
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
+    bool createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue) override;
+//    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
+//    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 };
 
 class QTN_PW_EXPORT QtnPropertyDelegateBoolCombobox: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>

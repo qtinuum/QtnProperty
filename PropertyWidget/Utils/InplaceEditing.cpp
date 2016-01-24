@@ -129,6 +129,7 @@ bool QtnInplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
 
 void QtnInplaceEditorHandler::OnEditorDestroyed(QObject* obj)
 {
+    Q_UNUSED(obj);
     Q_ASSERT(obj == g_inplaceEditor);
 
     delete g_inplaceEditorHandler;

@@ -238,9 +238,6 @@ void QtnPropertyDelegateWithValue::addSubItemValue(QtnPropertyDelegateDrawContex
 
 bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(QtnPropertyDelegateDrawContext&, QtnPropertyDelegateSubItem& subItemValue)
 {
-    if (trackStateImpl())
-        subItemValue.trackState();
-
     subItemValue.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
         // draw property value
        drawValueImpl(*context.painter, item.rect, state(context.isActive, item.state()), nullptr);

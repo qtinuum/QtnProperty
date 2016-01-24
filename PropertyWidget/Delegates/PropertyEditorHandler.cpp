@@ -31,6 +31,7 @@ QtnPropertyEditorHandlerBase::~QtnPropertyEditorHandlerBase()
 
 void QtnPropertyEditorHandlerBase::onObjectDestroyed(QObject *object)
 {
+    Q_UNUSED(object);
     Q_ASSERT((object == &propertyBase()) || (object == &editorBase()));
     delete this;
 }

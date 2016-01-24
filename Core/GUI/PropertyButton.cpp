@@ -25,3 +25,9 @@ void QtnPropertyButton::setClickHandler(const std::function<void(const QtnProper
 {
     QObject::connect(this, &QtnPropertyButton::click, clickHandler);
 }
+
+void QtnPropertyButton::invokePreDrawButton(QStyleOptionButton* option)
+{
+    Q_ASSERT(option);
+    emit preDrawButton(this, option);
+}

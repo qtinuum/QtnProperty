@@ -90,8 +90,6 @@ protected:
 
     // override to draw property value or override propertyValueToStrImpl to draw value as text
     virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;
-    //
-    virtual bool trackStateImpl() const { return false; }
 //    virtual QString toolTipImpl() const;
     // override if property value can be displayed as string
     virtual bool propertyValueToStrImpl(QString& strValue) const { Q_UNUSED(strValue); return false; }

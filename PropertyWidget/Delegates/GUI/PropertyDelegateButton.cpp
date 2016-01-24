@@ -45,8 +45,6 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContex
 
     buttonItem.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
 
-        context.painter->save();
-
         auto style = context.style();
 
         QStyleOptionButton option;
@@ -59,31 +57,13 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContex
         if (style->inherits("QWindowsVistaStyle"))
             option.styleObject = nullptr;
 
-        //option.state |= m_pushableTracker.styleStateByItem(cache.item);
         option.rect = item.rect;
+        option.text = m_title;
+
+        owner().invokePreDrawButton(&option);
 
         // draw button
-        style->drawControl(QStyle::CE_PushButtonBevel, &option, context.painter, context.widget);
-
-        // setup standard palette
-        auto cg = context.colorGroup();
-        context.painter->setPen(context.palette().color(cg, QPalette::ButtonText));
-        context.painter->setBackground(context.palette().brush(cg, QPalette::Button));
-
-        // shift sub-view's origin if button has pressed
-        if (option.state & QStyle::State_Sunken)
-            context.painter->translate(QPoint(1, 1));
-
-        int bttnMargin = style->pixelMetric(QStyle::PM_ButtonMargin);
-        QRect contentRect = item.rect.marginsRemoved(QMargins(bttnMargin, 0, bttnMargin, 0));
-        context.painter->drawText(contentRect, Qt::AlignHCenter | Qt::AlignVCenter
-                         , qtnElidedText(*context.painter, m_title, contentRect));
-
-        // restore sub-view's origin if button has pressed
-        if (option.state & QStyle::State_Sunken)
-            context.painter->translate(QPoint(-1, -1));
-
-        context.painter->restore();
+        style->drawControl(QStyle::CE_PushButton, &option, context.painter, context.widget);
     };
 
     buttonItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
@@ -108,7 +88,6 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContex
 
         return false;
     };
-
 
     subItems.append(buttonItem);
 }

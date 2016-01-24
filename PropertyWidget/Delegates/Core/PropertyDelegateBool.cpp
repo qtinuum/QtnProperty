@@ -128,45 +128,49 @@ QCheckBox* createPropertyBoolCheckBox(QtnPropertyBoolBase& owner, QWidget* paren
     return checkBox;
 }
 
-void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue)
 {
-    Q_UNUSED(needTooltip);
+    subItemValue.trackState();
+    subItemValue.rect.setRight(subItemValue.rect.left() + context.style()->pixelMetric(QStyle::PM_IndicatorWidth));
 
-    QStyleOptionButton opt;
-    opt.rect = rect;
-    opt.state = state;
+    subItemValue.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
+        QStyleOptionButton opt;
+        opt.rect = item.rect;
+        opt.state = state(context.isActive, item.state());
 
-    bool value = owner().value();
-    if (value)
-        opt.state |= QStyle::State_On;
+        bool value = owner().value();
+        if (value)
+            opt.state |= QStyle::State_On;
 
-    painter.drawControl(QStyle::CE_CheckBox, opt);
-}
+        context.painter->drawControl(QStyle::CE_CheckBox, opt);
+    };
 
-QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
-{
-    if (!owner().isEditableByUser())
-        return nullptr;
+    subItemValue.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) {
+        bool toggleValue = false;
+        switch (context.eventType())
+        {
+        case QEvent::MouseButtonRelease:
+            toggleValue = true;
+            break;
 
-    if (inplaceInfo && inplaceInfo->activationEvent->type() == QEvent::MouseButtonRelease)
-    {
-        auto mouseEvent = static_cast<QMouseEvent*>(inplaceInfo->activationEvent);
-        QRect r = rect;
-        r.setRight(r.left() + parent->style()->pixelMetric(QStyle::PM_IndicatorWidth));
-        if (!r.contains(mouseEvent->pos()))
-            return nullptr;
-    }
+        case QEvent::KeyPress:
+        {
+            int key = context.eventAs<QKeyEvent>()->key();
+            toggleValue = (key == Qt::Key_Space) || (key == Qt::Key_Return);
+        }
+        break;
 
-    owner().setValue(!owner().value());
-    return nullptr;
-/*
-    QCheckBox *checkBox = createPropertyBoolCheckBox(owner(), parent, rect);
+        default:
+            ;
+        }
 
-    if (inplaceInfo)
-        checkBox->setAutoFillBackground(true);
+        if (toggleValue)
+            owner().setValue(!owner().value());
 
-    return checkBox;
-    */
+        return toggleValue;
+    };
+
+    return true;
 }
 
 QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner)

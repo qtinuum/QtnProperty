@@ -20,6 +20,8 @@
 #include "../Property.h"
 #include <functional>
 
+class QStyleOptionButton;
+
 class QTN_PE_CORE_EXPORT QtnPropertyButton: public QtnProperty
 {
     Q_OBJECT
@@ -42,6 +44,12 @@ public:
 
 Q_SIGNALS:
     void click(const QtnPropertyButton* property);
+
+public:
+    void invokePreDrawButton(QStyleOptionButton* option);
+
+Q_SIGNALS:
+    void preDrawButton(const QtnPropertyButton* property, QStyleOptionButton* option);
 };
 
 #endif // PROPERTY_BUTTON_H
