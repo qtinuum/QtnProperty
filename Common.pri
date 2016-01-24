@@ -3,8 +3,7 @@ DESTDIR = $$BIN_DIR
 
 CONFIG+=c++11
 
-win32:QMAKE_CXXFLAGS += /wd4100 /wd4065 -D_CRT_SECURE_NO_WARNINGS
-unix {
+unix|win32-g++ {
     QMAKE_CFLAGS_WARN_ON -= -Wall -W
     QMAKE_CXXFLAGS_WARN_ON -= -Wall -W
 
@@ -17,4 +16,6 @@ unix {
         -Wno-deprecated-register \
         -Wno-unused-const-variable \
         -Wno-switch-bool
+} else {
+    win32:QMAKE_CXXFLAGS += /wd4100 /wd4065 -D_CRT_SECURE_NO_WARNINGS
 }
