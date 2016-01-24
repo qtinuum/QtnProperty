@@ -63,6 +63,23 @@ public:
     {
     }
 
+	static QString getFamilyLabel();
+	static QString getFamilyDescription(const QString &owner_name);
+	static QString getPointSizeLabel();
+	static QString getPointSizeDescription(const QString &owner_name);
+	static QString getBoldLabel();
+	static QString getBoldDescription(const QString &owner_name);
+	static QString getItalicLabel();
+	static QString getItalicDescription(const QString &owner_name);
+	static QString getUnderlineLabel();
+	static QString getUnderlineDescription(const QString &owner_name);
+	static QString getStrikeoutLabel();
+	static QString getStrikeoutDescription(const QString &owner_name);
+	static QString getKerningLabel();
+	static QString getKerningDescription(const QString &owner_name);
+	static QString getAntialiasingLabel();
+	static QString getAntialiasingDescription(const QString &owner_name);
+
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFont, QtnPropertyQFontBase)
 };
 

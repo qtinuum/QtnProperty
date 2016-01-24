@@ -152,10 +152,8 @@ QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, co
 QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner)
     : QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
 {
-    static QString labels[2] = { owner.tr("False"), owner.tr("True")};
-
-    m_labels[0] = labels[0];
-    m_labels[1] = labels[1];
+	m_labels[0] = QtnPropertyBool::getBoolText(false);
+	m_labels[1] = QtnPropertyBool::getBoolText(true);
 }
 
 void QtnPropertyDelegateBoolCombobox::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
@@ -169,8 +167,8 @@ QWidget* QtnPropertyDelegateBoolCombobox::createValueEditorImpl(QWidget* parent,
     if (owner().isEditableByUser())
     {
         QComboBox *comboBox = new QComboBox(parent);
-        comboBox->addItem(m_labels[true], true);
-        comboBox->addItem(m_labels[false], false);
+		comboBox->addItem(m_labels[1], true);
+		comboBox->addItem(m_labels[0], false);
 
         comboBox->setGeometry(rect);
 
@@ -186,7 +184,7 @@ QWidget* QtnPropertyDelegateBoolCombobox::createValueEditorImpl(QWidget* parent,
     {
         QLineEdit *lineEdit = new QLineEdit(parent);
         lineEdit->setReadOnly(true);
-        lineEdit->setText(m_labels[owner()]);
+		lineEdit->setText(m_labels[bool(owner()) ? 1 : 0]);
 
         lineEdit->setGeometry(rect);
 
@@ -196,6 +194,6 @@ QWidget* QtnPropertyDelegateBoolCombobox::createValueEditorImpl(QWidget* parent,
 
 bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(QString& strValue) const
 {
-    strValue = m_labels[owner().value()];
+	strValue = m_labels[bool(owner()) ? 1 : 0];
     return true;
 }

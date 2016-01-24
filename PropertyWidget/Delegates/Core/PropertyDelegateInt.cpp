@@ -21,6 +21,8 @@
 
 #include <QSpinBox>
 
+#include <QLocale>
+
 class QtnPropertyIntSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyIntBase, QSpinBox>
 {
 public:
@@ -73,6 +75,6 @@ QWidget* QtnPropertyDelegateInt::createValueEditorImpl(QWidget* parent, const QR
 
 bool QtnPropertyDelegateInt::propertyValueToStr(QString& strValue) const
 {
-    strValue = QString::number(owner().value());
-    return true;
+	strValue = QLocale().toString(owner().value());
+	return true;
 }

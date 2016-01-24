@@ -72,6 +72,8 @@ public:
     {
     }
 
+	static QString getFlagLabelDescription(const QString &flag_name, const QString &owner_name);
+
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnumFlags, QtnPropertyEnumFlagsBase)
 };
 

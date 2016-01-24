@@ -16,19 +16,13 @@
 
 #include "PropertyBool.h"
 
-static QString getBoolText(bool value)
-{
-    static QString boolTexts[2] = {QObject::tr("False"), QObject::tr("True")};
-    return boolTexts[value];
-}
-
 static bool getBoolValue(QString boolText, bool& success)
 {
     success = true;
-    if (QString::compare(boolText, getBoolText(false), Qt::CaseInsensitive) == 0)
+	if (QString::compare(boolText, QtnPropertyBool::getBoolText(false), Qt::CaseInsensitive) == 0)
         return false;
 
-    if (QString::compare(boolText, getBoolText(true), Qt::CaseInsensitive) == 0)
+	if (QString::compare(boolText, QtnPropertyBool::getBoolText(true), Qt::CaseInsensitive) == 0)
         return true;
 
     success = false;
@@ -49,7 +43,12 @@ bool QtnPropertyBoolBase::fromStrImpl(const QString& str)
 bool QtnPropertyBoolBase::toStrImpl(QString& str) const
 {
     bool boolValue = value();
-    str = getBoolText(boolValue);
+	str = QtnPropertyBool::getBoolText(boolValue);
     return true;
 }
 
+
+QString QtnPropertyBool::getBoolText(bool value)
+{
+	return value ? tr("True") : tr("False");
+}

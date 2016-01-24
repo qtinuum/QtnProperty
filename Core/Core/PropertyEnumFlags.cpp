@@ -94,3 +94,8 @@ bool QtnPropertyEnumFlagsBase::toStrImpl(QString& str) const
     str = strValues;
     return true;
 }
+
+QString QtnPropertyEnumFlags::getFlagLabelDescription(const QString &flag_name, const QString &owner_name)
+{
+	return tr("%1 flag for %2").arg(flag_name, owner_name);
+}

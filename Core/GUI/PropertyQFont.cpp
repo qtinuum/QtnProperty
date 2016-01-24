@@ -38,3 +38,83 @@ bool QtnPropertyQFontBase::toStrImpl(QString& str) const
     str = v.toString();
     return true;
 }
+
+QString QtnPropertyQFont::getFamilyLabel()
+{
+	return tr("Family");
+}
+
+QString QtnPropertyQFont::getFamilyDescription(const QString &owner_name)
+{
+	return tr("Font Family for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getPointSizeLabel()
+{
+	return tr("PointSize");
+}
+
+QString QtnPropertyQFont::getPointSizeDescription(const QString &owner_name)
+{
+	return tr("Point size for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getBoldLabel()
+{
+	return tr("Bold");
+}
+
+QString QtnPropertyQFont::getBoldDescription(const QString &owner_name)
+{
+	return tr("Bold flag for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getItalicLabel()
+{
+	return tr("Italic");
+}
+
+QString QtnPropertyQFont::getItalicDescription(const QString &owner_name)
+{
+	return tr("Italic flag for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getUnderlineLabel()
+{
+	return tr("Underline");
+}
+
+QString QtnPropertyQFont::getUnderlineDescription(const QString &owner_name)
+{
+	return tr("Underline flag for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getStrikeoutLabel()
+{
+	return tr("Strikeout");
+}
+
+QString QtnPropertyQFont::getStrikeoutDescription(const QString &owner_name)
+{
+	return tr("Strikeout flag for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getKerningLabel()
+{
+	return tr("Kerning");
+}
+
+QString QtnPropertyQFont::getKerningDescription(const QString &owner_name)
+{
+	return tr("Kerning flag for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getAntialiasingLabel()
+{
+	return tr("Antialiasing");
+}
+
+QString QtnPropertyQFont::getAntialiasingDescription(const QString &owner_name)
+{
+	return tr("Antialiasing flag for %1").arg(owner_name);
+}

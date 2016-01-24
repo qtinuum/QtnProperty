@@ -16,19 +16,25 @@
 
 #include "PropertyDouble.h"
 
+#include <QLocale>
+
 bool QtnPropertyDoubleBase::fromStrImpl(const QString& str)
 {
     bool ok = false;
-    ValueType value = str.toDouble(&ok);
-    if (!ok)
-        return false;
+	ValueType value = str.toDouble(&ok);
+	if (!ok)
+	{
+		value = QLocale().toDouble(str, &ok);
+		if (!ok)
+			return false;
+	}
 
     return setValue(value);
 }
 
 bool QtnPropertyDoubleBase::toStrImpl(QString& str) const
 {
-    str = QString::number(value(), 'g', 10);
+	str = QString::number(value(), 'f', 10);
     return true;
 }
 
