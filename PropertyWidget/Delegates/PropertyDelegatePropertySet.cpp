@@ -61,7 +61,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
     {
         QtnPropertyDelegateSubItem brItem(true);
         brItem.rect = context.rect.marginsRemoved(context.margins);
-        brItem.rect.setRight(brItem.rect.left() + brItem.rect.height());
+        brItem.rect.setWidth(brItem.rect.height());
         context.margins.setLeft(context.margins.left() + brItem.rect.height());
 
         if (brItem.rect.isValid())
@@ -71,7 +71,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
                 QRectF branchRect = item.rect;
                 qreal side = branchRect.height() / 3.5f;
                 QColor fillClr = context.widget->palette().color(QPalette::Text);
-                QColor outlineClr = (item.state() == QtnSubItemStateUnderCursor)
+                QColor outlineClr = (item.state() != QtnSubItemStateNone)
                             ? Qt::blue
                             : context.widget->palette().color(QPalette::Text);
 

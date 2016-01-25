@@ -21,10 +21,15 @@
 
 void regButtonDelegates()
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyButton::staticMetaObject
-                 , &qtnCreateDelegate<QtnPropertyDelegateButton, QtnPropertyButton>
-                 , "Button");
+    QtnPropertyDelegateFactory::staticInstance()
+      .registerDelegateDefault(&QtnPropertyButton::staticMetaObject
+                   , &qtnCreateDelegate<QtnPropertyDelegateButton, QtnPropertyButton>
+                   , "Button");
+
+    QtnPropertyDelegateFactory::staticInstance()
+      .registerDelegate(&QtnPropertyButton::staticMetaObject
+                   , &qtnCreateDelegate<QtnPropertyDelegateButtonLink, QtnPropertyButton>
+                   , "Link");
 }
 
 QtnPropertyDelegateButton::QtnPropertyDelegateButton(QtnPropertyButton& owner)
@@ -90,4 +95,66 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnPropertyDelegateDrawContex
     };
 
     subItems.append(buttonItem);
+}
+
+QtnPropertyDelegateButtonLink::QtnPropertyDelegateButtonLink(QtnPropertyButton& owner)
+    : QtnPropertyDelegateButton(owner)
+{
+}
+
+void QtnPropertyDelegateButtonLink::createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems)
+{
+    QtnPropertyDelegateSubItem linkItem(true);
+    linkItem.rect = context.rect.marginsRemoved(context.margins);
+    linkItem.rect.setWidth(context.painter->fontMetrics().width(m_title));
+
+    linkItem.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
+
+        context.painter->save();
+
+        QColor linkColor = context.palette().color(context.colorGroup(), QPalette::Link);
+        switch (item.state())
+        {
+        case QtnSubItemStateUnderCursor:
+            linkColor = linkColor.lighter();
+            break;
+
+        case QtnSubItemStatePushed:
+            linkColor = linkColor.darker();
+            break;
+
+        default:;
+        }
+
+        context.painter->setPen(linkColor);
+
+        context.painter->drawText(item.rect, Qt::AlignLeading | Qt::AlignVCenter, m_title);
+
+        context.painter->restore();
+    };
+
+    linkItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
+        bool doClick = false;
+        switch (context.eventType())
+        {
+        case QEvent::MouseButtonRelease:
+            doClick = true;
+            break;
+
+        case QEvent::KeyPress:
+            int key = context.eventAs<QKeyEvent>()->key();
+            doClick = (key == Qt::Key_Space) || (key == Qt::Key_Return);
+            break;
+        }
+
+        if (doClick)
+        {
+            owner().invokeClick();
+            return true;
+        }
+
+        return false;
+    };
+
+    subItems.append(linkItem);
 }

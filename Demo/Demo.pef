@@ -29,11 +29,22 @@ property_set SamplePS
 
     Button ButtonProperty
     {
+        description = "Start calculate a long operation.";
+
         clickHandler = [](const QtnPropertyButton* bttn) {
             qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
         };
         
         delegate { title = "Click me"; }
+    }
+    
+    Button ButtonLinkProperty
+    {
+        clickHandler = [](const QtnPropertyButton* bttn) {
+            qDebug() << Q_FUNC_INFO << "Link has clicked: " << bttn;
+        };
+        
+        delegate Link { title = "Click on me"; }
     }
 
     ABColor RGBColor

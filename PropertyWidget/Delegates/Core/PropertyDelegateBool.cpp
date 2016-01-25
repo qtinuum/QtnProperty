@@ -131,7 +131,7 @@ QCheckBox* createPropertyBoolCheckBox(QtnPropertyBoolBase& owner, QWidget* paren
 bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue)
 {
     subItemValue.trackState();
-    subItemValue.rect.setRight(subItemValue.rect.left() + context.style()->pixelMetric(QStyle::PM_IndicatorWidth));
+    subItemValue.rect.setWidth(context.style()->pixelMetric(QStyle::PM_IndicatorWidth));
 
     subItemValue.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
         QStyleOptionButton opt;

@@ -218,6 +218,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
     , ButtonProperty(*new QtnPropertyButton(this))
+    , ButtonLinkProperty(*new QtnPropertyButton(this))
     , RGBColor(*new QtnPropertyABColor(this))
     , FloatPropertySliderBox(*new QtnPropertyFloat(this))
     , DoubleProperty(*new QtnPropertyDouble(this))
@@ -252,6 +253,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
 
     BoolProperty = other.BoolProperty;
     ButtonProperty = other.ButtonProperty;
+    ButtonLinkProperty = other.ButtonLinkProperty;
     RGBColor = other.RGBColor;
     FloatPropertySliderBox = other.FloatPropertySliderBox;
     DoubleProperty = other.DoubleProperty;
@@ -301,6 +303,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->ButtonProperty.state() & ignoreMask))
     {
         ButtonProperty = theCopyFrom->ButtonProperty;
+    }
+
+    if (!(theCopyFrom->ButtonLinkProperty.state() & ignoreMask))
+    {
+        ButtonLinkProperty = theCopyFrom->ButtonLinkProperty;
     }
 
     if (!(theCopyFrom->RGBColor.state() & ignoreMask))
@@ -400,6 +407,13 @@ void QtnPropertySetSamplePS::init()
     ButtonProperty.setName(ButtonProperty_name);
     ButtonProperty.setClickHandler([](const QtnPropertyButton* bttn) {
             qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
+        });
+    static QString ButtonProperty_description = "Start calculate a long operation.";
+    ButtonProperty.setDescription(ButtonProperty_description);
+    static QString ButtonLinkProperty_name = tr("ButtonLinkProperty");
+    ButtonLinkProperty.setName(ButtonLinkProperty_name);
+    ButtonLinkProperty.setClickHandler([](const QtnPropertyButton* bttn) {
+            qDebug() << Q_FUNC_INFO << "Link has clicked: " << bttn;
         });
     static QString RGBColor_name = tr("RGBColor");
     RGBColor.setName(RGBColor_name);
@@ -537,6 +551,12 @@ void QtnPropertySetSamplePS::connectDelegates()
     ButtonProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["title"] = "Click me";
+        return info.take();
+    });
+    ButtonLinkProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->name = "Link";
+        info->attributes["title"] = "Click on me";
         return info.take();
     });
     RGBColor.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {

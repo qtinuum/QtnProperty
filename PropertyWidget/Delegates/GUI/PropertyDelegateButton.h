@@ -32,8 +32,18 @@ protected:
     void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
     void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
 
-private:
     QString m_title;
+};
+
+class QTN_PW_EXPORT QtnPropertyDelegateButtonLink: public QtnPropertyDelegateButton
+{
+    Q_DISABLE_COPY(QtnPropertyDelegateButtonLink)
+
+public:
+    QtnPropertyDelegateButtonLink(QtnPropertyButton& owner);
+
+protected:
+    void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
 };
 
 #endif // PROPERTY_DELEGATE_BUTTON_H

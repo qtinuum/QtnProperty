@@ -97,7 +97,7 @@ void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRec
     if (m_shape != QtnColorDelegateShapeNone)
     {
         QRect colorRect = rect;
-        colorRect.setRight(colorRect.left() + colorRect.height());
+        colorRect.setWidth(colorRect.height());
         colorRect.adjust(2, 2, -2, -2);
 
         if (m_shape == QtnColorDelegateShapeSquare)

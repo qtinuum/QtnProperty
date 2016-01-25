@@ -114,7 +114,7 @@ void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& cont
     boxRect.adjust(1, 1, -1, -1);
 
     auto valueRect = boxRect;
-    valueRect.setRight(valueRect.left() + int(valuePart * valueRect.width()));
+    valueRect.setWidth(int(valuePart * valueRect.width()));
 
     auto& painter = *context.painter;
 
