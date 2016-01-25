@@ -76,12 +76,14 @@ QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
       m_activeProperty(nullptr),
       m_delegateFactory(&QtnPropertyDelegateFactory::staticInstance()),
       m_visibleItemsValid(false),
+      m_grabMouseSubItem(nullptr),
       m_style(QtnPropertyViewStyleLiveSplit),
       m_itemHeight(0),
       m_itemHeightSpacing(6),
       m_valueLeftMargin(0),
       m_splitRatio(0.5f),
       m_rubberBand(nullptr),
+      m_mouseAtSplitter(false),
       m_accessibilityProxy(nullptr)
 {
   set_smaller_text_osx(this);
@@ -359,17 +361,26 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent* e)
     }
     else if (qAbs(e->x() - splitPosition()) < TOLERANCE)
     {
-        setCursor(Qt::SplitHCursor);
+        if (!m_mouseAtSplitter)
+        {
+            m_mouseAtSplitter = true;
+            m_oldCursor = cursor();
+            setCursor(Qt::SplitHCursor);
+        }
     }
     else
     {
-        setCursor(Qt::ArrowCursor);
+        if (m_mouseAtSplitter)
+        {
+            m_mouseAtSplitter = false;
+            setCursor(m_oldCursor);
+        }
 
         int index = visibleItemIndexByPoint(e->pos());
-       if (e->buttons() & Qt::LeftButton)
+        if (e->buttons() & Qt::LeftButton)
             changeActivePropertyByIndex(index);
-        else
-            handleMouseEvent(index, e, e->pos());
+        //else
+        handleMouseEvent(index, e, e->pos());
     }
 }
 
@@ -643,8 +654,12 @@ bool QtnPropertyView::handleEvent(QtnPropertyDelegateEventContext& context, Visi
     if (!vItem.subItemsValid)
         return false;
 
-    //if (m_activeSubItems.isEmpty() || (context.eventType() == QEvent::MouseMove))
+    // process event
+    if (m_grabMouseSubItem)
+        return m_grabMouseSubItem->event(context);
+    else
     {
+        // update list of sub items under cursor
         QList<QtnPropertyDelegateSubItem*> activeSubItems;
 
         // make list of new active sub items
@@ -665,17 +680,46 @@ bool QtnPropertyView::handleEvent(QtnPropertyDelegateEventContext& context, Visi
 
         // adopt new active sub items
         m_activeSubItems.swap(activeSubItems);
-    }
 
-    // process event
-    for (auto activeSubItem : m_activeSubItems)
-    {
-        if (activeSubItem->event(context))
-            return true;
+        for (auto activeSubItem : m_activeSubItems)
+        {
+            if (activeSubItem->event(context))
+                return true;
+        }
     }
 
     return false;
 }
+
+bool QtnPropertyView::grabMouseForSubItem(QtnPropertyDelegateSubItem* subItem)
+{
+    qDebug() << "grab " << m_grabMouseSubItem << " - " << subItem;
+    Q_ASSERT(!m_grabMouseSubItem);
+    if (m_grabMouseSubItem)
+        return false;
+
+    viewport()->grabMouse();
+    m_grabMouseSubItem = subItem;
+    m_grabMouseSubItem->grabMouse(this);
+
+    return true;
+}
+
+bool QtnPropertyView::releaseMouseForSubItem(QtnPropertyDelegateSubItem* subItem)
+{
+    qDebug() << "release " << m_grabMouseSubItem << " - " << subItem;
+    Q_UNUSED(subItem);
+    Q_ASSERT(m_grabMouseSubItem == subItem);
+    if (!m_grabMouseSubItem)
+        return false;
+
+    m_grabMouseSubItem->releaseMouse(this);
+    m_grabMouseSubItem = nullptr;
+    viewport()->releaseMouse();
+
+    return true;
+}
+
 
 void QtnPropertyView::updateItemsTree()
 {
@@ -719,9 +763,9 @@ QtnPropertyView::Item* QtnPropertyView::createItemsTree(QtnPropertyBase* rootPro
 
 void QtnPropertyView::invalidateVisibleItems()
 {
+    deactivateSubItems();
     m_visibleItemsValid = false;
     m_visibleItems.clear();
-    m_activeSubItems.clear();
     update();
 }
 
@@ -842,18 +886,27 @@ bool QtnPropertyView::ensureVisibleItemByIndex(int index)
 
 void QtnPropertyView::invalidateSubItems()
 {
+    deactivateSubItems();
+
     for (auto& item: m_visibleItems)
     {
         item.subItemsValid = false;
         item.subItems.clear();
     }
-    m_activeSubItems.clear();
 }
 
 void QtnPropertyView::deactivateSubItems()
 {
+    if (m_grabMouseSubItem)
+    {
+        qDebug() << "deactivate " << m_grabMouseSubItem;
+        viewport()->releaseMouse();
+        m_grabMouseSubItem = nullptr;
+    }
+
     for (auto subItem : m_activeSubItems)
         subItem->deactivate(this);
+
     m_activeSubItems.clear();
 }
 

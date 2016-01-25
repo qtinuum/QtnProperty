@@ -73,6 +73,8 @@ QStyle::State QtnPropertyDelegate::state(bool isActive, QtnPropertyDelegateSubIt
 
     if (subState == QtnSubItemStateUnderCursor)
         state |= QStyle::State_MouseOver;
+    else if (subState == QtnSubItemStatePushed)
+        state |= QStyle::State_Sunken;
 
     return state;
 }

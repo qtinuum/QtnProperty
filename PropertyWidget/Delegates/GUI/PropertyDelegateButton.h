@@ -44,6 +44,9 @@ public:
 
 protected:
     void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
+
+private:
+    QCursor m_widgetCursor;
 };
 
 #endif // PROPERTY_DELEGATE_BUTTON_H

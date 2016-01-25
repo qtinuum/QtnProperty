@@ -19,5 +19,4 @@ std::function<R(Types...)> qtnMemFn(T* t, R(T::*memFn)(Types...))
     return [t, memFn](Types... args) { return std::mem_fn(memFn)(t, std::forward<Types>(args)...); };
 }
 
-
 #endif // QTN_PROPERTYWIDGETAPI_H

@@ -41,11 +41,7 @@ class QTN_PW_EXPORT QtnPropertyDelegateFloatSlideBox: public QtnPropertyDelegate
     Q_DISABLE_COPY(QtnPropertyDelegateFloatSlideBox)
 
 public:
-    QtnPropertyDelegateFloatSlideBox(QtnPropertyFloatBase& owner)
-        : QtnPropertyDelegateTyped<QtnPropertyFloatBase, QtnPropertyDelegateWithValue>(owner)
-    {
-        m_boxFillColor = QColor::fromRgb(200, 200, 255);
-    }
+    QtnPropertyDelegateFloatSlideBox(QtnPropertyFloatBase& owner);
 
 protected:
     void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
@@ -54,8 +50,10 @@ protected:
 private:
     void draw(QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item);
     bool event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item);
+    void updateDragValue(int x, const QRect& rect);
 
     QColor m_boxFillColor;
+    float m_dragValue;
 };
 
 #endif // PROPERTY_DELEGATE_FLOAT_H

@@ -16,6 +16,7 @@
 
 #include "PropertyDelegateAux.h"
 #include "PropertyView.h"
+#include <QMouseEvent>
 
 QtnPropertyDelegateSubItem::QtnPropertyDelegateSubItem(bool trackState)
     : m_trackState(trackState),
@@ -39,6 +40,7 @@ bool QtnPropertyDelegateSubItem::activate(QtnPropertyView *widget)
     {
         m_state = QtnSubItemStateUnderCursor;
         widget->viewport()->update();
+        selfEvent(SubItemActivated, widget);
      }
 
     return true;
@@ -59,7 +61,32 @@ bool QtnPropertyDelegateSubItem::deactivate(QtnPropertyView *widget)
     {
         m_state = QtnSubItemStateNone;
         widget->viewport()->update();
+        selfEvent(SubItemDeactivated, widget);
     }
+
+    return true;
+}
+
+bool QtnPropertyDelegateSubItem::grabMouse(QtnPropertyView* widget)
+{
+    Q_ASSERT(m_activeCount > 0);
+    Q_ASSERT(m_state == QtnSubItemStateUnderCursor);
+
+    m_state = QtnSubItemStatePushed;
+    widget->viewport()->update();
+    selfEvent(SubItemGrabMouse, widget);
+
+    return true;
+}
+
+bool QtnPropertyDelegateSubItem::releaseMouse(QtnPropertyView* widget)
+{
+    Q_ASSERT(m_activeCount > 0);
+    Q_ASSERT(m_state == QtnSubItemStatePushed);
+
+    m_state = QtnSubItemStateUnderCursor;
+    widget->viewport()->update();
+    selfEvent(SubItemReleaseMouse, widget);
 
     return true;
 }
@@ -70,12 +97,42 @@ void QtnPropertyDelegateSubItem::draw(QtnPropertyDelegateDrawContext& context) c
         drawHandler(context, *this);
 }
 
-bool QtnPropertyDelegateSubItem::event(QtnPropertyDelegateEventContext& context) const
+bool QtnPropertyDelegateSubItem::event(QtnPropertyDelegateEventContext& context)
 {
+    if (m_trackState)
+    {
+        switch (context.eventType())
+        {
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonDblClick:
+        {
+            if (context.eventAs<QMouseEvent>()->button() == Qt::LeftButton)
+                context.grabMouse(this);
+        } break;
+
+        case QEvent::MouseButtonRelease:
+        {
+            if ((context.eventAs<QMouseEvent>()->button() == Qt::LeftButton)
+                    && (m_state == QtnSubItemStatePushed))
+                context.releaseMouse(this);
+        } break;
+
+        default:
+            ;
+        }
+    }
+
     if (eventHandler)
         return eventHandler(context, *this);
 
     return false;
+}
+
+bool QtnPropertyDelegateSubItem::selfEvent(int type, QtnPropertyView* widget)
+{
+    QEvent event_((QEvent::Type)type);
+    QtnPropertyDelegateEventContext context{&event_, widget};
+    return event(context);
 }
 
 QStyle* QtnPropertyDelegateDrawContext::style() const
@@ -104,3 +161,14 @@ QPalette::ColorGroup QtnPropertyDelegateDrawContext::colorGroup() const
     else
         return QPalette::Active;
 }
+
+bool QtnPropertyDelegateEventContext::grabMouse(QtnPropertyDelegateSubItem* subItem)
+{
+    return widget->grabMouseForSubItem(subItem);
+}
+
+bool QtnPropertyDelegateEventContext::releaseMouse(QtnPropertyDelegateSubItem* subItem)
+{
+    return widget->releaseMouseForSubItem(subItem);
+}
+

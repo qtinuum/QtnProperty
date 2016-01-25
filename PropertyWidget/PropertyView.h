@@ -156,6 +156,8 @@ private:
 
     bool handleMouseEvent(int index, QEvent *e, QPoint mousePos);
     bool handleEvent(QtnPropertyDelegateEventContext& context, VisibleItem& vItem, QPoint mousePos);
+    bool grabMouseForSubItem(QtnPropertyDelegateSubItem* subItem);
+    bool releaseMouseForSubItem(QtnPropertyDelegateSubItem* subItem);
 
     void updateVScrollbar() const;
     void updateStyleStuff();
@@ -181,6 +183,7 @@ private:
     mutable bool m_visibleItemsValid;
 
     QList<QtnPropertyDelegateSubItem*> m_activeSubItems;
+    QtnPropertyDelegateSubItem* m_grabMouseSubItem;
 
     QtnPropertyViewStyle m_style;
     int m_itemHeight;
@@ -191,9 +194,13 @@ private:
 
     float m_splitRatio;
     QRubberBand* m_rubberBand;
+    bool m_mouseAtSplitter;
+    QCursor m_oldCursor;
 
     friend class QtnAccessibilityProxy;
     QtnAccessibilityProxy* m_accessibilityProxy;
+
+    friend struct QtnPropertyDelegateEventContext;
 };
 
 #endif // QTN_PROPERTYVIEW_H

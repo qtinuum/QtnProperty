@@ -87,6 +87,14 @@ bool QtnPropertyDelegateFloat::propertyValueToStrImpl(QString& strValue) const
     return true;
 }
 
+QtnPropertyDelegateFloatSlideBox::QtnPropertyDelegateFloatSlideBox(QtnPropertyFloatBase& owner)
+    : QtnPropertyDelegateTyped<QtnPropertyFloatBase, QtnPropertyDelegateWithValue>(owner),
+      m_boxFillColor(QColor::fromRgb(200, 200, 255)),
+      m_dragValue(0)
+{
+}
+
+
 void QtnPropertyDelegateFloatSlideBox::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
 {
     qtnGetAttribute(attributes, "fillColor", m_boxFillColor);
@@ -106,7 +114,8 @@ void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& cont
     if (valueInterval <= 0)
         return;
 
-    float valuePart = (owner().value() - owner().minValue())/valueInterval;
+    float value = (item.state() == QtnSubItemStatePushed) ? m_dragValue : owner().value();
+    float valuePart = (value - owner().minValue())/valueInterval;
 
     auto boxBorderColor = (item.state() == QtnSubItemStateNone) ? m_boxFillColor : m_boxFillColor.darker(150);
 
@@ -129,7 +138,7 @@ void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& cont
     painter.restore();
 
     boxRect.adjust(context.widget->valueLeftMargin(), 0, 0, 0);
-    auto strValue = QString::number(owner().value());
+    auto strValue = QString::number(value);
     drawValueText(strValue, painter, boxRect, state(context.isActive, item.state()), nullptr);
 }
 
@@ -149,31 +158,47 @@ bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& co
             return false;
 
         return true;
-    }
+    } break;
 
     case QEvent::Wheel:
     {
         int steps = context.eventAs<QWheelEvent>()->angleDelta().y()/120;
         owner().incrementValue(steps);
         return true;
-    }
+    } break;
 
-    case QEvent::MouseButtonPress:
-//    case QEvent::MouseButtonDblClick:
+
+    case QEvent::MouseMove:
     {
-        int x = context.eventAs<QMouseEvent>()->x();
-        if (item.rect.left() <= x && x <= item.rect.right())
+        if (item.state() == QtnSubItemStatePushed)
         {
-            float valuePart = float(x - item.rect.left()) / item.rect.width();
-            float value = owner().minValue() + valuePart * (owner().maxValue() - owner().minValue());
-            owner().setValue(value);
-            return true;
+            updateDragValue(context.eventAs<QMouseEvent>()->x(), item.rect);
+            context.widget->viewport()->update();
         }
-    }
+        return true;
+    } break;
+
+    case QtnPropertyDelegateSubItem::SubItemReleaseMouse:
+    {
+        //updateDragValue(context.eventAs<QMouseEvent>()->x(), item.rect);
+        owner().setValue(m_dragValue);
+        return true;
+    } break;
 
     default:
         return false;
     }
+}
+
+void QtnPropertyDelegateFloatSlideBox::updateDragValue(int x, const QRect& rect)
+{
+    float valuePart = float(x - rect.left()) / rect.width();
+    if (valuePart < 0)
+        valuePart = 0;
+    else if (valuePart > 1.f)
+        valuePart = 1.f;
+
+    m_dragValue = owner().minValue() + valuePart * (owner().maxValue() - owner().minValue());
 }
 
 

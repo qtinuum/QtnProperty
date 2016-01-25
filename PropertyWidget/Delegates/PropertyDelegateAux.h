@@ -46,12 +46,24 @@ struct QTN_PW_EXPORT QtnPropertyDelegateSubItem
     QtnPropertyDelegateSubItemState state() const { return m_state; }
     void trackState() { m_trackState = true; }
 
+    enum SubItemEventType
+    {
+        SubItemActivated = 3 * QEvent::User + 15,
+        SubItemDeactivated = 3 * QEvent::User + 16,
+        SubItemGrabMouse = 3 * QEvent::User + 17,
+        SubItemReleaseMouse = 3 * QEvent::User + 18
+    };
+
 private:
     bool activate(QtnPropertyView* widget);
     bool deactivate(QtnPropertyView* widget);
 
+    bool grabMouse(QtnPropertyView* widget);
+    bool releaseMouse(QtnPropertyView* widget);
+
     void draw(QtnPropertyDelegateDrawContext& context) const;
-    bool event(QtnPropertyDelegateEventContext& context) const;
+    bool event(QtnPropertyDelegateEventContext& context);
+    bool selfEvent(int type, QtnPropertyView* widget);
 
     bool m_trackState;
     quint8 m_activeCount;
@@ -83,13 +95,14 @@ struct QTN_PW_EXPORT QtnPropertyDelegateEventContext
 {
 public:
     QEvent* event;
-    const QtnPropertyView* widget;
+    QtnPropertyView* widget;
 
     QEvent::Type eventType() const { return event->type(); }
     template <class EventT>
     EventT* eventAs() { return static_cast<EventT*>(event); }
 
-    bool grabMouse(const QtnPropertyDelegateSubItem& subItem);
+    bool grabMouse(QtnPropertyDelegateSubItem* subItem);
+    bool releaseMouse(QtnPropertyDelegateSubItem* subItem);
 };
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H
