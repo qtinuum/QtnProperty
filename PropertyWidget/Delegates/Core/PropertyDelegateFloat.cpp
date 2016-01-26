@@ -100,7 +100,7 @@ void QtnPropertyDelegateFloatSlideBox::applyAttributesImpl(const QtnPropertyDele
     qtnGetAttribute(attributes, "fillColor", m_boxFillColor);
 }
 
-bool QtnPropertyDelegateFloatSlideBox::createSubItemValueImpl(QtnPropertyDelegateDrawContext&, QtnPropertyDelegateSubItem& subItemValue)
+bool QtnPropertyDelegateFloatSlideBox::createSubItemValueImpl(QtnDrawContext&, QtnSubItem& subItemValue)
 {
     subItemValue.trackState();
     subItemValue.drawHandler = qtnMemFn(this, &QtnPropertyDelegateFloatSlideBox::draw);
@@ -108,7 +108,7 @@ bool QtnPropertyDelegateFloatSlideBox::createSubItemValueImpl(QtnPropertyDelegat
     return true;
 }
 
-void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item)
+void QtnPropertyDelegateFloatSlideBox::draw(QtnDrawContext& context, const QtnSubItem& item)
 {
     float valueInterval = owner().maxValue() - owner().minValue();
     if (valueInterval <= 0)
@@ -142,7 +142,7 @@ void QtnPropertyDelegateFloatSlideBox::draw(QtnPropertyDelegateDrawContext& cont
     drawValueText(strValue, painter, boxRect, state(context.isActive, item.state()), nullptr);
 }
 
-bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item)
+bool QtnPropertyDelegateFloatSlideBox::event(QtnEventContext& context, const QtnSubItem& item)
 {
     switch (context.eventType())
     {
@@ -178,7 +178,7 @@ bool QtnPropertyDelegateFloatSlideBox::event(QtnPropertyDelegateEventContext& co
         return true;
     } break;
 
-    case QtnPropertyDelegateSubItem::SubItemReleaseMouse:
+    case QtnSubItem::EventReleaseMouse:
     {
         //updateDragValue(context.eventAs<QMouseEvent>()->x(), item.rect);
         owner().setValue(m_dragValue);

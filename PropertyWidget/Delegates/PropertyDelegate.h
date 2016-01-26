@@ -40,7 +40,7 @@ public:
     // tune up with attributes
     void applyAttributes(const QtnPropertyDelegateAttributes& attributes);
     // create GUI sub elements to present property on PropertyView
-    void createSubItems(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
+    void createSubItems(QtnDrawContext& context, QList<QtnSubItem>& subItems);
 
 protected:
     QtnPropertyDelegate() {}
@@ -52,10 +52,10 @@ protected:
 
     virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) { Q_UNUSED(attributes); }
 
-    virtual void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) = 0;
+    virtual void createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems) = 0;
 
     // helper functions
-    QStyle::State state(bool isActive, QtnPropertyDelegateSubItemState subState) const;
+    QStyle::State state(bool isActive, QtnSubItemState subState) const;
     static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, QStyle::State state, bool* needTooltip = nullptr);
 };
 
@@ -66,17 +66,17 @@ class QTN_PW_EXPORT QtnPropertyDelegateWithValue: public QtnPropertyDelegate
 protected:
     QtnPropertyDelegateWithValue() {}
 
-    void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
+    void createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems) override;
 
     // override to define value part of property item
-    virtual bool createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue) = 0;
+    virtual bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) = 0;
 
     // sub-items functions
-    void addSubItemBackground(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
-    void addSubItemSelection(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
-    void addSubItemBranchNode(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
-    void addSubItemName(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
-    void addSubItemValue(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems);
+    void addSubItemBackground(QtnDrawContext& context, QList<QtnSubItem>& subItems);
+    void addSubItemSelection(QtnDrawContext& context, QList<QtnSubItem>& subItems);
+    void addSubItemBranchNode(QtnDrawContext& context, QList<QtnSubItem>& subItems);
+    void addSubItemName(QtnDrawContext& context, QList<QtnSubItem>& subItems);
+    void addSubItemValue(QtnDrawContext& context, QList<QtnSubItem>& subItems);
 };
 
 class QTN_PW_EXPORT QtnPropertyDelegateWithValueEditor: public QtnPropertyDelegateWithValue
@@ -86,7 +86,7 @@ class QTN_PW_EXPORT QtnPropertyDelegateWithValueEditor: public QtnPropertyDelega
 protected:
     QtnPropertyDelegateWithValueEditor() {}
 
-    bool createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue) override;
+    bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) override;
 
     // override to draw property value or override propertyValueToStrImpl to draw value as text
     virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const;

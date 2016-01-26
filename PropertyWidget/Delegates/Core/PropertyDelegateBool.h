@@ -32,7 +32,7 @@ public:
     }
 
 protected:
-    bool createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue) override;
+    bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) override;
 //    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
 //    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 };

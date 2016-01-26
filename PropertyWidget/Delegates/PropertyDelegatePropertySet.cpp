@@ -35,16 +35,16 @@ QtnPropertyBase* QtnPropertyDelegatePropertySet::subPropertyImpl(int index)
     return owner().childProperties()[index];
 }
 
-void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems)
+void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
     // background
     {
-        QtnPropertyDelegateSubItem bgItem;
+        QtnSubItem bgItem;
         bgItem.rect = context.rect;
 
         if (bgItem.rect.isValid())
         {
-            bgItem.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
+            bgItem.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
                 // fill background
                 context.painter->fillRect(item.rect, (context.isActive) ?
                                               context.widget->palette().color(QPalette::Highlight) :
@@ -59,14 +59,14 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
     // branch node sign
     if (context.hasChildren)
     {
-        QtnPropertyDelegateSubItem brItem(true);
+        QtnSubItem brItem(true);
         brItem.rect = context.rect.marginsRemoved(context.margins);
         brItem.rect.setWidth(brItem.rect.height());
         context.margins.setLeft(context.margins.left() + brItem.rect.height());
 
         if (brItem.rect.isValid())
         {
-            brItem.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
+            brItem.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
                 auto& painter = *context.painter;
                 QRectF branchRect = item.rect;
                 qreal side = branchRect.height() / 3.5f;
@@ -110,7 +110,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
                 painter.restore();
             };
 
-            brItem.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) -> bool {
+            brItem.eventHandler = [this](QtnEventContext& context, const QtnSubItem&) -> bool {
                 if ((context.eventType() == QEvent::MouseButtonPress) || (context.eventType() == QEvent::MouseButtonDblClick))
                 {
                     property()->switchStateAuto(QtnPropertyStateCollapsed);
@@ -126,12 +126,12 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnPropertyDelegateDrawC
 
     // property set name
     {
-        QtnPropertyDelegateSubItem nameItem;
+        QtnSubItem nameItem;
         nameItem.rect = context.rect.marginsRemoved(context.margins);
 
         if (nameItem.rect.isValid())
         {
-            nameItem.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
+            nameItem.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
                 QPalette::ColorGroup cg = property()->isEditableByUser() ? QPalette::Active : QPalette::Disabled;
 
                 QFont oldFont = context.painter->font();

@@ -45,11 +45,11 @@ public:
 
 protected:
     void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
-    bool createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue) override;
+    bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) override;
 
 private:
-    void draw(QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item);
-    bool event(QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem& item);
+    void draw(QtnDrawContext& context, const QtnSubItem& item);
+    bool event(QtnEventContext& context, const QtnSubItem& item);
     void updateDragValue(int x, const QRect& rect);
 
     QColor m_boxFillColor;

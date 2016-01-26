@@ -24,34 +24,34 @@
 #include <QEvent>
 
 class QtnPropertyView;
-struct QtnPropertyDelegateDrawContext;
-struct QtnPropertyDelegateEventContext;
+struct QtnDrawContext;
+struct QtnEventContext;
 
-enum QtnPropertyDelegateSubItemState
+enum QtnSubItemState
 {
     QtnSubItemStateNone,
     QtnSubItemStateUnderCursor,
     QtnSubItemStatePushed
 };
 
-struct QTN_PW_EXPORT QtnPropertyDelegateSubItem
+struct QTN_PW_EXPORT QtnSubItem
 {
-    QtnPropertyDelegateSubItem(bool trackState = false);
+    QtnSubItem(bool trackState = false);
 
     QRect rect;
 
-    std::function<void(QtnPropertyDelegateDrawContext&, const QtnPropertyDelegateSubItem&)> drawHandler;
-    std::function<bool(QtnPropertyDelegateEventContext&, const QtnPropertyDelegateSubItem&)> eventHandler;
+    std::function<void(QtnDrawContext&, const QtnSubItem&)> drawHandler;
+    std::function<bool(QtnEventContext&, const QtnSubItem&)> eventHandler;
 
-    QtnPropertyDelegateSubItemState state() const { return m_state; }
+    QtnSubItemState state() const { return m_state; }
     void trackState() { m_trackState = true; }
 
     enum SubItemEventType
     {
-        SubItemActivated = 3 * QEvent::User + 15,
-        SubItemDeactivated = 3 * QEvent::User + 16,
-        SubItemGrabMouse = 3 * QEvent::User + 17,
-        SubItemReleaseMouse = 3 * QEvent::User + 18
+        EventActivated = 3 * QEvent::User + 15,
+        EventDeactivated = 3 * QEvent::User + 16,
+        EventGrabMouse = 3 * QEvent::User + 17,
+        EventReleaseMouse = 3 * QEvent::User + 18
     };
 
 private:
@@ -61,18 +61,18 @@ private:
     bool grabMouse(QtnPropertyView* widget);
     bool releaseMouse(QtnPropertyView* widget);
 
-    void draw(QtnPropertyDelegateDrawContext& context) const;
-    bool event(QtnPropertyDelegateEventContext& context);
-    bool selfEvent(int type, QtnPropertyView* widget);
+    void draw(QtnDrawContext& context) const;
+    bool event(QtnEventContext& context);
+    bool selfEvent(SubItemEventType type, QtnPropertyView* widget);
 
     bool m_trackState;
     quint8 m_activeCount;
-    QtnPropertyDelegateSubItemState m_state;
+    QtnSubItemState m_state;
 
     friend class QtnPropertyView;
 };
 
-struct QTN_PW_EXPORT QtnPropertyDelegateDrawContext
+struct QTN_PW_EXPORT QtnDrawContext
 {
 public:
     QStylePainter* painter;
@@ -91,7 +91,7 @@ public:
     QPalette::ColorGroup colorGroup() const;
 };
 
-struct QTN_PW_EXPORT QtnPropertyDelegateEventContext
+struct QTN_PW_EXPORT QtnEventContext
 {
 public:
     QEvent* event;
@@ -101,8 +101,9 @@ public:
     template <class EventT>
     EventT* eventAs() { return static_cast<EventT*>(event); }
 
-    bool grabMouse(QtnPropertyDelegateSubItem* subItem);
-    bool releaseMouse(QtnPropertyDelegateSubItem* subItem);
+    bool grabMouse(QtnSubItem* subItem);
+    bool releaseMouse(QtnSubItem* subItem);
 };
+
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H

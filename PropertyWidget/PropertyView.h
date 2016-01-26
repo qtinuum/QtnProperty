@@ -126,7 +126,7 @@ private:
         int level;
         bool hasChildren;
 
-        mutable QList<QtnPropertyDelegateSubItem> subItems;
+        mutable QList<QtnSubItem> subItems;
         mutable bool subItemsValid;
 
         VisibleItem()
@@ -155,9 +155,9 @@ private:
     QRect visibleItemRect(int index) const;
 
     bool handleMouseEvent(int index, QEvent *e, QPoint mousePos);
-    bool handleEvent(QtnPropertyDelegateEventContext& context, VisibleItem& vItem, QPoint mousePos);
-    bool grabMouseForSubItem(QtnPropertyDelegateSubItem* subItem);
-    bool releaseMouseForSubItem(QtnPropertyDelegateSubItem* subItem);
+    bool handleEvent(QtnEventContext& context, VisibleItem& vItem, QPoint mousePos);
+    bool grabMouseForSubItem(QtnSubItem* subItem);
+    bool releaseMouseForSubItem(QtnSubItem* subItem);
 
     void updateVScrollbar() const;
     void updateStyleStuff();
@@ -182,8 +182,8 @@ private:
     mutable QList<VisibleItem> m_visibleItems;
     mutable bool m_visibleItemsValid;
 
-    QList<QtnPropertyDelegateSubItem*> m_activeSubItems;
-    QtnPropertyDelegateSubItem* m_grabMouseSubItem;
+    QList<QtnSubItem*> m_activeSubItems;
+    QtnSubItem* m_grabMouseSubItem;
 
     QtnPropertyViewStyle m_style;
     int m_itemHeight;
@@ -200,7 +200,7 @@ private:
     friend class QtnAccessibilityProxy;
     QtnAccessibilityProxy* m_accessibilityProxy;
 
-    friend struct QtnPropertyDelegateEventContext;
+    friend struct QtnEventContext;
 };
 
 #endif // QTN_PROPERTYVIEW_H

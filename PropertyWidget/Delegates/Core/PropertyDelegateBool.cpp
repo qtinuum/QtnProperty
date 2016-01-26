@@ -128,12 +128,12 @@ QCheckBox* createPropertyBoolCheckBox(QtnPropertyBoolBase& owner, QWidget* paren
     return checkBox;
 }
 
-bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(QtnPropertyDelegateDrawContext& context, QtnPropertyDelegateSubItem& subItemValue)
+bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue)
 {
     subItemValue.trackState();
     subItemValue.rect.setWidth(context.style()->pixelMetric(QStyle::PM_IndicatorWidth));
 
-    subItemValue.drawHandler = [this](QtnPropertyDelegateDrawContext& context, const QtnPropertyDelegateSubItem& item) {
+    subItemValue.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
         QStyleOptionButton opt;
         opt.rect = item.rect;
         opt.state = state(context.isActive, item.state());
@@ -145,7 +145,7 @@ bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(QtnPropertyDelegateDra
         context.painter->drawControl(QStyle::CE_CheckBox, opt);
     };
 
-    subItemValue.eventHandler = [this](QtnPropertyDelegateEventContext& context, const QtnPropertyDelegateSubItem&) {
+    subItemValue.eventHandler = [this](QtnEventContext& context, const QtnSubItem&) {
         bool toggleValue = false;
         switch (context.eventType())
         {

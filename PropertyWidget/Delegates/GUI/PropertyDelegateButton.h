@@ -30,7 +30,7 @@ public:
 
 protected:
     void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
-    void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
+    void createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems) override;
 
     QString m_title;
 };
@@ -43,7 +43,7 @@ public:
     QtnPropertyDelegateButtonLink(QtnPropertyButton& owner);
 
 protected:
-    void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
+    void createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems) override;
 
 private:
     QCursor m_widgetCursor;

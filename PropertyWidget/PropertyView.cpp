@@ -222,7 +222,7 @@ void QtnPropertyView::drawItem(QStylePainter& painter, const QRect& rect, const 
     QMargins margins(m_valueLeftMargin + rect.height() * vItem.level, 0, 0, 0);
     bool isActive = (m_activeProperty == vItem.item->property);
 
-    QtnPropertyDelegateDrawContext drawContext{&painter, this,
+    QtnDrawContext drawContext{&painter, this,
                                                rect, margins, splitPosition(),
                                                isActive, vItem.hasChildren};
 
@@ -287,7 +287,7 @@ bool QtnPropertyView::handleMouseEvent(int index, QEvent* e, QPoint mousePos)
         return false;
     }
 
-    QtnPropertyDelegateEventContext context{e, this};
+    QtnEventContext context{e, this};
     return handleEvent(context, m_visibleItems[index], mousePos);
 }
 
@@ -573,7 +573,7 @@ void QtnPropertyView::keyPressEvent(QKeyEvent* e)
 
             if (index >= 0)
             {
-                QtnPropertyDelegateEventContext context{e, this};
+                QtnEventContext context{e, this};
                 if (handleEvent(context, m_visibleItems[index], QPoint()))
                 {
                     // eat event
@@ -649,7 +649,7 @@ void QtnPropertyView::tooltipEvent(QHelpEvent* e)
     }
 }
 
-bool QtnPropertyView::handleEvent(QtnPropertyDelegateEventContext& context, VisibleItem& vItem, QPoint mousePos)
+bool QtnPropertyView::handleEvent(QtnEventContext& context, VisibleItem& vItem, QPoint mousePos)
 {
     if (!vItem.subItemsValid)
         return false;
@@ -660,7 +660,7 @@ bool QtnPropertyView::handleEvent(QtnPropertyDelegateEventContext& context, Visi
     else
     {
         // update list of sub items under cursor
-        QList<QtnPropertyDelegateSubItem*> activeSubItems;
+        QList<QtnSubItem*> activeSubItems;
 
         // make list of new active sub items
         for (auto& subItem: vItem.subItems)
@@ -691,7 +691,7 @@ bool QtnPropertyView::handleEvent(QtnPropertyDelegateEventContext& context, Visi
     return false;
 }
 
-bool QtnPropertyView::grabMouseForSubItem(QtnPropertyDelegateSubItem* subItem)
+bool QtnPropertyView::grabMouseForSubItem(QtnSubItem* subItem)
 {
     qDebug() << "grab " << m_grabMouseSubItem << " - " << subItem;
     Q_ASSERT(!m_grabMouseSubItem);
@@ -705,7 +705,7 @@ bool QtnPropertyView::grabMouseForSubItem(QtnPropertyDelegateSubItem* subItem)
     return true;
 }
 
-bool QtnPropertyView::releaseMouseForSubItem(QtnPropertyDelegateSubItem* subItem)
+bool QtnPropertyView::releaseMouseForSubItem(QtnSubItem* subItem)
 {
     qDebug() << "release " << m_grabMouseSubItem << " - " << subItem;
     Q_UNUSED(subItem);

@@ -37,7 +37,7 @@ protected:
 
     //virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) { Q_UNUSED(attributes); }
 
-    void createSubItemsImpl(QtnPropertyDelegateDrawContext& context, QList<QtnPropertyDelegateSubItem>& subItems) override;
+    void createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems) override;
 };
 
 
