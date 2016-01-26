@@ -82,9 +82,33 @@ void QtnPropertyDelegateQColor::applyAttributesImpl(const QtnPropertyDelegateAtt
     qtnGetAttribute(attributes, "rgbSubItems", rgbSubItems);
     if (rgbSubItems)
     {
-        addSubProperty(qtnCreateRedProperty(0, &owner()));
-        addSubProperty(qtnCreateGreenProperty(0, &owner()));
-        addSubProperty(qtnCreateBlueProperty(0, &owner()));
+        QtnPropertyDelegateInfo delegateInfo;
+        delegateInfo.name = "SliderBox";
+        delegateInfo.attributes["liveUpdate"] = true;
+
+        {
+            auto subProperty = qtnCreateRedProperty(0, &owner());
+            delegateInfo.attributes["fillColor"] = QColor::fromRgb(255, 100, 100);
+            subProperty->setDelegate(delegateInfo);
+            addSubProperty(subProperty);
+
+        }
+
+        {
+            auto subProperty = qtnCreateGreenProperty(0, &owner());
+            delegateInfo.attributes["fillColor"] = QColor::fromRgb(100, 255, 100);
+            subProperty->setDelegate(delegateInfo);
+            addSubProperty(subProperty);
+
+        }
+
+        {
+            auto subProperty = qtnCreateBlueProperty(0, &owner());
+            delegateInfo.attributes["fillColor"] = QColor::fromRgb(100, 100, 255);
+            subProperty->setDelegate(delegateInfo);
+            addSubProperty(subProperty);
+
+        }
     }
 }
 

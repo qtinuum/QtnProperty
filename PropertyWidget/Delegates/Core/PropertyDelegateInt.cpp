@@ -27,6 +27,11 @@ void regIntDelegates()
     .registerDelegateDefault(&QtnPropertyIntBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>
                  , "SpinBox");
+
+  QtnPropertyDelegateFactory::staticInstance()
+      .registerDelegate(&QtnPropertyIntBase::staticMetaObject
+                 , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyIntBase>, QtnPropertyIntBase>
+                 , "SliderBox");
 }
 
 

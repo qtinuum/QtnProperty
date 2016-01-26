@@ -75,7 +75,7 @@ void QtnPropertyDelegateButton::createSubItemsImpl(QtnDrawContext& context, QLis
         bool doClick = false;
         switch (context.eventType())
         {
-        case QtnSubItem::EventReleaseMouse:
+        case QtnSubItemEvent::ReleaseMouse:
             doClick = true;
             break;
 
@@ -143,18 +143,18 @@ void QtnPropertyDelegateButtonLink::createSubItemsImpl(QtnDrawContext& context, 
             doClick = (key == Qt::Key_Space) || (key == Qt::Key_Return);
         } break;
 
-        case QtnSubItem::EventActivated:
+        case QtnSubItemEvent::Activated:
         {
             m_widgetCursor = context.widget->cursor();
             context.widget->setCursor(Qt::PointingHandCursor);
         } break;
 
-        case QtnSubItem::EventDeactivated:
+        case QtnSubItemEvent::Deactivated:
         {
             context.widget->setCursor(m_widgetCursor);
         } break;
 
-        case QtnSubItem::EventReleaseMouse:
+        case QtnSubItemEvent::ReleaseMouse:
         {
             doClick = true;
         } break;

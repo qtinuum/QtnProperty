@@ -31,7 +31,7 @@ void regFloatDelegates()
 
     QtnPropertyDelegateFactory::staticInstance()
         .registerDelegate(&QtnPropertyFloatBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateFloatSlideBox, QtnPropertyFloatBase>
+                                , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyFloatBase>, QtnPropertyFloatBase>
                                 , "SliderBox");
 }
 
@@ -86,7 +86,7 @@ bool QtnPropertyDelegateFloat::propertyValueToStrImpl(QString& strValue) const
     strValue = QString::number(owner().value());
     return true;
 }
-
+/*
 QtnPropertyDelegateFloatSlideBox::QtnPropertyDelegateFloatSlideBox(QtnPropertyFloatBase& owner)
     : QtnPropertyDelegateTyped<QtnPropertyFloatBase, QtnPropertyDelegateWithValue>(owner),
       m_boxFillColor(QColor::fromRgb(200, 200, 255)),
@@ -167,20 +167,34 @@ bool QtnPropertyDelegateFloatSlideBox::event(QtnEventContext& context, const Qtn
         return true;
     } break;
 
+    case QtnSubItemEvent::Activated:
+    {
+        m_oldCursor = context.widget->cursor();
+        return true;
+    } break;
+
+    case QtnSubItemEvent::PressMouse:
+    {
+        updateDragValue(context.eventAs<QtnSubItemEvent>()->x(), item.rect);
+        context.widget->setCursor(Qt::SplitHCursor);
+        context.updateWidget();
+        return true;
+    } break;
 
     case QEvent::MouseMove:
     {
         if (item.state() == QtnSubItemStatePushed)
         {
             updateDragValue(context.eventAs<QMouseEvent>()->x(), item.rect);
-            context.widget->viewport()->update();
+            context.updateWidget();
         }
         return true;
     } break;
 
-    case QtnSubItem::EventReleaseMouse:
+    case QtnSubItemEvent::ReleaseMouse:
     {
-        //updateDragValue(context.eventAs<QMouseEvent>()->x(), item.rect);
+        updateDragValue(context.eventAs<QtnSubItemEvent>()->x(), item.rect);
+        context.widget->setCursor(m_oldCursor);
         owner().setValue(m_dragValue);
         return true;
     } break;
@@ -200,5 +214,5 @@ void QtnPropertyDelegateFloatSlideBox::updateDragValue(int x, const QRect& rect)
 
     m_dragValue = owner().minValue() + valuePart * (owner().maxValue() - owner().minValue());
 }
-
+*/
 

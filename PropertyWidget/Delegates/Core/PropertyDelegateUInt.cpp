@@ -23,10 +23,16 @@
 
 void regUIntDelegates()
 {
+    QtnPropertyDelegateFactory::staticInstance()
+        .registerDelegateDefault(&QtnPropertyUIntBase::staticMetaObject
+            , &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
+            , "SpinBox");
+
+
   QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyUIntBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
-                                , "SpinBox");
+      .registerDelegate(&QtnPropertyUIntBase::staticMetaObject
+            , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyUIntBase>, QtnPropertyUIntBase>
+            , "SliderBox");
 }
 
 const quint32 qtn_u_2 = std::numeric_limits<quint32>::max() / 2 + 1;

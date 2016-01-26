@@ -25,7 +25,7 @@ QtnSubItem::QtnSubItem(bool trackState)
 {
 }
 
-bool QtnSubItem::activate(QtnPropertyView *widget)
+bool QtnSubItem::activate(QtnPropertyView *widget, QPoint mousePos)
 {
     if (!m_trackState)
         return false;
@@ -40,13 +40,13 @@ bool QtnSubItem::activate(QtnPropertyView *widget)
     {
         m_state = QtnSubItemStateUnderCursor;
         widget->viewport()->update();
-        selfEvent(EventActivated, widget);
+        selfEvent(QtnSubItemEvent::Activated, widget, mousePos);
      }
 
     return true;
 }
 
-bool QtnSubItem::deactivate(QtnPropertyView *widget)
+bool QtnSubItem::deactivate(QtnPropertyView *widget, QPoint mousePos)
 {
     if (!m_trackState)
         return false;
@@ -61,32 +61,32 @@ bool QtnSubItem::deactivate(QtnPropertyView *widget)
     {
         m_state = QtnSubItemStateNone;
         widget->viewport()->update();
-        selfEvent(EventDeactivated, widget);
+        selfEvent(QtnSubItemEvent::Deactivated, widget, mousePos);
     }
 
     return true;
 }
 
-bool QtnSubItem::grabMouse(QtnPropertyView* widget)
+bool QtnSubItem::grabMouse(QtnPropertyView* widget, QPoint mousePos)
 {
     Q_ASSERT(m_activeCount > 0);
     Q_ASSERT(m_state == QtnSubItemStateUnderCursor);
 
     m_state = QtnSubItemStatePushed;
     widget->viewport()->update();
-    selfEvent(EventGrabMouse, widget);
+    selfEvent(QtnSubItemEvent::PressMouse, widget, mousePos);
 
     return true;
 }
 
-bool QtnSubItem::releaseMouse(QtnPropertyView* widget)
+bool QtnSubItem::releaseMouse(QtnPropertyView* widget, QPoint mousePos)
 {
     Q_ASSERT(m_activeCount > 0);
     Q_ASSERT(m_state == QtnSubItemStatePushed);
 
     m_state = QtnSubItemStateUnderCursor;
     widget->viewport()->update();
-    selfEvent(EventReleaseMouse, widget);
+    selfEvent(QtnSubItemEvent::ReleaseMouse, widget, mousePos);
 
     return true;
 }
@@ -106,15 +106,17 @@ bool QtnSubItem::event(QtnEventContext& context)
         case QEvent::MouseButtonPress:
         case QEvent::MouseButtonDblClick:
         {
-            if (context.eventAs<QMouseEvent>()->button() == Qt::LeftButton)
-                context.grabMouse(this);
+            auto event = context.eventAs<QMouseEvent>();
+            if (event->button() == Qt::LeftButton)
+                context.grabMouse(this, event->pos());
         } break;
 
         case QEvent::MouseButtonRelease:
         {
-            if ((context.eventAs<QMouseEvent>()->button() == Qt::LeftButton)
+            auto event = context.eventAs<QMouseEvent>();
+            if ((event->button() == Qt::LeftButton)
                     && (m_state == QtnSubItemStatePushed))
-                context.releaseMouse(this);
+                context.releaseMouse(this, event->pos());
         } break;
 
         default:
@@ -128,9 +130,9 @@ bool QtnSubItem::event(QtnEventContext& context)
     return false;
 }
 
-bool QtnSubItem::selfEvent(SubItemEventType type, QtnPropertyView* widget)
+bool QtnSubItem::selfEvent(QtnSubItemEvent::Type type, QtnPropertyView* widget, QPoint mousePos)
 {
-    QEvent event_((QEvent::Type)type);
+    QtnSubItemEvent event_(type, mousePos);
     QtnEventContext context{&event_, widget};
     return event(context);
 }
@@ -162,13 +164,23 @@ QPalette::ColorGroup QtnDrawContext::colorGroup() const
         return QPalette::Active;
 }
 
-bool QtnEventContext::grabMouse(QtnSubItem* subItem)
+void QtnEventContext::updateWidget()
 {
-    return widget->grabMouseForSubItem(subItem);
+    widget->viewport()->update();
 }
 
-bool QtnEventContext::releaseMouse(QtnSubItem* subItem)
+bool QtnEventContext::grabMouse(QtnSubItem* subItem, QPoint mousePos)
 {
-    return widget->releaseMouseForSubItem(subItem);
+    return widget->grabMouseForSubItem(subItem, mousePos);
 }
+
+bool QtnEventContext::releaseMouse(QtnSubItem* subItem, QPoint mousePos)
+{
+    return widget->releaseMouseForSubItem(subItem, mousePos);
+}
+
+QtnSubItemEvent::QtnSubItemEvent(Type type, QPoint mousePos)
+    : QEvent((QEvent::Type)type),
+      m_mousePos(mousePos)
+{}
 

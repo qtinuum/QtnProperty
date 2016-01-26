@@ -667,7 +667,7 @@ bool QtnPropertyView::handleEvent(QtnEventContext& context, VisibleItem& vItem, 
         {
             if (mousePos.isNull() || subItem.rect.contains(mousePos))
             {
-                subItem.activate(this);
+                subItem.activate(this, mousePos);
                 activeSubItems.append(&subItem);
             }
         }
@@ -675,7 +675,7 @@ bool QtnPropertyView::handleEvent(QtnEventContext& context, VisibleItem& vItem, 
         // deactivate old sub items
         for (auto activeSubItem : m_activeSubItems)
         {
-            activeSubItem->deactivate(this);
+            activeSubItem->deactivate(this, mousePos);
         }
 
         // adopt new active sub items
@@ -691,29 +691,27 @@ bool QtnPropertyView::handleEvent(QtnEventContext& context, VisibleItem& vItem, 
     return false;
 }
 
-bool QtnPropertyView::grabMouseForSubItem(QtnSubItem* subItem)
+bool QtnPropertyView::grabMouseForSubItem(QtnSubItem* subItem, QPoint mousePos)
 {
-    qDebug() << "grab " << m_grabMouseSubItem << " - " << subItem;
     Q_ASSERT(!m_grabMouseSubItem);
     if (m_grabMouseSubItem)
         return false;
 
     viewport()->grabMouse();
     m_grabMouseSubItem = subItem;
-    m_grabMouseSubItem->grabMouse(this);
+    m_grabMouseSubItem->grabMouse(this, mousePos);
 
     return true;
 }
 
-bool QtnPropertyView::releaseMouseForSubItem(QtnSubItem* subItem)
+bool QtnPropertyView::releaseMouseForSubItem(QtnSubItem* subItem, QPoint mousePos)
 {
-    qDebug() << "release " << m_grabMouseSubItem << " - " << subItem;
     Q_UNUSED(subItem);
     Q_ASSERT(m_grabMouseSubItem == subItem);
     if (!m_grabMouseSubItem)
         return false;
 
-    m_grabMouseSubItem->releaseMouse(this);
+    m_grabMouseSubItem->releaseMouse(this, mousePos);
     m_grabMouseSubItem = nullptr;
     viewport()->releaseMouse();
 
@@ -905,7 +903,7 @@ void QtnPropertyView::deactivateSubItems()
     }
 
     for (auto subItem : m_activeSubItems)
-        subItem->deactivate(this);
+        subItem->deactivate(this, QPoint());
 
     m_activeSubItems.clear();
 }

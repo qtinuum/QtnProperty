@@ -156,8 +156,8 @@ private:
 
     bool handleMouseEvent(int index, QEvent *e, QPoint mousePos);
     bool handleEvent(QtnEventContext& context, VisibleItem& vItem, QPoint mousePos);
-    bool grabMouseForSubItem(QtnSubItem* subItem);
-    bool releaseMouseForSubItem(QtnSubItem* subItem);
+    bool grabMouseForSubItem(QtnSubItem* subItem, QPoint mousePos);
+    bool releaseMouseForSubItem(QtnSubItem* subItem, QPoint mousePos);
 
     void updateVScrollbar() const;
     void updateStyleStuff();

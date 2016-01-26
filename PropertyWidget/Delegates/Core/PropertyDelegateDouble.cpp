@@ -28,6 +28,11 @@ void regDoubleDelegates()
     .registerDelegateDefault(&QtnPropertyDoubleBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>
                  , "SpinBox");
+
+  QtnPropertyDelegateFactory::staticInstance()
+      .registerDelegate(&QtnPropertyDoubleBase::staticMetaObject
+                  , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyDoubleBase>, QtnPropertyDoubleBase>
+                  , "SliderBox");
 }
 
 class QtnPropertyDoubleSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, QDoubleSpinBox>

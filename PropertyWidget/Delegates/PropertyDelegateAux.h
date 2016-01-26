@@ -27,6 +27,27 @@ class QtnPropertyView;
 struct QtnDrawContext;
 struct QtnEventContext;
 
+class QtnSubItemEvent: public QEvent
+{
+public:
+    enum Type
+    {
+        Activated = 3 * QEvent::User + 15,
+        Deactivated = 3 * QEvent::User + 16,
+        PressMouse = 3 * QEvent::User + 17,
+        ReleaseMouse = 3 * QEvent::User + 18
+    };
+
+    QtnSubItemEvent(Type type, QPoint mousePos);
+
+    QPoint pos() const { return m_mousePos; }
+    int x() const { return m_mousePos.x(); }
+    int y() const { return m_mousePos.y(); }
+
+private:
+    QPoint m_mousePos;
+};
+
 enum QtnSubItemState
 {
     QtnSubItemStateNone,
@@ -46,24 +67,16 @@ struct QTN_PW_EXPORT QtnSubItem
     QtnSubItemState state() const { return m_state; }
     void trackState() { m_trackState = true; }
 
-    enum SubItemEventType
-    {
-        EventActivated = 3 * QEvent::User + 15,
-        EventDeactivated = 3 * QEvent::User + 16,
-        EventGrabMouse = 3 * QEvent::User + 17,
-        EventReleaseMouse = 3 * QEvent::User + 18
-    };
-
 private:
-    bool activate(QtnPropertyView* widget);
-    bool deactivate(QtnPropertyView* widget);
+    bool activate(QtnPropertyView* widget, QPoint mousePos);
+    bool deactivate(QtnPropertyView* widget, QPoint mousePos);
 
-    bool grabMouse(QtnPropertyView* widget);
-    bool releaseMouse(QtnPropertyView* widget);
+    bool grabMouse(QtnPropertyView* widget, QPoint mousePos);
+    bool releaseMouse(QtnPropertyView* widget, QPoint mousePos);
 
     void draw(QtnDrawContext& context) const;
     bool event(QtnEventContext& context);
-    bool selfEvent(SubItemEventType type, QtnPropertyView* widget);
+    bool selfEvent(QtnSubItemEvent::Type type, QtnPropertyView* widget, QPoint mousePos);
 
     bool m_trackState;
     quint8 m_activeCount;
@@ -101,9 +114,13 @@ public:
     template <class EventT>
     EventT* eventAs() { return static_cast<EventT*>(event); }
 
-    bool grabMouse(QtnSubItem* subItem);
-    bool releaseMouse(QtnSubItem* subItem);
-};
+    void updateWidget();
 
+private:
+    bool grabMouse(QtnSubItem* subItem, QPoint mousePos);
+    bool releaseMouse(QtnSubItem* subItem, QPoint mousePos);
+
+    friend struct QtnSubItem;
+};
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H
