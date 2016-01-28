@@ -17,7 +17,7 @@
 #ifndef PROPERTY_DELEGATE_QSTRING_H
 #define PROPERTY_DELEGATE_QSTRING_H
 
-#include "../PropertyDelegate.h"
+#include "../Utils/PropertyDelegateMisc.h"
 
 class QtnPropertyQStringBase;
 

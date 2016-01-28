@@ -15,7 +15,7 @@
 */
 
 #include "PropertyEditorAux.h"
-#include "PropertyDelegate.h"
+#include "../PropertyDelegate.h"
 
 #include <QHBoxLayout>
 #include <QKeyEvent>

@@ -555,7 +555,7 @@ void QtnPropertySetSamplePS::connectDelegates()
     });
     ButtonLinkProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
-        info->name = "Link";
+        info->name = "Link2";
         info->attributes["title"] = "Click on me";
         return info.take();
     });

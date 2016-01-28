@@ -17,7 +17,7 @@
 #include "PropertyDelegateEnum.h"
 #include "../../../Core/Core/PropertyEnum.h"
 #include "../PropertyDelegateFactory.h"
-#include "../PropertyEditorHandler.h"
+#include "../Utils/PropertyEditorHandler.h"
 
 #include <QComboBox>
 #include <QLineEdit>

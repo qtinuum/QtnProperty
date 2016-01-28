@@ -57,7 +57,6 @@ QtnMetaPropertyFactory_t qtnCreateFactory()
 
 bool qtnRegisterDefaultMetaPropertyFactory()
 {
-    qDebug() << Q_FUNC_INFO;
     qtnRegisterMetaPropertyFactory(QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::String, qtnCreateFactory<QtnPropertyQStringCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::Double, qtnCreateFactory<QtnPropertyDoubleCallback>());

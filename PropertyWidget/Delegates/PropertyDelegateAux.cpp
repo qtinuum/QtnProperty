@@ -184,3 +184,23 @@ QtnSubItemEvent::QtnSubItemEvent(Type type, QPoint mousePos)
       m_mousePos(mousePos)
 {}
 
+QString qtnElidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided)
+{
+    QString newText = painter.fontMetrics().elidedText(text, Qt::ElideRight, rect.width());
+
+    if (elided)
+        *elided = (newText != text);
+
+    return newText;
+}
+
+void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, QStyle::State state, bool* needTooltip)
+{
+    Q_UNUSED(state);
+
+    if (text.isEmpty())
+        return;
+
+    painter.drawText(rect, Qt::AlignLeading | Qt::AlignVCenter
+                     , qtnElidedText(painter, text, rect, needTooltip));
+}

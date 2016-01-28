@@ -24,8 +24,10 @@ QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(const QtnPropertyDelegate
 
 QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnPropertyBase &owner) const
 {
+    CreateFunction* createFunction = nullptr;
+
     const QMetaObject* metaObject = owner.metaObject();
-    while (metaObject)
+    while (metaObject && !createFunction)
     {
         // try to find delegate factory by class name
         auto it = m_createItems.find(metaObject->className());
@@ -39,8 +41,6 @@ QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnPropertyBase 
             if (propertyDelegate)
                 delegateName = propertyDelegate->name;
 
-            CreateFunction* createFunction = nullptr;
-
             if (delegateName.isEmpty())
             {
                 createFunction = createItem.defaultCreateFunction;
@@ -48,24 +48,25 @@ QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnPropertyBase 
             else
             {
                 auto jt = createItem.createFunctions.find(delegateName);
-                Q_ASSERT(jt != createItem.createFunctions.end());
+                //Q_ASSERT(jt != createItem.createFunctions.end());
                 if (jt != createItem.createFunctions.end())
                     createFunction = jt.value();
             }
-
-            if (!createFunction)
-                return nullptr;
-
-            // call factory function
-            return (*createFunction)(owner);
         }
 
         metaObject = metaObject->superClass();
     }
 
+    if (createFunction)
+    {
+        // call factory function
+        return (*createFunction)(owner);
+    }
+
     if (m_superFactory)
         return m_superFactory->createDelegate(owner);
 
+    // create delegate stub
     return nullptr;
 }
 

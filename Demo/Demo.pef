@@ -44,7 +44,7 @@ property_set SamplePS
             qDebug() << Q_FUNC_INFO << "Link has clicked: " << bttn;
         };
         
-        delegate Link { title = "Click on me"; }
+        delegate Link2 { title = "Click on me"; }
     }
 
     ABColor RGBColor

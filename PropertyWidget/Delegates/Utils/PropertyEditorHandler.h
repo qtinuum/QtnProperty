@@ -17,8 +17,8 @@
 #ifndef PROPERTY_EDITOR_HANDLER_H
 #define PROPERTY_EDITOR_HANDLER_H
 
-#include "../PropertyWidgetAPI.h"
-#include "../../Core/Property.h"
+#include "../../PropertyWidgetAPI.h"
+#include "../../../Core/Property.h"
 #include <QWidget>
 
 class QTN_PW_EXPORT QtnPropertyEditorHandlerBase: public QObject

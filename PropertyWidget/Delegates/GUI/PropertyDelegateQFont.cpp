@@ -21,8 +21,8 @@
 #include "../../../Core/Core/PropertyBool.h"
 #include "../../../Core/Core/PropertyEnum.h"
 #include "../PropertyDelegateFactory.h"
-#include "../PropertyEditorHandler.h"
-#include "../PropertyEditorAux.h"
+#include "../Utils/PropertyEditorHandler.h"
+#include "../Utils/PropertyEditorAux.h"
 
 #include <QFontDialog>
 #include <QFontDatabase>

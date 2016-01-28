@@ -17,13 +17,13 @@
 #ifndef PROPERTY_EDITOR_AUX_H
 #define PROPERTY_EDITOR_AUX_H
 
-#include "../PropertyWidgetAPI.h"
+#include "../../PropertyWidgetAPI.h"
+#include "PropertyDelegateMisc.h"
 
 #include <QLineEdit>
 #include <QToolButton>
 
 class QKeyEvent;
-class QtnInplaceInfo;
 
 class QTN_PW_EXPORT QtnLineEditBttn: public QWidget
 {

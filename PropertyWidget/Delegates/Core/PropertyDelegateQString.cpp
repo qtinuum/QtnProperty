@@ -17,8 +17,8 @@
 #include "PropertyDelegateQString.h"
 #include "../../../Core/Core/PropertyQString.h"
 #include "../PropertyDelegateFactory.h"
-#include "../PropertyEditorHandler.h"
-#include "../PropertyEditorAux.h"
+#include "../Utils/PropertyEditorHandler.h"
+#include "../Utils/PropertyEditorAux.h"
 
 #include <QLineEdit>
 #include <QKeyEvent>

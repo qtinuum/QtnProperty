@@ -17,7 +17,8 @@
 #include "PropertyDelegateFloat.h"
 #include "../../../Core/Core/PropertyFloat.h"
 #include "../PropertyDelegateFactory.h"
-#include "../PropertyEditorHandler.h"
+#include "../Utils/PropertyEditorHandler.h"
+#include "../Utils/PropertyDelegateSliderBox.h"
 
 #include <QDoubleSpinBox>
 #include <QKeyEvent>

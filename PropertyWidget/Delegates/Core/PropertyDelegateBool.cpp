@@ -18,10 +18,9 @@
 
 #include "../../../Core/Core/PropertyBool.h"
 #include "../PropertyDelegateFactory.h"
-#include "../PropertyEditorHandler.h"
+#include "../Utils/PropertyEditorHandler.h"
 
 #include <QDebug>
-#include <QStyleOption>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>

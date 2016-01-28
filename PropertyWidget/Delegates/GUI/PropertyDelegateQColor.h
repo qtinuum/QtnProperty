@@ -17,7 +17,7 @@
 #ifndef PROPERTY_DELEGATE_QCOLOR_H
 #define PROPERTY_DELEGATE_QCOLOR_H
 
-#include "../PropertyDelegate.h"
+#include "../Utils/PropertyDelegateMisc.h"
 
 class QtnPropertyQColorBase;
 

@@ -17,7 +17,7 @@
 #ifndef PROPERTY_DELEGATE_QSIZE_H
 #define PROPERTY_DELEGATE_QSIZE_H
 
-#include "../PropertyDelegate.h"
+#include "../Utils/PropertyDelegateMisc.h"
 
 class QtnPropertyQSizeBase;
 

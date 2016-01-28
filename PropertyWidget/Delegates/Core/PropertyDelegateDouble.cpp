@@ -17,7 +17,8 @@
 #include "PropertyDelegateDouble.h"
 #include "../../../Core/Core/PropertyDouble.h"
 #include "../PropertyDelegateFactory.h"
-#include "../PropertyEditorHandler.h"
+#include "../Utils/PropertyEditorHandler.h"
+#include "../Utils/PropertyDelegateSliderBox.h"
 
 #include <QDoubleSpinBox>
 

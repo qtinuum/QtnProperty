@@ -17,7 +17,7 @@
 #ifndef PROPERTY_DELEGATE_INT_H
 #define PROPERTY_DELEGATE_INT_H
 
-#include "../PropertyDelegate.h"
+#include "../Utils/PropertyDelegateMisc.h"
 
 class QtnPropertyIntBase;
 

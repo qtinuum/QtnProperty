@@ -15,9 +15,12 @@
 */
 
 #include "PropertyDelegateButton.h"
-#include "../../../Core/GUI/PropertyButton.h"
 #include "../PropertyDelegateFactory.h"
+#include "../../PropertyView.h"
+#include "../../../Core/GUI/PropertyButton.h"
+
 #include <QStyleOptionButton>
+#include <QKeyEvent>
 
 void regButtonDelegates()
 {

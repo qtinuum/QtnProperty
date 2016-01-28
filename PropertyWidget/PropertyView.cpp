@@ -897,7 +897,6 @@ void QtnPropertyView::deactivateSubItems()
 {
     if (m_grabMouseSubItem)
     {
-        qDebug() << "deactivate " << m_grabMouseSubItem;
         viewport()->releaseMouse();
         m_grabMouseSubItem = nullptr;
     }

@@ -15,7 +15,8 @@
 */
 
 #include "PropertyDelegatePropertySet.h"
-#include "../../Core/PropertySet.h"
+#include "../PropertyDelegateFactory.h"
+#include "../../../Core/PropertySet.h"
 
 void regPropertySetDelegates()
 {
@@ -25,14 +26,24 @@ void regPropertySetDelegates()
                  , "Default");
 }
 
+QtnPropertyBase* QtnPropertyDelegatePropertySet::propertyImpl()
+{
+    return &m_owner;
+}
+
+const QtnPropertyBase* QtnPropertyDelegatePropertySet::propertyImmutableImpl() const
+{
+    return &m_owner;
+}
+
 int QtnPropertyDelegatePropertySet::subPropertyCountImpl() const
 {
-    return owner().childProperties().size();
+    return m_owner.childProperties().size();
 }
 
 QtnPropertyBase* QtnPropertyDelegatePropertySet::subPropertyImpl(int index)
 {
-    return owner().childProperties()[index];
+    return m_owner.childProperties()[index];
 }
 
 void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems)
@@ -47,8 +58,8 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context,
             bgItem.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
                 // fill background
                 context.painter->fillRect(item.rect, (context.isActive) ?
-                                              context.widget->palette().color(QPalette::Highlight) :
-                                              context.widget->palette().color(QPalette::Button));
+                                              context.palette().color(QPalette::Highlight) :
+                                              context.palette().color(QPalette::Button));
 
             };
 
@@ -70,10 +81,10 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context,
                 auto& painter = *context.painter;
                 QRectF branchRect = item.rect;
                 qreal side = branchRect.height() / 3.5f;
-                QColor fillClr = context.widget->palette().color(QPalette::Text);
+                QColor fillClr = context.palette().color(QPalette::Text);
                 QColor outlineClr = (item.state() != QtnSubItemStateNone)
                             ? Qt::blue
-                            : context.widget->palette().color(QPalette::Text);
+                            : context.palette().color(QPalette::Text);
 
                 painter.save();
                 painter.setPen(outlineClr);
@@ -142,7 +153,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context,
                 font.setBold(true);
                 context.painter->setFont(font);
 
-                context.painter->setPen(context.widget->palette().color(cg, (context.isActive) ? QPalette::HighlightedText : QPalette::Text));
+                context.painter->setPen(context.palette().color(cg, (context.isActive) ? QPalette::HighlightedText : QPalette::Text));
 
                 QString elidedName = context.painter->fontMetrics().elidedText(property()->name(), Qt::ElideRight, item.rect.width());
                 context.painter->drawText(item.rect, Qt::AlignLeading|Qt::AlignVCenter|Qt::TextSingleLine, elidedName);

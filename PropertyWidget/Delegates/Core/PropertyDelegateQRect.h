@@ -17,7 +17,7 @@
 #ifndef PROPERTY_DELEGATE_QRECT_H
 #define PROPERTY_DELEGATE_QRECT_H
 
-#include "../PropertyDelegate.h"
+#include "../Utils/PropertyDelegateMisc.h"
 
 class QtnPropertyQRectBase;
 

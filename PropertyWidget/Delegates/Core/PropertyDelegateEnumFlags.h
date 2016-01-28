@@ -17,7 +17,7 @@
 #ifndef PROPERTY_DELEGATE_ENUM_FLAGS_H
 #define PROPERTY_DELEGATE_ENUM_FLAGS_H
 
-#include "../PropertyDelegate.h"
+#include "../Utils/PropertyDelegateMisc.h"
 
 class QtnPropertyEnumFlagsBase;
 

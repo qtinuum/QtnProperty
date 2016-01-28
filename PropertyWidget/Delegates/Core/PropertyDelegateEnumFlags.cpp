@@ -17,7 +17,7 @@
 #include "PropertyDelegateEnumFlags.h"
 #include "../../../Core/Core/PropertyEnumFlags.h"
 #include "../PropertyDelegateFactory.h"
-#include "../PropertyEditorHandler.h"
+#include "../Utils/PropertyEditorHandler.h"
 
 #include "../../../Core/Core/PropertyBool.h"
 #include <QLineEdit>

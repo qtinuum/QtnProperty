@@ -17,7 +17,8 @@
 #include "PropertyDelegateInt.h"
 #include "../../../Core/Core/PropertyInt.h"
 #include "../PropertyDelegateFactory.h"
-#include "../PropertyEditorHandler.h"
+#include "../Utils/PropertyEditorHandler.h"
+#include "../Utils/PropertyDelegateSliderBox.h"
 
 #include <QSpinBox>
 

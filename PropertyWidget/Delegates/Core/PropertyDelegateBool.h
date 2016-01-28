@@ -17,7 +17,7 @@
 #ifndef PROPERTY_DELEGATE_BOOL_H
 #define PROPERTY_DELEGATE_BOOL_H
 
-#include "../PropertyDelegate.h"
+#include "../Utils/PropertyDelegateMisc.h"
 
 class QtnPropertyBoolBase;
 
