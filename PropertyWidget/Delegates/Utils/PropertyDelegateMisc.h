@@ -129,4 +129,26 @@ private:
     QList<QSharedPointer<QtnPropertyBase>> m_subProperties;
 };
 
+class QTN_PW_EXPORT QtnPropertyDelegateError: public QtnPropertyDelegateWithValue
+{
+    Q_DISABLE_COPY(QtnPropertyDelegateError)
+
+public:
+    QtnPropertyDelegateError(QtnPropertyBase& owner, QString error)
+        : m_owner(owner),
+          m_error(error)
+    {}
+
+protected:
+    QtnPropertyBase* propertyImpl() override { return &m_owner; }
+    const QtnPropertyBase* propertyImmutableImpl() const override { return &m_owner; }
+    bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) override;
+
+private:
+    QtnPropertyBase& m_owner;
+    QString m_error;
+};
+
+QTN_PW_EXPORT QtnPropertyDelegate* qtnCreateDelegateError(QtnPropertyBase& owner, QString error);
+
 #endif // QTN_PROPERTY_DELEGATE_MISC_H

@@ -67,7 +67,7 @@ void QtnPropertyDelegateSlideBox::draw(QtnDrawContext& context, const QtnSubItem
     painter.restore();
 
     boxRect.adjust(context.widget->valueLeftMargin(), 0, 0, 0);
-    drawValueText(valuePartToStr(valuePart), painter, boxRect, state(context.isActive, item.state()), nullptr);
+    qtnDrawValueText(valuePartToStr(valuePart), painter, boxRect, state(context.isActive, item.state()), nullptr);
 }
 
 bool QtnPropertyDelegateSlideBox::event(QtnEventContext& context, const QtnSubItem& item)

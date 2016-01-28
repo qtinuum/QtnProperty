@@ -234,7 +234,7 @@ void QtnPropertyDelegateWithValueEditor::drawValueImpl(QStylePainter& painter, c
     QString strValue;
     if (propertyValueToStrImpl(strValue))
     {
-        drawValueText(strValue, painter, rect, state, needTooltip);
+        qtnDrawValueText(strValue, painter, rect, state, needTooltip);
     }
 }
 
@@ -297,3 +297,21 @@ QWidget* QtnPropertyDelegateWithValueEditor::createValueEditorLineEdit(QWidget* 
 
     return lineEdit;
 }
+
+bool QtnPropertyDelegateError::createSubItemValueImpl(QtnDrawContext& /*context*/, QtnSubItem& subItemValue)
+{
+    subItemValue.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
+        QPen oldPen = context.painter->pen();
+        context.painter->setPen(Qt::red);
+        qtnDrawValueText(m_error, *context.painter, item.rect, state(context.isActive, item.state()));
+        context.painter->setPen(oldPen);
+    };
+
+    return true;
+}
+
+QtnPropertyDelegate* qtnCreateDelegateError(QtnPropertyBase& owner, QString error)
+{
+    return new QtnPropertyDelegateError(owner, error);
+}
+

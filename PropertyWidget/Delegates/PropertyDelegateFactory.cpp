@@ -17,6 +17,8 @@
 #include "PropertyDelegateFactory.h"
 #include <QDebug>
 
+QtnPropertyDelegate* qtnCreateDelegateError(QtnPropertyBase& owner, QString error);
+
 QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory)
     : m_superFactory(superFactory)
 {
@@ -25,6 +27,10 @@ QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(const QtnPropertyDelegate
 QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnPropertyBase &owner) const
 {
     CreateFunction* createFunction = nullptr;
+
+    QByteArray delegateName;
+    if (auto propertyDelegate = owner.delegate())
+        delegateName = propertyDelegate->name;
 
     const QMetaObject* metaObject = owner.metaObject();
     while (metaObject && !createFunction)
@@ -36,10 +42,6 @@ QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnPropertyBase 
         {
             // try to find delegate factory by delegate name
             const CreateItem& createItem = it.value();
-            const QtnPropertyDelegateInfo* propertyDelegate = owner.delegate();
-            QByteArray delegateName;
-            if (propertyDelegate)
-                delegateName = propertyDelegate->name;
 
             if (delegateName.isEmpty())
             {
@@ -67,7 +69,18 @@ QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnPropertyBase 
         return m_superFactory->createDelegate(owner);
 
     // create delegate stub
-    return nullptr;
+    if (delegateName.isEmpty())
+    {
+        qWarning() << "Cannot find default delegate for property" << owner.name();
+        qWarning() << "Did you forget to register default delegate for " << owner.metaObject()->className() << "type?";
+    }
+    else
+    {
+        qWarning() << "Cannot find delegate with name" << delegateName << "for property" << owner.name();
+        qWarning() << "Did you forget to register" << delegateName << "delegate for" << owner.metaObject()->className() << "type?";
+    }
+
+    return qtnCreateDelegateError(owner, QString("Delegate <%1> unknown").arg(QString::fromLatin1(delegateName)));
 }
 
 bool QtnPropertyDelegateFactory::registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)

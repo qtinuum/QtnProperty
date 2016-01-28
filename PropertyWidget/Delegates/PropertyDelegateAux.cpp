@@ -194,7 +194,7 @@ QString qtnElidedText(const QPainter& painter, const QString& text, const QRect&
     return newText;
 }
 
-void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, QStyle::State state, bool* needTooltip)
+void qtnDrawValueText(const QString& text, QStylePainter& painter, const QRect& rect, QStyle::State state, bool* needTooltip)
 {
     Q_UNUSED(state);
 

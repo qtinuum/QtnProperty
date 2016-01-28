@@ -6,7 +6,7 @@ VERSION = 1.1.0
 
 QT += core gui widgets script
 CONFIG += staticlib
-aaa:CONFIG += unity_build
+CONFIG += unity_build
 
 CONFIG(staticlib) {
   DEFINES += STATICLIB

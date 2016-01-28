@@ -125,7 +125,7 @@ private:
 };
 
 QTN_PW_EXPORT QString qtnElidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided = 0);
-QTN_PW_EXPORT void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, QStyle::State state, bool* needTooltip = nullptr);
+QTN_PW_EXPORT void qtnDrawValueText(const QString& text, QStylePainter& painter, const QRect& rect, QStyle::State state, bool* needTooltip = nullptr);
 
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H
