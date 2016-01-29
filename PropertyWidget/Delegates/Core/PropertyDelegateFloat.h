@@ -35,28 +35,5 @@ protected:
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStrImpl(QString& strValue) const override;
 };
-/*
-class QTN_PW_EXPORT QtnPropertyDelegateFloatSlideBox: public QtnPropertyDelegateTyped<QtnPropertyFloatBase, QtnPropertyDelegateWithValue>
-{
-    Q_DISABLE_COPY(QtnPropertyDelegateFloatSlideBox)
-
-public:
-    QtnPropertyDelegateFloatSlideBox(QtnPropertyFloatBase& owner);
-
-protected:
-    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
-    bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) override;
-
-private:
-    void draw(QtnDrawContext& context, const QtnSubItem& item);
-    bool event(QtnEventContext& context, const QtnSubItem& item);
-    void updateDragValue(int x, const QRect& rect);
-
-    QColor m_boxFillColor;
-
-    float m_dragValue;
-    QCursor m_oldCursor;
-};
-*/
 
 #endif // PROPERTY_DELEGATE_FLOAT_H

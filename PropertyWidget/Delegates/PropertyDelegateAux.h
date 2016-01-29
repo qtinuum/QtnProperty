@@ -64,9 +64,14 @@ struct QTN_PW_EXPORT QtnSubItem
 
     std::function<void(QtnDrawContext&, const QtnSubItem&)> drawHandler;
     std::function<bool(QtnEventContext&, const QtnSubItem&)> eventHandler;
+    std::function<QString(QtnEventContext&, const QtnSubItem&)> tooltipHandler;
 
     QtnSubItemState state() const { return m_state; }
     void trackState() { m_trackState = true; }
+
+    void setTextAsTooltip(const QString& text);
+    void setPropertyNameAsTooltip(const QtnPropertyBase& property);
+    void setPropertyDescriptionAsTooltip(const QtnPropertyBase& property);
 
 private:
     bool activate(QtnPropertyView* widget, QPoint mousePos);

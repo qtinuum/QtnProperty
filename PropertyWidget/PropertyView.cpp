@@ -21,7 +21,7 @@
 #include <QtGui>
 #include <QApplication>
 #include <QScrollBar>
-#include <QStyleOptionFrameV3>
+//#include <QStyleOptionFrameV3>
 #include <QHelpEvent>
 #include <QToolTip>
 
@@ -611,39 +611,7 @@ static QString qtnGetPropertyTooltip(const QtnPropertyBase* property)
 
 void QtnPropertyView::tooltipEvent(QHelpEvent* e)
 {
-    int index = visibleItemIndexByPoint(e->pos());
-    if (index >= 0)
-    {
-        QRect rect = visibleItemRect(index);
-        int splitPos = splitPosition();
-
-        QString tooltipText;
-
-        const VisibleItem& vItem = m_visibleItems[index];
-
-        // propertyset case
-        if (!vItem.item->delegate)
-        {
-            tooltipText = qtnGetPropertyTooltip(vItem.item->property);
-        }
-        // name sub rect
-        else if (e->x() < splitPos)
-        {
-            rect.setRight(splitPos);
-            tooltipText = qtnGetPropertyTooltip(vItem.item->property);
-        }
-        // value sub rect
-        /*
-        else if (vItem.needTooltip)
-        {
-            rect.setLeft(splitPos);
-            tooltipText = vItem.item->delegate->toolTip();
-        }
-        */
-
-        QToolTip::showText(e->globalPos(), tooltipText, this, rect);
-    }
-    else
+    if (!handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos()))
     {
         QToolTip::hideText();
     }
@@ -681,6 +649,7 @@ bool QtnPropertyView::handleEvent(QtnEventContext& context, VisibleItem& vItem, 
         // adopt new active sub items
         m_activeSubItems.swap(activeSubItems);
 
+        // process event
         for (auto activeSubItem : m_activeSubItems)
         {
             if (activeSubItem->event(context))
@@ -905,6 +874,8 @@ void QtnPropertyView::deactivateSubItems()
         subItem->deactivate(this, QPoint());
 
     m_activeSubItems.clear();
+
+    QToolTip::hideText();
 }
 
 int QtnPropertyView::splitPosition() const

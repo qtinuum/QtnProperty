@@ -25,6 +25,27 @@ QtnSubItem::QtnSubItem(bool trackState)
 {
 }
 
+void QtnSubItem::setTextAsTooltip(const QString& text)
+{
+    tooltipHandler = [text](QtnEventContext&, const QtnSubItem&)->QString {
+        return text;
+    };
+}
+
+void QtnSubItem::setPropertyNameAsTooltip(const QtnPropertyBase& property)
+{
+    tooltipHandler = [&property](QtnEventContext&, const QtnSubItem&)->QString {
+        return property.name();
+    };
+}
+
+void QtnSubItem::setPropertyDescriptionAsTooltip(const QtnPropertyBase& property)
+{
+    tooltipHandler = [&property](QtnEventContext&, const QtnSubItem&)->QString {
+        return property.description();
+    };
+}
+
 bool QtnSubItem::activate(QtnPropertyView *widget, QPoint mousePos)
 {
     if (!m_trackState)
@@ -121,6 +142,20 @@ bool QtnSubItem::event(QtnEventContext& context)
 
         default:
             ;
+        }
+    }
+
+    if (context.eventType() == QEvent::ToolTip)
+    {
+        if (!tooltipHandler)
+            return false;
+
+        QString tooltipText = tooltipHandler(context, *this);
+        if (!tooltipText.isEmpty())
+        {
+            auto event = context.eventAs<QHelpEvent>();
+            QToolTip::showText(event->globalPos(), tooltipText, context.widget, rect);
+            return true;
         }
     }
 
