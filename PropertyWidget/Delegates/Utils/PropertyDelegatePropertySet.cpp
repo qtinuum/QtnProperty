@@ -139,6 +139,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context,
     {
         QtnSubItem nameItem;
         nameItem.rect = context.rect.marginsRemoved(context.margins);
+        nameItem.setPropertyDescriptionAsTooltip(m_owner);
 
         if (nameItem.rect.isValid())
         {

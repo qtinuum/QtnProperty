@@ -109,7 +109,7 @@ private:
         int level;
 
         Item *parent;
-        QList<QSharedPointer<Item> > children;
+        QList<QSharedPointer<Item>> children;
 
         Item()
             : property(nullptr),

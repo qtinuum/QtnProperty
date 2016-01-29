@@ -143,6 +143,12 @@ void QtnPropertyDelegateWithValue::addSubItemBranchNode(QtnDrawContext& context,
         return false;
     };
 
+    brItem.tooltipHandler = [this](QtnEventContext&, const QtnSubItem&) -> QString {
+        return (property()->stateLocal() & QtnPropertyStateCollapsed)
+                ? "Click to expand"
+                : "Click to collapse";
+    };
+
     subItems.append(brItem);
 }
 
@@ -151,6 +157,7 @@ void QtnPropertyDelegateWithValue::addSubItemName(QtnDrawContext& context, QList
     QtnSubItem nameItem;
     nameItem.rect = context.rect.marginsRemoved(context.margins);
     nameItem.rect.setRight(context.splitPos);
+    nameItem.setPropertyDescriptionAsTooltip(*propertyImmutable());
 
     if (!nameItem.rect.isValid())
         return;
@@ -224,6 +231,13 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(QtnDrawContext&,
         }
 
         return false;
+    };
+
+    subItemValue.tooltipHandler = [this](QtnEventContext&, const QtnSubItem&) -> QString {
+        QString valueText;
+        if (!propertyValueToStrImpl(valueText))
+            return QString();
+        return valueText;
     };
 
     return true;

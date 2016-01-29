@@ -35,6 +35,7 @@ void QtnPropertyDelegateSlideBox::applyAttributesImpl(const QtnPropertyDelegateA
 bool QtnPropertyDelegateSlideBox::createSubItemValueImpl(QtnDrawContext&, QtnSubItem& subItemValue)
 {
     subItemValue.trackState();
+    subItemValue.setTextAsTooltip("Drag/Scroll mouse to change value");
     subItemValue.drawHandler = qtnMemFn(this, &QtnPropertyDelegateSlideBox::draw);
     subItemValue.eventHandler = qtnMemFn(this, &QtnPropertyDelegateSlideBox::event);
     return true;
