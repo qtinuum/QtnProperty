@@ -185,7 +185,7 @@ void QtnPropertyDelegateSlideBox::updateDragValuePart(int x, const QRect& rect)
 
 void QtnPropertyDelegateSlideBox::onPropertyWillChange(const QtnPropertyBase*, const QtnPropertyBase*, QtnPropertyChangeReason, QtnPropertyValuePtr)
 {
-    m_oldValuePart = propertyValuePart();
+    m_oldValuePart = m_dragValuePart = propertyValuePart();
 }
 
 void QtnPropertyDelegateSlideBox::onPropertyDidChange(const QtnPropertyBase*, const QtnPropertyBase*, QtnPropertyChangeReason)
