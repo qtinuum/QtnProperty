@@ -417,8 +417,9 @@ void QtnPropertySetSamplePS::init()
         });
     static QString RGBColor_name = tr("RGBColor");
     RGBColor.setName(RGBColor_name);
-    RGBColor.setClickHandler([](const QtnPropertyABColor* color) {
+    RGBColor.setClickHandler([this](const QtnPropertyABColor* color) {
             qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
+            RGBColor = QColor::fromRgb(qrand()%255, qrand()%255, qrand()%255);
         });
     static QString RGBColor_description = "ABColor property with RGB components";
     RGBColor.setDescription(RGBColor_description);
@@ -567,6 +568,7 @@ void QtnPropertySetSamplePS::connectDelegates()
     FloatPropertySliderBox.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "SliderBox";
+        info->attributes["drawBorder"] = false;
         info->attributes["fillColor"] = QColor::fromRgb(170, 170, 255);
         return info.take();
     });

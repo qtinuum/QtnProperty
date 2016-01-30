@@ -467,15 +467,17 @@ void QtnPropertyBase::setDelegateCallback(const std::function<const QtnPropertyD
     m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterCallback(callback));
 }
 
-QMetaObject::Connection QtnPropertyBase::connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
+void QtnPropertyBase::connectMasterSignals(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
 {
     slaveProperty.setStateInherited(masterProperty.state());
-    return QObject::connect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyStateDidChange);
+    QObject::connect(&masterProperty, &QtnPropertyBase::propertyWillChange, &slaveProperty, &QtnPropertyBase::masterPropertyWillChange);
+    QObject::connect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyDidChange);
 }
 
-bool QtnPropertyBase::disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
+void QtnPropertyBase::disconnectMasterSignals(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
 {
-    return QObject::disconnect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyStateDidChange);
+    QObject::disconnect(&masterProperty, &QtnPropertyBase::propertyWillChange, &slaveProperty, &QtnPropertyBase::masterPropertyWillChange);
+    QObject::disconnect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyDidChange);
 }
 
 void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)
@@ -492,13 +494,22 @@ void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)
     updateStateInherited(force);
 }
 
-void QtnPropertyBase::masterPropertyStateDidChange(const QtnPropertyBase *changedProperty, const QtnPropertyBase *firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertyBase::masterPropertyWillChange(const QtnPropertyBase*, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr)
+{
+    if (reason & QtnPropertyChangeReasonValue)
+        Q_EMIT propertyWillChange(this, firedProperty, reason, nullptr);
+}
+
+void QtnPropertyBase::masterPropertyDidChange(const QtnPropertyBase *changedProperty, const QtnPropertyBase *firedProperty, QtnPropertyChangeReason reason)
 {
     // state has changed and not from child property
     if ((reason & QtnPropertyChangeReasonState) && (changedProperty == firedProperty))
     {
         setStateInherited(changedProperty->state());
     }
+
+    if (reason & QtnPropertyChangeReasonValue)
+        Q_EMIT propertyDidChange(this, firedProperty, reason);
 }
 
 QVariant QtnPropertyBase::valueAsVariant() const

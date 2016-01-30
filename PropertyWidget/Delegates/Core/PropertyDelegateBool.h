@@ -33,8 +33,6 @@ public:
 
 protected:
     bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) override;
-//    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
-//    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 };
 
 class QTN_PW_EXPORT QtnPropertyDelegateBoolCombobox: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>

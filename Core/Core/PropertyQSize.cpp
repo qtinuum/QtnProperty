@@ -71,7 +71,7 @@ QtnProperty* qtnCreateWidthProperty(QObject *parent, QtnPropertyQSizeBase *prope
         size.setWidth(newWidth);
         propertySize->setValue(size);
     });
-    QtnPropertyBase::connectMasterState(*propertySize, *widthProperty);
+    QtnPropertyBase::connectMasterSignals(*propertySize, *widthProperty);
 
     return widthProperty;
 }
@@ -87,7 +87,7 @@ QtnProperty* qtnCreateHeightProperty(QObject *parent, QtnPropertyQSizeBase *prop
         size.setHeight(newHeight);
         propertySize->setValue(size);
     });
-    QtnPropertyBase::connectMasterState(*propertySize, *heightProperty);
+    QtnPropertyBase::connectMasterSignals(*propertySize, *heightProperty);
 
     return heightProperty;
 }

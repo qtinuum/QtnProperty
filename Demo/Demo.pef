@@ -52,8 +52,9 @@ property_set SamplePS
         description = "ABColor property with RGB components";
         value = QColor(123, 150, 10);
 
-        clickHandler = [](const QtnPropertyABColor* color) {
+        clickHandler = [this](const QtnPropertyABColor* color) {
             qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
+            RGBColor = QColor::fromRgb(qrand()%255, qrand()%255, qrand()%255);
         };
 
         delegate { rgbSubItems = true; }
@@ -70,6 +71,7 @@ property_set SamplePS
         delegate SliderBox
         {
             fillColor = QColor::fromRgb(170, 170, 255);
+            drawBorder = false;
         }
     }
 

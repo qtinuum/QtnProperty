@@ -19,12 +19,15 @@
 
 #include "PropertyDelegateMisc.h"
 
+class QVariantAnimation;
+
 class QTN_PW_EXPORT QtnPropertyDelegateSlideBox: public QtnPropertyDelegateWithValue
 {
     Q_DISABLE_COPY(QtnPropertyDelegateSlideBox)
 
 protected:
     QtnPropertyDelegateSlideBox();
+    ~QtnPropertyDelegateSlideBox();
 
     void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
     bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) override;
@@ -41,12 +44,24 @@ protected:
 
     QColor m_boxFillColor;
     bool m_liveUpdate;
+    bool m_drawBorder;
+    bool m_updateByScroll;
+    bool m_animate;
 
 private:
     void updateDragValuePart(int x, const QRect& rect);
+    void onPropertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
+    void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+    void onAnimationChanged(const QVariant& value);
 
     float m_dragValuePart;
     QCursor m_oldCursor;
+
+    QScopedPointer<QVariantAnimation> m_animation;
+    float m_oldValuePart;
+    QWidget* m_animateWidget;
+    QMetaObject::Connection m_c1;
+    QMetaObject::Connection m_c2;
 };
 
 template <typename PropertyClass>

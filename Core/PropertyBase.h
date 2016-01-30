@@ -84,8 +84,8 @@ public:
     void setDelegate(const QtnPropertyDelegateInfo& delegate);
     void setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback);
 
-    static QMetaObject::Connection connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
-    static bool disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
+    static void connectMasterSignals(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
+    static void disconnectMasterSignals(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
 
 public: // properties for scripting
     Q_PROPERTY(QString name READ name)
@@ -119,7 +119,8 @@ protected:
     void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
 private:
-    void masterPropertyStateDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+    void masterPropertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
+    void masterPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 
     // getter/setter for "value" property
     QVariant valueAsVariant() const;

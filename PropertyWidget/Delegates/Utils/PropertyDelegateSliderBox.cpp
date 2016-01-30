@@ -18,32 +18,56 @@
 #include "../../PropertyView.h"
 
 #include <QMouseEvent>
+#include <QVariantAnimation>
 
 QtnPropertyDelegateSlideBox::QtnPropertyDelegateSlideBox()
     : m_boxFillColor(QColor::fromRgb(200, 200, 255)),
       m_dragValuePart(0),
-      m_liveUpdate(false)
+      m_liveUpdate(false),
+      m_drawBorder(true),
+      m_updateByScroll(true),
+      m_animate(true),
+      m_oldValuePart(0),
+      m_animateWidget(nullptr)
 {
+}
+
+QtnPropertyDelegateSlideBox::~QtnPropertyDelegateSlideBox()
+{
+    m_animation.reset();
 }
 
 void QtnPropertyDelegateSlideBox::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
 {
     qtnGetAttribute(attributes, "fillColor", m_boxFillColor);
     qtnGetAttribute(attributes, "liveUpdate", m_liveUpdate);
+    qtnGetAttribute(attributes, "drawBorder", m_drawBorder);
+    qtnGetAttribute(attributes, "updateByScroll", m_updateByScroll);
+    qtnGetAttribute(attributes, "animate", m_animate);
 }
 
-bool QtnPropertyDelegateSlideBox::createSubItemValueImpl(QtnDrawContext&, QtnSubItem& subItemValue)
+bool QtnPropertyDelegateSlideBox::createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue)
 {
     subItemValue.trackState();
     subItemValue.setTextAsTooltip("Drag/Scroll mouse to change value");
     subItemValue.drawHandler = qtnMemFn(this, &QtnPropertyDelegateSlideBox::draw);
     subItemValue.eventHandler = qtnMemFn(this, &QtnPropertyDelegateSlideBox::event);
+
+    if (m_animate)
+    {
+        m_animation.reset(new QVariantAnimation());
+        m_animateWidget = context.widget->viewport();
+        m_c1 = QObject::connect(property(), &QtnPropertyBase::propertyWillChange, qtnMemFn(this, &QtnPropertyDelegateSlideBox::onPropertyWillChange));
+        m_c2 = QObject::connect(property(), &QtnPropertyBase::propertyDidChange, qtnMemFn(this, &QtnPropertyDelegateSlideBox::onPropertyDidChange));
+    }
+
     return true;
 }
 
 void QtnPropertyDelegateSlideBox::draw(QtnDrawContext& context, const QtnSubItem& item)
 {
-    float valuePart = (item.state() == QtnSubItemStatePushed) ? dragValuePart() : propertyValuePart();
+    float valuePart = (item.state() == QtnSubItemStatePushed
+                       || (m_animate && m_animation->state() == QAbstractAnimation::Running)) ? dragValuePart() : propertyValuePart();
     if (valuePart < 0)
         return;
 
@@ -63,7 +87,8 @@ void QtnPropertyDelegateSlideBox::draw(QtnDrawContext& context, const QtnSubItem
 
     painter.setPen(boxBorderColor);
     painter.drawRect(valueRect);
-    painter.drawRect(boxRect);
+    if (m_drawBorder)
+        painter.drawRect(boxRect);
 
     painter.restore();
 
@@ -91,9 +116,14 @@ bool QtnPropertyDelegateSlideBox::event(QtnEventContext& context, const QtnSubIt
 
     case QEvent::Wheel:
     {
-        int steps = context.eventAs<QWheelEvent>()->angleDelta().y()/120;
-        incrementPropertyValue(steps);
-        return true;
+        if (m_updateByScroll)
+        {
+            int steps = context.eventAs<QWheelEvent>()->angleDelta().y()/120;
+            incrementPropertyValue(steps);
+            return true;
+        }
+        else
+            return false;
     } break;
 
     case QtnSubItemEvent::Activated:
@@ -104,9 +134,12 @@ bool QtnPropertyDelegateSlideBox::event(QtnEventContext& context, const QtnSubIt
 
     case QtnSubItemEvent::PressMouse:
     {
-        updateDragValuePart(context.eventAs<QtnSubItemEvent>()->x(), item.rect);
         context.widget->setCursor(Qt::SplitHCursor);
-        context.updateWidget();
+        if (!m_animate)
+        {
+            updateDragValuePart(context.eventAs<QtnSubItemEvent>()->x(), item.rect);
+            context.updateWidget();
+        }
         return true;
     } break;
 
@@ -114,19 +147,24 @@ bool QtnPropertyDelegateSlideBox::event(QtnEventContext& context, const QtnSubIt
     {
         if (item.state() == QtnSubItemStatePushed)
         {
-            updateDragValuePart(context.eventAs<QMouseEvent>()->x(), item.rect);
             if (m_liveUpdate)
+            {
+                updateDragValuePart(context.eventAs<QMouseEvent>()->x(), item.rect);
                 setPropertyValuePart(m_dragValuePart);
-            else
+            }
+            else if (!m_animate)
+            {
+                updateDragValuePart(context.eventAs<QMouseEvent>()->x(), item.rect);
                 context.updateWidget();
+            }
         }
         return true;
     } break;
 
     case QtnSubItemEvent::ReleaseMouse:
     {
-        updateDragValuePart(context.eventAs<QtnSubItemEvent>()->x(), item.rect);
         context.widget->setCursor(m_oldCursor);
+        updateDragValuePart(context.eventAs<QtnSubItemEvent>()->x(), item.rect);
         setPropertyValuePart(m_dragValuePart);
         return true;
     } break;
@@ -144,3 +182,26 @@ void QtnPropertyDelegateSlideBox::updateDragValuePart(int x, const QRect& rect)
     else if (m_dragValuePart > 1.f)
         m_dragValuePart = 1.f;
 }
+
+void QtnPropertyDelegateSlideBox::onPropertyWillChange(const QtnPropertyBase*, const QtnPropertyBase*, QtnPropertyChangeReason, QtnPropertyValuePtr)
+{
+    m_oldValuePart = propertyValuePart();
+}
+
+void QtnPropertyDelegateSlideBox::onPropertyDidChange(const QtnPropertyBase*, const QtnPropertyBase*, QtnPropertyChangeReason)
+{
+    m_animation->setStartValue(m_oldValuePart);
+    m_animation->setEndValue(propertyValuePart());
+    m_animation->setDuration(300);
+    m_animation->setEasingCurve(QEasingCurve::OutCirc);
+    QObject::connect(m_animation.data(), &QVariantAnimation::valueChanged, qtnMemFn(this, &QtnPropertyDelegateSlideBox::onAnimationChanged));
+    m_animation->start();
+}
+
+void QtnPropertyDelegateSlideBox::onAnimationChanged(const QVariant& value)
+{
+    m_dragValuePart = value.toFloat();
+   if (m_animateWidget)
+       m_animateWidget->update();
+}
+

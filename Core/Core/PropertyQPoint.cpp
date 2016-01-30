@@ -71,7 +71,7 @@ QtnProperty* qtnCreateXProperty(QObject *parent, QtnPropertyQPointBase *property
         point.setX(newX);
         propertyPoint->setValue(point);
     });
-    QtnPropertyBase::connectMasterState(*propertyPoint, *xProperty);
+    QtnPropertyBase::connectMasterSignals(*propertyPoint, *xProperty);
 
     return xProperty;
 }
@@ -87,7 +87,7 @@ QtnProperty* qtnCreateYProperty(QObject *parent, QtnPropertyQPointBase *property
         point.setY(newY);
         propertyPoint->setValue(point);
     });
-    QtnPropertyBase::connectMasterState(*propertyPoint, *yProperty);
+    QtnPropertyBase::connectMasterSignals(*propertyPoint, *yProperty);
 
     return yProperty;
 }

@@ -51,7 +51,7 @@ QtnProperty* qtnCreateRedProperty(QObject *parent, QtnPropertyQColorBase *proper
     });
     redProperty->setMinValue(0);
     redProperty->setMaxValue(255);
-    QtnPropertyBase::connectMasterState(*propertyColor, *redProperty);
+    QtnPropertyBase::connectMasterSignals(*propertyColor, *redProperty);
 
     return redProperty;
 }
@@ -69,7 +69,7 @@ QtnProperty* qtnCreateGreenProperty(QObject *parent, QtnPropertyQColorBase *prop
     });
     greenProperty->setMinValue(0);
     greenProperty->setMaxValue(255);
-    QtnPropertyBase::connectMasterState(*propertyColor, *greenProperty);
+    QtnPropertyBase::connectMasterSignals(*propertyColor, *greenProperty);
 
     return greenProperty;
 }
@@ -87,7 +87,7 @@ QtnProperty* qtnCreateBlueProperty(QObject *parent, QtnPropertyQColorBase *prope
     });
     blueProperty->setMinValue(0);
     blueProperty->setMaxValue(255);
-    QtnPropertyBase::connectMasterState(*propertyColor, *blueProperty);
+    QtnPropertyBase::connectMasterSignals(*propertyColor, *blueProperty);
 
     return blueProperty;
 }
