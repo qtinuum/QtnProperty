@@ -64,11 +64,11 @@ protected:
 
     float propertyValuePart() const override
     {
-        ValueType valueInterval = owner().maxValue() - owner().minValue();
+        ValueType valueInterval = this->owner().maxValue() - this->owner().minValue();
         if (valueInterval <= 0)
             return -1.f;
 
-        return float(owner().value() - owner().minValue())/valueInterval;
+        return float(this->owner().value() - this->owner().minValue())/valueInterval;
     }
     QString valuePartToStr(float valuePart) const
     {
@@ -76,17 +76,17 @@ protected:
     }
     void incrementPropertyValue(int steps)
     {
-        owner().incrementValue(steps);
+        this->owner().incrementValue(steps);
     }
 
     void setPropertyValuePart(float valuePart)
     {
-        owner().setValue(partToValue(valuePart));
+        this->owner().setValue(partToValue(valuePart));
     }
 
     ValueType partToValue(float valuePart) const
     {
-        return owner().minValue() + ValueType(valuePart * (owner().maxValue() - owner().minValue()));
+        return this->owner().minValue() + ValueType(valuePart * (this->owner().maxValue() - this->owner().minValue()));
     }
 };
 
