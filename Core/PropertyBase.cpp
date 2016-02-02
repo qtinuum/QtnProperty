@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2012-1015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -466,6 +466,21 @@ void QtnPropertyBase::setDelegateCallback(const std::function<const QtnPropertyD
 {
     m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterCallback(callback));
 }
+
+void QtnPropertyBase::setResetCallback(const std::function<void(QtnPropertyBase&)>& resetCallback)
+{
+    m_resetCallback = resetCallback;
+}
+
+bool QtnPropertyBase::reset()
+{
+    if (!m_resetCallback)
+        return false;
+
+    m_resetCallback(*this);
+    return true;
+}
+
 
 void QtnPropertyBase::connectMasterSignals(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
 {

@@ -423,6 +423,9 @@ void QtnPropertySetSamplePS::init()
         });
     static QString RGBColor_description = "ABColor property with RGB components";
     RGBColor.setDescription(RGBColor_description);
+    RGBColor.setResetCallback([this](QtnPropertyBase&){
+            RGBColor = Qt::green;
+        });
     RGBColor.setValue(QColor(123, 150, 10));
     static QString FloatPropertySliderBox_name = tr("FloatPropertySliderBox");
     FloatPropertySliderBox.setName(FloatPropertySliderBox_name);

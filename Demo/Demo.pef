@@ -56,6 +56,10 @@ property_set SamplePS
             qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
             RGBColor = QColor::fromRgb(qrand()%255, qrand()%255, qrand()%255);
         };
+        
+        resetCallback = [this](QtnPropertyBase&){
+            RGBColor = Qt::green;
+        };
 
         delegate { rgbSubItems = true; }
     }

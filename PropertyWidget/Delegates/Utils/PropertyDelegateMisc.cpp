@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2012-1015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ void QtnPropertyDelegateWithValue::createSubItemsImpl(QtnDrawContext& context, Q
     addSubItemSelection(context, subItems);
     addSubItemBranchNode(context, subItems);
     addSubItemName(context, subItems);
+    addSubItemReset(context, subItems);
     addSubItemValue(context, subItems);
 }
 
@@ -175,6 +176,70 @@ void QtnPropertyDelegateWithValue::addSubItemName(QtnDrawContext& context, QList
     };
 
     subItems.append(nameItem);
+}
+
+
+void QtnPropertyDelegateWithValue::addSubItemReset(QtnDrawContext& context, QList<QtnSubItem>& subItems)
+{
+    if (!propertyImmutable()->hasResetCallback())
+        return;
+
+    QtnSubItem resetItem(true);
+    resetItem.rect = context.rect.marginsRemoved(context.margins);
+    resetItem.rect.setLeft(resetItem.rect.right() - resetItem.rect.height());
+    resetItem.setTextAsTooltip("Reset");
+
+    if (!resetItem.rect.isValid())
+        return;
+
+    resetItem.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
+
+        auto style = context.style();
+
+        QStyleOptionButton option;
+        context.initStyleOption(option);
+
+        option.state = state(context.isActive, item.state());
+
+        // dont initialize styleObject from widget for QWindowsVistaStyle
+        // this disables buggous animations
+        if (style->inherits("QWindowsVistaStyle"))
+            option.styleObject = nullptr;
+
+        option.rect = item.rect;
+        option.text = "R";
+
+        //owner().invokePreDrawButton(&option);
+
+        // draw button
+        style->drawControl(QStyle::CE_PushButton, &option, context.painter, context.widget);
+    };
+
+    resetItem.eventHandler = [this](QtnEventContext& context, const QtnSubItem&) -> bool {
+        bool doClick = false;
+        switch (context.eventType())
+        {
+        case QtnSubItemEvent::ReleaseMouse:
+            doClick = true;
+            break;
+/*
+        case QEvent::KeyPress:
+            int key = context.eventAs<QKeyEvent>()->key();
+            doClick = (key == Qt::Key_Space) || (key == Qt::Key_Return);
+            break;
+            */
+        }
+
+        if (doClick)
+        {
+            property()->reset();
+            return true;
+        }
+
+        return false;
+    };
+
+    subItems.append(resetItem);
 }
 
 void QtnPropertyDelegateWithValue::addSubItemValue(QtnDrawContext& context, QList<QtnSubItem>& subItems)

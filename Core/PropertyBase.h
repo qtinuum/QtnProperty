@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2012-1015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -84,6 +84,11 @@ public:
     void setDelegate(const QtnPropertyDelegateInfo& delegate);
     void setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback);
 
+    // reset callback
+    bool hasResetCallback() const { return (bool)m_resetCallback; }
+    void setResetCallback(const std::function<void(QtnPropertyBase&)>& resetCallback);
+    bool reset();
+
     static void connectMasterSignals(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
     static void disconnectMasterSignals(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
 
@@ -133,6 +138,8 @@ private:
     QtnPropertyState m_stateInherited;
 
     QScopedPointer<QtnPropertyDelegateInfoGetter> m_delegateInfoGetter;
+
+    std::function<void(QtnPropertyBase&)> m_resetCallback;
 
     friend class QtnPropertySet;
 };
