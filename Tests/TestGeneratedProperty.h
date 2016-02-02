@@ -3,11 +3,6 @@
 
 #include <QObject>
 
-static bool ret_true()
-{
-    return true;
-}
-
 class TestGeneratedProperty: public QObject
 {
     Q_OBJECT

@@ -597,18 +597,6 @@ void QtnPropertyView::wheelEvent(QWheelEvent *e)
     QAbstractScrollArea::wheelEvent(e);
 }
 
-static QString qtnGetPropertyTooltip(const QtnPropertyBase* property)
-{
-    if (!property)
-        return QString();
-
-    QString tooltipText = property->description();
-    if (tooltipText.isEmpty())
-        tooltipText = property->name();
-
-    return tooltipText;
-}
-
 void QtnPropertyView::tooltipEvent(QHelpEvent* e)
 {
     if (!handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos()))

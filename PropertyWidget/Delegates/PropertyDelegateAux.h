@@ -116,7 +116,7 @@ public:
     QEvent* event;
     QtnPropertyView* widget;
 
-    QEvent::Type eventType() const { return event->type(); }
+    int eventType() const { return static_cast<int>(event->type()); }
     template <class EventT>
     EventT* eventAs() { return static_cast<EventT*>(event); }
 

@@ -22,48 +22,6 @@
 #include <QStack>
 
 PEG& peg = PEG::instance();
-/*
-bool isPredefinedPropertyType(QString type)
-{
-    static QSet<QString> qtnPropertyNames;
-    if (qtnPropertyNames.empty())
-    {
-        QSet<QString> names;
-        names.insert("Bool");
-        names.insert("Double");
-        names.insert("Enum");
-        names.insert("EnumFlags");
-        names.insert("Float");
-        names.insert("Int");
-        names.insert("UInt");
-        names.insert("Int64");
-        names.insert("UInt64");
-        names.insert("QRect");
-        names.insert("QPoint");
-        names.insert("QSize");
-        names.insert("QString");
-        names.insert("QColor");
-        names.insert("QFont");
-
-        foreach (QString name, names)
-        {
-            qtnPropertyNames.insert(name + "Callback");
-        }
-
-        qtnPropertyNames += names;
-    }
-
-    return qtnPropertyNames.contains(type);
-}
-*/
-
-static QString decorateStr(QString str, QString prefix, QString postfix = QString())
-{
-    if (str.isEmpty())
-        return str;
-
-    return prefix + str + postfix;
-}
 
 // special values that initialized in constructor
 static Exceptions createSetExceptions()

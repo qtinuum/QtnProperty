@@ -257,42 +257,6 @@ bool QtnPropertyDelegateWithValueEditor::acceptKeyPressedForInplaceEditImpl(QKey
     int key = keyEvent->key();
     return (key == Qt::Key_F2) || (key == Qt::Key_Space) || (key == Qt::Key_Return);
 }
-/*
-QString QtnPropertyDelegateWithValue::toolTipImpl() const
-{
-    QString strValue;
-    propertyValueToStrImpl(strValue);
-    return strValue;
-}
-
-/*
-QString QtnPropertyDelegate::toolTip() const
-{
-    return toolTipImpl();
-}
-
-bool QtnPropertyDelegate::acceptKeyPressedForInplaceEdit(QKeyEvent* keyEvent) const
-{
-    return acceptKeyPressedForInplaceEditImpl(keyEvent);
-}
-
-QWidget* QtnPropertyDelegate::createValueEditor(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
-{
-    QWidget* valueEditor = createValueEditorImpl(parent, rect, inplaceInfo);
-    if (!valueEditor)
-        return valueEditor;
-
-    valueEditor->setObjectName("QtnPropertyValueEditor");
-    return valueEditor;
-}
-
-
-bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const
-{
-    int key = keyEvent->key();
-    return (key == Qt::Key_F2) || (key == Qt::Key_Space) || (key == Qt::Key_Return);
-}
-*/
 
 QWidget* QtnPropertyDelegateWithValueEditor::createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo)
 {

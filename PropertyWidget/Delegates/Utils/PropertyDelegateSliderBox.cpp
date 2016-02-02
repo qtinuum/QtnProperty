@@ -22,11 +22,11 @@
 
 QtnPropertyDelegateSlideBox::QtnPropertyDelegateSlideBox()
     : m_boxFillColor(QColor::fromRgb(200, 200, 255)),
-      m_dragValuePart(0),
       m_liveUpdate(false),
       m_drawBorder(true),
       m_updateByScroll(true),
       m_animate(true),
+      m_dragValuePart(0),
       m_oldValuePart(0),
       m_animateWidget(nullptr)
 {
@@ -55,6 +55,7 @@ bool QtnPropertyDelegateSlideBox::createSubItemValueImpl(QtnDrawContext& context
 
     if (m_animate)
     {
+        m_dragValuePart = propertyValuePart();
         m_animation.reset(new QVariantAnimation());
         m_animateWidget = context.widget->viewport();
         m_c1 = QObject::connect(property(), &QtnPropertyBase::propertyWillChange, qtnMemFn(this, &QtnPropertyDelegateSlideBox::onPropertyWillChange));
