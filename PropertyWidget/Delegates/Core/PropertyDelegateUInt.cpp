@@ -20,7 +20,7 @@
 #include "../PropertyEditorHandler.h"
 
 #include <QSpinBox>
-
+#include <QLineEdit>
 #include <QLocale>
 
 const quint32 qtn_u_2 = std::numeric_limits<quint32>::max() / 2 + 1;
@@ -33,11 +33,34 @@ static quint32 qtn_i2u(qint32 val)
     return (quint32)val + qtn_u_2;
 }
 
-class QtnPropertyUIntSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyUIntBase, QSpinBox>
+class SpinBoxUnsigned: public QSpinBox
 {
 public:
-    QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase& property, QSpinBox& editor)
+	SpinBoxUnsigned(QWidget* parent)
+		: QSpinBox(parent)
+	{
+	}
+
+	QLineEdit *lineEdit() const { return QSpinBox::lineEdit(); }
+
+protected:
+	int valueFromText(const QString& text) const override
+	{
+		return qtn_u2i(locale().toUInt(text));
+	}
+
+	QString textFromValue(int val) const override
+	{
+		return locale().toString(qtn_i2u(val));
+	}
+};
+
+class QtnPropertyUIntSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyUIntBase, SpinBoxUnsigned>
+{
+public:
+	QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase& property, SpinBoxUnsigned& editor)
         : QtnPropertyEditorHandlerType(property, editor)
+		, block(0)
     {
         if (!property.isEditableByUser())
             editor.setReadOnly(true);
@@ -47,8 +70,19 @@ public:
 
         updateEditor();
 
-        QObject::connect(  &editor, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged)
-                         , this, &QtnPropertyUIntSpinBoxHandler::onValueChanged);
+		editor.setKeyboardTracking(false);
+		QObject::connect(&editor,
+						 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+						 this,
+						 &QtnPropertyUIntSpinBoxHandler::onValueChanged);
+		QObject::connect(editor.lineEdit(),
+						 &QLineEdit::textEdited,
+						 this,
+						 &QtnPropertyUIntSpinBoxHandler::onTextEdited);
+		QObject::connect(&editor,
+						 &QSpinBox::editingFinished,
+						 this,
+						 &QtnPropertyUIntSpinBoxHandler::onEditingFinished);
     }
 
 private:
@@ -57,30 +91,31 @@ private:
         editor().setValue(qtn_u2i(property().value()));
     }
 
-    void onValueChanged(int value)
-    {
-        property() = qtn_i2u(value);
-    }
-};
+	void onTextEdited(const QString &text)
+	{
+		bool ok = false;
+		auto value = text.toUInt(&ok);
 
-class SpinBoxUnsigned: public QSpinBox
-{
-public:
-    SpinBoxUnsigned(QWidget* parent)
-        : QSpinBox(parent)
+		if (ok)
+		{
+			block++;
+			editor().setValue(qtn_u2i(value));
+			block--;
+		}
+	}
+
+	void onValueChanged(int value)
     {
+		if (0 == block)
+			property() = qtn_i2u(value);
     }
 
-protected:
-    int valueFromText(const QString& text) const override
-    {
-        return qtn_u2i(locale().toUInt(text));
-    }
+	void onEditingFinished()
+	{
+		property() = qtn_i2u(editor().value());
+	}
 
-    QString textFromValue(int val) const override
-    {
-        return locale().toString(qtn_i2u(val));
-    }
+	unsigned block;
 };
 
 static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -90,7 +125,7 @@ static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
 
 QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QSpinBox* spinBox = new SpinBoxUnsigned(parent);
+	auto spinBox = new SpinBoxUnsigned(parent);
     spinBox->setGeometry(rect);
 
     new QtnPropertyUIntSpinBoxHandler(owner(), *spinBox);

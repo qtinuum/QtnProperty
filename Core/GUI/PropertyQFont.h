@@ -63,6 +63,9 @@ public:
     {
     }
 
+	static QString getPreferDefaultStr();
+	static QString getNoAntialiasStr();
+	static QString getPreferAntialiasStr();
 	static QString getFamilyLabel();
 	static QString getFamilyDescription(const QString &owner_name);
 	static QString getPointSizeLabel();

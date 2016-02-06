@@ -22,7 +22,7 @@ PEG_SOURCES += Demo.pef
 INCLUDEPATH += $$TOP_SRC_DIR/Core
 INCLUDEPATH += $$TOP_SRC_DIR/PropertyWidget
 
-LIBS += -L$$BIN_DIR -lQtnPropertyCore -lQtnPropertyWidget
+LIBS += -L$$BIN_DIR -lQtnPropertyCoreAC -lQtnPropertyWidgetAC
 
 win32 {
 } else:unix {

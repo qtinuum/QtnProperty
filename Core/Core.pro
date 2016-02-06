@@ -2,11 +2,9 @@ include(../Common.pri)
 
 QT += script
 
-TARGET = QtnPropertyCore
+TARGET = QtnPropertyCoreAC
 TEMPLATE = lib
-VERSION = 1.0.1
-
-
+VERSION = 1.0.3
 
 DEFINES += QTN_PE_CORE_LIBRARY
 

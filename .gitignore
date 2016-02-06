@@ -8,3 +8,4 @@
 *.autosave
 *Thumbs.db
 *.qm
+build/

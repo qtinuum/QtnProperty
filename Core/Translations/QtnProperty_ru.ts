@@ -26,81 +26,99 @@
     <name>QtnPropertyQFont</name>
     <message>
         <location filename="../GUI/PropertyQFont.cpp" line="44"/>
+        <location filename="../GUI/PropertyQFont.h" line="66"/>
+        <source>PreferDefault</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQFont.cpp" line="49"/>
+        <location filename="../GUI/PropertyQFont.h" line="67"/>
+        <source>NoAntialias</source>
+        <translation>Выключено</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQFont.cpp" line="54"/>
+        <location filename="../GUI/PropertyQFont.h" line="68"/>
+        <source>PreferAntialias</source>
+        <translation>Включено</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQFont.cpp" line="59"/>
         <source>Family</source>
         <translation>Семейство</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="49"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="64"/>
         <source>Font Family for %1</source>
         <translation>%1: Семейство шрифтов</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="54"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="69"/>
         <source>PointSize</source>
         <translation>Размер точки</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="59"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="74"/>
         <source>Point size for %1</source>
         <translation>%1: Размер точки</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="64"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="79"/>
         <source>Bold</source>
         <translation>Полужирный</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="69"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="84"/>
         <source>Bold flag for %1</source>
         <translation>%1: Будет ли текст полужирным</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="74"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="89"/>
         <source>Italic</source>
         <translation>Курсив</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="79"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="94"/>
         <source>Italic flag for %1</source>
         <translation>%1: Будет ли текст курсивным</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="84"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="99"/>
         <source>Underline</source>
         <translation>Подчёркнутый</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="89"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="104"/>
         <source>Underline flag for %1</source>
         <translation>%1: Будет ли текст подчёркнутым</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="94"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="109"/>
         <source>Strikeout</source>
         <translation>Зачёркнутый</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="99"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="114"/>
         <source>Strikeout flag for %1</source>
         <translation>%1: Будет ли текст зачёркнутым</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="104"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="119"/>
         <source>Kerning</source>
         <translation>Кернинг</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="109"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="124"/>
         <source>Kerning flag for %1</source>
         <translation>%1: Кернинг</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="114"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="129"/>
         <source>Antialiasing</source>
         <translation>Сглаживание</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="119"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="134"/>
         <source>Antialiasing flag for %1</source>
         <translation>%1: Сглаживание</translation>
     </message>

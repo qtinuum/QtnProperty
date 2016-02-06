@@ -26,81 +26,99 @@
     <name>QtnPropertyQFont</name>
     <message>
         <location filename="../GUI/PropertyQFont.cpp" line="44"/>
+        <location filename="../GUI/PropertyQFont.h" line="66"/>
+        <source>PreferDefault</source>
+        <translation>Default</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQFont.cpp" line="49"/>
+        <location filename="../GUI/PropertyQFont.h" line="67"/>
+        <source>NoAntialias</source>
+        <translation>Disabled</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQFont.cpp" line="54"/>
+        <location filename="../GUI/PropertyQFont.h" line="68"/>
+        <source>PreferAntialias</source>
+        <translation>Enabled</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQFont.cpp" line="59"/>
         <source>Family</source>
         <translation>Family</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="49"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="64"/>
         <source>Font Family for %1</source>
         <translation>Font Family for %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="54"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="69"/>
         <source>PointSize</source>
         <translation>Point size</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="59"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="74"/>
         <source>Point size for %1</source>
         <translation>Point size for %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="64"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="79"/>
         <source>Bold</source>
         <translation>Bold</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="69"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="84"/>
         <source>Bold flag for %1</source>
         <translation>Bold flag for %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="74"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="89"/>
         <source>Italic</source>
         <translation>Italic</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="79"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="94"/>
         <source>Italic flag for %1</source>
         <translation>Italic flag for %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="84"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="99"/>
         <source>Underline</source>
         <translation>Underline</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="89"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="104"/>
         <source>Underline flag for %1</source>
         <translation>Underline flag for %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="94"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="109"/>
         <source>Strikeout</source>
         <translation>Strikeout</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="99"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="114"/>
         <source>Strikeout flag for %1</source>
         <translation>Strikeout flag for %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="104"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="119"/>
         <source>Kerning</source>
         <translation>Kerning</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="109"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="124"/>
         <source>Kerning flag for %1</source>
         <translation>Kerning flag %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="114"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="129"/>
         <source>Antialiasing</source>
         <translation>Antialiasing</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQFont.cpp" line="119"/>
+        <location filename="../GUI/PropertyQFont.cpp" line="134"/>
         <source>Antialiasing flag for %1</source>
         <translation>Antialiasing flag for %1</translation>
     </message>

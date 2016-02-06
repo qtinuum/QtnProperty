@@ -1,8 +1,8 @@
 include(../Common.pri)
 
-TARGET = QtnPropertyWidget
+TARGET = QtnPropertyWidgetAC
 TEMPLATE = lib
-VERSION = 1.0.1
+VERSION = 1.0.3
 
 QT += core gui widgets
 
@@ -55,7 +55,7 @@ HEADERS += PropertyWidgetAPI.h \
     Utils/AccessibilityProxy.h \
     Utils/DoubleSpinBox.h
 
-LIBS += -L$$BIN_DIR -lQtnPropertyCore
+LIBS += -L$$BIN_DIR -lQtnPropertyCoreAC
 
 win32 {
     TARGET_EXT = .dll
