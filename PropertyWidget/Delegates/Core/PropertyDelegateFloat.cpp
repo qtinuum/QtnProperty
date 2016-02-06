@@ -38,19 +38,22 @@ public:
 
         updateEditor();
 
-        QObject::connect(  &editor, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged)
-                         , this, &QtnPropertyFloatSpinBoxHandler::onValueChanged);
+		editor.setKeyboardTracking(false);
+		QObject::connect(&editor,
+		static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+						 this,
+						 &QtnPropertyFloatSpinBoxHandler::onValueChanged);
     }
 
 private:
     void updateEditor() override
     {
-        editor().setValue((float)property());
+		editor().setValue(property());
     }
 
-    void onValueChanged(double value)
+	void onValueChanged(double value)
     {
-        property() = (float)value;
+		property() = static_cast<float>(value);
     }
 };
 

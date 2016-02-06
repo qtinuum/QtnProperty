@@ -26,7 +26,7 @@ PEG_SOURCES += PEG/test.pef \
 
 OTHER_FILES += $$PEG_SOURCES
 
-LIBS += -L$$BIN_DIR -lQtnPropertyCore
+LIBS += -L$$BIN_DIR -lQtnPropertyCoreAC
 win32 {
 } else:unix {
     QMAKE_LFLAGS += -Wl,-rpath,\'\$$ORIGIN\'

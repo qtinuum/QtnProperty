@@ -25,52 +25,6 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-class QtnPropertyBoolCheckBoxHandler: public QtnPropertyEditorHandler<QtnPropertyBoolBase, QCheckBox>
-{
-public:
-    QtnPropertyBoolCheckBoxHandler(QtnPropertyBoolBase& property, QCheckBox& editor)
-        : QtnPropertyEditorHandlerType(property, editor)
-    {
-        updateEditor();
-
-        if (!property.isEditableByUser())
-            editor.setDisabled(true);
-
-        QObject::connect(&editor, &QCheckBox::toggled, this, &QtnPropertyBoolCheckBoxHandler::onToggled);
-    }
-
-private:
-    void updateEditor() override
-    {
-        editor().setChecked(property());
-    }
-
-    void onToggled(bool checked)
-    {
-        property() = checked;
-    }
-};
-
-class QCheckBoxPropertyBool: public QCheckBox
-{
-public:
-    explicit QCheckBoxPropertyBool(QWidget *parent=0)
-        : QCheckBox(parent)
-    {
-    }
-
-    explicit QCheckBoxPropertyBool(const QString& text, QWidget* parent=0)
-        : QCheckBox(text, parent)
-    {
-    }
-
-protected:
-    bool hitButton(const QPoint& pos) const override
-    {
-        return QAbstractButton::hitButton(pos);
-    }
-};
-
 class QtnPropertyBoolComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyBoolBase, QComboBox>
 {
 public:
@@ -112,17 +66,6 @@ static bool regBoolDelegateCombobox = QtnPropertyDelegateFactory::staticInstance
                                 , &qtnCreateDelegate<QtnPropertyDelegateBoolCombobox, QtnPropertyBoolBase>
                                 , "ComboBox");
 
-QCheckBox* createPropertyBoolCheckBox(QtnPropertyBoolBase& owner, QWidget* parent, const QRect& rect)
-{
-    QCheckBox *checkBox = new QCheckBoxPropertyBool(parent);
-    checkBox->setGeometry(rect);
-
-    // connect widget and property
-    new QtnPropertyBoolCheckBoxHandler(owner, *checkBox);
-
-    return checkBox;
-}
-
 void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     QStyleOptionButton opt;
@@ -141,12 +84,8 @@ QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, co
     if (!owner().isEditableByUser())
         return 0;
 
-    QCheckBox *checkBox = createPropertyBoolCheckBox(owner(), parent, rect);
-
-    if (inplaceInfo)
-        checkBox->setAutoFillBackground(true);
-
-    return checkBox;
+	owner().setValue(!owner().value());
+	return nullptr;
 }
 
 QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner)

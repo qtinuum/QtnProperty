@@ -2,7 +2,7 @@ include(../Common.pri)
 
 TARGET = QtnPropertyWidgetAC
 TEMPLATE = lib
-VERSION = 1.0.2
+VERSION = 1.0.3
 
 QT += core gui widgets
 

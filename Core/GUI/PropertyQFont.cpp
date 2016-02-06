@@ -39,6 +39,21 @@ bool QtnPropertyQFontBase::toStrImpl(QString& str) const
     return true;
 }
 
+QString QtnPropertyQFont::getPreferDefaultStr()
+{
+	return tr("PreferDefault");
+}
+
+QString QtnPropertyQFont::getNoAntialiasStr()
+{
+	return tr("NoAntialias");
+}
+
+QString QtnPropertyQFont::getPreferAntialiasStr()
+{
+	return tr("PreferAntialias");
+}
+
 QString QtnPropertyQFont::getFamilyLabel()
 {
 	return tr("Family");

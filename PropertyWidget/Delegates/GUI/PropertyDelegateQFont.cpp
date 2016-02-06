@@ -75,9 +75,9 @@ static QtnEnumInfo* styleStrategyEnum()
     if (!enumInfo)
     {
         QVector<QtnEnumValueInfo> items;
-        items.append(QtnEnumValueInfo(QFont::PreferDefault, "PreferDefault"));
-        items.append(QtnEnumValueInfo(QFont::NoAntialias, "NoAntialias"));
-        items.append(QtnEnumValueInfo(QFont::PreferAntialias, "PreferAntialias"));
+		items.append(QtnEnumValueInfo(QFont::PreferDefault, QtnPropertyQFont::getPreferDefaultStr()));
+		items.append(QtnEnumValueInfo(QFont::NoAntialias, QtnPropertyQFont::getNoAntialiasStr()));
+		items.append(QtnEnumValueInfo(QFont::PreferAntialias, QtnPropertyQFont::getPreferAntialiasStr()));
         enumInfo = new QtnEnumInfo("StyleStrategy", items);
     }
 
