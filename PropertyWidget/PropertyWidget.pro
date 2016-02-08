@@ -29,7 +29,8 @@ SOURCES += PropertyWidget.cpp \
     Delegates/Core/PropertyDelegateQPoint.cpp \
     Delegates/GUI/PropertyDelegateQFont.cpp \
     Utils/AccessibilityProxy.cpp \
-    Utils/DoubleSpinBox.cpp
+    Utils/DoubleSpinBox.cpp \
+    Delegates/GUI/MultilineTextDialog.cpp
 
 HEADERS += PropertyWidgetAPI.h \
     PropertyWidget.h \
@@ -53,10 +54,14 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/Core/PropertyDelegateQPoint.h \
     Delegates/GUI/PropertyDelegateQFont.h \
     Utils/AccessibilityProxy.h \
-    Utils/DoubleSpinBox.h
+    Utils/DoubleSpinBox.h \
+    Delegates/GUI/MultilineTextDialog.h
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCoreAC
 
 win32 {
     TARGET_EXT = .dll
 }
+
+FORMS += \
+    Delegates/GUI/MultilineTextDialog.ui

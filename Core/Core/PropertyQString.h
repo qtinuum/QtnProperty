@@ -83,6 +83,8 @@ public:
         return *this;
     }
 
+	static QString getMultilinePlaceholderStr();
+
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQString, QtnPropertyQStringBase)
 };
 

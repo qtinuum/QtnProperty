@@ -26,12 +26,19 @@ class QTN_PW_EXPORT QtnPropertyDelegateQString: public QtnPropertyDelegateTyped<
     Q_DISABLE_COPY(QtnPropertyDelegateQString)
 
 public:
+	typedef QtnPropertyDelegateTyped<QtnPropertyQStringBase> Inherited;
+
     QtnPropertyDelegateQString(QtnPropertyQStringBase& owner);
 
+	static bool isMultilineText(const QString &text);
+
 protected:
-    bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const override;
-    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-    bool propertyValueToStr(QString& strValue) const override;
+	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const override;
+	virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
+	virtual bool propertyValueToStr(QString& strValue) const override;
+	virtual void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
+
+	bool check_multiline;
 };
 
 class QTN_PW_EXPORT QtnPropertyDelegateQStringInvalidBase: public QtnPropertyDelegateQString

@@ -37,3 +37,8 @@ bool QtnPropertyQStringBase::toStrImpl(QString& str) const
     str = value();
     return true;
 }
+
+QString QtnPropertyQString::getMultilinePlaceholderStr()
+{
+	return tr("(Multiline Text)");
+}

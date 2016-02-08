@@ -26,19 +26,16 @@
     <name>QtnPropertyQFont</name>
     <message>
         <location filename="../GUI/PropertyQFont.cpp" line="44"/>
-        <location filename="../GUI/PropertyQFont.h" line="66"/>
         <source>PreferDefault</source>
         <translation>По умолчанию</translation>
     </message>
     <message>
         <location filename="../GUI/PropertyQFont.cpp" line="49"/>
-        <location filename="../GUI/PropertyQFont.h" line="67"/>
         <source>NoAntialias</source>
         <translation>Выключено</translation>
     </message>
     <message>
         <location filename="../GUI/PropertyQFont.cpp" line="54"/>
-        <location filename="../GUI/PropertyQFont.h" line="68"/>
         <source>PreferAntialias</source>
         <translation>Включено</translation>
     </message>
@@ -249,6 +246,14 @@
         <location filename="../Core/PropertyQSize.cpp" line="104"/>
         <source>%1 x %2</source>
         <translation>%1 x %2</translation>
+    </message>
+</context>
+<context>
+    <name>QtnPropertyQString</name>
+    <message>
+        <location filename="../Core/PropertyQString.cpp" line="43"/>
+        <source>(Multiline Text)</source>
+        <translation>(Многострочный текст)</translation>
     </message>
 </context>
 </TS>
