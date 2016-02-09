@@ -255,5 +255,10 @@
         <source>(Multiline Text)</source>
         <translation>(Многострочный текст)</translation>
     </message>
+    <message>
+        <location filename="../Core/PropertyQString.cpp" line="48"/>
+        <source>%1 (Read only)</source>
+        <translation>%1 (Только чтение)</translation>
+    </message>
 </context>
 </TS>

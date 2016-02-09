@@ -42,3 +42,8 @@ QString QtnPropertyQString::getMultilinePlaceholderStr()
 {
 	return tr("(Multiline Text)");
 }
+
+QString QtnPropertyQString::getReadOnlyPropertyTitleFormat()
+{
+	return tr("%1 (Read only)");
+}

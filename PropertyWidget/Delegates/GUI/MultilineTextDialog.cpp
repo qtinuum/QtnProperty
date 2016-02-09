@@ -1,6 +1,8 @@
 #include "MultilineTextDialog.h"
 #include "ui_MultilineTextDialog.h"
 
+#include <QAbstractButton>
+
 MultilineTextDialog::MultilineTextDialog(QWidget *parent)
 	: QDialog(parent)
 	, ui(new Ui::MultilineTextDialog)
@@ -13,6 +15,11 @@ MultilineTextDialog::~MultilineTextDialog()
 	delete ui;
 }
 
+void MultilineTextDialog::setReadOnly(bool value)
+{
+	ui->plainTextEdit->setReadOnly(value);
+}
+
 void MultilineTextDialog::setText(const QString &text)
 {
 	ui->plainTextEdit->setPlainText(text);
@@ -21,4 +28,21 @@ void MultilineTextDialog::setText(const QString &text)
 QString MultilineTextDialog::getText() const
 {
 	return ui->plainTextEdit->toPlainText();
+}
+
+void MultilineTextDialog::on_buttonBox_clicked(QAbstractButton *button)
+{
+	switch (ui->buttonBox->buttonRole(button))
+	{
+		case QDialogButtonBox::AcceptRole:
+			accept();
+			break;
+
+		case QDialogButtonBox::RejectRole:
+			reject();
+			break;
+
+		default:
+			break;
+	}
 }

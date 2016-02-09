@@ -84,6 +84,7 @@ public:
     }
 
 	static QString getMultilinePlaceholderStr();
+	static QString getReadOnlyPropertyTitleFormat();
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQString, QtnPropertyQStringBase)
 };

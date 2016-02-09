@@ -95,8 +95,12 @@ public:
 	QtnPropertyQStringMultilineEditBttnHandler(QtnPropertyQStringBase& property, QtnLineEditBttn& editor)
 		: QtnPropertyEditorHandlerType(property, editor)
 		, dialog(&editor)
+		, revert(false)
+		, multiline(false)
 	{
 		updateEditor();
+
+		editor.lineEdit->installEventFilter(this);
 
 		QObject::connect(editor.toolButton, &QToolButton::clicked,
 		this, &QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked);
@@ -109,27 +113,65 @@ protected:
 	virtual void updateEditor() override
 	{
 		auto edit = editor().lineEdit;
+		edit->setReadOnly(!property().isEditableByUser());
 		if (QtnPropertyDelegateQString::isMultilineText(property().value()))
 		{
+			multiline = true;
 			edit->setText(QString());
 			edit->setPlaceholderText(QtnPropertyQString::getMultilinePlaceholderStr());
 		} else
 		{
+			multiline = false;
 			edit->setText(property().value());
 			edit->setPlaceholderText(QString());
 		}
 	}
 
+	virtual bool eventFilter(QObject *obj, QEvent *event) override
+	{
+		if (event->type() == QEvent::KeyPress)
+		{
+			QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+			// revert all changes
+			if (keyEvent->key() == Qt::Key_Escape)
+			{
+				revert = true;
+			}
+		}
+
+		return QObject::eventFilter(obj, event);
+	}
+
 private:
 	void onEditingFinished()
 	{
-		property() = editor().lineEdit->text();
-		updateEditor();
+		auto text = editor().lineEdit->text();
+		if (!revert && (!multiline || !text.isEmpty()))
+		{
+			property() = text;
+			updateEditor();
+		}
+
+		revert = false;
 	}
 
 	void onToolButtonClicked(bool)
 	{
-		dialog.setText(property().value());
+		auto text = editor().lineEdit->text();
+
+		if (text.isEmpty() && multiline)
+		{
+			text = property().value();
+		}
+
+		revert = true;
+		bool readonly = !property().isEditableByUser();
+		dialog.setReadOnly(readonly);
+		if (readonly)
+			dialog.setWindowTitle(QtnPropertyQString::getReadOnlyPropertyTitleFormat().arg(property().name()));
+		else
+			dialog.setWindowTitle(property().name());
+		dialog.setText(text);
 		dialog.show();
 		dialog.raise();
 		if (dialog.exec() == QDialog::Accepted)
@@ -140,6 +182,8 @@ private:
 	}
 
 	MultilineTextDialog dialog;
+	bool revert;
+	bool multiline;
 };
 
 QtnPropertyDelegateQString::QtnPropertyDelegateQString(QtnPropertyQStringBase& owner)
