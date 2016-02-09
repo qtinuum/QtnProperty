@@ -1,4 +1,4 @@
-include(../Common.pri)
+include($$_PRO_FILE_PWD_/../Common.pri)
 
 TARGET = QtnPropertyWidgetAC
 TEMPLATE = lib
@@ -57,7 +57,8 @@ HEADERS += PropertyWidgetAPI.h \
     Utils/DoubleSpinBox.h \
     Delegates/GUI/MultilineTextDialog.h
 
-LIBS += -L$$BIN_DIR -lQtnPropertyCoreAC
+LIBS += -L$$BIN_DIR
+LIBS += -lQtnPropertyCoreAC
 
 win32 {
     TARGET_EXT = .dll

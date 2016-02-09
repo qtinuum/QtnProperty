@@ -175,10 +175,9 @@ private:
 		dialog.show();
 		dialog.raise();
 		if (dialog.exec() == QDialog::Accepted)
-		{
-			property() = dialog.getText();
-			updateEditor();
-		}
+			property() = dialog.getText();			
+
+		updateEditor();
 	}
 
 	MultilineTextDialog dialog;

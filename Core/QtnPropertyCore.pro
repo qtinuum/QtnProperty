@@ -1,4 +1,4 @@
-include(../Common.pri)
+include($$_PRO_FILE_PWD_/../Common.pri)
 
 QT += script
 

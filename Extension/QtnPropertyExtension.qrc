@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource lang="en" prefix="/Translations">
+    <file alias="QtnPropertyExtension.qm">Translations/QtnPropertyExtension_en.qm</file>    
+</qresource>
+<qresource lang="ru" prefix="/Translations">
+    <file alias="QtnPropertyExtension.qm">Translations/QtnPropertyExtension_ru.qm</file>    
+</qresource>
+</RCC>

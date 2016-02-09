@@ -20,7 +20,7 @@ FORMS    += MainWindow.ui \
 PEG_SOURCES += Demo.pef
 
 INCLUDEPATH += $$TOP_SRC_DIR/Core
-INCLUDEPATH += $$TOP_SRC_DIR/PropertyWidget
+INCLUDEPATH += $$TOP_SRC_DIR/Widget
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCoreAC -lQtnPropertyWidgetAC
 
@@ -33,8 +33,8 @@ OTHER_FILES += \
     Demo.pef
 
 
-DYNAMIC_LIBS.files += $$BIN_DIR/libQtnPropertyCore.1.dylib
-DYNAMIC_LIBS.files += $$BIN_DIR/libQtnPropertyWidget.1.dylib
+DYNAMIC_LIBS.files += $$BIN_DIR/libQtnPropertyCoreAC.1.dylib
+DYNAMIC_LIBS.files += $$BIN_DIR/libQtnPropertyWidgetAC.1.dylib
 
 DYNAMIC_LIBS.path = "Contents/MacOS"
 

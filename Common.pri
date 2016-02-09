@@ -1,4 +1,9 @@
-BIN_DIR = $$TOP_BUILD_DIR/bin
+isEmpty(TOP_BUILD_DIR) {
+    BIN_DIR = $$OUT_PWD/../bin
+} else {
+    BIN_DIR = $$TOP_BUILD_DIR/bin
+}
+
 DESTDIR = $$BIN_DIR
 
 CONFIG += c++11 warn_off
