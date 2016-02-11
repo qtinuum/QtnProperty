@@ -157,13 +157,16 @@ void QtnPropertySet::clearChildProperties()
     Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonChildPropertyRemove);
 }
 
-bool QtnPropertySet::addChildProperty(QtnPropertyBase* childProperty, bool moveOwnership)
+bool QtnPropertySet::addChildProperty(QtnPropertyBase* childProperty, bool moveOwnership, int index)
 {
     Q_CHECK_PTR(childProperty);
 
     Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonChildPropertyAdd, QtnPropertyValuePtr(childProperty));
 
-    m_childProperties.append(childProperty);
+	if (index < 0)
+		m_childProperties.append(childProperty);
+	else
+		m_childProperties.insert(index, childProperty);
     qtnConnectChildProperty(this, childProperty);
     if (moveOwnership)
         childProperty->setParent(this);

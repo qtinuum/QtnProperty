@@ -15,7 +15,11 @@ HEADERS += \
     PropertyQPointF.h \
     PropertyQSizeF.h \
     PropertyWidgetEx.h \
-    PropertyPercent.h
+    PropertyPercent.h \
+    CustomPropertyEditorDialog.h \
+    CustomPropertyOptionsDialog.h \
+    VarProperty.h \
+    PropertyQVariant.h
 
 SOURCES += \
     PropertyInt64.cpp \
@@ -25,7 +29,11 @@ SOURCES += \
     PropertyQPointF.cpp \
     PropertyQSizeF.cpp \
     PropertyWidgetEx.cpp \
-    PropertyPercent.cpp
+    PropertyPercent.cpp \
+    CustomPropertyEditorDialog.cpp \
+    CustomPropertyOptionsDialog.cpp \
+    VarProperty.cpp \
+    PropertyQVariant.cpp
 
 TRANSLATIONS = \
     Translations/QtnPropertyExtension_en.ts \
@@ -34,3 +42,7 @@ TRANSLATIONS = \
 for(tr, TRANSLATIONS):system($$[QT_INSTALL_BINS]/lrelease $$_PRO_FILE_PWD_/$${tr})
 
 RESOURCES = QtnPropertyExtension.qrc
+
+FORMS += \
+    CustomPropertyEditorDialog.ui \
+    CustomPropertyOptionsDialog.ui

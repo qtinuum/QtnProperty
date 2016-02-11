@@ -36,7 +36,7 @@ public slots:
     QList<QtnPropertyBase*> findChildProperties(const QRegularExpression& re, Qt::FindChildOptions options = Qt::FindChildrenRecursively);
     QtnPropertyBase* findChildProperty(QtnPropertyID id);
     void clearChildProperties();
-    bool addChildProperty(QtnPropertyBase* childProperty, bool moveOwnership = true);
+	bool addChildProperty(QtnPropertyBase* childProperty, bool moveOwnership = true, int index = -1);
     bool removeChildProperty(QtnPropertyBase* childProperty);
 
     // cloning
