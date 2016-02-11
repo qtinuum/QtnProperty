@@ -27,6 +27,16 @@
 #include <QFontDialog>
 #include <QFontDatabase>
 
+static QString FontToStr(const QFont &font)
+{
+	int size = font.pointSize();
+	bool pixels = (size < 0);
+	if (pixels)
+		size = font.pixelSize();
+
+	return QString("[%1, %2 %3]").arg(font.family(), QString::number(size), QString(pixels ? "px" : "pt"));
+}
+
 class QtnPropertyQFontLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQFontBase, QtnLineEditBttn>
 {
 public:
@@ -50,8 +60,7 @@ public:
 private:
     void updateEditor() override
     {
-        QFont font = property();
-        editor().lineEdit->setText(QString("[%1, %2]").arg(font.family()).arg(font.pointSize()));
+		editor().lineEdit->setText(FontToStr(property()));
     }
 
     void onToolButtonClicked(bool checked)
@@ -78,10 +87,31 @@ static QtnEnumInfo* styleStrategyEnum()
 		items.append(QtnEnumValueInfo(QFont::PreferDefault, QtnPropertyQFont::getPreferDefaultStr()));
 		items.append(QtnEnumValueInfo(QFont::NoAntialias, QtnPropertyQFont::getNoAntialiasStr()));
 		items.append(QtnEnumValueInfo(QFont::PreferAntialias, QtnPropertyQFont::getPreferAntialiasStr()));
-        enumInfo = new QtnEnumInfo("StyleStrategy", items);
+		enumInfo = new QtnEnumInfo("FontStyleStrategy", items);
     }
 
     return enumInfo;
+}
+
+enum
+{
+	SizeUnitPixel,
+	SizeUnitPoint
+};
+
+
+static QtnEnumInfo* sizeUnitEnum()
+{
+	static QtnEnumInfo* enumInfo = nullptr;
+	if (!enumInfo)
+	{
+		QVector<QtnEnumValueInfo> items;
+		items.append(QtnEnumValueInfo(SizeUnitPixel, QtnPropertyQFont::getPixelStr()));
+		items.append(QtnEnumValueInfo(SizeUnitPoint, QtnPropertyQFont::getPointStr()));
+		enumInfo = new QtnEnumInfo("FontSizeUnit", items);
+	}
+
+	return enumInfo;
 }
 
 QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
@@ -105,21 +135,75 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
     delegate.attributes["items"] = fDB.families();
     propertyFamily->setDelegate(delegate);
 
-    QtnPropertyUIntCallback* propertyPointSize = new QtnPropertyUIntCallback(0);
-    addSubProperty(propertyPointSize);
-	propertyPointSize->setName(QtnPropertyQFont::getPointSizeLabel());
-	propertyPointSize->setDescription(QtnPropertyQFont::getPointSizeDescription(owner.name()));
-    propertyPointSize->setCallbackValueGet([&owner]()->quint32 {
+	QtnPropertyUIntCallback* propertySize = new QtnPropertyUIntCallback(0);
+	addSubProperty(propertySize);
+	propertySize->setName(QtnPropertyQFont::getSizeLabel());
+	propertySize->setDescription(QtnPropertyQFont::getSizeDescription(owner.name()));
+	propertySize->setCallbackValueGet([&owner]() -> quint32
+	{
         int ps = owner.value().pointSize();
-        return ps != -1 ? ps : 1;
+		if (ps < 0)
+			ps = owner.value().pixelSize();
+		if (ps < 1)
+			ps = 1;
+		return ps;
     });
-    propertyPointSize->setCallbackValueSet([&owner](quint32 value) {
+	propertySize->setCallbackValueSet([&owner](quint32 value)
+	{
+		if (value == 0)
+			value = 1;
+
         QFont font = owner.value();
-        font.setPointSize((int)value);
+		if (font.pointSize() > 0)
+		{
+			if (value > 128)
+				value = 128;
+
+			font.setPointSize((int) value);
+		} else
+		{
+			if (value > 256)
+				value = 256;
+
+			font.setPixelSize((int) value);
+		}
         owner.setValue(font);
     });
-    propertyPointSize->setMinValue(1);
-    propertyPointSize->setMaxValue((quint32)std::numeric_limits<int>::max());
+
+	QtnPropertyEnumCallback* propertySizeUnit = new QtnPropertyEnumCallback(0);
+	addSubProperty(propertySizeUnit);
+	propertySizeUnit->setName(QtnPropertyQFont::getSizeUnitLabel());
+	propertySizeUnit->setDescription(QtnPropertyQFont::getSizeUnitDescription(owner.name()));
+	propertySizeUnit->setEnumInfo(sizeUnitEnum());
+	propertySizeUnit->setCallbackValueGet([&owner]() -> QtnEnumValueType
+	{
+		if (owner.value().pointSize() < 0)
+			return SizeUnitPixel;
+
+		return SizeUnitPoint;
+	});
+	propertySizeUnit->setCallbackValueSet([&owner](QtnEnumValueType value)
+	{
+		QFont font = owner.value();
+
+		int size = std::max(font.pointSize(), font.pixelSize());
+
+		switch (value)
+		{
+			case SizeUnitPixel:
+				font.setPixelSize(size);
+				break;
+
+			case SizeUnitPoint:
+				font.setPointSize(size);
+				break;
+
+			default:
+				break;
+		}
+
+		owner.setValue(font);
+	});
 
     QtnPropertyBoolCallback* propertyBold = new QtnPropertyBoolCallback(0);
     addSubProperty(propertyBold);
@@ -244,7 +328,6 @@ QWidget* QtnPropertyDelegateQFont::createValueEditorImpl(QWidget* parent, const 
 
 bool QtnPropertyDelegateQFont::propertyValueToStr(QString& strValue) const
 {
-    QFont value = owner().value();
-    strValue = QString("[%1, %2]").arg(value.family()).arg(value.pointSize());
+	strValue = FontToStr(owner().value());
     return true;
 }

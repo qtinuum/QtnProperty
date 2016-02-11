@@ -63,13 +63,17 @@ public:
     {
     }
 
+	static QString getPixelStr();
+	static QString getPointStr();
 	static QString getPreferDefaultStr();
 	static QString getNoAntialiasStr();
 	static QString getPreferAntialiasStr();
 	static QString getFamilyLabel();
 	static QString getFamilyDescription(const QString &owner_name);
-	static QString getPointSizeLabel();
-	static QString getPointSizeDescription(const QString &owner_name);
+	static QString getSizeLabel();
+	static QString getSizeDescription(const QString &owner_name);
+	static QString getSizeUnitLabel();
+	static QString getSizeUnitDescription(const QString &owner_name);
 	static QString getBoldLabel();
 	static QString getBoldDescription(const QString &owner_name);
 	static QString getItalicLabel();

@@ -39,6 +39,16 @@ bool QtnPropertyQFontBase::toStrImpl(QString& str) const
     return true;
 }
 
+QString QtnPropertyQFont::getPixelStr()
+{
+	return tr("Pixel");
+}
+
+QString QtnPropertyQFont::getPointStr()
+{
+	return tr("Point");
+}
+
 QString QtnPropertyQFont::getPreferDefaultStr()
 {
 	return tr("PreferDefault");
@@ -61,17 +71,27 @@ QString QtnPropertyQFont::getFamilyLabel()
 
 QString QtnPropertyQFont::getFamilyDescription(const QString &owner_name)
 {
-	return tr("Font Family for %1").arg(owner_name);
+	return tr("Family for %1").arg(owner_name);
 }
 
-QString QtnPropertyQFont::getPointSizeLabel()
+QString QtnPropertyQFont::getSizeLabel()
 {
-	return tr("PointSize");
+	return tr("Size");
 }
 
-QString QtnPropertyQFont::getPointSizeDescription(const QString &owner_name)
+QString QtnPropertyQFont::getSizeDescription(const QString &owner_name)
 {
-	return tr("Point size for %1").arg(owner_name);
+	return tr("Size for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getSizeUnitLabel()
+{
+	return tr("Size Unit");
+}
+
+QString QtnPropertyQFont::getSizeUnitDescription(const QString &owner_name)
+{
+	return tr("Size Unit for %1").arg(owner_name);
 }
 
 QString QtnPropertyQFont::getBoldLabel()
@@ -131,5 +151,5 @@ QString QtnPropertyQFont::getAntialiasingLabel()
 
 QString QtnPropertyQFont::getAntialiasingDescription(const QString &owner_name)
 {
-	return tr("Antialiasing flag for %1").arg(owner_name);
+	return tr("Antialiasing options for %1").arg(owner_name);
 }
