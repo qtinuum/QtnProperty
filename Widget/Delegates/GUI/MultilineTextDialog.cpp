@@ -8,6 +8,8 @@ MultilineTextDialog::MultilineTextDialog(QWidget *parent)
 	, ui(new Ui::MultilineTextDialog)
 {
 	ui->setupUi(this);
+
+	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint)));
 }
 
 MultilineTextDialog::~MultilineTextDialog()
