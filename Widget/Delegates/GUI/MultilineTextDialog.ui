@@ -38,7 +38,7 @@
       <bool>true</bool>
      </property>
      <property name="lineWrapMode">
-      <enum>QPlainTextEdit::NoWrap</enum>
+      <enum>QPlainTextEdit::WidgetWidth</enum>
      </property>
     </widget>
    </item>
@@ -46,6 +46,9 @@
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
