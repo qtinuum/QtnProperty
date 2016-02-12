@@ -82,7 +82,7 @@ protected:
         if (!QtnProperty::loadImpl(stream))
             return false;
 
-		ValueTypeStore newValue;
+		auto newValue = ValueTypeStore();
         stream >> newValue;
 
         if (stream.status() != QDataStream::Ok)
