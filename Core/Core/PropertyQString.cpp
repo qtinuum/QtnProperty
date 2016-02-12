@@ -38,9 +38,20 @@ bool QtnPropertyQStringBase::toStrImpl(QString& str) const
     return true;
 }
 
-QString QtnPropertyQString::getMultilinePlaceholderStr()
+bool QtnPropertyQString::isMultilineText(const QString &text)
 {
-	return tr("(Multiline Text)");
+	return text.contains('\n') || text.contains('\r');
+}
+
+QString QtnPropertyQString::getPlaceholderStr(const QString &text, bool check_multiline)
+{
+	if (check_multiline && isMultilineText(text))
+		return tr("(Multiline Text)");
+
+	if (text.isEmpty())
+		return tr("(Empty)");
+
+	return QString();
 }
 
 QString QtnPropertyQString::getReadOnlyPropertyTitleFormat()

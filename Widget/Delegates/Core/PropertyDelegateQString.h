@@ -30,8 +30,6 @@ public:
 
     QtnPropertyDelegateQString(QtnPropertyQStringBase& owner);
 
-	static bool isMultilineText(const QString &text);
-
 protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const override;
 	virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;

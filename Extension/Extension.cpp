@@ -6,6 +6,7 @@
 #include "PropertyQPointF.h"
 #include "PropertyQSizeF.h"
 #include "PropertyQRectF.h"
+#include "PropertyQVariant.h"
 
 #include <QCoreApplication>
 #include <QTranslator>
@@ -29,6 +30,7 @@ namespace QtnPropertyExtension
 		QtnPropertyQPointF::Register();
 		QtnPropertyQSizeF::Register();
 		QtnPropertyQRectF::Register();
+		QtnPropertyQVariant::Register();
 	}
 
 	QtnProperty* CreateQObjectProperty(QObject* object, const char *class_name, const QMetaProperty& meta_property)

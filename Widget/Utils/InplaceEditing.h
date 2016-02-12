@@ -21,6 +21,6 @@
 
 bool qtnStartInplaceEdit(QWidget *editor);
 QWidget *qtnGetInplaceEdit();
-bool qtnStopInplaceEdit();
+bool qtnStopInplaceEdit(bool delete_later = true);
 
 #endif // INPLACE_EDITING_H

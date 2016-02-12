@@ -19,17 +19,20 @@ VarProperty::VarProperty(QObject *parent, VarProperty::Type type, const QString 
 
 }
 
-void VarProperty::ChangePropertyValue(QVariant &dest, const QVariant &value)
+void VarProperty::ChangePropertyValue(const QVariant &value, QVariant *dest)
 {
 	if (this->value != value)
 	{
 		this->value = value;
 
-		auto top = TopParent();
+		if (nullptr != dest)
+		{
+			auto top = TopParent();
 
-		Q_ASSERT(nullptr != top);
+			Q_ASSERT(nullptr != top);
 
-		dest = top->CreateVariant();
+			*dest = top->CreateVariant();
+		}
 	}
 }
 
@@ -123,14 +126,40 @@ VarProperty::Type VarProperty::GetType() const
 	return type;
 }
 
+QVariant::Type VarProperty::GetVariantType() const
+{
+	switch (type)
+	{
+		case Value:
+			return value.type();
+
+		case List:
+			return QVariant::List;
+
+		case Map:
+			return QVariant::Map;
+	}
+
+	return QVariant::Invalid;
+}
+
 int VarProperty::GetIndex() const
 {
 	return index;
 }
 
-void VarProperty::SetIndex(int new_index)
+bool VarProperty::SetIndex(int new_index)
 {
-	index = new_index;
+	if (index != new_index)
+	{
+		index = new_index;
+		if (new_index >= 0)
+			name = QString("[%1]").arg(QString::number(new_index));
+
+		return true;
+	}
+
+	return false;
 }
 
 const QString &VarProperty::GetName() const
@@ -138,9 +167,16 @@ const QString &VarProperty::GetName() const
 	return name;
 }
 
-void VarProperty::SetName(const QString &new_name)
+bool VarProperty::SetName(const QString &new_name)
 {
-	name = new_name;
+	if (index < 0)
+	{
+		name = new_name;
+
+		return true;
+	}
+
+	return false;
 }
 
 VarProperty *VarProperty::TopParent()
@@ -166,9 +202,14 @@ VarProperty *VarProperty::VarParent()
 	return var_parent;
 }
 
-VarProperty::VarChildren &VarProperty::GetVarChildren()
+VarProperty::VarChildren &VarProperty::GetChildren()
 {
 	return var_children;
+}
+
+int VarProperty::GetChildrenCount() const
+{
+	return static_cast<int>(var_children.size());
 }
 
 QVariant VarProperty::CreateVariant() const
@@ -206,12 +247,12 @@ QVariant VarProperty::CreateVariant() const
 	return value;
 }
 
-bool VarProperty::IsChildNameAvailable(const QString &name, bool skip_this) const
+bool VarProperty::IsChildNameAvailable(const QString &name, VarProperty *skip) const
 {
 	auto it = std::find_if(var_children.begin(), var_children.end(),
-	[this, &name](VarProperty *value) -> bool
+	[this, &name, skip](VarProperty *value) -> bool
 	{
-		if (skip_this && value == this)
+		if (skip == value)
 			return false;
 
 		return value->name == name;
@@ -309,7 +350,7 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 	return prop;
 }
 
-bool VarProperty::PropertyValueAccept(const QtnProperty *property, void *valueToAccept, QVariant &dest)
+bool VarProperty::PropertyValueAccept(const QtnProperty *property, void *valueToAccept, QVariant *dest)
 {
 	switch (property->id())
 	{
@@ -354,7 +395,7 @@ bool VarProperty::PropertyValueAccept(const QtnProperty *property, void *valueTo
 				}
 			}
 
-			var_property->ChangePropertyValue(dest, value);
+			var_property->ChangePropertyValue(value, dest);
 
 			return true;
 		}

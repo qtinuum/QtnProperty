@@ -2,6 +2,147 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
+    <name>BasePropertyDialog</name>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.cpp" line="79"/>
+        <source>Property with name &apos;%1&apos; is already exist.</source>
+        <translation>Свойство с именем &quot;%1&quot; уже существует.</translation>
+    </message>
+</context>
+<context>
+    <name>CustomPropertyEditorDialog</name>
+    <message>
+        <source>Custom Property Editor</source>
+        <translation type="vanished">Настраиваемые свойства</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="307"/>
+        <source>Add Element</source>
+        <translation>Добавить элемент</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="370"/>
+        <source>Duplicate Element</source>
+        <translation>Дублировать элемент</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="420"/>
+        <source>Element Options</source>
+        <translation>Настройки элемента</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="474"/>
+        <source>Add...</source>
+        <translation>Добавить...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="482"/>
+        <source>Add Property...</source>
+        <translation>Добавить свойство...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="486"/>
+        <source>Add Element...</source>
+        <translation>Добавить элемент...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="511"/>
+        <source>Edit Custom Properties</source>
+        <translation>Редактировать свойства</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="511"/>
+        <source>Read-only Properties</source>
+        <translation>Свойства только для чтения</translation>
+    </message>
+    <message>
+        <source>Add Child Property...</source>
+        <translation type="vanished">Добавить свойство...</translation>
+    </message>
+    <message>
+        <source>Add Child Property</source>
+        <translation type="vanished">Добавить свойство</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.ui" line="69"/>
+        <source>Remove</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <source>Remove Property</source>
+        <translation type="vanished">Удалить свойство</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.ui" line="83"/>
+        <source>Duplicate...</source>
+        <translation>Дублировать...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="377"/>
+        <source>Duplicate Property</source>
+        <translation>Дублировать свойство</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.ui" line="91"/>
+        <source>Options...</source>
+        <translation>Настройки...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="409"/>
+        <source>Property Options</source>
+        <translation>Настройки свойства</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="313"/>
+        <source>Add Property</source>
+        <translation>Добавить свойство</translation>
+    </message>
+</context>
+<context>
+    <name>CustomPropertyOptionsDialog</name>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.ui" line="53"/>
+        <location filename="../CustomPropertyOptionsDialog.cpp" line="117"/>
+        <source>Name:</source>
+        <translation>Название:</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.ui" line="105"/>
+        <source>Type</source>
+        <translation>Тип</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.ui" line="111"/>
+        <source>Numeric</source>
+        <translation>Числовой</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.ui" line="121"/>
+        <source>String</source>
+        <translation>Строковый</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.ui" line="131"/>
+        <source>Boolean</source>
+        <translation>Логический</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.ui" line="138"/>
+        <source>Dictionary</source>
+        <translation>Словарь</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.ui" line="145"/>
+        <source>List</source>
+        <translation>Список</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyOptionsDialog.cpp" line="116"/>
+        <source>Index:</source>
+        <translation>Индекс:</translation>
+    </message>
+</context>
+<context>
     <name>QtnPropertyQPointF</name>
     <message>
         <location filename="../PropertyQPointF.cpp" line="33"/>
@@ -88,6 +229,24 @@
         <location filename="../PropertyQSizeF.cpp" line="27"/>
         <source>Height of the %1</source>
         <translation>%1: Высота</translation>
+    </message>
+</context>
+<context>
+    <name>QtnPropertyQVariant</name>
+    <message>
+        <location filename="../PropertyQVariant.cpp" line="197"/>
+        <source>(Dictionary)</source>
+        <translation>(Словарь)</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQVariant.cpp" line="200"/>
+        <source>(List)</source>
+        <translation>(Список)</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQVariant.cpp" line="206"/>
+        <source>(Empty)</source>
+        <translation>(Пусто)</translation>
     </message>
 </context>
 </TS>

@@ -17,7 +17,7 @@ BasePropertyDialog::BasePropertyDialog(QWidget *parent)
 				|	Qt::CustomizeWindowHint);
 }
 
-void BasePropertyDialog::initWithCount(int actual_index, int existing_count)
+void BasePropertyDialog::initWithCount(int actual_index, int existing_count, bool readonly)
 {
 	if (actual_index < 0)
 		actual_index = existing_count;
@@ -31,9 +31,10 @@ void BasePropertyDialog::initWithCount(int actual_index, int existing_count)
 	index_edit->setMinimum(0);
 	index_edit->setMaximum(existing_count);
 	index_edit->setValue(actual_index);
+	index_edit->setReadOnly(readonly);
 }
 
-void BasePropertyDialog::initWithName(const QString &actual_name, const IsNameAvailableCB &is_name_available)
+void BasePropertyDialog::initWithName(const QString &actual_name, const IsNameAvailableCB &is_name_available, bool readonly)
 {
 	result_index = -1;
 	result_name = "";
@@ -45,19 +46,15 @@ void BasePropertyDialog::initWithName(const QString &actual_name, const IsNameAv
 	auto name_edit = GetNameEdit();
 	name_edit->setVisible(true);
 	name_edit->setText(actual_name);
+	name_edit->setReadOnly(readonly);
 }
 
 bool BasePropertyDialog::execute()
 {
-	auto connection = QObject::connect(GetButtonBox(), &QDialogButtonBox::clicked,
-					 this, &BasePropertyDialog::on_buttonBox_clicked);
-
 	show();
 	raise();
 
 	exec();
-
-	QObject::disconnect(connection);
 
 	return result() == DialogCode::Accepted;
 }
@@ -120,33 +117,7 @@ CustomPropertyOptionsDialog::~CustomPropertyOptionsDialog()
 	delete ui;
 }
 
-
-bool CustomPropertyOptionsDialog::execute(QWidget *parent, const QString &title,
-										  Result &result, int existing_count, int index)
-{
-	CustomPropertyOptionsDialog dialog(parent);
-
-	dialog.setWindowTitle(title);
-
-	dialog.initWithCount(index, existing_count);
-
-	return dialog.execute(result);
-}
-
-bool CustomPropertyOptionsDialog::execute(QWidget *parent, const QString &title,
-										  Result &result, const QString &default_name,
-										  const IsNameAvailableCB &is_name_available)
-{
-	CustomPropertyOptionsDialog dialog(parent);
-
-	dialog.setWindowTitle(title);
-
-	dialog.initWithName(default_name, is_name_available);
-
-	return dialog.execute(result);
-}
-
-bool CustomPropertyOptionsDialog::execute(Result &result)
+bool CustomPropertyOptionsDialog::execute(CustomPropertyData &result)
 {
 	if (BasePropertyDialog::execute())
 	{
@@ -158,6 +129,42 @@ bool CustomPropertyOptionsDialog::execute(Result &result)
 	}
 
 	return false;
+}
+
+void CustomPropertyOptionsDialog::setType(QVariant::Type type)
+{
+	switch (type)
+	{
+		case QVariant::List:
+			ui->rbList->setChecked(true);
+			break;
+
+		case QVariant::Map:
+			ui->rbDictionary->setChecked(true);
+			break;
+
+		case QVariant::Bool:
+			ui->rbBoolean->setChecked(true);
+			break;
+
+		case QVariant::Int:
+		case QVariant::UInt:
+		case QVariant::LongLong:
+		case QVariant::ULongLong:
+		case QVariant::Double:
+		case QVariant::Invalid:
+			ui->rbNumeric->setChecked(true);
+			break;
+
+		default:
+			ui->rbString->setChecked(true);
+			break;
+	}
+}
+
+void CustomPropertyOptionsDialog::setTypeBoxEnabled(bool value)
+{
+	ui->typeBox->setEnabled(value);
 }
 
 bool CustomPropertyOptionsDialog::ValidateInput()

@@ -20,13 +20,14 @@ class BasePropertyDialog : public QDialog
 public:
 	explicit BasePropertyDialog(QWidget *parent = nullptr);
 
+	void initWithCount(int actual_index, int existing_count, bool readonly = false);
+	void initWithName(const QString &actual_name, const IsNameAvailableCB &is_name_available, bool readonly = false);
+
 private slots:
 	void on_buttonBox_clicked(QAbstractButton *button);
 
 protected:
 	bool execute();
-	void initWithCount(int actual_index, int existing_count);
-	void initWithName(const QString &actual_name, const IsNameAvailableCB &is_name_available);
 
 	virtual bool ValidateInput();
 	virtual QLabel *GetLabel() = 0;
@@ -47,6 +48,13 @@ namespace Ui
 	class CustomPropertyOptionsDialog;
 }
 
+struct CustomPropertyData
+{
+	int index;
+	QString name;
+	QVariant value;
+};
+
 class CustomPropertyOptionsDialog : public BasePropertyDialog
 {
 	Q_OBJECT
@@ -55,17 +63,11 @@ public:
 	explicit CustomPropertyOptionsDialog(QWidget *parent = nullptr);
 	virtual ~CustomPropertyOptionsDialog();
 
-	struct Result
-	{
-		int index;
-		QString name;
-		QVariant value;
-	};
+	bool execute(CustomPropertyData &result);
 
-	static bool execute(QWidget *parent, const QString &title, Result &result, int existing_count, int index = -1);
-	static bool execute(QWidget *parent, const QString &title, Result &result, const QString &default_name, const IsNameAvailableCB &is_name_available);
-
-	bool execute(Result &result);
+	void setType(QVariant::Type type);
+	void setTypeBoxEnabled(bool value);
+	void setNameBoxEnabled(bool value);
 
 protected:
 	virtual bool ValidateInput() override;

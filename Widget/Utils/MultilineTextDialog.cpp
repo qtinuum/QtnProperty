@@ -20,6 +20,14 @@ MultilineTextDialog::~MultilineTextDialog()
 void MultilineTextDialog::setReadOnly(bool value)
 {
 	ui->plainTextEdit->setReadOnly(value);
+
+	if (value)
+	{
+		ui->buttonBox->setStandardButtons(QDialogButtonBox::Close);
+	} else
+	{
+		ui->buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+	}
 }
 
 void MultilineTextDialog::setText(const QString &text)

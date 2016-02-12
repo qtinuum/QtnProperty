@@ -23,14 +23,18 @@ class CustomPropertyEditorDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit CustomPropertyEditorDialog(QWidget *parent = 0);
+	explicit CustomPropertyEditorDialog(QWidget *parent = nullptr);
 	virtual ~CustomPropertyEditorDialog();
 
-	bool execute(const QString &title, const QVariant &data);
+	bool execute(const QString &title, QVariant &data);
 
-	QVariant getData() const;
+	void setReadOnly(bool value);
+
+signals:
+	void apply(const QVariant &data);
 
 private slots:
+	void onActivePropertyChanged(QtnPropertyBase* activeProperty);
 	void onPropertyValueAccept(const QtnProperty *property, void *valueToAccept, bool *accept);
 
 	void on_buttonBox_clicked(QAbstractButton *button);
@@ -46,6 +50,10 @@ private slots:
 	void on_actionPropertyOptions_triggered();
 
 private:
+	void updateData();
+	void updateSet(QtnPropertyBase *set_property, int child_index);
+	void updateActions(QtnPropertyBase *property);
+	void updateTitle();
 	bool getActiveVarProperty(QtnPropertyBase *&property, VarProperty *&var_property);
 	static VarProperty *getVarProperty(QtnPropertyBase *source);
 	QtnPropertyBase *newProperty(QtnPropertySet *parent,
@@ -55,16 +63,13 @@ private:
 								 VarProperty *map_parent);
 
 
-	void addProperty(QtnPropertyBase *source, const QVariant &value,
-					 const QString &name, int index);
-	void duplicateProperty(QtnPropertyBase *source, const QString &name, int index);
-	void propertyOptions(QtnPropertyBase *source, const QString &name, int index);
-
-	typedef std::function<void (VarProperty *, const QString &, int)> PropertyActionCB;
-
-	void propertyAction(QtnPropertyBase *property, const QString &dialog_title,
-						const IsNameAvailableCB &is_name_available,
-						const PropertyActionCB &action);
+	void addProperty(QtnPropertyBase *source, const CustomPropertyData &data);
+	void duplicateProperty(QtnPropertyBase *source, const CustomPropertyData &data);
+	void updatePropertyOptions(QtnPropertyBase *source, const CustomPropertyData &data);
 
 	Ui::CustomPropertyEditorDialog *ui;
+	QVariant::Type last_add_type;
+	QVariant *data_ptr;
+
+	bool read_only;
 };

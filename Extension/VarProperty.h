@@ -29,7 +29,7 @@ public:
 				int index,
 				const QVariant &value);
 
-	void ChangePropertyValue(QVariant &dest, const QVariant &value);
+	void ChangePropertyValue(const QVariant &value, QVariant *dest = nullptr);
 	void RemoveFromParent();
 	VarProperty *Duplicate(VarProperty *child, int new_index);
 	VarProperty *Duplicate(VarProperty *child, const QString &new_name);
@@ -43,25 +43,27 @@ public:
 
 	static Type GetTypeFromValue(const QVariant &value);
 	Type GetType() const;
+	QVariant::Type GetVariantType() const;
 
 	int GetIndex() const;
-	void SetIndex(int new_index);
+	bool SetIndex(int new_index);
 
 	const QString &GetName() const;
-	void SetName(const QString &new_name);
+	bool SetName(const QString &new_name);
 
 	VarProperty *TopParent();
 	VarProperty *VarParent();
-	VarChildren &GetVarChildren();
+	VarChildren &GetChildren();
+	int GetChildrenCount() const;
 
 	QVariant CreateVariant() const;
-	bool IsChildNameAvailable(const QString &name, bool skip_this) const;
+	bool IsChildNameAvailable(const QString &name, VarProperty *skip) const;
 
 	static QtnPropertyBase *NewExtraProperty(QtnPropertySet *set, const QVariant &value,
 											 const QString &key, int index, VarProperty *map_parent,
 											 const RegisterPropertyCallback &register_property);
 
-	static bool PropertyValueAccept(const QtnProperty *property, void *valueToAccept, QVariant &dest);
+	static bool PropertyValueAccept(const QtnProperty *property, void *valueToAccept, QVariant *dest = nullptr);
 
 	enum
 	{

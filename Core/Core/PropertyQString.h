@@ -83,7 +83,8 @@ public:
         return *this;
     }
 
-	static QString getMultilinePlaceholderStr();
+	static bool isMultilineText(const QString &text);
+	static QString getPlaceholderStr(const QString &text, bool check_multiline);
 	static QString getReadOnlyPropertyTitleFormat();
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQString, QtnPropertyQStringBase)

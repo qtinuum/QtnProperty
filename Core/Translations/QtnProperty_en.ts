@@ -303,12 +303,17 @@
 <context>
     <name>QtnPropertyQString</name>
     <message>
-        <location filename="../Core/PropertyQString.cpp" line="43"/>
+        <location filename="../Core/PropertyQString.cpp" line="49"/>
         <source>(Multiline Text)</source>
         <translation>(Multiline Text)</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQString.cpp" line="48"/>
+        <location filename="../Core/PropertyQString.cpp" line="52"/>
+        <source>(Empty)</source>
+        <translation>(Empty)</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQString.cpp" line="59"/>
         <source>%1 (Read only)</source>
         <translation>%1 (Read only)</translation>
     </message>

@@ -36,8 +36,7 @@ bool qtnStartInplaceEdit(QWidget* editor)
 
     if (g_inplaceEditor)
     {
-        Q_ASSERT(false);
-        qtnStopInplaceEdit();
+		qtnStopInplaceEdit(false);
     }
 
     QCoreApplication* app = QCoreApplication::instance();
@@ -78,7 +77,7 @@ void onInplaceWidgetDestroyed(QObject* object)
         parent->setFocus();
 }
 
-bool qtnStopInplaceEdit()
+bool qtnStopInplaceEdit(bool delete_later)
 {
     if (!g_inplaceEditor)
         return false;
@@ -88,7 +87,10 @@ bool qtnStopInplaceEdit()
 
     QObject::connect(g_inplaceEditor, &QObject::destroyed, &onInplaceWidgetDestroyed);
 
-    g_inplaceEditor->deleteLater();
+	if (delete_later)
+		g_inplaceEditor->deleteLater();
+	else
+		delete g_inplaceEditor;
     g_inplaceEditor = 0;
 
     return true;

@@ -3,16 +3,37 @@
 
 #include "VarProperty.h"
 
+#include "QtnProperty/Widget/Utils/InplaceEditing.h"
+
 #include <QAbstractButton>
 #include <QMenu>
+#include <QShortcut>
 
 CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 	: QDialog(parent)
 	, ui(new Ui::CustomPropertyEditorDialog)
+	, last_add_type(QVariant::Invalid)
+	, data_ptr(nullptr)
+	, read_only(false)
 {
 	ui->setupUi(this);
 
+	updateTitle();
+
 	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint)));
+
+	QObject::connect(ui->propertyWidget->propertyView(), &QtnPropertyView::activePropertyChanged,
+					 this, &CustomPropertyEditorDialog::onActivePropertyChanged);
+
+	auto shortcut = new QShortcut(ui->actionPropertyOptions->shortcut(), this);
+	QObject::connect(shortcut, &QShortcut::activated,
+					 this, &CustomPropertyEditorDialog::on_actionPropertyOptions_triggered);
+
+
+	shortcut = new QShortcut(ui->actionPropertyRemove->shortcut(), this);
+	QObject::connect(shortcut, &QShortcut::activated,
+					 this, &CustomPropertyEditorDialog::on_actionPropertyRemove_triggered);
+
 }
 
 CustomPropertyEditorDialog::~CustomPropertyEditorDialog()
@@ -20,19 +41,28 @@ CustomPropertyEditorDialog::~CustomPropertyEditorDialog()
 	delete ui;
 }
 
-bool CustomPropertyEditorDialog::execute(const QString &title, const QVariant &data)
+bool CustomPropertyEditorDialog::execute(const QString &title, QVariant &data)
 {
+	data_ptr = &data;
 	auto widget = ui->propertyWidget;
 
 	auto property_set = new QtnPropertySet(widget);
+	if (read_only)
+		property_set->setState(QtnPropertyStateImmutable, true);
 
 	newProperty(property_set, data, title, -1, nullptr);
 
 	widget->setPropertySet(property_set);
 
+	updateActions(widget->propertyView()->activeProperty());
+
 	show();
 	raise();
 	exec();
+
+	updateData();
+
+	data_ptr = nullptr;
 
 	widget->setPropertySet(nullptr);
 	delete property_set;
@@ -40,11 +70,33 @@ bool CustomPropertyEditorDialog::execute(const QString &title, const QVariant &d
 	return (result() == Accepted);
 }
 
+void CustomPropertyEditorDialog::setReadOnly(bool value)
+{
+	if (read_only != value)
+	{
+		read_only = value;
+		updateTitle();
+
+		if (value)
+		{
+			ui->buttonBox->setStandardButtons(QDialogButtonBox::Close);
+		} else
+		{
+			ui->buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply);
+		}
+	}
+}
+
+void CustomPropertyEditorDialog::onActivePropertyChanged(QtnPropertyBase *activeProperty)
+{
+	updateActions(activeProperty);
+}
+
 void CustomPropertyEditorDialog::onPropertyValueAccept(const QtnProperty *property, void *valueToAccept, bool *accept)
 {
 	if (nullptr != accept)
 	{
-		bool ok = VarProperty::PropertyValueAccept(property, valueToAccept, data);
+		bool ok = VarProperty::PropertyValueAccept(property, valueToAccept);
 		Q_ASSERT(ok);
 
 		*accept = ok;
@@ -55,6 +107,14 @@ void CustomPropertyEditorDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
 	switch (ui->buttonBox->buttonRole(button))
 	{
+		case QDialogButtonBox::ApplyRole:
+			if (nullptr != data_ptr)
+			{
+				updateData();
+				emit apply(*data_ptr);
+			}
+			break;
+
 		case QDialogButtonBox::AcceptRole:
 			accept();
 			break;
@@ -70,11 +130,12 @@ void CustomPropertyEditorDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(const QPoint &pos)
 {
-	QtnPropertyBase *property;
-	VarProperty *var_property;
+	auto property = ui->propertyWidget->propertyView()->activeProperty();
 
-	if (getActiveVarProperty(property, var_property))
+	if (nullptr != property)
 	{
+		qtnStopInplaceEdit(false);
+
 		auto menu = new QMenu(this);
 
 		menu->addAction(ui->actionPropertyAdd);
@@ -82,11 +143,7 @@ void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(co
 		menu->addAction(ui->actionPropertyOptions);
 		menu->addAction(ui->actionPropertyRemove);
 
-		bool not_top_parent = (var_property != var_property->TopParent());
-		ui->actionPropertyAdd->setEnabled(property->id() == VarProperty::PID_EXTRA);
-		ui->actionPropertyRemove->setEnabled(not_top_parent);
-		ui->actionPropertyDuplicate->setEnabled(not_top_parent);
-		ui->actionPropertyOptions->setEnabled(not_top_parent);
+		updateActions(property);
 
 		menu->exec(ui->propertyWidget->mapToGlobal(pos));
 	}
@@ -103,7 +160,7 @@ bool CustomPropertyEditorDialog::getActiveVarProperty(QtnPropertyBase *&property
 
 VarProperty *CustomPropertyEditorDialog::getVarProperty(QtnPropertyBase *source)
 {
-	auto var_property = nullptr;
+	VarProperty *var_property = nullptr;
 	if (nullptr != source)
 		var_property = source->findChild<VarProperty *>(QString(), Qt::FindDirectChildrenOnly);
 
@@ -124,90 +181,125 @@ QtnPropertyBase *CustomPropertyEditorDialog::newProperty(QtnPropertySet *parent,
 	});
 }
 
-void CustomPropertyEditorDialog::addProperty(QtnPropertyBase *source, const QVariant &value,
-											 const QString &name, int index)
+void CustomPropertyEditorDialog::addProperty(QtnPropertyBase *source, const CustomPropertyData &data)
 {
 	auto var_property = getVarProperty(source);
+	Q_ASSERT(nullptr != var_property);
 	auto set = dynamic_cast<QtnPropertySet *>(source);
 	Q_ASSERT(nullptr != set);
-	auto new_property = newProperty(nullptr, value, name, index, var_property);
+	auto new_property = newProperty(nullptr, data.value, data.name, data.index, var_property);
 
 	std::vector<QtnPropertyBase *> children;
-	for(auto child : set->childProperties())
+	for (auto child : set->childProperties())
 	{
 		children.push_back(child);
 	}
 
 	children.push_back(new_property);
 
-	std::sort(children.begin(), children.end(),
-	[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool
+	auto is_list = (VarProperty::List == var_property->GetType());
+
+	if (is_list)
 	{
-		return a->name() < b->name();
-	});
+		std::sort(children.begin(), children.end(),
+		[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool
+		{
+			auto va = getVarProperty(a);
+			auto vb = getVarProperty(b);
+
+			return va->GetIndex() < vb->GetIndex();
+		});
+
+		int count = static_cast<int>(children.size());
+		for (int i = 0; i < count; i++)
+		{
+			auto property = children.at(i);
+			auto var_property = getVarProperty(property);
+			var_property->SetIndex(i);
+			property->setName(var_property->GetName());
+		}
+	} else
+	{
+		std::sort(children.begin(), children.end(),
+		[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool
+		{
+			return a->name() < b->name();
+		});
+	}
 
 	auto it = std::find(children.begin(), children.end(), new_property);
 
 	set->addChildProperty(new_property, true, it - children.begin());
-	ui->propertyWidget->setActiveProperty(new_property);
+	ui->propertyWidget->propertyView()->setActiveProperty(new_property);
 }
 
 void CustomPropertyEditorDialog::duplicateProperty(QtnPropertyBase *source,
-												   const QString &name, int index)
+												   const CustomPropertyData &data)
 {
-
-}
-
-void CustomPropertyEditorDialog::propertyOptions(QtnPropertyBase *source,
-												 const QString &name, int index)
-{
-
-}
-
-void CustomPropertyEditorDialog::propertyAction(QtnPropertyBase *property,
-												const QString &dialog_title,
-												const IsNameAvailableCB &is_name_available,
-												const PropertyActionCB &action)
-{
-	Q_ASSERT(nullptr != property);
-	auto var_property = getVarProperty(property);
+	auto var_property = getVarProperty(source);
 	Q_ASSERT(nullptr != var_property);
 
-	CustomPropertyOptionsDialog::Result result;
-	auto var_parent = var_property->VarParent();
+	auto set = dynamic_cast<QtnPropertySet *>(source->parent());
+	Q_ASSERT(nullptr != set);
 
-	CustomPropertyOptionsDialog dialog(this);
+	addProperty(set, { data.index, data.name, var_property->CreateVariant() });
+}
 
-	dialog.setWindowTitle(dialog_title);
+void CustomPropertyEditorDialog::updatePropertyOptions(QtnPropertyBase *source,
+												 const CustomPropertyData &data)
+{
+	auto var_property = getVarProperty(source);
+	Q_ASSERT(nullptr != var_property);
 
-	switch (var_parent->GetType())
+	auto set = dynamic_cast<QtnPropertySet *>(source->parent());
+	Q_ASSERT(nullptr != set);
+
+	bool changed_order = false;
+
+	int old_index = var_property->GetIndex();
+
+	if (var_property != var_property->TopParent())
 	{
-		case VarProperty::List:
+		changed_order = var_property->SetIndex(data.index);
+		changed_order =	var_property->SetName(data.name) || changed_order;
+	}
+
+	auto var_parent = var_property->VarParent();
+	if (!changed_order)
+	{
+		int index = set->childProperties().indexOf(source);
+
+		set->removeChildProperty(source);
+
+		delete source;
+
+		auto new_property = newProperty(nullptr, data.value, data.name, data.index, var_parent);
+
+		set->addChildProperty(new_property, true, index);
+		ui->propertyWidget->propertyView()->setActiveProperty(new_property);
+	} else
+	{
+		int index = data.index;
+
+		auto children = var_parent->GetChildren();
+
+		if (index < 0)
 		{
-			//TODO
-			dialog.initWithCount(var_property->GetIndex(),
-								 static_cast<int>(var_parent->VarChildren().size());
-
-			if (CustomPropertyOptionsDialog::execute(result))
+			std::sort(children.begin(), children.end(), [](VarProperty *a, VarProperty *b) -> bool
 			{
-				action(property, "", result.index);
-			}
-		} break;
+				return a->GetName() < b->GetName();
+			});
 
-		case VarProperty::Map:
+			auto it = std::find(children.begin(), children.end(), var_property);
+
+			index = it - children.begin();
+		} else
+		if (old_index != index)
 		{
-			dialog.initWithName(var_property->GetName(),
-								is_name_available);
+			children.at(index)->SetIndex(old_index);
+		}
 
-			if (CustomPropertyOptionsDialog::execute(result))
-			{
-				action(property, result.name, -1);
-			}
-		} break;
-
-		default:
-			Q_ASSERT(false);
-			break;
+		updateSet(set, index);
 	}
 }
 
@@ -218,12 +310,37 @@ void CustomPropertyEditorDialog::on_actionPropertyAdd_triggered()
 
 	if (getActiveVarProperty(property, var_property))
 	{
-		auto var_parent = var_property->VarParent();
+		CustomPropertyOptionsDialog dialog(this);
+		CustomPropertyData result_data;
 
-		using namespace std::placeholders;
-		propertyAction(property, tr("Add Property"),
-			std::bind(&VarProperty::IsChildNameAvailable, var_parent, _1, false),
-			std::bind(&CustomPropertyEditorDialog::addProperty, this, _1, QVariant(), _2, _3));
+		switch (var_property->GetType())
+		{
+			case VarProperty::List:
+			{
+				dialog.setWindowTitle(tr("Add Element"));
+				dialog.initWithCount(-1, var_property->GetChildrenCount());
+			} break;
+
+			case VarProperty::Map:
+			{
+				dialog.setWindowTitle(tr("Add Property"));
+				dialog.initWithName(QString(),
+									std::bind(&VarProperty::IsChildNameAvailable,
+											  var_property, std::placeholders::_1, nullptr));
+			} break;
+
+			default:
+				Q_ASSERT(false);
+				break;
+		}
+
+		dialog.setType(last_add_type);
+
+		if (dialog.execute(result_data))
+		{
+			last_add_type = result_data.value.type();
+			addProperty(property, result_data);
+		}
 	}
 }
 
@@ -234,14 +351,12 @@ void CustomPropertyEditorDialog::on_actionPropertyRemove_triggered()
 
 	if (getActiveVarProperty(property, var_property))
 	{
-		auto set = dynamic_cast<QtnPropertySet *>(property->parent());
-		if (nullptr != set)
+		if (var_property != var_property->TopParent())
 		{
-			set->removeChildProperty(property);
-
 			var_property->RemoveFromParent();
 
-			delete property;
+			auto set = dynamic_cast<QtnPropertySet *>(property->parent());
+			updateSet(set, set->childProperties().indexOf(property));
 		}
 	}
 }
@@ -253,12 +368,39 @@ void CustomPropertyEditorDialog::on_actionPropertyDuplicate_triggered()
 
 	if (getActiveVarProperty(property, var_property))
 	{
+		CustomPropertyOptionsDialog dialog(this);
+		CustomPropertyData result_data;
+
 		auto var_parent = var_property->VarParent();
 
-		using namespace std::placeholders;
-		propertyAction(property, tr("Duplicate Property"),
-			std::bind(&VarProperty::IsChildNameAvailable, var_parent, _1, false),
-			std::bind(&CustomPropertyEditorDialog::duplicateProperty, this, _1, _2, _3));
+		switch (var_parent->GetType())
+		{
+			case VarProperty::List:
+			{
+				dialog.setWindowTitle(tr("Duplicate Element"));
+				dialog.initWithCount(var_property->GetIndex(),
+									 var_parent->GetChildrenCount());
+			} break;
+
+			case VarProperty::Map:
+			{
+				dialog.setWindowTitle(tr("Duplicate Property"));
+				dialog.initWithName(var_property->GetName(),
+									std::bind(&VarProperty::IsChildNameAvailable,
+											  var_parent, std::placeholders::_1, nullptr));
+			} break;
+
+			default:
+				Q_ASSERT(false);
+				break;
+		}
+
+
+		dialog.setType(var_property->GetVariantType());
+		dialog.setTypeBoxEnabled(false);
+
+		if (dialog.execute(result_data))
+			duplicateProperty(property, result_data);
 	}
 }
 
@@ -269,11 +411,185 @@ void CustomPropertyEditorDialog::on_actionPropertyOptions_triggered()
 
 	if (getActiveVarProperty(property, var_property))
 	{
+		CustomPropertyOptionsDialog dialog(this);
+		CustomPropertyData result_data;
+
 		auto var_parent = var_property->VarParent();
 
-		using namespace std::placeholders;
-		propertyAction(property, tr("Property Options"),
-			std::bind(&VarProperty::IsChildNameAvailable, var_parent, _1, true),
-			std::bind(&CustomPropertyEditorDialog::propertyOptions, this, _1, _2, _3));
+		dialog.setWindowTitle(tr("Property Options"));
+
+		if (nullptr == var_parent)
+		{
+			dialog.initWithName(var_property->GetName(), nullptr, true);
+		} else
+		{
+			switch (var_parent->GetType())
+			{
+				case VarProperty::List:
+				{
+					dialog.setWindowTitle(tr("Element Options"));
+					dialog.initWithCount(var_property->GetIndex(),
+										 var_parent->GetChildrenCount() - 1);
+				} break;
+
+				case VarProperty::Map:
+				{
+					dialog.initWithName(var_property->GetName(),
+										std::bind(&VarProperty::IsChildNameAvailable,
+												  var_parent, std::placeholders::_1, var_property));
+				} break;
+
+				default:
+					Q_ASSERT(false);
+					break;
+			}
+		}
+		dialog.setType(var_property->GetVariantType());
+
+		if (dialog.execute(result_data))
+		{
+			auto old_data = var_property->CreateVariant();
+			switch (result_data.value.type())
+			{
+				case QVariant::Bool:
+					result_data.value = old_data.toBool();
+					break;
+
+				case QVariant::Char:
+				case QVariant::String:
+					result_data.value = old_data.toString();
+					break;
+
+				case QVariant::Int:
+				case QVariant::UInt:
+				case QVariant::LongLong:
+				case QVariant::ULongLong:
+				case QVariant::Double:
+					result_data.value = old_data.toDouble();
+					break;
+
+				default:
+					if (var_property->GetType() == VarProperty::GetTypeFromValue(result_data.value))
+						result_data.value.swap(old_data);
+					else
+					{
+						switch (var_property->GetType())
+						{
+							case VarProperty::List:
+							{
+								if (result_data.value.type() == QVariant::Map)
+								{
+									old_data.clear();
+									QVariantMap result;
+									for (auto property : var_property->GetChildren())
+										result.insert(property->GetName(), property->CreateVariant());
+
+									result_data.value = result;
+								}
+							}	break;
+
+							case VarProperty::Map:
+							{
+								if (result_data.value.type() == QVariant::List)
+								{
+									old_data.clear();
+									QVariantList result;
+									for (auto property : var_property->GetChildren())
+										result.push_back(property->CreateVariant());
+
+									result_data.value = result;
+								}
+							}	break;
+
+							default:
+								break;
+						}
+					}
+					break;
+			}
+
+			updatePropertyOptions(property, result_data);
+		}
 	}
+}
+
+void CustomPropertyEditorDialog::updateData()
+{
+	auto property_set = ui->propertyWidget->propertySet();
+	if (!read_only && nullptr != data_ptr && nullptr != property_set)
+	{
+		qtnStopInplaceEdit(false);
+
+		auto var_property = getVarProperty(property_set->childProperties().at(0));
+		*data_ptr = var_property->CreateVariant();
+	}
+}
+
+void CustomPropertyEditorDialog::updateSet(QtnPropertyBase *set_property, int child_index)
+{
+	Q_ASSERT(nullptr != set_property);
+
+	auto var_property = getVarProperty(set_property);
+	Q_ASSERT(nullptr != var_property);
+
+	auto data = var_property->CreateVariant();
+
+	auto var_parent = var_property->VarParent();
+
+	auto new_set = dynamic_cast<QtnPropertySet *>(newProperty(nullptr, data, var_property->GetName(),
+															  var_property->GetIndex(), var_parent));
+	Q_ASSERT(nullptr != new_set);
+
+	auto property_parent = dynamic_cast<QtnPropertySet *>(set_property->parent());
+	Q_ASSERT(nullptr != property_parent);
+
+	int property_index = property_parent->childProperties().indexOf(set_property);
+	property_parent->removeChildProperty(set_property);
+
+	delete set_property;
+
+	property_parent->addChildProperty(new_set, true, property_index);
+	ui->propertyWidget->propertyView()->setActiveProperty(new_set->childProperties().at(child_index));
+}
+
+void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
+{
+	auto add_text = tr("Add...");
+
+	auto var_property = getVarProperty(property);
+	if (nullptr != var_property)
+	{
+		switch (var_property->GetType())
+		{
+			case VarProperty::Map:
+				add_text = tr("Add Property...");
+				break;
+
+			case VarProperty::List:
+				add_text = tr("Add Element...");
+				break;
+
+			default:
+				break;
+		}
+
+		bool not_top_parent = (var_property != var_property->TopParent());
+		ui->actionPropertyAdd->setEnabled(property->id() == VarProperty::PID_EXTRA);
+		ui->actionPropertyDuplicate->setEnabled(not_top_parent);
+		ui->actionPropertyOptions->setEnabled(true);
+		ui->actionPropertyRemove->setEnabled(not_top_parent);
+	} else
+	{
+		ui->actionPropertyAdd->setEnabled(false);
+		ui->actionPropertyDuplicate->setEnabled(false);
+		ui->actionPropertyOptions->setEnabled(false);
+		ui->actionPropertyRemove->setEnabled(false);
+	}
+
+	ui->actionPropertyAdd->setText(add_text);
+}
+
+void CustomPropertyEditorDialog::updateTitle()
+{
+	setWindowTitle(read_only ? tr("Read-only Properties") : tr("Edit Custom Properties"));
 }

@@ -3,7 +3,7 @@
  <class>CustomPropertyOptionsDialog</class>
  <widget class="QDialog" name="CustomPropertyOptionsDialog">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -20,7 +20,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Add property</string>
+   <string notr="true"/>
   </property>
   <property name="modal">
    <bool>true</bool>

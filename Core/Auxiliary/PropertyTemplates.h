@@ -82,7 +82,7 @@ protected:
         if (!QtnProperty::loadImpl(stream))
             return false;
 
-        ValueType newValue = ValueType();
+		ValueTypeStore newValue;
         stream >> newValue;
 
         if (stream.status() != QDataStream::Ok)
@@ -100,8 +100,7 @@ protected:
         if (!QtnProperty::saveImpl(stream))
             return false;
 
-        ValueType valueToSave = value();
-        stream << valueToSave;
+		stream << value();
 
         return stream.status() == QDataStream::Ok;
     }
@@ -109,15 +108,15 @@ protected:
     // variant conversion implementation
     bool fromVariantImpl(const QVariant& var) override
     {
-        if (var.canConvert<ValueType>())
-            return setValue(var.value<ValueType>());
+		if (var.canConvert<ValueTypeStore>())
+			return setValue(var.value<ValueTypeStore>());
         else
             return false;
     }
 
     bool toVariantImpl(QVariant& var) const override
     {
-        var.setValue<ValueType>(value());
+		var.setValue<ValueTypeStore>(value());
         return var.isValid();
     }
 

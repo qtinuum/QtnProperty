@@ -19,7 +19,7 @@
 #include "../PropertyDelegateFactory.h"
 #include "../PropertyEditorHandler.h"
 #include "../PropertyEditorAux.h"
-#include "../GUI/MultilineTextDialog.h"
+#include "../../Utils/MultilineTextDialog.h"
 
 #include <QLineEdit>
 #include <QKeyEvent>
@@ -55,18 +55,17 @@ public:
             editor.setReadOnly(true);
 
         editor.installEventFilter(this);
-        QObject::connect(  &editor, &QLineEdit::editingFinished
-                         , this, &QtnPropertyQStringLineEditHandler::onEditingFinished);
-    }
-
-    ~QtnPropertyQStringLineEditHandler()
-    {
+		QObject::connect(&editor, &QLineEdit::editingFinished,
+						 this, &QtnPropertyQStringLineEditHandler::onEditingFinished);
     }
 
 private:
     void updateEditor() override
     {
-        editor().setText(property());
+		auto text = property().value();
+
+		editor().setText(text);
+		editor().setPlaceholderText(QtnPropertyQString::getPlaceholderStr(text, false));
     }
 
     void onEditingFinished()
@@ -114,17 +113,19 @@ protected:
 	{
 		auto edit = editor().lineEdit;
 		edit->setReadOnly(!property().isEditableByUser());
-		if (QtnPropertyDelegateQString::isMultilineText(property().value()))
+
+		auto text = property().value();
+		if (QtnPropertyQString::isMultilineText(text))
 		{
 			multiline = true;
 			edit->setText(QString());
-			edit->setPlaceholderText(QtnPropertyQString::getMultilinePlaceholderStr());
 		} else
 		{
 			multiline = false;
-			edit->setText(property().value());
-			edit->setPlaceholderText(QString());
+			edit->setText(text);
 		}
+
+		edit->setPlaceholderText(QtnPropertyQString::getPlaceholderStr(text, true));
 	}
 
 	virtual bool eventFilter(QObject *obj, QEvent *event) override
@@ -227,29 +228,21 @@ QWidget* QtnPropertyDelegateQString::createValueEditorImpl(QWidget* parent, cons
 bool QtnPropertyDelegateQString::propertyValueToStr(QString& strValue) const
 {
     strValue = owner().value();
-	if (check_multiline && isMultilineText(strValue))
-		strValue = QtnPropertyQString::getMultilinePlaceholderStr();
+	auto placeholder = QtnPropertyQString::getPlaceholderStr(strValue, check_multiline);
+	if (!placeholder.isEmpty())
+		strValue.swap(placeholder);
+
 	return true;
 }
 
 void QtnPropertyDelegateQString::drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip) const
 {
-	if (check_multiline && isMultilineText(owner().value()))
-	{
-		QPen oldPen = painter.pen();
+	QPen oldPen = painter.pen();
+	if (!QtnPropertyQString::getPlaceholderStr(owner().value(), check_multiline).isEmpty())
 		painter.setPen(Qt::darkGray);
-		Inherited::drawValueImpl(painter, rect, state, needTooltip);
-		painter.setPen(oldPen);
-	}
-	else
-	{
-		Inherited::drawValueImpl(painter, rect, state, needTooltip);
-	}
-}
 
-bool QtnPropertyDelegateQString::isMultilineText(const QString &text)
-{
-	return text.contains('\n') || text.contains('\r');
+	Inherited::drawValueImpl(painter, rect, state, needTooltip);
+	painter.setPen(oldPen);
 }
 
 class QtnPropertyQStringFileLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QtnLineEditBttn>
@@ -305,7 +298,10 @@ public:
 private:
     void updateEditor() override
     {
-        editor().lineEdit->setText(property().value());
+		auto path = property().value();
+		auto edit = editor().lineEdit;
+		edit->setText(path);
+		edit->setPlaceholderText(QtnPropertyQString::getPlaceholderStr(path, false));
 	}
 
     void onToolButtonClicked(bool checked)
@@ -354,17 +350,12 @@ void QtnPropertyDelegateQStringInvalidBase::applyAttributesImpl(const QtnPropert
 
 void QtnPropertyDelegateQStringInvalidBase::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
+	QPen oldPen = painter.pen();
     if ((m_invalidColor.alpha() != 0) && !isPropertyValid())
-    {
-        QPen oldPen = painter.pen();
         painter.setPen(m_invalidColor);
-        QtnPropertyDelegateQString::drawValueImpl(painter, rect, state, needTooltip);
-        painter.setPen(oldPen);
-    }
-    else
-    {
-        QtnPropertyDelegateQString::drawValueImpl(painter, rect, state, needTooltip);
-    }
+
+	QtnPropertyDelegateQString::drawValueImpl(painter, rect, state, needTooltip);
+	painter.setPen(oldPen);
 }
 
 
@@ -394,7 +385,7 @@ QWidget* QtnPropertyDelegateQStringFile::createValueEditorImpl(QWidget* parent, 
 
 bool QtnPropertyDelegateQStringFile::isPropertyValid() const
 {
-    return QFileInfo(owner().value()).exists();
+	return QFileInfo(owner().value()).exists();
 }
 
 class QtnPropertyQStringListComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QComboBox>
@@ -408,8 +399,8 @@ public:
         if (!property.isEditableByUser())
             editor.setDisabled(true);
 
-        QObject::connect(  &editor, &QComboBox::currentTextChanged
-                         , this, &QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged);
+		QObject::connect(&editor, &QComboBox::currentTextChanged,
+						 this, &QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged);
     }
 
 private:
