@@ -60,7 +60,7 @@ public:
     }
 
 private:
-    void updateEditor() override
+	virtual void updateEditor() override
     {
 		auto text = property().value();
 
@@ -72,23 +72,11 @@ private:
     {
         property() = editor().text();
     }
-
-    bool eventFilter(QObject *obj, QEvent *event) override
-    {
-        if (event->type() == QEvent::KeyPress)
-        {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-            // revert all changes
-            if (keyEvent->key() == Qt::Key_Escape)
-                updateEditor();
-        }
-
-        return QObject::eventFilter(obj, event);
-    }
 };
 
 
-class QtnPropertyQStringMultilineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QtnLineEditBttn>
+class QtnPropertyQStringMultilineEditBttnHandler
+		: public QtnPropertyEditorBttnHandler<QtnPropertyQStringBase, QtnLineEditBttn>
 {
 public:
 	QtnPropertyQStringMultilineEditBttnHandler(QtnPropertyQStringBase& property, QtnLineEditBttn& editor)
@@ -128,20 +116,8 @@ protected:
 		edit->setPlaceholderText(QtnPropertyQString::getPlaceholderStr(text, true));
 	}
 
-	virtual bool eventFilter(QObject *obj, QEvent *event) override
-	{
-		if (event->type() == QEvent::KeyPress)
-		{
-			QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-			// revert all changes
-			if (keyEvent->key() == Qt::Key_Escape)
-			{
-				revert = true;
-			}
-		}
-
-		return QObject::eventFilter(obj, event);
-	}
+	virtual void revertInput() override { revert = true; }
+	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
 
 private:
 	void onEditingFinished()
@@ -245,7 +221,8 @@ void QtnPropertyDelegateQString::drawValueImpl(QStylePainter &painter, const QRe
 	painter.setPen(oldPen);
 }
 
-class QtnPropertyQStringFileLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QtnLineEditBttn>
+class QtnPropertyQStringFileLineEditBttnHandler
+	: public QtnPropertyEditorBttnHandler<QtnPropertyQStringBase, QtnLineEditBttn>
 {
 public:
     QtnPropertyQStringFileLineEditBttnHandler(QtnPropertyQStringBase& property, QtnLineEditBttn& editor)
@@ -295,7 +272,8 @@ public:
             m_dlg.setNameFilters(list);
     }
 
-private:
+	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
+
     void updateEditor() override
     {
 		auto path = property().value();
@@ -304,7 +282,8 @@ private:
 		edit->setPlaceholderText(QtnPropertyQString::getPlaceholderStr(path, false));
 	}
 
-    void onToolButtonClicked(bool checked)
+private:
+	void onToolButtonClicked(bool)
     {
         m_dlg.selectFile(property().value());
         if (m_dlg.exec() == QDialog::Accepted)
@@ -318,19 +297,6 @@ private:
     void onEditingFinished()
     {
         property() = editor().lineEdit->text();
-    }
-
-    bool eventFilter(QObject* obj, QEvent* event) override
-    {
-        if (event->type() == QEvent::KeyPress)
-        {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-            // revert all changes
-            if (keyEvent->key() == Qt::Key_Escape)
-                updateEditor();
-        }
-
-        return QObject::eventFilter(obj, event);
     }
 
     QFileDialog m_dlg;

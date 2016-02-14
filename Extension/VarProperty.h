@@ -56,6 +56,7 @@ public:
 	VarChildren &GetChildren();
 	int GetChildrenCount() const;
 
+	void SetValue(const QVariant &value);
 	QVariant CreateVariant() const;
 	bool IsChildNameAvailable(const QString &name, VarProperty *skip) const;
 

@@ -38,16 +38,16 @@ void VarProperty::ChangePropertyValue(const QVariant &value, QVariant *dest)
 
 void VarProperty::RemoveFromParent()
 {
-	auto &siblings = var_parent->var_children;
-
-	auto it = std::find_if(siblings.begin(), siblings.end(), [this](VarProperty *value)->bool
+	if (nullptr != var_parent)
 	{
-		return value == this;
-	});
+		auto &siblings = var_parent->var_children;
 
-	if (it != siblings.end())
-	{
-		siblings.erase(it);
+		auto it = std::find(siblings.begin(), siblings.end(), this);
+
+		if (it != siblings.end())
+		{
+			siblings.erase(it);
+		}
 	}
 }
 
@@ -169,7 +169,7 @@ const QString &VarProperty::GetName() const
 
 bool VarProperty::SetName(const QString &new_name)
 {
-	if (index < 0)
+	if (index < 0 && name != new_name)
 	{
 		name = new_name;
 
@@ -210,6 +210,29 @@ VarProperty::VarChildren &VarProperty::GetChildren()
 int VarProperty::GetChildrenCount() const
 {
 	return static_cast<int>(var_children.size());
+}
+
+void VarProperty::SetValue(const QVariant &value)
+{
+	this->value = value;
+	switch (type)
+	{
+		case Map:
+		case List:
+			for (auto child : var_children)
+			{
+				child->SetValue(QVariant());
+				child->setParent(nullptr);
+				delete child;
+			}
+			var_children.clear();
+			break;
+
+		case Value:
+			break;
+	}
+
+	type = Value;
 }
 
 QVariant VarProperty::CreateVariant() const
@@ -267,29 +290,22 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 {
 	QtnProperty *prop = nullptr;
 
+	QString name(key);
+	if (index >= 0)
+		name = QString("[%1]").arg(QString::number(index));
+
 	auto type = value.type();
 
 	switch (type)
 	{
 		case QVariant::Map:
 		{
-			return NewExtraPropertySet(set, value.toMap(), map_parent, key, index, register_property);
+			return NewExtraPropertySet(set, value.toMap(), map_parent, name, index, register_property);
 		} break;
 
 		case QVariant::List:
 		{
-			return NewExtraPropertyList(set, value.toList(), map_parent, key, index, register_property);
-		} break;
-
-		case QVariant::String:
-		case QVariant::Char:
-		{
-			auto p = new QtnPropertyQString(set);
-
-			p->setId(PID_EXTRA_STRING);
-			p->setValue(value.toString());
-
-			prop = p;
+			return NewExtraPropertyList(set, value.toList(), map_parent, name, index, register_property);
 		} break;
 
 		case QVariant::Int:
@@ -335,15 +351,24 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 		} break;
 
 		default:
-			break;
+		{
+			auto p = new QtnPropertyQString(set);
+
+			p->setId(PID_EXTRA_STRING);
+			p->setValue(value.toString());
+
+			prop = p;
+		} break;
 	}
 
 	if (nullptr != prop)
-	{
-		auto varprop = new VarProperty(prop, VarProperty::Value, key, index, value);
+	{					
+		auto varprop = new VarProperty(prop, VarProperty::Value, name, index, value);
 		if (nullptr != map_parent)
-			map_parent->AddChild(varprop);
-		prop->setName(key);
+			map_parent->AddChild(varprop, index);
+
+		prop->setName(name);
+
 		register_property(prop);
 	}
 
@@ -412,7 +437,7 @@ QtnPropertySet *VarProperty::NewExtraPropertySet(QObject *parent, const QVariant
 
 	auto varprop = new VarProperty(set, VarProperty::Map, name, index, QVariant());
 	if (nullptr != map_parent)
-		map_parent->AddChild(varprop);
+		map_parent->AddChild(varprop, index);
 	map_parent = varprop;
 
 	set->setId(PID_EXTRA);
@@ -437,7 +462,7 @@ QtnPropertySet *VarProperty::NewExtraPropertyList(QObject *parent, const QVarian
 
 	auto varprop = new VarProperty(set, VarProperty::List, name, index, QVariant());
 	if (nullptr != map_parent)
-		map_parent->AddChild(varprop);
+		map_parent->AddChild(varprop, index);
 	map_parent = varprop;
 
 	set->setId(PID_EXTRA);
@@ -449,7 +474,7 @@ QtnPropertySet *VarProperty::NewExtraPropertyList(QObject *parent, const QVarian
 	{
 		auto &value = list.at(i);
 
-		NewExtraProperty(set, value, QString("[%1]").arg(QString::number(i)), i, map_parent, register_property);
+		NewExtraProperty(set, value, QString(), i, map_parent, register_property);
 	}
 
 	return set;

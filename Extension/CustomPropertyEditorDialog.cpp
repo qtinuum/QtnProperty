@@ -254,21 +254,22 @@ void CustomPropertyEditorDialog::updatePropertyOptions(QtnPropertyBase *source,
 	auto set = dynamic_cast<QtnPropertySet *>(source->parent());
 	Q_ASSERT(nullptr != set);
 
-	bool changed_order = false;
+	bool refresh_siblings = false;
 
 	int old_index = var_property->GetIndex();
 
 	if (var_property != var_property->TopParent())
 	{
-		changed_order = var_property->SetIndex(data.index);
-		changed_order =	var_property->SetName(data.name) || changed_order;
+		refresh_siblings = var_property->SetIndex(data.index);
+		refresh_siblings = var_property->SetName(data.name) || refresh_siblings;
 	}
 
 	auto var_parent = var_property->VarParent();
-	if (!changed_order)
+	if (!refresh_siblings)
 	{
 		int index = set->childProperties().indexOf(source);
 
+		var_property->RemoveFromParent();
 		set->removeChildProperty(source);
 
 		delete source;
@@ -279,6 +280,8 @@ void CustomPropertyEditorDialog::updatePropertyOptions(QtnPropertyBase *source,
 		ui->propertyWidget->propertyView()->setActiveProperty(new_property);
 	} else
 	{
+		var_property->SetValue(data.value);
+
 		int index = data.index;
 
 		auto children = var_parent->GetChildren();
@@ -536,8 +539,11 @@ void CustomPropertyEditorDialog::updateSet(QtnPropertyBase *set_property, int ch
 
 	auto var_parent = var_property->VarParent();
 
+	var_property->RemoveFromParent();
+
 	auto new_set = dynamic_cast<QtnPropertySet *>(newProperty(nullptr, data, var_property->GetName(),
 															  var_property->GetIndex(), var_parent));
+
 	Q_ASSERT(nullptr != new_set);
 
 	auto property_parent = dynamic_cast<QtnPropertySet *>(set_property->parent());
@@ -549,7 +555,17 @@ void CustomPropertyEditorDialog::updateSet(QtnPropertyBase *set_property, int ch
 	delete set_property;
 
 	property_parent->addChildProperty(new_set, true, property_index);
-	ui->propertyWidget->propertyView()->setActiveProperty(new_set->childProperties().at(child_index));
+	auto view = ui->propertyWidget->propertyView();
+	auto &child_properties = new_set->childProperties();
+	if (child_properties.isEmpty())
+		view->setActiveProperty(new_set);
+	else
+	{
+		int count = child_properties.count();
+		if (child_index >= count)
+			child_index = count - 1;
+		view->setActiveProperty(child_properties.at(child_index));
+	}
 }
 
 void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)

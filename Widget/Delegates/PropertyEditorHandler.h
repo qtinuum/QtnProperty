@@ -20,16 +20,19 @@
 #include "../PropertyWidgetAPI.h"
 #include "../../Core/Property.h"
 #include <QWidget>
+#include <QEvent>
 
 class QTN_PW_EXPORT QtnPropertyEditorHandlerBase: public QObject
 {
 protected:
     QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor);
-    ~QtnPropertyEditorHandlerBase();
 
     virtual QtnProperty& propertyBase() = 0;
     virtual QWidget& editorBase()  = 0;
     virtual void updateEditor() = 0;
+	virtual void revertInput();
+
+	virtual bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     void onObjectDestroyed(QObject* object);
@@ -49,19 +52,48 @@ protected:
     {
     }
 
-    ~QtnPropertyEditorHandler()
-    {
-    }
+	PropertyClass &property() { return m_property;  }
+	PropertyEditorClass &editor() { return m_editor; }
 
-    PropertyClass& property() { return m_property;  }
-    PropertyEditorClass& editor() { return m_editor; }
-
-    QtnProperty& propertyBase() override { return property(); }
-    QWidget& editorBase() override {return editor(); }
+	virtual QtnProperty &propertyBase() override { return property(); }
+	virtual QWidget &editorBase() override {return editor(); }
 
 private:
     PropertyClass& m_property;
     PropertyEditorClass& m_editor;
 };
+
+template <typename PropertyClass, typename PropertyEditorClass>
+class QtnPropertyEditorBttnHandler
+	: public QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass>
+{
+private:
+	typedef QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass> Inherited;
+protected:
+	typedef QtnPropertyEditorBttnHandler QtnPropertyEditorHandlerType;
+
+	QtnPropertyEditorBttnHandler(PropertyClass& property, PropertyEditorClass& editor)
+		: Inherited(property, editor)
+	{
+
+	}
+
+	virtual void onToolButtonClick() = 0;
+	virtual bool eventFilter(QObject *obj, QEvent *event) override
+	{
+		switch (event->type())
+		{
+			case QEvent::MouseButtonDblClick:
+				onToolButtonClick();
+				return true;
+
+			default:
+				break;
+		}
+
+		return Inherited::eventFilter(obj, event);
+	}
+};
+
 
 #endif // PROPERTY_EDITOR_HANDLER_H

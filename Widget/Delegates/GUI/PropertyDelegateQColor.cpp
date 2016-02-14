@@ -22,7 +22,8 @@
 
 #include <QColorDialog>
 
-class QtnPropertyQColorLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQColorBase, QtnLineEditBttn>
+class QtnPropertyQColorLineEditBttnHandler
+		: public QtnPropertyEditorBttnHandler<QtnPropertyQColorBase, QtnLineEditBttn>
 {
 public:
     QtnPropertyQColorLineEditBttnHandler(QtnPropertyQColorBase& property, QtnLineEditBttn& editor)
@@ -42,13 +43,15 @@ public:
                          , this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
     }
 
-private:
-    void updateEditor() override
+protected:
+	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
+	virtual void updateEditor() override
     {
         editor().lineEdit->setText(property().value().name());
     }
 
-    void onToolButtonClicked(bool checked)
+private:
+	void onToolButtonClicked(bool)
     {
         QColorDialog dlg(property(), &editor());
         if (dlg.exec() == QDialog::Accepted)

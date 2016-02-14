@@ -17,10 +17,12 @@
 #ifndef INPLACE_EDITING_H
 #define INPLACE_EDITING_H
 
+#include "../../Widget/PropertyWidgetAPI.h"
+
 #include <QWidget>
 
-bool qtnStartInplaceEdit(QWidget *editor);
-QWidget *qtnGetInplaceEdit();
-bool qtnStopInplaceEdit(bool delete_later = true);
+QTN_PW_EXPORT bool qtnStartInplaceEdit(QWidget *editor);
+QTN_PW_EXPORT QWidget *qtnGetInplaceEdit();
+QTN_PW_EXPORT bool qtnStopInplaceEdit(bool delete_later = true);
 
 #endif // INPLACE_EDITING_H

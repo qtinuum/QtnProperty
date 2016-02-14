@@ -17,26 +17,48 @@
 #include "PropertyEditorHandler.h"
 
 #include <QDebug>
+#include <QKeyEvent>
 
 QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor)
 {
     QObject::connect(&editor, &QObject::destroyed, this, &QtnPropertyEditorHandlerBase::onObjectDestroyed);
     QObject::connect(&property, &QObject::destroyed, this, &QtnPropertyEditorHandlerBase::onObjectDestroyed);
-    QObject::connect(&property, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
+	QObject::connect(&property, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
 }
 
-QtnPropertyEditorHandlerBase::~QtnPropertyEditorHandlerBase()
+void QtnPropertyEditorHandlerBase::revertInput()
 {
+	updateEditor();
+}
+
+bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
+{
+	switch (event->type())
+	{
+		case QEvent::KeyPress:
+		{
+			auto keyEvent = static_cast<QKeyEvent*>(event);
+			// revert all changes
+			if (keyEvent->key() == Qt::Key_Escape)
+				revertInput();
+
+		}	break;
+
+		default:
+			break;
+	}
+
+	return QObject::eventFilter(obj, event);
 }
 
 void QtnPropertyEditorHandlerBase::onObjectDestroyed(QObject *object)
 {
-    Q_ASSERT((object == &propertyBase()) || (object == &editorBase()));
-    delete this;
+	Q_ASSERT((object == &propertyBase()) || (object == &editorBase()));
+	delete this;
 }
 
 void QtnPropertyEditorHandlerBase::onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
-    if ((reason & QtnPropertyChangeReasonValue) && (&propertyBase() == firedProperty))
+	if ((reason & QtnPropertyChangeReasonValue) && (&propertyBase() == firedProperty))
         updateEditor();
 }

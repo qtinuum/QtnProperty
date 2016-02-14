@@ -10,7 +10,8 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-class QtnPropertyQVariantEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQVariantBase, QtnLineEditBttn>
+class QtnPropertyQVariantEditBttnHandler
+	: public QtnPropertyEditorBttnHandler<QtnPropertyQVariantBase, QtnLineEditBttn>
 {
 public:
 	QtnPropertyQVariantEditBttnHandler(QtnPropertyQVariantBase& property, QtnLineEditBttn& editor)
@@ -34,6 +35,8 @@ public:
 	}
 
 protected:
+	virtual void revertInput() override { revert = true; }
+	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
 	virtual void updateEditor() override
 	{
 		auto edit = editor().lineEdit;
@@ -52,28 +55,14 @@ protected:
 		edit->setPlaceholderText(QtnPropertyQVariant::getPlaceholderStr(value.type()));
 	}
 
-	virtual bool eventFilter(QObject *obj, QEvent *event) override
-	{
-		if (event->type() == QEvent::KeyPress)
-		{
-			QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-			// revert all changes
-			if (keyEvent->key() == Qt::Key_Escape)
-			{
-				revert = true;
-			}
-		}
-
-		return QObject::eventFilter(obj, event);
-	}
-
 private:
 	void onEditingFinished()
 	{
 		auto text = editor().lineEdit->text();
 		if (!revert && (!is_object || !text.isEmpty()))
 		{
-			property().setValue(text);
+			if (is_object || text != property().value().toString())
+				property().setValue(text);
 			updateEditor();
 		}
 
@@ -85,11 +74,13 @@ private:
 		QVariant data;
 		auto text = editor().lineEdit->text();
 
-		if (!text.isEmpty() || !is_object)
+		auto &value = property().value();
+
+		if (!is_object && text != value.toString())
 		{
 			data = text;
 		} else
-			data = property().value();
+			data = value;
 
 		revert = true;
 		dialog.setReadOnly(!property().isEditableByUser());
@@ -156,6 +147,15 @@ QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(QObject *object, const 
 	setCallbackValueAccepted([this](const QVariant &) -> bool
 	{
 		return isEditableByUser();
+	});
+
+	setCallbackValueEqual([this, object, meta_property](const QVariant &value) -> bool
+	{
+		this->value = meta_property.read(object);
+
+		return (this->value.isValid() == value.isValid()
+			&&	value.type() == this->value.type()
+			&&	value == this->value);
 	});
 }
 

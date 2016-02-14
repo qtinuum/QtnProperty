@@ -37,7 +37,8 @@ static QString FontToStr(const QFont &font)
 	return QString("[%1, %2 %3]").arg(font.family(), QString::number(size), QString(pixels ? "px" : "pt"));
 }
 
-class QtnPropertyQFontLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQFontBase, QtnLineEditBttn>
+class QtnPropertyQFontLineEditBttnHandler
+		: public QtnPropertyEditorBttnHandler<QtnPropertyQFontBase, QtnLineEditBttn>
 {
 public:
     QtnPropertyQFontLineEditBttnHandler(QtnPropertyQFontBase& property, QtnLineEditBttn& editor)
@@ -57,13 +58,15 @@ public:
                          , this, &QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked);
     }
 
-private:
-    void updateEditor() override
+protected:
+	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
+	virtual void updateEditor() override
     {
 		editor().lineEdit->setText(FontToStr(property()));
     }
 
-    void onToolButtonClicked(bool checked)
+private:
+	void onToolButtonClicked(bool)
     {
         QFontDialog dlg(property(), &editor());
         if (dlg.exec() == QDialog::Accepted)

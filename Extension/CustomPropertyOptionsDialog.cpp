@@ -65,6 +65,7 @@ bool BasePropertyDialog::ValidateInput()
 	if (name_edit->isVisible())
 	{
 		auto name = name_edit->text();
+
 		if (nullptr == is_name_available || is_name_available(name))
 		{
 			result_name = name;
