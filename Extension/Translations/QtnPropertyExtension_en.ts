@@ -4,7 +4,7 @@
 <context>
     <name>BasePropertyDialog</name>
     <message>
-        <location filename="../CustomPropertyOptionsDialog.cpp" line="79"/>
+        <location filename="../CustomPropertyOptionsDialog.cpp" line="75"/>
         <source>Property with name &apos;%1&apos; is already exist.</source>
         <translation>Property with name &quot;%1&quot; is already exist.</translation>
     </message>
@@ -16,42 +16,42 @@
         <translation type="vanished">Custom Property Editor</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="307"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="323"/>
         <source>Add Element</source>
         <translation>Add Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="370"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="383"/>
         <source>Duplicate Element</source>
         <translation>Duplicate Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="420"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="433"/>
         <source>Element Options</source>
         <translation>Element Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="474"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="573"/>
         <source>Add...</source>
         <translation>Add...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="482"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="581"/>
         <source>Add Property...</source>
         <translation>Add Property...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="486"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="585"/>
         <source>Add Element...</source>
         <translation>Add Element...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="511"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="610"/>
         <source>Edit Custom Properties</source>
         <translation>Edit Custom Properties</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="511"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="610"/>
         <source>Read-only Properties</source>
         <translation>Read-only Properties</translation>
     </message>
@@ -78,7 +78,7 @@
         <translation>Duplicate...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="377"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="390"/>
         <source>Duplicate Property</source>
         <translation>Duplicate Property</translation>
     </message>
@@ -88,12 +88,12 @@
         <translation>Options...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="409"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="422"/>
         <source>Property Options</source>
         <translation>Property Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="313"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="329"/>
         <source>Add Property</source>
         <translation>Add Property</translation>
     </message>
@@ -102,7 +102,7 @@
     <name>CustomPropertyOptionsDialog</name>
     <message>
         <location filename="../CustomPropertyOptionsDialog.ui" line="53"/>
-        <location filename="../CustomPropertyOptionsDialog.cpp" line="117"/>
+        <location filename="../CustomPropertyOptionsDialog.cpp" line="113"/>
         <source>Name:</source>
         <translation>Name:</translation>
     </message>
@@ -137,7 +137,7 @@
         <translation>List</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyOptionsDialog.cpp" line="116"/>
+        <location filename="../CustomPropertyOptionsDialog.cpp" line="112"/>
         <source>Index:</source>
         <translation>Index:</translation>
     </message>
@@ -234,17 +234,17 @@
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="197"/>
+        <location filename="../PropertyQVariant.cpp" line="206"/>
         <source>(Dictionary)</source>
         <translation>(Dictionary)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="200"/>
+        <location filename="../PropertyQVariant.cpp" line="209"/>
         <source>(List)</source>
         <translation>(List)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="206"/>
+        <location filename="../PropertyQVariant.cpp" line="215"/>
         <source>(Empty)</source>
         <translation>(Empty)</translation>
     </message>
