@@ -1,5 +1,6 @@
 #include "TestGeneratedProperty.h"
 #include "PEG/test.peg.h"
+#include "PEG/test2.peg.h"
 #include <QtTest/QtTest>
 
 void TestGeneratedProperty::test1()
@@ -64,5 +65,38 @@ void TestGeneratedProperty::testAllPropertyTypes()
 
     default:
         QFAIL("ep expected as COLOR::RED");
+    }
+}
+
+void TestGeneratedProperty::testLoadSave()
+{
+    {
+        QtnPropertySetAllPropertyTypes p;
+        QtnPropertySetA p2;
+
+        {
+            QtnPropertySet allProperties(nullptr);
+            allProperties.addChildProperty(&p, false);
+            allProperties.addChildProperty(&p2, false);
+
+            QByteArray data;
+
+            {
+                QDataStream s(&data, QIODevice::WriteOnly);
+                QVERIFY(allProperties.save(s));
+            }
+
+            QCOMPARE(data.size(), 910);
+
+            {
+                QDataStream s(&data, QIODevice::ReadOnly);
+                QVERIFY(allProperties.load(s));
+            }
+
+            QString result;
+            QVERIFY(allProperties.toStr(result));
+
+            QCOMPARE(result.size(), 899);
+        }
     }
 }

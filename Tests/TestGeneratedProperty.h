@@ -15,6 +15,7 @@ private Q_SLOTS:
     void test1();
     void test2();
     void testAllPropertyTypes();
+    void testLoadSave();
 };
 
 #endif // TEST_GENERATED_PROPERTY_H

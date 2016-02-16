@@ -66,6 +66,7 @@ void QtnPropertySetTest1::init()
     setName(Test1_name);
     static QString description = "Test property_set description";
     setDescription(description);
+    setId(1);
     setState(0);
     
     // start children initialization
@@ -73,6 +74,7 @@ void QtnPropertySetTest1::init()
     a.setName(a_name);
     static QString a_description = "Descripion";
     a.setDescription(a_description);
+    a.setId(2);
     a.setMaxValue(10);
     a.setStepValue(-1);
     a.setValue(5);
@@ -82,6 +84,7 @@ void QtnPropertySetTest1::init()
     "derf r g\r\nreg r{}""dfrgerg"
     "fwrewre";
     text.setDescription(text_description);
+    text.setId(3);
     text.setValue(QString("#^{};"));
     // end children initialization
 }
@@ -146,6 +149,7 @@ void QtnPropertySetTest2::init()
 {
     static QString Test2_name = tr("Test2");
     setName(Test2_name);
+    setId(4);
 }
 
 void QtnPropertySetTest2::connectSlots()
@@ -224,6 +228,7 @@ void QtnPropertySetYY::init()
     setName(yy_name);
     static QString description = tr("ss")+tr("ss");
     setDescription(description);
+    setId(6);
     
     // start children initialization
     static QString rect_name = tr("rect");
@@ -294,6 +299,7 @@ void QtnPropertySetAA::init()
 {
     static QString aa_name = tr("aa");
     setName(aa_name);
+    setId(9);
 }
 
 void QtnPropertySetAA::connectSlots()
@@ -370,13 +376,16 @@ void QtnPropertySetSS::init()
 {
     static QString iis_name = tr("iis");
     setName(iis_name);
+    setId(7);
     
     // start children initialization
     static QString a_name = tr("a");
     a.setName(a_name);
+    a.setId(8);
     a.setValue(true);
     static QString aa_name = tr("aa");
     aa.setName(aa_name);
+    aa.setId(9);
     // end children initialization
 }
 
@@ -481,16 +490,20 @@ void QtnPropertySetTest3::init()
 {
     static QString Test3_name = tr("Test3");
     setName(Test3_name);
+    setId(5);
     
     // start children initialization
     static QString yy_name = tr("yy");
     yy.setName(yy_name);
     static QString yy_description = tr("ss")+tr("ss");
     yy.setDescription(yy_description);
+    yy.setId(6);
     static QString iis_name = tr("iis");
     iis.setName(iis_name);
+    iis.setId(7);
     static QString u_name = tr("u");
     u.setName(u_name);
+    u.setId(10);
     u.setValue(true);
     static QString xx_name = tr("xx");
     xx.setName(xx_name);
@@ -501,6 +514,7 @@ void QtnPropertySetTest3::init()
     s.a.setValue(false);
     static QString ww_name = tr("ww");
     ww.setName(ww_name);
+    ww.setId(11);
     static QString bc_name = tr("bc");
     bc.setName(bc_name);
     bc.setCallbackValueAccepted([](bool value)->bool {
@@ -517,6 +531,7 @@ void QtnPropertySetTest3::init()
     bc.setCallbackValueSet([this](bool value) {
             m_s = value;
         });
+    bc.setId(12);
     // end children initialization
 }
 
@@ -896,120 +911,121 @@ void QtnPropertySetAllPropertyTypes::init()
 {
     static QString AllPropertyTypes_name = tr("AllPropertyTypes");
     setName(AllPropertyTypes_name);
+    setId(13);
     
     // start children initialization
     static QString bp_name = tr("bp");
     bp.setName(bp_name);
-    bp.setId(1);
+    bp.setId(14);
     static QString bpc_name = tr("bpc");
     bpc.setName(bpc_name);
     bpc.setCallbackValueGet([this]() { return _b; });
     bpc.setCallbackValueSet([this](bool v) { _b = v; });
-    bpc.setId(2);
+    bpc.setId(15);
     static QString ip_name = tr("ip");
     ip.setName(ip_name);
-    ip.setId(3);
+    ip.setId(16);
     static QString ipc_name = tr("ipc");
     ipc.setName(ipc_name);
     ipc.setCallbackValueGet([this]() { return _i; });
     ipc.setCallbackValueSet([this](qint32 v) { _i =v; });
-    ipc.setId(4);
+    ipc.setId(17);
     static QString up_name = tr("up");
     up.setName(up_name);
-    up.setId(5);
+    up.setId(18);
     static QString upc_name = tr("upc");
     upc.setName(upc_name);
     upc.setCallbackValueGet([this]() { return _ui; });
     upc.setCallbackValueSet([this](quint32 v) { _ui = v; });
-    upc.setId(6);
+    upc.setId(19);
     static QString fp_name = tr("fp");
     fp.setName(fp_name);
-    fp.setId(7);
+    fp.setId(20);
     static QString fpc_name = tr("fpc");
     fpc.setName(fpc_name);
     fpc.setCallbackValueGet([this]() { return _f; });
     fpc.setCallbackValueSet([this](float v) { _f = v; });
-    fpc.setId(8);
+    fpc.setId(21);
     static QString dp_name = tr("dp");
     dp.setName(dp_name);
-    dp.setId(9);
+    dp.setId(22);
     static QString dpc_name = tr("dpc");
     dpc.setName(dpc_name);
     dpc.setCallbackValueGet([this]() { return _d; });
     dpc.setCallbackValueSet([this](double v) { _d = v; });
-    dpc.setId(10);
+    dpc.setId(23);
     static QString sp_name = tr("sp");
     sp.setName(sp_name);
-    sp.setId(11);
+    sp.setId(24);
     static QString spc_name = tr("spc");
     spc.setName(spc_name);
     spc.setCallbackValueGet([this]() { return _s; });
     spc.setCallbackValueSet([this](QString v) { _s = v; });
-    spc.setId(12);
+    spc.setId(25);
     static QString rp_name = tr("rp");
     rp.setName(rp_name);
-    rp.setId(13);
+    rp.setId(26);
     static QString rpc_name = tr("rpc");
     rpc.setName(rpc_name);
     rpc.setCallbackValueGet([this]() { return _r; });
     rpc.setCallbackValueSet([this](QRect v) { _r = v; });
-    rpc.setId(14);
+    rpc.setId(27);
     static QString pp_name = tr("pp");
     pp.setName(pp_name);
-    pp.setId(15);
+    pp.setId(28);
     static QString ppc_name = tr("ppc");
     ppc.setName(ppc_name);
     ppc.setCallbackValueGet([this]() { return _p; });
     ppc.setCallbackValueSet([this](QPoint v) { _p = v; });
-    ppc.setId(16);
+    ppc.setId(29);
     static QString szp_name = tr("szp");
     szp.setName(szp_name);
-    szp.setId(17);
+    szp.setId(30);
     static QString szpc_name = tr("szpc");
     szpc.setName(szpc_name);
     szpc.setCallbackValueGet([this]() { return _sz; });
     szpc.setCallbackValueSet([this](QSize v) { _sz = v; });
-    szpc.setId(18);
+    szpc.setId(31);
     static QString ep_name = tr("ep");
     ep.setName(ep_name);
     ep.setEnumInfo(&COLOR::info());
-    ep.setId(19);
+    ep.setId(32);
     ep.setValue(COLOR::BLUE);
     static QString epc_name = tr("epc");
     epc.setName(epc_name);
     epc.setCallbackValueGet([this]() { return _e; });
     epc.setCallbackValueSet([this](QtnEnumValueType v) { _e = v; });
     epc.setEnumInfo(&COLOR::info());
-    epc.setId(20);
+    epc.setId(33);
     static QString efp_name = tr("efp");
     efp.setName(efp_name);
     efp.setEnumInfo(&MASK::info());
-    efp.setId(21);
+    efp.setId(34);
     efp.setValue(MASK::ONE|MASK::FOUR);
     static QString efpc_name = tr("efpc");
     efpc.setName(efpc_name);
     efpc.setCallbackValueGet([this]() { return _ef; });
     efpc.setCallbackValueSet([this](QtnEnumFlagsValueType v) { _ef = v; });
     efpc.setEnumInfo(&MASK::info());
-    efpc.setId(22);
+    efpc.setId(35);
     static QString cp_name = tr("cp");
     cp.setName(cp_name);
-    cp.setId(23);
+    cp.setId(36);
     cp.setValue(QColor(Qt::blue));
     static QString cpc_name = tr("cpc");
     cpc.setName(cpc_name);
     cpc.setCallbackValueGet([this]() { return _cl; });
     cpc.setCallbackValueSet([this](QColor v) { _cl = v; });
-    cpc.setId(24);
+    cpc.setId(37);
     static QString fnp_name = tr("fnp");
     fnp.setName(fnp_name);
-    fnp.setId(25);
+    fnp.setId(38);
     fnp.setValue(QFont("Courier", 10));
     static QString fnpc_name = tr("fnpc");
     fnpc.setName(fnpc_name);
     fnpc.setCallbackValueGet([this]() { return _fn; });
     fnpc.setCallbackValueSet([this](QFont v) { _fn = v; });
-    fnpc.setId(26);
+    fnpc.setId(39);
     // end children initialization
 }
 

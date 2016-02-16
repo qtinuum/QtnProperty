@@ -31,3 +31,16 @@ void QtnPropertyButton::invokePreDrawButton(QStyleOptionButton* option)
     Q_ASSERT(option);
     emit preDrawButton(this, option);
 }
+
+bool QtnPropertyButton::fromStrImpl(const QString& str)
+{
+    Q_UNUSED(str);
+    return true;
+}
+
+bool QtnPropertyButton::toStrImpl(QString& str) const
+{
+    Q_UNUSED(str);
+    return true;
+}
+

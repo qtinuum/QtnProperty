@@ -237,21 +237,35 @@ bool QtnPropertySet::fromStrImpl(const QString& str)
     foreach (QString line, lines)
     {
         if (!parserLine.exactMatch(line))
+        {
+            qDebug() << "Cannot parse string: \"" << line << "\"";
             continue;
+        }
 
         QStringList params = parserLine.capturedTexts();
         if (params.size() != 3)
+        {
+            qDebug() << "Cannot parse string: \"" << line << "\"";
             continue;
+        }
 
         QString propertyPath = params[1];
         QString propertyStrValue = params[2];
 
         QList<QtnPropertyBase*> subProperties = findChildProperties(propertyPath, Qt::FindChildrenRecursively);
         if (subProperties.size() != 1)
+        {
+            qDebug() << "Ambiguous property path: " << propertyPath;
             continue;
+        }
 
-        if (subProperties[0]->fromStr(propertyStrValue))
-            anySuccess = true;
+        if (!subProperties[0]->fromStr(propertyStrValue))
+        {
+            qDebug() << QString("Cannot convert property %1<%2> from string \"%3\"").arg(subProperties[0]->name(), subProperties[0]->metaObject()->className(), propertyStrValue);
+            continue;
+        }
+
+        anySuccess = true;
     }
 
     return anySuccess;
@@ -407,7 +421,11 @@ bool QtnPropertySet::toStrWithPrefix(QString& str, const QString& prefix) const
         {
             QString strValue;
             if (!childProperty->toStr(strValue))
+            {
+                qDebug() << QString("Cannot convert property %1<%2> to string").arg(childProperty->name(), childProperty->metaObject()->className());
+                Q_ASSERT(false);
                 return false;
+            }
 
             str.append(QString("%1%2 = %3%4").arg(prefix, childProperty->name(), strValue, lineEnd));
         }

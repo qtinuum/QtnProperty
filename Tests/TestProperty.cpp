@@ -141,7 +141,7 @@ void TestProperty::state()
     QtnPropertyInt p(&ps);
 
     QCOMPARE(ps.state(), QtnPropertyStateNone);
-    QCOMPARE(p.state(), QtnPropertyStateNone);
+    QCOMPARE(p.state(), QtnPropertyStateCollapsed);
 
     QtnPropertyState master_state = QtnPropertyStateInvisible|QtnPropertyStateNonSimple;
 
@@ -1445,7 +1445,7 @@ void TestProperty::qObjectProperty()
         QtnPropertyQStringBase* ps = qobject_cast<QtnPropertyQStringBase*>(p);
         QVERIFY(ps);
         QCOMPARE(ps->value(), tr("Item1"));
-        QCOMPARE(ps->state(), QtnPropertyStateNone);
+        QCOMPARE(ps->state(), QtnPropertyStateCollapsed);
         ps->setValue("NewItemName");
         QCOMPARE(obj.objectName(), tr("NewItemName"));
         QCOMPARE(ps->value(), tr("NewItemName"));

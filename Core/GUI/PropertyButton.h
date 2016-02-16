@@ -50,6 +50,11 @@ public:
 
 Q_SIGNALS:
     void preDrawButton(const QtnPropertyButton* property, QStyleOptionButton* option);
+
+protected:
+    bool fromStrImpl(const QString& str) override;
+    bool toStrImpl(QString& str) const override;
+
 };
 
 #endif // PROPERTY_BUTTON_H
