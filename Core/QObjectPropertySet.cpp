@@ -21,38 +21,6 @@
 #include <QMetaProperty>
 #include <QMap>
 
-template <typename PropertyCallbackType>
-QtnMetaPropertyFactory_t qtnCreateFactory()
-{
-    typedef typename PropertyCallbackType::ValueType ValueType;
-
-    QtnMetaPropertyFactory_t factory = [] (QObject* object, const QMetaProperty& metaProperty)->QtnProperty* {
-
-        typedef ValueType ValueTypeLocal;
-
-        QScopedPointer<PropertyCallbackType> property(new PropertyCallbackType(object));
-
-        property->setCallbackValueGet([object, metaProperty] ()->ValueType {
-            QVariant variantValue = metaProperty.read(object);
-            return variantValue.value<ValueTypeLocal>();
-        });
-
-        property->setCallbackValueSet([object, metaProperty] (ValueType value)->void {
-            QVariant variantValue = QVariant::fromValue<ValueTypeLocal>(value);
-            metaProperty.write(object, variantValue);
-        });
-
-        PropertyCallbackType* propertyPtr = property.data();
-        property->setCallbackValueAccepted([propertyPtr] (ValueType value)->bool {
-            return propertyPtr->isEditableByUser();
-        });
-
-        return property.take();
-    };
-
-    return factory;
-}
-
 bool qtnRegisterDefaultMetaPropertyFactory()
 {
     qtnRegisterMetaPropertyFactory(QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());

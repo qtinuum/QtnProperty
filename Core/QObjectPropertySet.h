@@ -28,4 +28,35 @@ QTN_PE_CORE_EXPORT QtnProperty* qtnCreateQObjectProperty(QObject* object, const 
 
 QTN_PE_CORE_EXPORT QtnPropertySet* qtnCreateQObjectPropertySet(QObject* object);
 
+template <typename PropertyCallbackType, typename ValueType = typename PropertyCallbackType::ValueTypeStore>
+QtnMetaPropertyFactory_t qtnCreateFactory()
+{
+	typedef typename PropertyCallbackType::ValueType CallbackValueType;
+	typedef typename PropertyCallbackType::ValueTypeStore CallbackValueTypeStore;
+
+	return [](QObject *object, const QMetaProperty &metaProperty) -> QtnProperty *
+	{
+		auto property = new PropertyCallbackType(nullptr);
+
+		property->setCallbackValueGet([object, metaProperty]() -> CallbackValueType
+		{
+			auto variantValue = metaProperty.read(object);
+			return CallbackValueTypeStore(variantValue.value<ValueType>());
+		});
+
+		property->setCallbackValueSet([object, metaProperty](CallbackValueType value)
+		{
+			auto variantValue = QVariant::fromValue<ValueType>(ValueType(value));
+			metaProperty.write(object, variantValue);
+		});
+
+		property->setCallbackValueAccepted([property](CallbackValueType) -> bool
+		{
+			return property->isEditableByUser();
+		});
+
+		return property;
+	};
+}
+
 #endif // QTN_QOBJECT_PROPERTY_SET_H

@@ -7,37 +7,6 @@
 
 #include <functional>
 
-template <typename PropertyCallbackType, typename ValueType = typename PropertyCallbackType::ValueTypeStore>
-QtnMetaPropertyFactory_t qtnCreateFactory()
-{
-	typedef typename PropertyCallbackType::ValueType CallbackValueType;
-	typedef typename PropertyCallbackType::ValueTypeStore CallbackValueTypeStore;
-
-	return [](QObject *object, const QMetaProperty &metaProperty) -> QtnProperty *
-	{
-		auto property = new PropertyCallbackType(nullptr);
-
-		property->setCallbackValueGet([object, metaProperty]() -> CallbackValueType
-		{
-			auto variantValue = metaProperty.read(object);
-			return CallbackValueTypeStore(variantValue.value<ValueType>());
-		});
-
-		property->setCallbackValueSet([object, metaProperty](CallbackValueType value)
-		{
-			auto variantValue = QVariant::fromValue<ValueType>(ValueType(value));
-			metaProperty.write(object, variantValue);
-		});
-
-		property->setCallbackValueAccepted([property](CallbackValueType) -> bool
-		{
-			return property->isEditableByUser();
-		});
-
-		return property;
-	};
-}
-
 template <typename VALUE_T, typename FIELD_PROP_T, typename FIELD_T = typename FIELD_PROP_T::ValueType>
 class QtnStructPropertyBase : public QtnSinglePropertyBase<VALUE_T>
 {
