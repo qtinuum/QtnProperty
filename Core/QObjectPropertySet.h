@@ -20,6 +20,8 @@
 #include "Property.h"
 #include "PropertySet.h"
 
+#include <QMetaProperty>
+
 typedef std::function<QtnProperty*(QObject*, const QMetaProperty&)> QtnMetaPropertyFactory_t;
 QTN_PE_CORE_EXPORT bool qtnRegisterMetaPropertyFactory(int metaPropertyType, const QtnMetaPropertyFactory_t& factory);
 
