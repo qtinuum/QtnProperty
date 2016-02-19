@@ -64,7 +64,7 @@ class QTN_PE_CORE_EXPORT QtnPropertyQRect: public QtnSinglePropertyValue<QtnProp
 public:
 	explicit QtnPropertyQRect(QObject *parent);
 
-	static QString getToStringFormat();
+	static QString getToStringFormat(bool coordinates = false);
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRect, QtnPropertyQRectBase)
 };

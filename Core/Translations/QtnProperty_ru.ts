@@ -268,6 +268,11 @@
         <translation>(%1; %2) %3 x %4</translation>
     </message>
     <message>
+        <location filename="../Core/PropertyQRect.cpp" line="175"/>
+        <source>(%1, %2), (%3, %4)</source>
+        <translation>(%1; %2), (%3; %4)</translation>
+    </message>
+    <message>
         <source>(%1, %2), %3 x %4</source>
         <translation type="vanished">(%1; %2), %3 x %4</translation>
     </message>

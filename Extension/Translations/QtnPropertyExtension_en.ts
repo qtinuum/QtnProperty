@@ -168,42 +168,62 @@
 <context>
     <name>QtnPropertyQRectF</name>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="23"/>
+        <location filename="../PropertyQRectF.cpp" line="41"/>
         <source>Left</source>
         <translation>Left</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="24"/>
+        <location filename="../PropertyQRectF.cpp" line="42"/>
         <source>Left position of the %1</source>
         <translation>Left position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="30"/>
+        <location filename="../PropertyQRectF.cpp" line="48"/>
         <source>Top</source>
         <translation>Top</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="31"/>
+        <location filename="../PropertyQRectF.cpp" line="49"/>
         <source>Top position of the %1</source>
         <translation>Top position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="37"/>
+        <location filename="../PropertyQRectF.cpp" line="55"/>
+        <source>Right</source>
+        <translation>Right</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQRectF.cpp" line="56"/>
+        <source>Right position of the %1</source>
+        <translation>Right position of the %1</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQRectF.cpp" line="62"/>
+        <source>Bottom</source>
+        <translation>Bottom</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQRectF.cpp" line="63"/>
+        <source>Bottom position of the %1</source>
+        <translation>Bottom position of the %1</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQRectF.cpp" line="69"/>
         <source>Width</source>
         <translation>Width</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="38"/>
+        <location filename="../PropertyQRectF.cpp" line="70"/>
         <source>Width of the %1</source>
         <translation>Width of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="44"/>
+        <location filename="../PropertyQRectF.cpp" line="76"/>
         <source>Height</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="45"/>
+        <location filename="../PropertyQRectF.cpp" line="77"/>
         <source>Height of the %1</source>
         <translation>Height of the %1</translation>
     </message>

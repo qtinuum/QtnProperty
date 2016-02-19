@@ -170,9 +170,9 @@ QtnPropertyQRect::QtnPropertyQRect(QObject *parent)
 {
 }
 
-QString QtnPropertyQRect::getToStringFormat()
+QString QtnPropertyQRect::getToStringFormat(bool coordinates)
 {
-	return tr("(%1, %2) %3 x %4");
+	return coordinates ? tr("(%1, %2), (%3, %4)") : tr("(%1, %2) %3 x %4");
 }
 
 QtnPropertyQRectCallback::QtnPropertyQRectCallback(QObject *parent)

@@ -168,44 +168,64 @@
 <context>
     <name>QtnPropertyQRectF</name>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="23"/>
+        <location filename="../PropertyQRectF.cpp" line="41"/>
         <source>Left</source>
-        <translation>Отступ слева</translation>
+        <translation>Слева</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="24"/>
+        <location filename="../PropertyQRectF.cpp" line="42"/>
         <source>Left position of the %1</source>
-        <translation>Отступ слева для прямоугольника &quot;%1&quot;</translation>
+        <translation>%1: Координата X левой стороны</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="30"/>
+        <location filename="../PropertyQRectF.cpp" line="48"/>
         <source>Top</source>
-        <translation>Отступ сверху</translation>
+        <translation>Сверху</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="31"/>
+        <location filename="../PropertyQRectF.cpp" line="49"/>
         <source>Top position of the %1</source>
-        <translation>Отступ сверху для прямоугольника &quot;%1&quot;</translation>
+        <translation>%1: Координата Y верхней стороны</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="37"/>
+        <location filename="../PropertyQRectF.cpp" line="55"/>
+        <source>Right</source>
+        <translation>Справа</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQRectF.cpp" line="56"/>
+        <source>Right position of the %1</source>
+        <translation>%1: Координата X правой стороны</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQRectF.cpp" line="62"/>
+        <source>Bottom</source>
+        <translation>Снизу</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQRectF.cpp" line="63"/>
+        <source>Bottom position of the %1</source>
+        <translation>%1: Координата Y нижней стороны</translation>
+    </message>
+    <message>
+        <location filename="../PropertyQRectF.cpp" line="69"/>
         <source>Width</source>
         <translation>Ширина</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="38"/>
+        <location filename="../PropertyQRectF.cpp" line="70"/>
         <source>Width of the %1</source>
-        <translation>Ширина прямоугольника &quot;%1&quot;</translation>
+        <translation>%1: Ширина</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="44"/>
+        <location filename="../PropertyQRectF.cpp" line="76"/>
         <source>Height</source>
         <translation>Высота</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="45"/>
+        <location filename="../PropertyQRectF.cpp" line="77"/>
         <source>Height of the %1</source>
-        <translation>Высота прямоугольника &quot;%1&quot;</translation>
+        <translation>%1: Высота</translation>
     </message>
 </context>
 <context>

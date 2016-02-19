@@ -17,8 +17,12 @@ class QtnPropertyQRectFBase: public QtnStructPropertyBase<QRectF, QtnPropertyDou
 public:
 	explicit QtnPropertyQRectFBase(QObject *parent);
 
-	QtnProperty *createLeftProperty();
-	QtnProperty *createTopProperty();
+	void setMode(bool coordinates);
+
+	QtnProperty *createLeftProperty(bool move);
+	QtnProperty *createTopProperty(bool move);
+	QtnProperty *createRightProperty(bool move);
+	QtnProperty *createBottomProperty(bool move);
 	QtnProperty *createWidthProperty();
 	QtnProperty *createHeightProperty();
 
@@ -29,8 +33,9 @@ protected:
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQRectFBase)
 
-private:
+private:	
 	QRegExp rect_parser;
+	bool coordinates;
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQRectFBase, QRectF)
@@ -41,7 +46,7 @@ class QtnPropertyQRectFCallback: public QtnSinglePropertyCallback<QtnPropertyQRe
 	QtnPropertyQRectFCallback(const QtnPropertyQRectFCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQRectFCallback(QObject *parent);
+	explicit QtnPropertyQRectFCallback(QObject *parent, bool coordinates);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRectFCallback, QtnPropertyQRectFBase)
 };
@@ -52,7 +57,7 @@ class QtnPropertyQRectF: public QtnSinglePropertyValue<QtnPropertyQRectFBase>
 	QtnPropertyQRectF(const QtnPropertyQRectF& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQRectF(QObject *parent);
+	explicit QtnPropertyQRectF(QObject *parent, bool coordinates);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRectF, QtnPropertyQRectFBase)
 
@@ -64,9 +69,15 @@ class QtnPropertyDelegateQRectF: public QtnPropertyDelegateTypedEx<QtnPropertyQR
 	Q_DISABLE_COPY(QtnPropertyDelegateQRectF)
 
 public:
-	QtnPropertyDelegateQRectF(QtnPropertyQRectFBase& owner);
+	QtnPropertyDelegateQRectF(QtnPropertyQRectFBase& owner, bool coordinates);
+
+	static QtnPropertyDelegate *createLTWH(QtnProperty &owner);
+	static QtnPropertyDelegate *createLTRB(QtnProperty &owner);
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo = nullptr) override;
 	virtual bool propertyValueToStr(QString& strValue) const override;
+
+private:
+	bool coordinates;
 };
