@@ -38,7 +38,7 @@ public:
         }
 
         updateEditor();
-
+		editor.installEventFilter(this);
         QObject::connect(  editor.toolButton, &QToolButton::clicked
                          , this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
     }
