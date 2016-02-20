@@ -371,7 +371,7 @@ void PropertySetCode::generateCppFile(TextStreamIndent& s) const
     s.newLine() << "{";
     s.addIndent();
         s.newLine() << QString("static QString %1_name = tr(\"%1\");").arg(name);
-        s.newLine() << QString("setName(%1_name);").arg(name);
+        s.newLine() << QString("setCppName(%1_name);").arg(name);
         assignmentsSetCode("", assignments, setExceptions, s);
         generateChildrenAssignment(s);
     s.delIndent();
@@ -442,7 +442,7 @@ void PropertySetCode::generateChildrenAssignment(TextStreamIndent& s) const
     foreach (auto p, members)
     {
         s.newLine() << QString("static QString %1_name = tr(\"%1\");").arg(p->name);
-        s.newLine() << QString("%1.setName(%1_name);").arg(p->name);
+        s.newLine() << QString("%1.setCppName(%1_name);").arg(p->name);
         assignmentsSetCode(p->name, p->assignments, setExceptions, s);
     }
     s.popWrapperLines();

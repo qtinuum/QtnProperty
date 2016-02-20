@@ -56,21 +56,21 @@ QtnPropertySet::~QtnPropertySet()
     clearChildProperties();
 }
 
-QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString name, Qt::FindChildOptions options)
+QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString cppName, Qt::FindChildOptions options)
 {
     QList<QtnPropertyBase*> result;
 
     // normilize name
-    name = name.trimmed();
+    cppName = cppName.trimmed();
 
     // if name is dot separated property path
-    if (name.contains('.'))
+    if (cppName.contains('.'))
     {
-        QString nameHead = name.section('.', 0, 0);
+        QString nameHead = cppName.section('.', 0, 0);
         if (nameHead.isEmpty())
             return result;
 
-        QString nameTail = name.section('.', 1);
+        QString nameTail = cppName.section('.', 1);
         if (nameTail.isEmpty())
             return result;
 
@@ -88,7 +88,7 @@ QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString name, Qt::Fi
     {
         foreach(QtnPropertyBase* childProperty, m_childProperties)
         {
-            if (childProperty->name() == name)
+            if (childProperty->cppName() == cppName)
                 result.append(childProperty);
         }
 
@@ -98,7 +98,7 @@ QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString name, Qt::Fi
             {
                 QtnPropertySet* propertySet = childProperty->asPropertySet();
                 if (propertySet)
-                    propertySet->findChildPropertiesRecursive(name, result);
+                    propertySet->findChildPropertiesRecursive(cppName, result);
             }
         }
     }
@@ -112,7 +112,7 @@ QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(const QRegularExpres
 
     foreach(QtnPropertyBase* childProperty, m_childProperties)
     {
-        if (re.match(childProperty->name()).isValid())
+        if (re.match(childProperty->cppName()).isValid())
             result.append(childProperty);
     }
 
@@ -212,6 +212,119 @@ QtnPropertySet* QtnPropertySet::createCopy(QObject* parentForCopy) const
 bool QtnPropertySet::copyValues(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
     return copyValuesImpl(propertySetCopyFrom, ignoreMask);
+}
+
+bool QtnPropertySet::fromJson(const QJsonObject& jsonObject)
+{
+    bool anyFail = false;
+
+    for (auto it = jsonObject.begin(), end = jsonObject.end(); it != end; ++it)
+    {
+        if (it.value().type() != QJsonValue::Object)
+        {
+            qDebug() << "Json object expected";
+            anyFail = true;
+            continue;
+        }
+
+        QString cppName = it.key();
+        auto childProperties = findChildProperties(cppName, Qt::FindDirectChildrenOnly);
+        if (childProperties.isEmpty())
+        {
+            qDebug() << "Cannot find property " << cppName;
+            anyFail = true;
+            continue;
+        }
+        else if (childProperties.size() > 1)
+        {
+            qDebug() << "Ambiguous property " << cppName;
+            anyFail = true;
+            continue;
+        }
+
+        auto childPropertySet = childProperties[0]->asPropertySet();
+        if (childPropertySet)
+        {
+            if (!childPropertySet->fromJson(it.value().toObject()))
+            {
+                qDebug() << "Cannot load \"" << childPropertySet->cppName() << "\" from JSON";
+                anyFail = true;
+            }
+        }
+        else
+        {
+            auto childProperty = childProperties[0]->asProperty();
+            if (childProperty)
+            {
+                auto jsonProperty = it.value().toObject();
+                auto propertyValue = jsonProperty.value("value").toVariant();
+                if (propertyValue.isNull())
+                {
+                    qDebug() << "Cannot parse \"value\" attribute";
+                    anyFail = true;
+                    continue;
+                }
+
+                if (!childProperty->fromVariant(propertyValue))
+                {
+                    qDebug() << "Cannot convert value " << propertyValue <<" to property \"" << childProperty->cppName() << "\"";
+                    anyFail = true;
+                }
+            }
+            else
+            {
+                Q_ASSERT(false && "Cannot recognize property type");
+                anyFail = true;
+            }
+        }
+    }
+
+    return !anyFail;
+}
+
+bool QtnPropertySet::toJson(QJsonObject& jsonObject) const
+{
+    int successCount = 0;
+
+    for (auto childPropertyBase : childProperties())
+    {
+        QJsonObject jsonSubObject;
+
+        auto childPropertySet = childPropertyBase->asPropertySet();
+        if (childPropertySet)
+        {
+            if (!childPropertySet->toJson(jsonSubObject))
+            {
+                qDebug() << "Cannot save \"" << childPropertySet->cppName() << "\" to JSON";
+                continue;
+            }
+        }
+        else
+        {
+            auto childProperty = childPropertyBase->asProperty();
+            if (childProperty)
+            {
+                QVariant value;
+                if (!childProperty->toVariant(value))
+                {
+                    qDebug() << "Cannot convert property \"" << childProperty->cppName() << "\" to Variant";
+                    continue;
+                }
+
+                jsonSubObject.insert("value", QJsonValue::fromVariant(value));
+            }
+            else
+            {
+                Q_ASSERT(false && "Cannot recognize property type");
+                continue;
+            }
+        }
+
+        jsonObject.insert(childPropertyBase->cppName(), jsonSubObject);
+        ++successCount;
+    }
+
+    return (successCount == childProperties().size());
 }
 
 void QtnPropertySet::updateStateInherited(bool force)

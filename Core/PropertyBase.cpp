@@ -177,6 +177,16 @@ void QtnPropertyBase::setName(const QString& name)
     Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonName);
 }
 
+void QtnPropertyBase::setCppName(const QString& cppName)
+{
+    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonCppName|QtnPropertyChangeReasonName, QtnPropertyValuePtr(&cppName));
+
+    m_cppName = cppName;
+    setObjectName(cppName);
+
+    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonCppName|QtnPropertyChangeReasonName);
+}
+
 void QtnPropertyBase::setDescription(const QString& description)
 {
     Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonDescription, QtnPropertyValuePtr(&description));

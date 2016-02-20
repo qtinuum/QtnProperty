@@ -16,6 +16,7 @@ private Q_SLOTS:
     void test2();
     void testAllPropertyTypes();
     void testLoadSave();
+    void testJson();
 };
 
 #endif // TEST_GENERATED_PROPERTY_H

@@ -18,6 +18,7 @@
 #define QTN_PROPERTY_SET_H
 
 #include "Property.h"
+#include <QJsonObject>
 
 class QTN_PE_CORE_EXPORT QtnPropertySet: public QtnPropertyBase
 {
@@ -32,7 +33,7 @@ public slots:
     // sub properties
     bool hasChildProperties() const { return !m_childProperties.empty(); }
     const QList<QtnPropertyBase*>& childProperties() const { return m_childProperties; }
-    QList<QtnPropertyBase*> findChildProperties(QString name, Qt::FindChildOptions options = Qt::FindChildrenRecursively);
+    QList<QtnPropertyBase*> findChildProperties(QString cppName, Qt::FindChildOptions options = Qt::FindChildrenRecursively);
     QList<QtnPropertyBase*> findChildProperties(const QRegularExpression& re, Qt::FindChildOptions options = Qt::FindChildrenRecursively);
     QtnPropertyBase* findChildProperty(QtnPropertyID id);
     void clearChildProperties();
@@ -49,6 +50,10 @@ public slots:
     // casts
     QtnPropertySet* asPropertySet() override { return this; }
     const QtnPropertySet* asPropertySet() const override { return this; }
+
+    // JSON support
+    bool fromJson(const QJsonObject& jsonObject);
+    bool toJson(QJsonObject& jsonObject) const;
 
 protected:
     void updateStateInherited(bool force) override;

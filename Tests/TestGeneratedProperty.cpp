@@ -86,7 +86,7 @@ void TestGeneratedProperty::testLoadSave()
                 QVERIFY(allProperties.save(s));
             }
 
-            QCOMPARE(data.size(), 910);
+            QCOMPARE(data.size(), 931);
 
             {
                 QDataStream s(&data, QIODevice::ReadOnly);
@@ -96,7 +96,23 @@ void TestGeneratedProperty::testLoadSave()
             QString result;
             QVERIFY(allProperties.toStr(result));
 
-            QCOMPARE(result.size(), 899);
+            QCOMPARE(result.size(), 925);
         }
     }
+}
+
+void TestGeneratedProperty::testJson()
+{
+    QtnPropertySetAllPropertyTypes p;
+
+    QJsonObject o;
+    QVERIFY(p.toJson(o));
+
+    QJsonDocument d(o);
+    auto res = d.toJson();
+    QCOMPARE(res.size(), 1192);
+    res = d.toJson(QJsonDocument::Compact);
+    QCOMPARE(res.size(), 623);
+
+    QVERIFY(p.fromJson(o));
 }

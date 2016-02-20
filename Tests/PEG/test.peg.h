@@ -301,6 +301,7 @@ public:
     QtnPropertyQColorCallback& cpc;
     QtnPropertyQFont& fnp;
     QtnPropertyQFontCallback& fnpc;
+    QtnPropertyButton& bttn;
     // end children declarations
 
 protected:
