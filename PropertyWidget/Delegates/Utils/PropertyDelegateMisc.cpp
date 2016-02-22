@@ -21,6 +21,38 @@
 #include <QLineEdit>
 #include <QKeyEvent>
 
+QIcon qtnResetIcon;
+
+static QIcon resetIcon()
+{
+    if (!qtnResetIcon.isNull())
+        return qtnResetIcon;
+
+    static const char iconData[] = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ"
+            "bWFnZVJlYWR5ccllPAAAAsJJREFUeNp0UktIVGEUPve/j7l37h2aCSQRzEU46jg5D3QWBUnaWGKE"
+            "WTmjNYobF4EERYWYD8bMVUW7XEVGtWsduIloZWoINRkR0oCLWaRCNa/76vzXuRdb+F/O/V/nfN85"
+            "/3eY2tpaOGgwhAFCyKJpmNcNw/iz/y6bzVozMeHgj+d4kGU5JSvyZ5Zj22mAfWcPYq1tw8ESNiYI"
+            "whtJlH673W7T4/EAWp2iKO94gX/IMIywLx440zTtdAVknJLc0rjL5SIIAhzHAc/ze8AsS/c383/z"
+            "XcViMYFHGQcA6wRRFJ9KkjQiu2VAJisA2RwmCkj3oXCo7kr/ZY+TgfXjuA5MeUSRFeB4DsKRMCQH"
+            "EuBv8EPfhUtAWKwUiZIDSUgOJt5jyIYDQFFrampmy2rZcmxqaoSpmcm3eDd96kT7suJRTN9hH9y6"
+            "fQui0ch0WySWLpfLsLW1VQFAqVRdbaVlqKoKvX29q23RWHepVLLSDgQDMJOe2a2uPtIfaYkuaaoG"
+            "9rvZGbDFQlHA+i0An893p1Qsga7roBENHj959AnveluaQ1l6tl8BS8a19VVAiQAbBTRNgwdz8znq"
+            "SFkoIAafDDYez+qaLiHZKGY6inPCAQgFw3q9v16lwRRkc3Nz1moVBDB0A5rqAwV6jg11V3SJC6Ik"
+            "LqD/mANA2c51n12jM33QQr5wEVVZAAYOVWoVUNIJZL6HPULlhrEbY/n/AOJd8ckz8U5Hb5R0FJtp"
+            "F9c/BZdQQtb72Bss7Y2e8z3Q0Xk67TwiTbO5Ibi0ur6yWFVVNfTq5WvAIMDep2UcpVnRQGpXrw1C"
+            "ajj1DP0/5HK5vQ72+rxAGALffmwIuJ/KfMmMLz5/QVY+rgDVm2bU2tYKQ8MpI9AcmEeftP9YQ3n7"
+            "13YFwOvdW1SYvn7PxHA7gRZHk9AKaEtoc/igy7ZCOzs7Vtw/AQYASsoRySkHkqIAAAAASUVORK5C"
+            "YII=";
+
+    auto bytes = QByteArray::fromBase64(iconData);
+    QPixmap pixmap;
+    pixmap.loadFromData(bytes);
+
+    qtnResetIcon.addPixmap(pixmap);
+
+    return qtnResetIcon;
+}
+
 void QtnPropertyDelegateWithValue::createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
     addSubItemBackground(context, subItems);
@@ -207,9 +239,14 @@ void QtnPropertyDelegateWithValue::addSubItemReset(QtnDrawContext& context, QLis
             option.styleObject = nullptr;
 
         option.rect = item.rect;
-        option.text = "R";
-
-        //owner().invokePreDrawButton(&option);
+        QIcon icon = resetIcon();
+        if (!icon.availableSizes().empty())
+        {
+            option.icon = resetIcon();
+            option.iconSize = icon.availableSizes().first();
+        }
+        else
+            option.text = "R";
 
         // draw button
         style->drawControl(QStyle::CE_PushButton, &option, context.painter, context.widget);

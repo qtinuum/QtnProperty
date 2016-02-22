@@ -3,9 +3,11 @@
 
 #include <functional>
 
+class QIcon;
+
 #define QTN_PW_EXPORT
 
-QTN_PW_EXPORT bool initQtnPropertyWidgetLibrary();
+QTN_PW_EXPORT bool initQtnPropertyWidgetLibrary(QIcon* resetIcon = nullptr);
 
 template<typename T, typename R, class... Types>
 std::function<R(Types...)> qtnMemFn(T* t, R(T::*memFn)(Types...) const)

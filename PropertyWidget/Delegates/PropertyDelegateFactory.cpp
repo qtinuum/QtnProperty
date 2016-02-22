@@ -120,6 +120,7 @@ QtnPropertyDelegateFactory& QtnPropertyDelegateFactory::staticInstance()
     return factory;
 }
 
+extern QIcon qtnResetIcon;
 void regPropertySetDelegates();
 void regBoolDelegates();
 void regDoubleDelegates();
@@ -136,12 +137,15 @@ void regQColorDelegates();
 void regQFontDelegates();
 void regButtonDelegates();
 
-bool initQtnPropertyWidgetLibrary()
+bool initQtnPropertyWidgetLibrary(QIcon *resetIcon)
 {
     static bool initialized = false;
 
     if (initialized)
         return false;
+
+    if (resetIcon)
+        qtnResetIcon = *resetIcon;
 
     regPropertySetDelegates();
     regBoolDelegates();
