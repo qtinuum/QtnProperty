@@ -10,3 +10,5 @@ else:DESTDIR = $$BIN_DIR
 
 debug: DBG = dgb-
 else: DBG = rel-
+
+CONFIG += c++11
