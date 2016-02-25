@@ -30,6 +30,9 @@ public:
 
 	void setReadOnly(bool value);
 
+	virtual void accept() override;
+	virtual void reject() override;
+
 signals:
 	void apply(const QVariant &data);
 

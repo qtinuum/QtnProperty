@@ -87,6 +87,20 @@ void CustomPropertyEditorDialog::setReadOnly(bool value)
 	}
 }
 
+void CustomPropertyEditorDialog::accept()
+{
+	qtnStopInplaceEdit(false);
+
+	QDialog::accept();
+}
+
+void CustomPropertyEditorDialog::reject()
+{
+	qtnStopInplaceEdit(false);
+
+	QDialog::reject();
+}
+
 void CustomPropertyEditorDialog::onActivePropertyChanged(QtnPropertyBase *activeProperty)
 {
 	updateActions(activeProperty);

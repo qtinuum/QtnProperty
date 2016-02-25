@@ -21,8 +21,7 @@
 
 QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor)
 {
-    QObject::connect(&editor, &QObject::destroyed, this, &QtnPropertyEditorHandlerBase::onObjectDestroyed);
-    QObject::connect(&property, &QObject::destroyed, this, &QtnPropertyEditorHandlerBase::onObjectDestroyed);
+	setParent(&editor);
 	QObject::connect(&property, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
 }
 
@@ -49,12 +48,6 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 	}
 
 	return QObject::eventFilter(obj, event);
-}
-
-void QtnPropertyEditorHandlerBase::onObjectDestroyed(QObject *object)
-{
-	Q_ASSERT((object == &propertyBase()) || (object == &editorBase()));
-	delete this;
 }
 
 void QtnPropertyEditorHandlerBase::onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)

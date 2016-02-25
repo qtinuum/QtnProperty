@@ -35,7 +35,6 @@ protected:
 	virtual bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
-    void onObjectDestroyed(QObject* object);
     void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 };
 
