@@ -12,6 +12,8 @@
 #include <QTranslator>
 #include <QLocale>
 
+#include <map>
+
 static void QtnPropertyExtension_InitResources()
 {
 	Q_INIT_RESOURCE(QtnPropertyExtension);
@@ -70,34 +72,47 @@ namespace QtnPropertyExtension
 			return nullptr;
 
 		// collect property sets by object's classes
-		QList<QtnPropertySet*> propertySetsByClass;
+		QStringList class_names;
+		std::map<QString, QtnPropertySet *> propertySetsByClass;
 
-		const QMetaObject* metaObject = object->metaObject();
-		while (metaObject)
+		auto metaObject = object->metaObject();
+		while (nullptr != metaObject)
 		{
 			if (metaObject->propertyCount() > 0)
 			{
 				QList<QtnProperty*> properties;
-				for (int propertyIndex = metaObject->propertyOffset(), n = metaObject->propertyCount();
+				for (int propertyIndex = metaObject->propertyOffset(),
+					 n = metaObject->propertyCount();
 					 propertyIndex < n; ++propertyIndex)
 				{
-					QMetaProperty metaProperty = metaObject->property(propertyIndex);
-					QtnProperty* property = CreateQObjectProperty(object, metaObject->className(), metaProperty);
-					if (property)
+					auto metaProperty = metaObject->property(propertyIndex);
+					auto property = CreateQObjectProperty(object, metaObject->className(), metaProperty);
+					if (nullptr != property)
 						properties.append(property);
 				}
 
 				if (!properties.isEmpty())
 				{
-					QScopedPointer<QtnPropertySet> propertySetByClass(new QtnPropertySet(nullptr));
+					auto class_name = QCoreApplication::translate("ClassName",
+																  metaObject->className());
+					auto it = propertySetsByClass.find(class_name);
 
-					propertySetByClass->setName(QCoreApplication::translate("ClassName", metaObject->className()));
-					foreach (QtnProperty* property, properties)
+					QtnPropertySet *propertySetByClass;
+					if (it != propertySetsByClass.end())
+						propertySetByClass = it->second;
+					else
+					{
+						propertySetByClass = new QtnPropertySet(nullptr);
+						propertySetByClass->setName(class_name);
+						propertySetsByClass[class_name] = propertySetByClass;
+
+						class_names.push_back(class_name);
+					}
+
+					for (auto property : properties)
 					{
 						propertySetByClass->addChildProperty(property);
 					}
-
-					propertySetsByClass.prepend(propertySetByClass.take());
 				}
 			}
 
@@ -105,19 +120,19 @@ namespace QtnPropertyExtension
 			metaObject = metaObject->superClass();
 		}
 
-		if (propertySetsByClass.isEmpty())
+		if (propertySetsByClass.empty())
 			return nullptr;
 
 		// move collected property sets to object's property set
-		QScopedPointer<QtnPropertySet> propertySet(new QtnPropertySet(nullptr));
+		auto propertySet = new QtnPropertySet(nullptr);
 		propertySet->setName(object->objectName());
 
-		foreach (QtnPropertySet* propertySetByClass, propertySetsByClass)
+		for (auto &class_name : class_names)
 		{
-			propertySet->addChildProperty(propertySetByClass);
-		}
+			propertySet->addChildProperty(propertySetsByClass[class_name]);
+		}		
 
-		return propertySet.take();
+		return propertySet;
 	}
 
 	PropertyConnector::PropertyConnector(QtnProperty *parent)
