@@ -27,14 +27,15 @@ class QTN_PW_EXPORT QtnPropertyEditorHandlerBase: public QObject
 protected:
     QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor);
 
-    virtual QtnProperty& propertyBase() = 0;
-    virtual QWidget& editorBase()  = 0;
+	virtual QtnProperty *&propertyBase() = 0;
+	virtual QWidget *&editorBase()  = 0;
     virtual void updateEditor() = 0;
 	virtual void revertInput();
 
 	virtual bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
+	void onPropertyDestroyed();
     void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 };
 
@@ -46,20 +47,20 @@ protected:
 
     QtnPropertyEditorHandler(PropertyClass& property, PropertyEditorClass& editor)
         : QtnPropertyEditorHandlerBase(property, editor),
-          m_property(property),
-          m_editor(editor)
-    {
+		  m_property(&property),
+		  m_editor(&editor)
+    {		
     }
 
-	PropertyClass &property() { return m_property;  }
-	PropertyEditorClass &editor() { return m_editor; }
+	PropertyClass &property() { return *static_cast<PropertyClass *>(m_property);  }
+	PropertyEditorClass &editor() { return *static_cast<PropertyEditorClass *>(m_editor); }
 
-	virtual QtnProperty &propertyBase() override { return property(); }
-	virtual QWidget &editorBase() override {return editor(); }
+	virtual QtnProperty *&propertyBase() override { return m_property; }
+	virtual QWidget *&editorBase() override {return m_editor; }
 
 private:
-    PropertyClass& m_property;
-    PropertyEditorClass& m_editor;
+	QtnProperty *m_property;
+	QWidget *m_editor;
 };
 
 template <typename PropertyClass, typename PropertyEditorClass>

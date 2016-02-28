@@ -112,7 +112,8 @@ private:
 
 	void onEditingFinished()
 	{
-		property() = qtn_i2u(editor().value());
+		if (nullptr != propertyBase())
+			property() = qtn_i2u(editor().value());
 	}
 
 	unsigned block;

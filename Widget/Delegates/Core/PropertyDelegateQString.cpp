@@ -70,7 +70,8 @@ private:
 
     void onEditingFinished()
     {
-        property() = editor().text();
+		if (nullptr != propertyBase())
+			property() = editor().text();
     }
 };
 
@@ -122,14 +123,17 @@ protected:
 private:
 	void onEditingFinished()
 	{
-		auto text = editor().lineEdit->text();
-		if (!revert && (!multiline || !text.isEmpty()))
+		if (nullptr != propertyBase())
 		{
-			property() = text;
-			updateEditor();
-		}
+			auto text = editor().lineEdit->text();
+			if (!revert && (!multiline || !text.isEmpty()))
+			{
+				property() = text;
+				updateEditor();
+			}
 
-		revert = false;
+			revert = false;
+		}
 	}
 
 	void onToolButtonClicked(bool)
@@ -296,7 +300,8 @@ private:
 
     void onEditingFinished()
     {
-        property() = editor().lineEdit->text();
+		if (nullptr != propertyBase())
+			property() = editor().lineEdit->text();
     }
 
     QFileDialog m_dlg;

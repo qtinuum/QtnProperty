@@ -22,7 +22,10 @@
 QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor)
 {
 	setParent(&editor);
-	QObject::connect(&property, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
+	QObject::connect(&property, &QtnPropertyBase::propertyDidChange,
+					 this, &QtnPropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
+	QObject::connect(&property, &QObject::destroyed,
+					 this, &QtnPropertyEditorHandlerBase::onPropertyDestroyed);
 }
 
 void QtnPropertyEditorHandlerBase::revertInput()
@@ -50,8 +53,13 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 	return QObject::eventFilter(obj, event);
 }
 
+void QtnPropertyEditorHandlerBase::onPropertyDestroyed()
+{
+	propertyBase() = nullptr;
+}
+
 void QtnPropertyEditorHandlerBase::onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
 {
-	if ((reason & QtnPropertyChangeReasonValue) && (&propertyBase() == firedProperty))
+	if ((reason & QtnPropertyChangeReasonValue) && (propertyBase() == firedProperty))
         updateEditor();
 }

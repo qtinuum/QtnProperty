@@ -58,15 +58,18 @@ protected:
 private:
 	void onEditingFinished()
 	{
-		auto text = editor().lineEdit->text();
-		if (!revert && (!is_object || !text.isEmpty()))
+		if (nullptr != propertyBase())
 		{
-			if (is_object || text != property().value().toString())
-				property().setValue(text);
-			updateEditor();
-		}
+			auto text = editor().lineEdit->text();
+			if (!revert && (!is_object || !text.isEmpty()))
+			{
+				if (is_object || text != property().value().toString())
+					property().setValue(text);
+				updateEditor();
+			}
 
-		revert = false;
+			revert = false;
+		}
 	}
 
 	void onToolButtonClicked(bool)
