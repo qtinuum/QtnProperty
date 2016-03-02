@@ -254,17 +254,17 @@
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="206"/>
+        <location filename="../PropertyQVariant.cpp" line="209"/>
         <source>(Dictionary)</source>
         <translation>(Словарь)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="209"/>
+        <location filename="../PropertyQVariant.cpp" line="212"/>
         <source>(List)</source>
         <translation>(Список)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="215"/>
+        <location filename="../PropertyQVariant.cpp" line="218"/>
         <source>(Empty)</source>
         <translation>(Пусто)</translation>
     </message>
