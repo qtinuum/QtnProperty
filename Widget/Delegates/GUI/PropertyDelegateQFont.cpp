@@ -54,8 +54,8 @@ public:
 
         updateEditor();
 		editor.lineEdit->installEventFilter(this);
-        QObject::connect(  editor.toolButton, &QToolButton::clicked
-                         , this, &QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked);
+		QObject::connect(editor.toolButton, &QToolButton::clicked,
+						 this, &QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked);
     }
 
 protected:

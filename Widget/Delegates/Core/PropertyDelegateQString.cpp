@@ -241,11 +241,11 @@ public:
 
         updateEditor();
 
-        editor.installEventFilter(this);
-        QObject::connect(  editor.toolButton, &QToolButton::clicked
-                         , this, &QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked);
-        QObject::connect(  editor.lineEdit, &QLineEdit::editingFinished
-                         , this, &QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished);
+		editor.lineEdit->installEventFilter(this);
+		QObject::connect(editor.toolButton, &QToolButton::clicked,
+						 this, &QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked);
+		QObject::connect(editor.lineEdit, &QLineEdit::editingFinished,
+						 this, &QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished);
 
     }
 

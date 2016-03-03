@@ -28,19 +28,19 @@ class QtnPropertyQColorLineEditBttnHandler
 public:
     QtnPropertyQColorLineEditBttnHandler(QtnPropertyQColorBase& property, QtnLineEditBttn& editor)
         : QtnPropertyEditorHandlerType(property, editor)
-    {
-        editor.lineEdit->setReadOnly(true);
-
+    {    
         if (!property.isEditableByUser())
         {
-//            editor.lineEdit->setReadOnly(true);
+			editor.lineEdit->setReadOnly(true);
             editor.toolButton->setEnabled(false);
         }
 
         updateEditor();
-		editor.installEventFilter(this);
-        QObject::connect(  editor.toolButton, &QToolButton::clicked
-                         , this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
+		editor.lineEdit->installEventFilter(this);
+		QObject::connect(editor.toolButton, &QToolButton::clicked,
+						 this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
+		QObject::connect(editor.lineEdit, &QLineEdit::editingFinished,
+						 this, &QtnPropertyQColorLineEditBttnHandler::onEditingFinished);
     }
 
 protected:
@@ -59,6 +59,13 @@ private:
             property() = dlg.currentColor();
         }
     }
+
+	void onEditingFinished()
+	{
+		if (nullptr != propertyBase())
+			property() = QColor(editor().lineEdit->text());
+	}
+
 };
 
 static bool regQColorDelegate = QtnPropertyDelegateFactory::staticInstance()
