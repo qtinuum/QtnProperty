@@ -237,7 +237,7 @@ void CustomPropertyEditorDialog::addProperty(QtnPropertyBase *source, const Cust
 		std::sort(children.begin(), children.end(),
 		[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool
 		{
-			return a->name() < b->name();
+			return QString::compare(a->name(), b->name(), Qt::CaseInsensitive) < 0;
 		});
 	}
 
@@ -304,7 +304,7 @@ void CustomPropertyEditorDialog::updatePropertyOptions(QtnPropertyBase *source,
 		{
 			std::sort(children.begin(), children.end(), [](VarProperty *a, VarProperty *b) -> bool
 			{
-				return a->GetName() < b->GetName();
+				return QString::compare(a->GetName(), b->GetName(), Qt::CaseInsensitive) < 0;
 			});
 
 			auto it = std::find(children.begin(), children.end(), var_property);
