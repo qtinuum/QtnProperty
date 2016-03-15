@@ -78,6 +78,8 @@ public:
     void addPropertyViewStyle(QtnPropertyViewStyle style);
     void removePropertyViewStyle(QtnPropertyViewStyle style);
 
+	QtnPropertyBase *getPropertyAt(const QPoint &position);
+
 public slots:
     QtnAccessibilityProxy* accessibilityProxy();
 

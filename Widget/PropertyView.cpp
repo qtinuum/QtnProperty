@@ -169,7 +169,16 @@ void QtnPropertyView::addPropertyViewStyle(QtnPropertyViewStyle style)
 
 void QtnPropertyView::removePropertyViewStyle(QtnPropertyViewStyle style)
 {
-    setPropertyViewStyle(propertyViewStyle() & ~style);
+	setPropertyViewStyle(propertyViewStyle() & ~style);
+}
+
+QtnPropertyBase *QtnPropertyView::getPropertyAt(const QPoint &position)
+{
+	int index = visibleItemIndexByPoint(position);
+	if (index >= 0)
+		return m_visibleItems[index].item->property;
+
+	return nullptr;
 }
 
 void QtnPropertyView::paintEvent(QPaintEvent* e)

@@ -36,12 +36,15 @@
     <number>6</number>
    </property>
    <item>
-    <widget class="QtnPropertyWidgetEx" name="propertyWidget" native="true">
+    <widget class="CustomPropertyWidget" name="propertyWidget" native="true">
      <property name="focusPolicy">
       <enum>Qt::WheelFocus</enum>
      </property>
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>
+     </property>
+     <property name="acceptDrops">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -103,12 +106,36 @@
     <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
+  <action name="actionPropertyCut">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionPropertyCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPropertyPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+V</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QtnPropertyWidgetEx</class>
+   <class>CustomPropertyWidget</class>
    <extends>QWidget</extends>
-   <header>QtnProperty/Extension/PropertyWidgetEx.h</header>
+   <header>QtnProperty/Extension/CustomPropertyWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

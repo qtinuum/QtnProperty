@@ -52,6 +52,12 @@ private slots:
 
 	void on_actionPropertyOptions_triggered();
 
+	void on_actionPropertyCut_triggered();
+
+	void on_actionPropertyCopy_triggered();
+
+	void on_actionPropertyPaste_triggered();
+
 private:
 	void updateData();
 	void updateSet(QtnPropertyBase *set_property, int child_index);

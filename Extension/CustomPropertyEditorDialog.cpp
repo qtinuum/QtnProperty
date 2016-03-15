@@ -29,11 +29,21 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 	QObject::connect(shortcut, &QShortcut::activated,
 					 this, &CustomPropertyEditorDialog::on_actionPropertyOptions_triggered);
 
-
 	shortcut = new QShortcut(ui->actionPropertyRemove->shortcut(), this);
 	QObject::connect(shortcut, &QShortcut::activated,
 					 this, &CustomPropertyEditorDialog::on_actionPropertyRemove_triggered);
 
+	shortcut = new QShortcut(ui->actionPropertyCut->shortcut(), this);
+	QObject::connect(shortcut, &QShortcut::activated,
+					 this, &CustomPropertyEditorDialog::on_actionPropertyCut_triggered);
+
+	shortcut = new QShortcut(ui->actionPropertyCopy->shortcut(), this);
+	QObject::connect(shortcut, &QShortcut::activated,
+					 this, &CustomPropertyEditorDialog::on_actionPropertyCopy_triggered);
+
+	shortcut = new QShortcut(ui->actionPropertyPaste->shortcut(), this);
+	QObject::connect(shortcut, &QShortcut::activated,
+					 this, &CustomPropertyEditorDialog::on_actionPropertyPaste_triggered);
 }
 
 CustomPropertyEditorDialog::~CustomPropertyEditorDialog()
@@ -622,4 +632,19 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 void CustomPropertyEditorDialog::updateTitle()
 {
 	setWindowTitle(read_only ? tr("Read-only Properties") : tr("Edit Custom Properties"));
+}
+
+void CustomPropertyEditorDialog::on_actionPropertyCut_triggered()
+{
+
+}
+
+void CustomPropertyEditorDialog::on_actionPropertyCopy_triggered()
+{
+
+}
+
+void CustomPropertyEditorDialog::on_actionPropertyPaste_triggered()
+{
+
 }
