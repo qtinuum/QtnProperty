@@ -71,7 +71,14 @@ private:
         QFontDialog dlg(property(), &editor());
         if (dlg.exec() == QDialog::Accepted)
         {
-            property() = dlg.currentFont();
+			auto font = property().value();
+			int pixel_size = font.pixelSize();
+			font = dlg.currentFont();
+
+			if (pixel_size > 0)
+				font.setPixelSize(font.pointSize());
+
+			property().setValue(font);
         }
     }
 };
