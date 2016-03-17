@@ -507,6 +507,8 @@ void QtnPropertyView::mousePressEvent(QMouseEvent* e)
             changeActivePropertyByIndex(index);
             processItemActionByMouse(index, e);
         }
+
+		QAbstractScrollArea::mousePressEvent(e);
     }
 }
 
@@ -559,6 +561,8 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent* e)
             else
                 processItemActionByMouse(index, e);
         }
+
+		QAbstractScrollArea::mouseMoveEvent(e);
     }
 }
 
