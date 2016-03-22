@@ -51,7 +51,7 @@ protected:
 
 	QString textFromValue(int val) const override
 	{
-		return locale().toString(qtn_i2u(val));
+		return locale().toString(qtn_i2u(val)).replace(QRegExp("\\s*"), "");
 	}
 };
 
