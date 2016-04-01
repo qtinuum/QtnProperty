@@ -16,42 +16,42 @@
         <translation type="vanished">Настраиваемые свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="426"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="592"/>
         <source>Add Element</source>
         <translation>Добавить элемент</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="474"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="634"/>
         <source>Duplicate Element</source>
         <translation>Дублировать элемент</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="524"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="684"/>
         <source>Element Options</source>
         <translation>Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="667"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="829"/>
         <source>Add...</source>
         <translation>Добавить...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="675"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="837"/>
         <source>Add Property...</source>
         <translation>Добавить свойство...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="679"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="841"/>
         <source>Add Element...</source>
         <translation>Добавить элемент...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="708"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="870"/>
         <source>Edit Custom Properties</source>
         <translation>Редактировать свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="708"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="870"/>
         <source>Read-only Properties</source>
         <translation>Свойства только для чтения</translation>
     </message>
@@ -64,22 +64,22 @@
         <translation type="vanished">Добавить свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="72"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="75"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="111"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="114"/>
         <source>Cut</source>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="119"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="122"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="127"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="130"/>
         <source>Paste</source>
         <translation>Вставить</translation>
     </message>
@@ -88,27 +88,27 @@
         <translation type="vanished">Удалить свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="86"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="89"/>
         <source>Duplicate...</source>
         <translation>Дублировать...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="481"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="641"/>
         <source>Duplicate Property</source>
         <translation>Дублировать свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="94"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="97"/>
         <source>Options...</source>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="513"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="673"/>
         <source>Property Options</source>
         <translation>Настройки свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="432"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="598"/>
         <source>Add Property</source>
         <translation>Добавить свойство</translation>
     </message>
