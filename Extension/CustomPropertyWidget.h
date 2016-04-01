@@ -9,9 +9,22 @@ class CustomPropertyWidget : public QtnPropertyWidgetEx
 public:
 	explicit CustomPropertyWidget(QWidget *parent = nullptr);
 
-//protected:
-//	virtual void mousePressEvent(QMouseEvent *event) override;
-//	virtual void moseMoveEvent(QMouseEvent *event) override;
-//	virtual void dragEnterEvent(QDragEnterEvent *event) override;
-//	virtual void dropEvent(QDragEnterEvent *event) override;
+	void setDelegate(QtnPropertyWidgetExDelegate *delegate);
+
+	virtual bool canRemoveProperty(QtnPropertyBase *property) override;
+	virtual bool canCutToClipboard() override;
+	virtual bool canCopyToClipboard() override;
+	virtual bool canPasteFromClipboard() override;
+
+protected:
+	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
+	virtual void removeProperty(QtnPropertyBase *property) override;
+	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
+												Qt::DropAction action) override;
+	virtual bool applyPropertyData(const QMimeData *data,
+								   QtnPropertyBase *destination,
+								   QtnApplyPosition position) override;
+
+private:
+	QtnPropertyWidgetExDelegate *delegate;
 };

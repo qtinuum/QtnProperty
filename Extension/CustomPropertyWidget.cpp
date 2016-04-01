@@ -9,39 +9,51 @@ static const QString kDragDropMimeType = "CustomPropertyDragDrop";
 
 CustomPropertyWidget::CustomPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
+	, delegate(nullptr)
 {
-//	setAcceptDrops(true);
 }
 
-//void CustomPropertyWidget::mousePressEvent(QMouseEvent *event)
-//{
-//	if (event->button() == Qt::LeftButton)
-//	{
-//		auto view = propertyView();
+bool CustomPropertyWidget::canRemoveProperty(QtnPropertyBase *property)
+{
+	return delegate->canRemoveProperty(property);
+}
 
-//		auto property = view->getPropertyAt(event->pos());
+bool CustomPropertyWidget::canCutToClipboard()
+{
+	return delegate->canCutToClipboard();
+}
 
-//		if (nullptr != property
-//		&&	0 != (property->stateLocal() & QtnPropertyStateDraggable))
-//		{
+bool CustomPropertyWidget::canCopyToClipboard()
+{
+	return (QtnPropertyWidgetEx::canCopyToClipboard()
+		&&	delegate->canCopyToClipboard());
+}
 
-//		}
-//	}
-//}
+bool CustomPropertyWidget::canPasteFromClipboard()
+{
+	return (QtnPropertyWidgetEx::canPasteFromClipboard()
+		&&	delegate->canPasteFromClipboard());
+}
 
-//void CustomPropertyWidget::moseMoveEvent(QMouseEvent *event)
-//{
+bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
+{
+	return delegate->dataHasSupportedFormats(data);
+}
 
-//}
+void CustomPropertyWidget::removeProperty(QtnPropertyBase *property)
+{
+	delegate->removeProperty(property);
+}
 
+QMimeData *CustomPropertyWidget::getPropertyDataForAction(QtnPropertyBase *property,
+														  Qt::DropAction action)
+{
+	return delegate->getPropertyDataForAction(property, action);
+}
 
-//void CustomPropertyWidget::dragEnterEvent(QDragEnterEvent *event)
-//{
-
-//}
-
-//void CustomPropertyWidget::dropEvent(QDragEnterEvent *event)
-//{
-//	if (event->mimeData()->hasFormat(kDragDropMimeType))
-//		event->acceptProposedAction();
-//}
+bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
+											 QtnPropertyBase *destination,
+											 QtnApplyPosition position)
+{
+	return delegate->applyPropertyData(data, destination, position);
+}

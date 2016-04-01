@@ -57,28 +57,31 @@ class QTN_PW_EXPORT QtnPropertyView: public QAbstractScrollArea
     Q_DISABLE_COPY(QtnPropertyView)
 
 public:
-    explicit QtnPropertyView(QWidget* parent = nullptr, QtnPropertySet* propertySet = nullptr);
+	explicit QtnPropertyView(QWidget* parent = nullptr,
+							 QtnPropertySet* propertySet = nullptr);
     ~QtnPropertyView();
 
-    const QtnPropertySet* propertySet() const { return m_propertySet; }
-    QtnPropertySet* propertySet() { return m_propertySet; }
+	inline const QtnPropertySet* propertySet() const;
+	inline QtnPropertySet* propertySet();
     void setPropertySet(QtnPropertySet* newPropertySet);
 
-    QtnPropertyBase* activeProperty() { return m_activeProperty; }
-    const QtnPropertyBase* activeProperty() const { return m_activeProperty; }
+	inline QtnPropertyBase* activeProperty();
+	inline const QtnPropertyBase* activeProperty() const;
     bool setActiveProperty(QtnPropertyBase*newActiveProperty);
 
     bool ensureVisible(const QtnPropertyBase* property);
 
-    quint32 itemHeightSpacing() const { return m_itemHeightSpacing; }
+	inline int itemHeight() const;
+
+	inline quint32 itemHeightSpacing() const;
     bool setItemHeightSpacing(quint32 itemHeightSpacing);
 
-    QtnPropertyViewStyle propertyViewStyle() const { return m_style; }
+	inline QtnPropertyViewStyle propertyViewStyle() const;
     void setPropertyViewStyle(QtnPropertyViewStyle style);
     void addPropertyViewStyle(QtnPropertyViewStyle style);
     void removePropertyViewStyle(QtnPropertyViewStyle style);
 
-	QtnPropertyBase *getPropertyAt(const QPoint &position);
+	QtnPropertyBase *getPropertyAt(const QPoint &position, QRect *out_rect = nullptr);
 
 public slots:
     QtnAccessibilityProxy* accessibilityProxy();
@@ -110,22 +113,18 @@ private:
         Item *parent;
         QList<QSharedPointer<Item> > children;
 
-        Item()
-            : property(nullptr),
-              level(0),
-              parent(nullptr)
-        {}
+		Item();
 
-        bool collapsed() const { return property->stateLocal() & QtnPropertyStateCollapsed; }
-    };
+		inline bool collapsed() const;
+	};
 
-    struct Action
-    {
-        QRect rect;
-        std::function<bool(QEvent *, QRect)> action;
-    };
+	struct Action
+	{
+		QRect rect;
+		std::function<bool(QEvent *, QRect)> action;
+	};
 
-    struct VisibleItem
+	struct VisibleItem
     {
         Item *item;
         int level;
@@ -135,14 +134,7 @@ private:
         mutable bool actionsValid;
         mutable bool needTooltip;
 
-        VisibleItem()
-            : item(nullptr),
-              level(0),
-              hasChildren(false),
-              actionsValid(false),
-              needTooltip(false)
-        {
-        }
+		VisibleItem();
     };
 
 private:
@@ -198,7 +190,47 @@ private:
     QRubberBand* m_rubberBand;
 
     friend class QtnAccessibilityProxy;
-    QtnAccessibilityProxy* m_accessibilityProxy;
+	QtnAccessibilityProxy* m_accessibilityProxy;
 };
+
+const QtnPropertySet *QtnPropertyView::propertySet() const
+{
+	return m_propertySet;
+}
+
+QtnPropertySet *QtnPropertyView::propertySet()
+{
+	return m_propertySet;
+}
+
+QtnPropertyBase *QtnPropertyView::activeProperty()
+{
+	return m_activeProperty;
+}
+
+const QtnPropertyBase *QtnPropertyView::activeProperty() const
+{
+	return m_activeProperty;
+}
+
+int QtnPropertyView::itemHeight() const
+{
+	return m_itemHeight;
+}
+
+quint32 QtnPropertyView::itemHeightSpacing() const
+{
+	return m_itemHeightSpacing;
+}
+
+QtnPropertyViewStyle QtnPropertyView::propertyViewStyle() const
+{
+	return m_style;
+}
+
+bool QtnPropertyView::Item::collapsed() const
+{
+	return property->stateLocal() & QtnPropertyStateCollapsed;
+}
 
 #endif // QTN_PROPERTYVIEW_H
