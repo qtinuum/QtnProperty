@@ -11,6 +11,7 @@
 #include <QMimeData>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 
 static const QString kCustomPropertyData = "QtnCustomPropertyData";
 
@@ -25,10 +26,12 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	updateTitle();
 
+	ui->propertyWidget->setDelegate(this);
+
 	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint)));
 
 	QObject::connect(ui->propertyWidget->propertyView(), &QtnPropertyView::activePropertyChanged,
-					 this, &CustomPropertyEditorDialog::onActivePropertyChanged);
+					 this, &CustomPropertyEditorDialog::onActivePropertyChanged);	
 
 	addShortcutForAction(ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions);
 #ifdef Q_OS_MAC
@@ -40,10 +43,12 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 	addShortcutForAction(QKeySequence::Copy, ui->actionPropertyCopy);
 	addShortcutForAction(QKeySequence::Paste, ui->actionPropertyPaste);
 
+	addShortcutForAction(ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd);
+
 	ui->propertyWidget->connectRemoveAction(ui->actionPropertyRemove, true);
 	ui->propertyWidget->connectCutAction(ui->actionPropertyCut, true);
 	ui->propertyWidget->connectCopyAction(ui->actionPropertyCopy, true);
-	ui->propertyWidget->connectCopyAction(ui->actionPropertyPaste, true);
+	ui->propertyWidget->connectPasteAction(ui->actionPropertyPaste, true);
 }
 
 CustomPropertyEditorDialog::~CustomPropertyEditorDialog()
@@ -179,11 +184,11 @@ QMimeData *CustomPropertyEditorDialog::getPropertyDataForAction(QtnPropertyBase 
 
 				if (action == Qt::IgnoreAction)
 				{
-					QVariantList varr;
-					varr.push_back(variant);
+					QJsonArray jarr;
+					jarr.append(QJsonValue::fromVariant(variant));
 
 					QJsonDocument doc;
-					doc.setArray(varr);
+					doc.setArray(jarr);
 
 					QByteArray json(doc.toJson());
 					int start = json.indexOf('[') + 1;
@@ -193,12 +198,12 @@ QMimeData *CustomPropertyEditorDialog::getPropertyDataForAction(QtnPropertyBase 
 													end - start).trimmed());
 				} else
 				{
-					QVariantMap vobj;
+					QJsonObject jobj;
 
-					vobj.insert(var_property->GetName(), variant);
+					jobj.insert(var_property->GetName(), QJsonValue::fromVariant(variant));
 
 					QJsonDocument doc;
-					doc.setObject(vobj);
+					doc.setObject(jobj);
 
 					mime->setData(kCustomPropertyData, doc.toBinaryData());
 				}
@@ -221,23 +226,28 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 	auto var_property = getVarProperty(destination);
 	if (nullptr != var_property)
 	{
-		QJsonParseError parse_result = { 0, QJsonParseError::MissingObject };
 		if (data->hasFormat(kCustomPropertyData))
 		{
-			auto doc = QJsonDocument::fromBinaryData(data->data(kCustomPropertyData), &parse_result);
+			auto doc = QJsonDocument::fromBinaryData(data->data(kCustomPropertyData));
 
 			if (doc.isObject())
 			{
 				auto obj = doc.object();
-				CustomPropertyData custom_data;				
+				CustomPropertyData custom_data;
+
+				if (QtnApplyPosition::Over == position
+				&&	var_property->GetType() == VarProperty::Value)
+				{
+					position = QtnApplyPosition::After;
+				}
 
 				bool ok = false;
 
 				int insert_index = var_property->GetIndex();
 
-				for (auto &it : obj)
+				for (auto it = obj.begin(); it != obj.end(); ++it)
 				{					
-					custom_data.value = it.value().toVariant();									
+					custom_data.value = it.value().toVariant();
 
 					switch (position)
 					{
@@ -247,7 +257,7 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 							if (var_property != var_property->TopParent())
 							{
 								auto parent_prop = dynamic_cast<QtnPropertyBase *>(destination->parent());
-								switch (var_property->GetType())
+								switch (getVarProperty(parent_prop)->GetType())
 								{
 									case VarProperty::Map:
 									{
@@ -267,6 +277,9 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 
 										addProperty(parent_prop, custom_data);
 									}	break;
+
+									default:
+										break;
 								}
 							}
 						}	break;
@@ -290,8 +303,10 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 									addProperty(destination, custom_data);
 									ok = true;
 								}	break;
-							}
 
+								default:
+									break;
+							}
 
 						}	break;
 					}
@@ -309,6 +324,7 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 			QByteArray text(data->data(*pTextPlain));
 			text.prepend('[');
 			text.append(']');
+			QJsonParseError parse_result;
 			auto doc = QJsonDocument::fromJson(text, &parse_result);
 
 			if (QJsonParseError::NoError == parse_result.error)
@@ -318,10 +334,10 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 				custom_data.name = var_property->GetName();
 				custom_data.value = doc.toVariant().toList().at(0);
 				updatePropertyOptions(destination, custom_data);
+
+				return true;
 			}
 		}
-
-
 	}
 
 	return false;
@@ -586,8 +602,7 @@ void CustomPropertyEditorDialog::on_actionPropertyAdd_triggered()
 			} break;
 
 			default:
-				Q_ASSERT(false);
-				break;
+				return;
 		}
 
 		dialog.setType(last_add_type);
@@ -598,11 +613,6 @@ void CustomPropertyEditorDialog::on_actionPropertyAdd_triggered()
 			addProperty(property, result_data);
 		}
 	}
-}
-
-void CustomPropertyEditorDialog::on_actionPropertyRemove_triggered()
-{
-	removeActive();
 }
 
 void CustomPropertyEditorDialog::on_actionPropertyDuplicate_triggered()
@@ -811,8 +821,10 @@ void CustomPropertyEditorDialog::updateSet(QtnPropertyBase *set_property, int ch
 
 void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 {
+	auto widget = ui->propertyWidget;
+
 	if (nullptr == property)
-		ui->propertyWidget->propertyView()->activeProperty();
+		property = ui->propertyWidget->propertyView()->activeProperty();
 
 	auto add_text = tr("Add...");
 
@@ -837,7 +849,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 		ui->actionPropertyAdd->setEnabled(property->id() == VarProperty::PID_EXTRA);
 		ui->actionPropertyDuplicate->setEnabled(not_top_parent);
 		ui->actionPropertyOptions->setEnabled(true);
-		ui->actionPropertyRemove->setEnabled(not_top_parent && canRemoveActive());
+		ui->actionPropertyRemove->setEnabled(not_top_parent && widget->canRemoveProperty(property));
 	} else
 	{
 		ui->actionPropertyAdd->setEnabled(false);
@@ -848,9 +860,9 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 
 	ui->actionPropertyAdd->setText(add_text);
 
-	ui->actionPropertyCut->setEnabled(canCutToClipboard());
-	ui->actionPropertyCopy->setEnabled(canCopyToClipboard());
-	ui->actionPropertyPaste->setEnabled(canPasteFromClipboard());
+	ui->actionPropertyCut->setEnabled(widget->canCutToClipboard());
+	ui->actionPropertyCopy->setEnabled(widget->canCopyToClipboard());
+	ui->actionPropertyPaste->setEnabled(widget->canPasteFromClipboard());
 }
 
 void CustomPropertyEditorDialog::updateTitle()

@@ -13,6 +13,11 @@ CustomPropertyWidget::CustomPropertyWidget(QWidget *parent)
 {
 }
 
+void CustomPropertyWidget::setDelegate(QtnPropertyWidgetExDelegate *delegate)
+{
+	this->delegate = delegate;
+}
+
 bool CustomPropertyWidget::canRemoveProperty(QtnPropertyBase *property)
 {
 	return delegate->canRemoveProperty(property);

@@ -7,6 +7,7 @@
 #include <QShortcut>
 #include <QClipboard>
 #include <QAction>
+#include <QDebug>
 
 static const QString kTextPlain = "text/plain";
 const QString *pTextPlain = &kTextPlain;
@@ -14,6 +15,7 @@ const QString *pTextPlain = &kTextPlain;
 QtnPropertyWidgetEx::QtnPropertyWidgetEx(QWidget *parent)
 	: QtnPropertyWidget(parent)
 	, dragged_property(nullptr)
+	, drop_action(Qt::IgnoreAction)
 	, can_remove(false)
 {
 	for (auto child : children())
@@ -52,6 +54,11 @@ void QtnPropertyWidgetEx::connectPasteAction(QAction *action, bool connect)
 	internalConnect(action, &QtnPropertyWidgetEx::pasteFromClipboard, connect);
 }
 
+bool QtnPropertyWidgetEx::canRemoveActiveProperty()
+{
+	return canRemoveProperty(propertyView()->activeProperty());
+}
+
 bool QtnPropertyWidgetEx::canRemoveProperty(QtnPropertyBase *)
 {
 	return false;
@@ -69,7 +76,8 @@ bool QtnPropertyWidgetEx::canCopyToClipboard()
 
 bool QtnPropertyWidgetEx::canPasteFromClipboard()
 {
-	return dataHasSupportedFormats(QApplication::clipboard()->mimeData());
+	return dataHasSupportedFormats(QApplication::clipboard()->mimeData())
+		&& (nullptr != propertyView()->activeProperty());
 }
 
 bool QtnPropertyWidgetEx::dataHasSupportedFormats(const QMimeData *data)
@@ -85,7 +93,7 @@ void QtnPropertyWidgetEx::removeActiveProperty()
 void QtnPropertyWidgetEx::cutToClipboard()
 {
 	copyToClipboard();
-	removeActive();
+	removeActiveProperty();
 }
 
 void QtnPropertyWidgetEx::copyToClipboard()
@@ -167,6 +175,7 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 				if ((mevent->pos() - drag_start_pos).manhattanLength()
 					 < QApplication::startDragDistance())
 				{
+					drop_action = Qt::IgnoreAction;
 					if (dragAndDrop())
 						return true;
 				}
@@ -194,8 +203,10 @@ void QtnPropertyWidgetEx::dragMoveEvent(QDragMoveEvent *event)
 		event->setDropAction(Qt::CopyAction);
 	} else
 	{
-		event->setDropAction(Qt::MoveAction);
+		event->setDropAction(Qt::MoveAction);		
 	}
+
+	drop_action = event->dropAction();
 
 	event->accept();
 }
@@ -246,7 +257,9 @@ bool QtnPropertyWidgetEx::dragAndDrop()
 
 		// TODO generate cursor
 
-		if (Qt::MoveAction == drag->exec(Qt::CopyAction | Qt::MoveAction))
+		drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+		if (Qt::MoveAction == drop_action)
 			removeProperty(dragged_property);
 		return true;
 	}

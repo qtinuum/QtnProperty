@@ -66,6 +66,9 @@
    <property name="toolTip">
     <string notr="true"/>
    </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl++</string>
+   </property>
   </action>
   <action name="actionPropertyRemove">
    <property name="text">

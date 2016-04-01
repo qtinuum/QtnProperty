@@ -4,7 +4,7 @@
 
 class QMimeData;
 
-const QString *pTextPlain;
+extern const QString *pTextPlain;
 
 enum class QtnApplyPosition
 {
@@ -39,10 +39,12 @@ class QtnPropertyWidgetEx
 public:
 	explicit QtnPropertyWidgetEx(QWidget *parent = nullptr);
 
-	void connectRemoveAction(QAction *action, bool connect);
-	void connectCutAction(QAction *action, bool connect);
-	void connectCopyAction(QAction *action, bool connect);
-	void connectPasteAction(QAction *action, bool connect);
+	void connectRemoveAction(QAction *drop_action, bool connect);
+	void connectCutAction(QAction *drop_action, bool connect);
+	void connectCopyAction(QAction *drop_action, bool connect);
+	void connectPasteAction(QAction *drop_action, bool connect);
+
+	bool canRemoveActiveProperty();
 
 	virtual bool canRemoveProperty(QtnPropertyBase *property) override;
 	virtual bool canCutToClipboard() override;
@@ -59,7 +61,7 @@ protected:
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void removeProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
-												Qt::DropAction action) override;
+												Qt::DropAction drop_action) override;
 	virtual bool applyPropertyData(const QMimeData *data,
 								   QtnPropertyBase *destination,
 								   QtnApplyPosition position) override;
@@ -72,11 +74,12 @@ protected:
 
 private:
 	bool dragAndDrop();
-	void internalConnect(QAction *action,
+	void internalConnect(QAction *drop_action,
 						 void (QtnPropertyWidgetEx::*slot)(),
 						 bool connect);
 
 	QPoint drag_start_pos;
 	QtnPropertyBase *dragged_property;
-	bool can_remove;
+	Qt::DropAction drop_action;
+	bool can_remove;	
 };
