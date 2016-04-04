@@ -201,12 +201,12 @@ void QtnPropertyWidgetEx::dragMoveEvent(QDragMoveEvent *event)
 	||	!can_remove)
 	{
 		event->setDropAction(Qt::CopyAction);
+		drop_action = Qt::CopyAction;
 	} else
 	{
 		event->setDropAction(Qt::MoveAction);		
+		drop_action = Qt::MoveAction;
 	}
-
-	drop_action = event->dropAction();
 
 	event->accept();
 }
@@ -234,8 +234,14 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			else
 				apply_position = QtnApplyPosition::Over;
 
+			if (property == dragged_property
+			||	nullptr == property)
+			{
+				dragged_property = nullptr;
+			}
+
 			auto data = event->mimeData();
-			if (property != dragged_property
+			if (nullptr != dragged_property
 			&&	dataHasSupportedFormats(data)
 			&&	applyPropertyData(data, property, apply_position))
 				event->accept();
@@ -259,8 +265,11 @@ bool QtnPropertyWidgetEx::dragAndDrop()
 
 		drag->exec(Qt::CopyAction | Qt::MoveAction);
 
-		if (Qt::MoveAction == drop_action)
-			removeProperty(dragged_property);
+		if (nullptr != dragged_property)
+		{
+			if (Qt::MoveAction == drop_action)
+				removeProperty(dragged_property);
+		}
 		return true;
 	}
 
