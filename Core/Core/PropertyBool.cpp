@@ -16,14 +16,25 @@
 
 #include "PropertyBool.h"
 
+#include <QCoreApplication>
+
 static bool getBoolValue(QString boolText, bool& success)
 {
     success = true;
-	if (QString::compare(boolText, QtnPropertyBool::getBoolText(false), Qt::CaseInsensitive) == 0)
+	if (0 == boolText.compare(QtnPropertyBool::getBoolText(false, true), Qt::CaseInsensitive))
         return false;
 
-	if (QString::compare(boolText, QtnPropertyBool::getBoolText(true), Qt::CaseInsensitive) == 0)
+	if (0 == boolText.compare(QtnPropertyBool::getBoolText(true, true), Qt::CaseInsensitive))
         return true;
+
+	if (0 == boolText.compare(QtnPropertyBool::getBoolText(false, false), Qt::CaseInsensitive))
+		return false;
+
+	if (0 == boolText.compare(QtnPropertyBool::getBoolText(true, false), Qt::CaseInsensitive))
+		return true;
+
+	if (boolText.toULongLong(&success) != 0)
+		return true;
 
     success = false;
     return false;
@@ -43,12 +54,17 @@ bool QtnPropertyBoolBase::fromStrImpl(const QString& str)
 bool QtnPropertyBoolBase::toStrImpl(QString& str) const
 {
     bool boolValue = value();
-	str = QtnPropertyBool::getBoolText(boolValue);
+	str = QtnPropertyBool::getBoolText(boolValue, true);
     return true;
 }
 
-
-QString QtnPropertyBool::getBoolText(bool value)
+QString QtnPropertyBool::getBoolText(bool value, bool internal)
 {
-	return value ? tr("True") : tr("False");
+	static const char *pFalse = QT_TRANSLATE_NOOP("QtnPropertyBool", "False");
+	static const char *pTrue = QT_TRANSLATE_NOOP("QtnPropertyBool", "True");
+
+	if (internal)
+		return QString(value ? pTrue : pFalse);
+
+	return QCoreApplication::translate("QtnPropertyBool", value ? pTrue : pFalse);
 }

@@ -4,12 +4,12 @@
 <context>
     <name>QtnPropertyBool</name>
     <message>
-        <location filename="../Core/PropertyBool.cpp" line="53"/>
+        <location filename="../Core/PropertyBool.cpp" line="64"/>
         <source>True</source>
         <translation>True</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyBool.cpp" line="53"/>
+        <location filename="../Core/PropertyBool.cpp" line="63"/>
         <source>False</source>
         <translation>False</translation>
     </message>

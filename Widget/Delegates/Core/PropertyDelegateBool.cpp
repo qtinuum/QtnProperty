@@ -91,8 +91,8 @@ QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, co
 QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner)
     : QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
 {
-	m_labels[0] = QtnPropertyBool::getBoolText(false);
-	m_labels[1] = QtnPropertyBool::getBoolText(true);
+	m_labels[0] = QtnPropertyBool::getBoolText(false, false);
+	m_labels[1] = QtnPropertyBool::getBoolText(true, false);
 }
 
 void QtnPropertyDelegateBoolCombobox::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)

@@ -32,7 +32,8 @@ enum QtnPropertyStateFlag
     QtnPropertyStateInvisible = 0x0002,
     QtnPropertyStateImmutable = 0x0004,
     QtnPropertyStateCollapsed = 0x0008,
-    QtnPropertyStateNonSerialized = 0x0010
+	QtnPropertyStateNonSerialized = 0x0010,
+	QtnPropertyStateDraggable = 0x0020
 };
 Q_DECLARE_FLAGS(QtnPropertyState, QtnPropertyStateFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyState)

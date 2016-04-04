@@ -65,7 +65,7 @@ public:
     {
     }
 
-	static QString getBoolText(bool value);
+	static QString getBoolText(bool value, bool internal);
 
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyBool, QtnPropertyBoolBase)
 };

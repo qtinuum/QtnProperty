@@ -94,9 +94,10 @@ QtnPropertyView::~QtnPropertyView()
 {
 }
 
+
 QtnAccessibilityProxy *QtnPropertyView::accessibilityProxy()
 {
-    if (!m_accessibilityProxy)
+	if (!m_accessibilityProxy)
         m_accessibilityProxy = new QtnAccessibilityProxy(this);
 
     return m_accessibilityProxy;
@@ -169,7 +170,22 @@ void QtnPropertyView::addPropertyViewStyle(QtnPropertyViewStyle style)
 
 void QtnPropertyView::removePropertyViewStyle(QtnPropertyViewStyle style)
 {
-    setPropertyViewStyle(propertyViewStyle() & ~style);
+	setPropertyViewStyle(propertyViewStyle() & ~style);
+}
+
+QtnPropertyBase *QtnPropertyView::getPropertyAt(const QPoint &position, QRect *out_rect)
+{
+	int index = visibleItemIndexByPoint(position);
+	if (index >= 0)
+	{
+		if (nullptr != out_rect)
+		{
+			*out_rect = visibleItemRect(index);
+		}
+		return m_visibleItems[index].item->property;
+	}
+
+	return nullptr;
 }
 
 void QtnPropertyView::paintEvent(QPaintEvent* e)
@@ -498,6 +514,8 @@ void QtnPropertyView::mousePressEvent(QMouseEvent* e)
             changeActivePropertyByIndex(index);
             processItemActionByMouse(index, e);
         }
+
+		QAbstractScrollArea::mousePressEvent(e);
     }
 }
 
@@ -550,6 +568,8 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent* e)
             else
                 processItemActionByMouse(index, e);
         }
+
+		QAbstractScrollArea::mouseMoveEvent(e);
     }
 }
 
@@ -819,9 +839,17 @@ void QtnPropertyView::tooltipEvent(QHelpEvent* e)
     }
 }
 
+QtnPropertyView::Item::Item()
+	: property(nullptr)
+	, level(0)
+	, parent(nullptr)
+{
+
+}
+
 void QtnPropertyView::updateItemsTree()
 {
-    m_itemsTree.reset(createItemsTree(m_propertySet, m_delegateFactory));
+	m_itemsTree.reset(createItemsTree(m_propertySet, m_delegateFactory));
     invalidateVisibleItems();
 }
 
@@ -1045,3 +1073,12 @@ void QtnPropertyView::OnPropertyDidChange(const QtnPropertyBase* changedProperty
     }
 }
 
+
+QtnPropertyView::VisibleItem::VisibleItem()
+	: item(nullptr)
+	, level(0)
+	, hasChildren(false)
+	, actionsValid(false)
+	, needTooltip(false)
+{
+}

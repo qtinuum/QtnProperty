@@ -19,7 +19,8 @@ HEADERS += \
     CustomPropertyEditorDialog.h \
     CustomPropertyOptionsDialog.h \
     VarProperty.h \
-    PropertyQVariant.h
+    PropertyQVariant.h \
+    CustomPropertyWidget.h
 
 SOURCES += \
     PropertyInt64.cpp \
@@ -33,7 +34,8 @@ SOURCES += \
     CustomPropertyEditorDialog.cpp \
     CustomPropertyOptionsDialog.cpp \
     VarProperty.cpp \
-    PropertyQVariant.cpp
+    PropertyQVariant.cpp \
+    CustomPropertyWidget.cpp
 
 TRANSLATIONS = \
     Translations/QtnPropertyExtension_en.ts \
