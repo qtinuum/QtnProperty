@@ -110,9 +110,9 @@ void TestGeneratedProperty::testJson()
 
     QJsonDocument d(o);
     auto res = d.toJson();
-    QCOMPARE(res.size(), 1192);
+    QCOMPARE(res.size(), 1321);
     res = d.toJson(QJsonDocument::Compact);
-    QCOMPARE(res.size(), 623);
+    QCOMPARE(res.size(), 752);
 
     QVERIFY(p.fromJson(o));
 }

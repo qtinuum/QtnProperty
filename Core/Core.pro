@@ -3,7 +3,7 @@ include(../Config.pri)
 QT += quick
 QT += script
 CONFIG += staticlib
-CONFIG += unity_build
+#CONFIG += unity_build
 
 TARGET = QtnPropertyCore
 TEMPLATE = lib

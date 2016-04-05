@@ -16,6 +16,7 @@
 
 #include "PropertySet.h"
 #include <QRegularExpression>
+#include <QDebug>
 
 static int qtnPropertySetPtrId = qRegisterMetaType<QtnPropertySet*>("QtnPropertySet*");
 
@@ -257,17 +258,17 @@ bool QtnPropertySet::fromJson(const QJsonObject& jsonObject)
             if (childProperty)
             {
                 auto jsonProperty = it.value().toObject();
-                auto propertyValue = jsonProperty.value("value").toVariant();
-                if (propertyValue.isNull())
+                QString propertyValue = jsonProperty.value("value").toString();
+                if (propertyValue.isEmpty())
                 {
                     qDebug() << "Cannot parse \"value\" attribute";
                     anyFail = true;
                     continue;
                 }
 
-                if (!childProperty->fromVariant(propertyValue))
+                if (!childProperty->fromStr(propertyValue))
                 {
-                    qDebug() << "Cannot convert value " << propertyValue <<" to property \"" << childProperty->cppName() << "\"";
+                    qDebug() << "Cannot convert value" << propertyValue <<"to property" << childProperty->cppName();
                     anyFail = true;
                 }
             }
@@ -304,14 +305,14 @@ bool QtnPropertySet::toJson(QJsonObject& jsonObject) const
             auto childProperty = childPropertyBase->asProperty();
             if (childProperty)
             {
-                QVariant value;
-                if (!childProperty->toVariant(value))
+                QString value;
+                if (!childProperty->toStr(value))
                 {
-                    qDebug() << "Cannot convert property \"" << childProperty->cppName() << "\" to Variant";
+                    qDebug() << "Cannot convert property \"" << childProperty->cppName() << "\" to QString";
                     continue;
                 }
 
-                jsonSubObject.insert("value", QJsonValue::fromVariant(value));
+                jsonSubObject.insert("value", value);
             }
             else
             {
@@ -535,19 +536,19 @@ bool QtnPropertySet::toStrWithPrefix(QString& str, const QString& prefix) const
             QString strValue;
             if (!childProperty->toStr(strValue))
             {
-                qDebug() << QString("Cannot convert property %1<%2> to string").arg(childProperty->name(), childProperty->metaObject()->className());
+                qDebug() << QString("Cannot convert property %1<%2> to string").arg(childProperty->cppName(), childProperty->metaObject()->className());
                 Q_ASSERT(false);
                 return false;
             }
 
-            str.append(QString("%1%2 = %3%4").arg(prefix, childProperty->name(), strValue, lineEnd));
+            str.append(QString("%1%2 = %3%4").arg(prefix, childProperty->cppName(), strValue, lineEnd));
         }
         else
         {
             QtnPropertySet* childPropertySet = childPropertyBase->asPropertySet();
             if (childPropertySet)
             {
-                if (!childPropertySet->toStrWithPrefix(str, QString("%1%2.").arg(prefix, childPropertySet->name())))
+                if (!childPropertySet->toStrWithPrefix(str, QString("%1%2.").arg(prefix, childPropertySet->cppName())))
                     return false;
             }
             else

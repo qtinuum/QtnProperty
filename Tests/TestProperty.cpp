@@ -464,17 +464,17 @@ void TestProperty::propertySet()
     QtnPropertySet p(this);
 
     QtnPropertySet pp(&p);
-    pp.setName("pp");
+    pp.setCppName("pp");
 
     QtnPropertyBool b(&pp);
-    b.setName("b");
+    b.setCppName("b");
 
     QtnPropertyFloat f(nullptr);
-    f.setName("f");
+    f.setCppName("f");
     p.addChildProperty(&f);
 
     QtnPropertyBool bb(&p);
-    bb.setName("b");
+    bb.setCppName("b");
 
     QList<QtnPropertyBase*> res = p.findChildProperties("pp");
     QCOMPARE(res.size(), 1);
