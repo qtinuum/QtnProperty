@@ -23,7 +23,8 @@ bool QtnPropertyFloatBase::fromStrImpl(const QString& str)
     if (!ok)
         return false;
 
-    return setValue(value);
+    setValue(value);
+    return true;
 }
 
 bool QtnPropertyFloatBase::toStrImpl(QString& str) const

@@ -50,7 +50,8 @@ bool QtnPropertyQSizeBase::fromStrImpl(const QString& str)
     if (!ok)
         return false;
 
-    return setValue(QSize(width, height));
+    setValue(QSize(width, height));
+    return true;
 }
 
 bool QtnPropertyQSizeBase::toStrImpl(QString& str) const

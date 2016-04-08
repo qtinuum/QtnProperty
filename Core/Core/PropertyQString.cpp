@@ -29,7 +29,8 @@ bool QtnPropertyQStringBase::fromStrImpl(const QString& str)
         }
     }
 
-    return setValue(strValue);
+    setValue(strValue);
+    return true;
 }
 
 bool QtnPropertyQStringBase::toStrImpl(QString& str) const

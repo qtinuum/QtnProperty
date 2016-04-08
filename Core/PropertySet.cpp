@@ -258,14 +258,14 @@ bool QtnPropertySet::fromJson(const QJsonObject& jsonObject)
             if (childProperty)
             {
                 auto jsonProperty = it.value().toObject();
-                QString propertyValue = jsonProperty.value("value").toString();
-                if (propertyValue.isEmpty())
+                if (!jsonProperty.contains("value"))
                 {
                     qDebug() << "Cannot parse \"value\" attribute";
                     anyFail = true;
                     continue;
                 }
 
+                QString propertyValue = jsonProperty.value("value").toString();
                 if (!childProperty->fromStr(propertyValue))
                 {
                     qDebug() << "Cannot convert value" << propertyValue <<"to property" << childProperty->cppName();
@@ -352,14 +352,16 @@ bool QtnPropertySet::fromStrImpl(const QString& str)
     {
         if (!parserLine.exactMatch(line))
         {
-            qDebug() << "Cannot parse string: \"" << line << "\"";
+            qDebug() << "Cannot parse string: " << line;
+            Q_ASSERT(false);
             continue;
         }
 
         QStringList params = parserLine.capturedTexts();
         if (params.size() != 3)
         {
-            qDebug() << "Cannot parse string: \"" << line << "\"";
+            qDebug() << "Cannot parse string: " << line;
+            Q_ASSERT(false);
             continue;
         }
 
@@ -370,12 +372,14 @@ bool QtnPropertySet::fromStrImpl(const QString& str)
         if (subProperties.size() != 1)
         {
             qDebug() << "Ambiguous property path: " << propertyPath;
+            Q_ASSERT(false);
             continue;
         }
 
         if (!subProperties[0]->fromStr(propertyStrValue))
         {
-            qDebug() << QString("Cannot convert property %1<%2> from string \"%3\"").arg(subProperties[0]->name(), subProperties[0]->metaObject()->className(), propertyStrValue);
+            qDebug() << QString("Cannot convert property %1<%2> from string \"%3\"").arg(subProperties[0]->cppName(), subProperties[0]->metaObject()->className(), propertyStrValue);
+            Q_ASSERT(false);
             continue;
         }
 

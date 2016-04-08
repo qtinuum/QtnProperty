@@ -420,7 +420,8 @@ bool QtnPropertyBase::fromStr(const QString& str)
     if (!isEditableByUser())
         return false;
 
-    return fromStrImpl(str);
+    QString trimmedStr = str.trimmed();
+    return fromStrImpl(trimmedStr);
 }
 
 bool QtnPropertyBase::toStr(QString& str) const

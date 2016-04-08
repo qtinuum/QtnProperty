@@ -56,7 +56,8 @@ bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString& str)
         val = val|enumValue->value();
     }
 
-    return setValue(val);
+    setValue(val);
+    return true;
 }
 
 bool QtnPropertyEnumFlagsBase::toStrImpl(QString& str) const

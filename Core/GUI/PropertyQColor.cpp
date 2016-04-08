@@ -23,7 +23,8 @@ bool QtnPropertyQColorBase::fromStrImpl(const QString& str)
     if (!color.isValid())
         return false;
 
-    return setValue(color);
+    setValue(color);
+    return true;
 }
 
 bool QtnPropertyQColorBase::toStrImpl(QString& str) const

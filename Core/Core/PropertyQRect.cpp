@@ -58,7 +58,8 @@ bool QtnPropertyQRectBase::fromStrImpl(const QString& str)
     if (!ok)
         return false;
 
-    return setValue(QRect(left, top, width, height));
+    setValue(QRect(left, top, width, height));
+    return true;
 }
 
 bool QtnPropertyQRectBase::toStrImpl(QString& str) const

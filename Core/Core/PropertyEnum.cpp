@@ -25,7 +25,8 @@ bool QtnPropertyEnumBase::fromStrImpl(const QString& str)
     if (!enumValue)
         return false;
 
-    return setValue(enumValue->value());
+    setValue(enumValue->value());
+    return true;
 }
 
 bool QtnPropertyEnumBase::toStrImpl(QString& str) const

@@ -50,7 +50,8 @@ bool QtnPropertyQPointBase::fromStrImpl(const QString& str)
     if (!ok)
         return false;
 
-    return setValue(QPoint(x, y));
+    setValue(QPoint(x, y));
+    return true;
 }
 
 bool QtnPropertyQPointBase::toStrImpl(QString& str) const

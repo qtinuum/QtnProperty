@@ -1202,7 +1202,7 @@ void TestProperty::stringConversions()
         QCOMPARE(pp.ip.value(), -23);
         pp.ip.setMinValue(-2);
         QCOMPARE(pp.ip.value(), -2);
-        QVERIFY(!pp.ip.fromStr("-32"));
+        QVERIFY(pp.ip.fromStr("-32"));
         QCOMPARE(pp.ip.value(), -2);
 
         QVERIFY(pp.ipc.toStr(str));
@@ -1233,7 +1233,7 @@ void TestProperty::stringConversions()
         QCOMPARE(pp.upc.value(), 11u);
         pp.upc.setMaxValue(100);
         QCOMPARE(pp.upc.value(), 11u);
-        QVERIFY(!pp.upc.fromStr("110"));
+        QVERIFY(pp.upc.fromStr("110"));
         QCOMPARE(pp.upc.value(), 11u);
 
         QVERIFY(pp.fp.toStr(str));
@@ -1431,6 +1431,25 @@ void TestProperty::stringConversions()
         QCOMPARE(p.u.value(), false);
         QCOMPARE(p.yy.s.value(), tr("new value"));
         QCOMPARE(p.s.a.value(), true);
+    }
+
+    {
+        QtnPropertySet ps(this);
+
+        QtnPropertyBool pb(&ps);
+        pb.setCppName("AAAA");
+        pb.setName("AA AA");
+        pb.setValue(false);
+
+        QtnPropertyInt pi(&ps);
+        pi.setCppName("BBBB");
+        pi.setName("BB BB");
+        pi.setValue(12);
+
+        QString res;
+        QVERIFY(ps.toStr(res));
+
+        QVERIFY(ps.fromStr(res));
     }
 }
 

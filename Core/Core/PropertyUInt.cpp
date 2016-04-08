@@ -23,7 +23,8 @@ bool QtnPropertyUIntBase::fromStrImpl(const QString& str)
     if (!ok)
         return false;
 
-    return setValue(value);
+    setValue(value);
+    return true;
 }
 
 bool QtnPropertyUIntBase::toStrImpl(QString& str) const

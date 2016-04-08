@@ -28,7 +28,8 @@ bool QtnPropertyQFontBase::fromStrImpl(const QString& str)
     if (!font.fromString(str.trimmed()))
         return false;
 
-    return setValue(font);
+    setValue(font);
+    return true;
 }
 
 bool QtnPropertyQFontBase::toStrImpl(QString& str) const
