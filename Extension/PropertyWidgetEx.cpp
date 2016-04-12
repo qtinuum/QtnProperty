@@ -222,7 +222,7 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			auto pos = view->mapFrom(this, event->pos());
 			QRect rect;
 			auto property = view->getPropertyAt(pos, &rect);
-			int part_height = view->itemHeight() / 4;
+			int part_height = view->itemHeight() / 3;
 
 			QtnApplyPosition apply_position;
 			if (QRect(rect.left(), rect.top(),

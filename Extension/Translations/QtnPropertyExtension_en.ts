@@ -16,42 +16,49 @@
         <translation type="vanished">Custom Property Editor</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="592"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="354"/>
+        <source>Do you want to insert new property from clipboard?
+If you press &apos;No&apos;, selected property will be replaced.</source>
+        <translation>Do you want to insert new property from clipboard?
+If you press &apos;No&apos;, selected property will be replaced.</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="669"/>
         <source>Add Element</source>
         <translation>Add Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="634"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="711"/>
         <source>Duplicate Element</source>
         <translation>Duplicate Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="684"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="761"/>
         <source>Element Options</source>
         <translation>Element Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="829"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="906"/>
         <source>Add...</source>
         <translation>Add...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="837"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="914"/>
         <source>Add Property...</source>
         <translation>Add Property...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="841"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="918"/>
         <source>Add Element...</source>
         <translation>Add Element...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="870"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="947"/>
         <source>Edit Custom Properties</source>
         <translation>Edit Custom Properties</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="870"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="947"/>
         <source>Read-only Properties</source>
         <translation>Read-only Properties</translation>
     </message>
@@ -74,12 +81,12 @@
         <translation>Cut</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="122"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="125"/>
         <source>Copy</source>
         <translation>Copy</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="130"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="136"/>
         <source>Paste</source>
         <translation>Paste</translation>
     </message>
@@ -93,7 +100,7 @@
         <translation>Duplicate...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="641"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="718"/>
         <source>Duplicate Property</source>
         <translation>Duplicate Property</translation>
     </message>
@@ -103,12 +110,12 @@
         <translation>Options...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="673"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="750"/>
         <source>Property Options</source>
         <translation>Property Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="598"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="675"/>
         <source>Add Property</source>
         <translation>Add Property</translation>
     </message>

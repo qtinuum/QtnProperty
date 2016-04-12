@@ -116,6 +116,9 @@
    <property name="shortcut">
     <string notr="true">Ctrl+X</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionPropertyCopy">
    <property name="text">
@@ -124,6 +127,9 @@
    <property name="shortcut">
     <string notr="true">Ctrl+C</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionPropertyPaste">
    <property name="text">
@@ -131,6 +137,9 @@
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+V</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
  </widget>

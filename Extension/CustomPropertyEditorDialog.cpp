@@ -12,6 +12,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QMessageBox>
 
 static const QString kCustomPropertyData = "QtnCustomPropertyData";
 
@@ -35,7 +36,7 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	addShortcutForAction(ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions);
 #ifdef Q_OS_MAC
-	addShortcutForAction(QKeySequence::Backspace, ui->actionPropertyRemove);
+	addShortcutForAction(QKeySequence(Qt::CTRL | Qt::Key_Backspace), ui->actionPropertyRemove);
 #else
 	addShortcutForAction(ui->actionPropertyRemove->shortcut(), ui->actionPropertyRemove);
 #endif
@@ -162,7 +163,11 @@ void CustomPropertyEditorDialog::removeProperty(QtnPropertyBase *property)
 			var_property->RemoveFromParent();
 
 			auto set = dynamic_cast<QtnPropertySet *>(property->parent());
-			updateSet(set, set->childProperties().indexOf(property));
+			auto &set_properties = set->childProperties();
+			auto active_property_index = set_properties.indexOf(ui->propertyWidget->propertyView()->activeProperty());
+			updateSet(set, active_property_index >= 0
+							? active_property_index
+							: set_properties.indexOf(property));
 		}
 	}
 }
@@ -182,29 +187,23 @@ QMimeData *CustomPropertyEditorDialog::getPropertyDataForAction(QtnPropertyBase 
 
 				auto variant = var_property->CreateVariant();
 
+				QJsonObject jobj;
+
+				jobj.insert(var_property->GetName(), QJsonValue::fromVariant(variant));
+
+				QJsonDocument doc;
+				doc.setObject(jobj);
+
 				if (action == Qt::IgnoreAction)
 				{
-					QJsonArray jarr;
-					jarr.append(QJsonValue::fromVariant(variant));
-
-					QJsonDocument doc;
-					doc.setArray(jarr);
-
 					QByteArray json(doc.toJson());
-					int start = json.indexOf('[') + 1;
-					int end = json.lastIndexOf(']');
+					int start = json.indexOf('{') + 1;
+					int end = json.lastIndexOf('}');
 
 					mime->setText(QString::fromUtf8(&json.constData()[start],
 													end - start).trimmed());
 				} else
 				{
-					QJsonObject jobj;
-
-					jobj.insert(var_property->GetName(), QJsonValue::fromVariant(variant));
-
-					QJsonDocument doc;
-					doc.setObject(jobj);
-
 					mime->setData(kCustomPropertyData, doc.toBinaryData());
 				}
 
@@ -264,6 +263,7 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 										custom_data.index = -1;
 										custom_data.name = it.key();
 										addProperty(parent_prop, custom_data);
+										ok = true;
 									}	break;
 
 									case VarProperty::List:
@@ -276,6 +276,7 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 											custom_data.index++;
 
 										addProperty(parent_prop, custom_data);
+										ok = true;
 									}	break;
 
 									default:
@@ -322,20 +323,96 @@ bool CustomPropertyEditorDialog::applyPropertyData(const QMimeData *data,
 		if (data->hasFormat(*pTextPlain))
 		{
 			QByteArray text(data->data(*pTextPlain));
-			text.prepend('[');
-			text.append(']');
+			text.prepend('{');
+			text.append('}');
 			QJsonParseError parse_result;
 			auto doc = QJsonDocument::fromJson(text, &parse_result);
 
 			if (QJsonParseError::NoError == parse_result.error)
 			{
-				CustomPropertyData custom_data;
-				custom_data.index = var_property->GetIndex();
-				custom_data.name = var_property->GetName();
-				custom_data.value = doc.toVariant().toList().at(0);
-				updatePropertyOptions(destination, custom_data);
+				auto object = doc.object();
+				for (auto it = object.begin(); it != object.end(); ++it)
+				{
+					CustomPropertyData custom_data;
+					custom_data.index = var_property->GetIndex();
+					custom_data.name = it.key();
+					custom_data.value = it.value().toVariant();
 
-				return true;
+					QMessageBox::StandardButton choice = QMessageBox::No;
+
+					auto insert_destination = dynamic_cast<QtnPropertySet *>(destination);
+
+					if (nullptr == insert_destination)
+					{
+						if (var_property != var_property->TopParent())
+							insert_destination = dynamic_cast<QtnPropertySet *>(destination->parent());
+					}
+
+					if (nullptr != insert_destination)
+					{
+						choice = QMessageBox::question(this, QCoreApplication::applicationName(),
+													   tr("Do you want to insert new property from clipboard?\n"
+														  "If you press 'No', selected property will be replaced."),
+													   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+					}
+
+					switch (choice)
+					{
+						case QMessageBox::Yes:
+						{
+							if (insert_destination == destination)
+							{
+								switch (var_property->GetType())
+								{
+									case VarProperty::List:
+										custom_data.index = var_property->GetChildrenCount();
+										break;
+
+									case VarProperty::Map:
+										custom_data.index = -1;
+										break;
+
+									default:
+										break;
+								}
+							}
+							addProperty(insert_destination, custom_data);
+						}	break;
+
+						case QMessageBox::No:
+						{
+							updatePropertyOptions(destination, custom_data);
+						}	break;
+
+						default:
+							return false;
+					}
+
+					return true;
+				}
+			} else
+			{
+				QByteArray text(data->data(*pTextPlain));
+				text.prepend('[');
+				text.append(']');
+
+				doc = QJsonDocument::fromJson(text, &parse_result);
+
+				if (QJsonParseError::NoError == parse_result.error)
+				{
+					auto array = doc.array();
+
+					if (array.size() > 0)
+					{
+						CustomPropertyData custom_data;
+						custom_data.index = var_property->GetIndex();
+						custom_data.name = var_property->GetName();
+						custom_data.value = array.at(0).toVariant();
+						updatePropertyOptions(destination, custom_data);
+
+						return true;
+					}
+				}
 			}
 		}
 	}
@@ -443,6 +520,8 @@ void CustomPropertyEditorDialog::addProperty(QtnPropertyBase *source, const Cust
 	Q_ASSERT(nullptr != var_property);
 	auto set = dynamic_cast<QtnPropertySet *>(source);
 	Q_ASSERT(nullptr != set);
+	if (data.index >= 0)
+		Q_ASSERT(data.index <= var_property->GetChildrenCount());
 	auto new_property = newProperty(nullptr, data.value, data.name, data.index, var_property);
 
 	std::vector<QtnPropertyBase *> children;
@@ -451,21 +530,15 @@ void CustomPropertyEditorDialog::addProperty(QtnPropertyBase *source, const Cust
 		children.push_back(child);
 	}
 
-	children.push_back(new_property);
+	if (data.index >= 0)
+		children.insert(children.begin() + data.index, new_property);
+	else
+		children.push_back(new_property);
 
 	auto is_list = (VarProperty::List == var_property->GetType());
 
 	if (is_list)
 	{
-		std::sort(children.begin(), children.end(),
-		[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool
-		{
-			auto va = getVarProperty(a);
-			auto vb = getVarProperty(b);
-
-			return va->GetIndex() < vb->GetIndex();
-		});
-
 		int count = static_cast<int>(children.size());
 		for (int i = 0; i < count; i++)
 		{
@@ -514,7 +587,9 @@ void CustomPropertyEditorDialog::updatePropertyOptions(QtnPropertyBase *source,
 
 	int old_index = var_property->GetIndex();
 
-	if (var_property != var_property->TopParent())
+	bool top_property = (var_property == var_property->TopParent());
+
+	if (!top_property)
 	{
 		refresh_siblings = var_property->SetIndex(data.index);
 		refresh_siblings = var_property->SetName(data.name) || refresh_siblings;
@@ -525,12 +600,14 @@ void CustomPropertyEditorDialog::updatePropertyOptions(QtnPropertyBase *source,
 	{
 		int index = set->childProperties().indexOf(source);
 
+		QString prop_name(top_property ? var_property->GetName() : data.name);
+
 		var_property->RemoveFromParent();
 		set->removeChildProperty(source);
 
 		delete source;
 
-		auto new_property = newProperty(nullptr, data.value, data.name, data.index, var_parent);
+		auto new_property = newProperty(nullptr, data.value, prop_name, data.index, var_parent);
 
 		set->addChildProperty(new_property, true, index);
 		ui->propertyWidget->propertyView()->setActiveProperty(new_property);
