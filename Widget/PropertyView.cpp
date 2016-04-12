@@ -100,9 +100,15 @@ QtnAccessibilityProxy *QtnPropertyView::accessibilityProxy()
 	if (!m_accessibilityProxy)
         m_accessibilityProxy = new QtnAccessibilityProxy(this);
 
-    return m_accessibilityProxy;
+	return m_accessibilityProxy;
 }
 
+void QtnPropertyView::onActivePropertyDestroyed()
+{
+	m_activeProperty = nullptr;
+	emit activePropertyChanged(m_activeProperty);
+	viewport()->update();
+}
 
 void QtnPropertyView::setPropertySet(QtnPropertySet* newPropertySet)
 {
@@ -120,15 +126,13 @@ void QtnPropertyView::setPropertySet(QtnPropertySet* newPropertySet)
 bool QtnPropertyView::setActiveProperty(QtnPropertyBase* newActiveProperty)
 {
     if (m_activeProperty == newActiveProperty)
-        return false;
+		return false;
 
     qtnStopInplaceEdit();
 
     if (!newActiveProperty)
     {
-        m_activeProperty = nullptr;
-        emit activePropertyChanged(activeProperty());
-        viewport()->update();
+		setActivePropertyInternal(nullptr);
         return true;
     }
 
@@ -136,9 +140,7 @@ bool QtnPropertyView::setActiveProperty(QtnPropertyBase* newActiveProperty)
     if (index < 0)
         return false;
 
-    m_activeProperty = newActiveProperty;
-    emit activePropertyChanged(activeProperty());
-    viewport()->update();
+	setActivePropertyInternal(newActiveProperty);
     return true;
 }
 
@@ -907,7 +909,18 @@ QtnPropertyView::Item* QtnPropertyView::createItemsTree(QtnPropertyBase* rootPro
             Q_ASSERT(false);
         }
     }
-    return item;
+	return item;
+}
+
+void QtnPropertyView::setActivePropertyInternal(QtnPropertyBase *property)
+{
+	disconnectActiveProperty();
+
+	m_activeProperty = property;
+	emit activePropertyChanged(m_activeProperty);
+	viewport()->update();
+
+	connectActiveProperty();
 }
 
 void QtnPropertyView::invalidateVisibleItems()
@@ -1051,7 +1064,25 @@ void QtnPropertyView::updateSplitRatio(float splitRatio)
     // firce to regenerate actions
     invalidateVisibleItemsActions();
     // repaint
-    viewport()->update();
+	viewport()->update();
+}
+
+void QtnPropertyView::connectActiveProperty()
+{
+	if (nullptr != m_activeProperty)
+	{
+		QObject::connect(m_activeProperty, &QObject::destroyed,
+						 this, &QtnPropertyView::onActivePropertyDestroyed);
+	}
+}
+
+void QtnPropertyView::disconnectActiveProperty()
+{
+	if (nullptr != m_activeProperty)
+	{
+		QObject::disconnect(m_activeProperty, &QObject::destroyed,
+							this, &QtnPropertyView::onActivePropertyDestroyed);
+	}
 }
 
 void QtnPropertyView::OnPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)

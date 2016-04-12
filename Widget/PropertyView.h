@@ -90,6 +90,9 @@ Q_SIGNALS:
     // emits when active property has changed
     void activePropertyChanged(QtnPropertyBase* activeProperty);
 
+private slots:
+	void onActivePropertyDestroyed();
+
 protected:
     void paintEvent(QPaintEvent* e) override;
     void resizeEvent(QResizeEvent* e) override;
@@ -141,6 +144,8 @@ private:
     void updateItemsTree();
     static Item* createItemsTree(QtnPropertyBase* rootProperty, const QtnPropertyDelegateFactory& factory);
 
+	void setActivePropertyInternal(QtnPropertyBase *property);
+
     void invalidateVisibleItems();
     void validateVisibleItems() const;
     void fillVisibleItems(Item* item, int level) const;
@@ -165,6 +170,9 @@ private:
 
     int splitPosition() const;
     void updateSplitRatio(float splitRatio);
+
+	void connectActiveProperty();
+	void disconnectActiveProperty();
 
     void OnPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
 
