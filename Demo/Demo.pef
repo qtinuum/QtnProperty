@@ -66,6 +66,7 @@ property_set SamplePS
 
     Float FloatPropertySliderBox
     {
+        displayName = "Float Property Slider Box";
         description = "Property to hold float values in range [0, 10].";
         value = 1.f;
         minValue = 0;

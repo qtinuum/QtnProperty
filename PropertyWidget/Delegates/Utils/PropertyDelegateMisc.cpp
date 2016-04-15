@@ -202,7 +202,7 @@ void QtnPropertyDelegateWithValue::addSubItemName(QtnDrawContext& context, QList
         context.painter->setPen(context.palette().color(cg, (context.isActive) ? QPalette::HighlightedText : QPalette::Text));
 
         context.painter->drawText(item.rect, Qt::AlignLeading|Qt::AlignVCenter|Qt::TextSingleLine
-                                , qtnElidedText(*context.painter, property()->name(), item.rect));
+                                , qtnElidedText(*context.painter, property()->displayName(), item.rect));
 
         context.painter->restore();
     };

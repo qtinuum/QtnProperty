@@ -55,12 +55,12 @@ bool QtnPropertySetA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPro
 void QtnPropertySetA::init()
 {
     static QString A_name = tr("A");
-    setCppName(A_name);
+    setName(A_name);
     setId(50);
     
     // start children initialization
     static QString b_name = tr("b");
-    b.setCppName(b_name);
+    b.setName(b_name);
     static QString b_description = "b property";
     b.setDescription(b_description);
     b.setId(51);

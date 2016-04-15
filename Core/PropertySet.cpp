@@ -57,21 +57,21 @@ QtnPropertySet::~QtnPropertySet()
     clearChildProperties();
 }
 
-QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString cppName, Qt::FindChildOptions options)
+QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString name, Qt::FindChildOptions options)
 {
     QList<QtnPropertyBase*> result;
 
     // normilize name
-    cppName = cppName.trimmed();
+    name = name.trimmed();
 
     // if name is dot separated property path
-    if (cppName.contains('.'))
+    if (name.contains('.'))
     {
-        QString nameHead = cppName.section('.', 0, 0);
+        QString nameHead = name.section('.', 0, 0);
         if (nameHead.isEmpty())
             return result;
 
-        QString nameTail = cppName.section('.', 1);
+        QString nameTail = name.section('.', 1);
         if (nameTail.isEmpty())
             return result;
 
@@ -89,7 +89,7 @@ QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString cppName, Qt:
     {
         foreach(QtnPropertyBase* childProperty, m_childProperties)
         {
-            if (childProperty->cppName() == cppName)
+            if (childProperty->name() == name)
                 result.append(childProperty);
         }
 
@@ -99,7 +99,7 @@ QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(QString cppName, Qt:
             {
                 QtnPropertySet* propertySet = childProperty->asPropertySet();
                 if (propertySet)
-                    propertySet->findChildPropertiesRecursive(cppName, result);
+                    propertySet->findChildPropertiesRecursive(name, result);
             }
         }
     }
@@ -113,7 +113,7 @@ QList<QtnPropertyBase*> QtnPropertySet::findChildProperties(const QRegularExpres
 
     foreach(QtnPropertyBase* childProperty, m_childProperties)
     {
-        if (re.match(childProperty->cppName()).isValid())
+        if (re.match(childProperty->name()).isValid())
             result.append(childProperty);
     }
 
@@ -248,7 +248,7 @@ bool QtnPropertySet::fromJson(const QJsonObject& jsonObject)
         {
             if (!childPropertySet->fromJson(it.value().toObject()))
             {
-                qDebug() << "Cannot load \"" << childPropertySet->cppName() << "\" from JSON";
+                qDebug() << "Cannot load \"" << childPropertySet->name() << "\" from JSON";
                 anyFail = true;
             }
         }
@@ -268,7 +268,7 @@ bool QtnPropertySet::fromJson(const QJsonObject& jsonObject)
                 QString propertyValue = jsonProperty.value("value").toString();
                 if (!childProperty->fromStr(propertyValue))
                 {
-                    qDebug() << "Cannot convert value" << propertyValue <<"to property" << childProperty->cppName();
+                    qDebug() << "Cannot convert value" << propertyValue <<"to property" << childProperty->name();
                     anyFail = true;
                 }
             }
@@ -296,7 +296,7 @@ bool QtnPropertySet::toJson(QJsonObject& jsonObject) const
         {
             if (!childPropertySet->toJson(jsonSubObject))
             {
-                qDebug() << "Cannot save \"" << childPropertySet->cppName() << "\" to JSON";
+                qDebug() << "Cannot save \"" << childPropertySet->name() << "\" to JSON";
                 continue;
             }
         }
@@ -308,7 +308,7 @@ bool QtnPropertySet::toJson(QJsonObject& jsonObject) const
                 QString value;
                 if (!childProperty->toStr(value))
                 {
-                    qDebug() << "Cannot convert property \"" << childProperty->cppName() << "\" to QString";
+                    qDebug() << "Cannot convert property \"" << childProperty->name() << "\" to QString";
                     continue;
                 }
 
@@ -321,7 +321,7 @@ bool QtnPropertySet::toJson(QJsonObject& jsonObject) const
             }
         }
 
-        jsonObject.insert(childPropertyBase->cppName(), jsonSubObject);
+        jsonObject.insert(childPropertyBase->name(), jsonSubObject);
         ++successCount;
     }
 
@@ -378,7 +378,7 @@ bool QtnPropertySet::fromStrImpl(const QString& str)
 
         if (!subProperties[0]->fromStr(propertyStrValue))
         {
-            qDebug() << QString("Cannot convert property %1<%2> from string \"%3\"").arg(subProperties[0]->cppName(), subProperties[0]->metaObject()->className(), propertyStrValue);
+            qDebug() << QString("Cannot convert property %1<%2> from string \"%3\"").arg(subProperties[0]->name(), subProperties[0]->metaObject()->className(), propertyStrValue);
             Q_ASSERT(false);
             continue;
         }
@@ -540,19 +540,19 @@ bool QtnPropertySet::toStrWithPrefix(QString& str, const QString& prefix) const
             QString strValue;
             if (!childProperty->toStr(strValue))
             {
-                qDebug() << QString("Cannot convert property %1<%2> to string").arg(childProperty->cppName(), childProperty->metaObject()->className());
+                qDebug() << QString("Cannot convert property %1<%2> to string").arg(childProperty->name(), childProperty->metaObject()->className());
                 Q_ASSERT(false);
                 return false;
             }
 
-            str.append(QString("%1%2 = %3%4").arg(prefix, childProperty->cppName(), strValue, lineEnd));
+            str.append(QString("%1%2 = %3%4").arg(prefix, childProperty->name(), strValue, lineEnd));
         }
         else
         {
             QtnPropertySet* childPropertySet = childPropertyBase->asPropertySet();
             if (childPropertySet)
             {
-                if (!childPropertySet->toStrWithPrefix(str, QString("%1%2.").arg(prefix, childPropertySet->cppName())))
+                if (!childPropertySet->toStrWithPrefix(str, QString("%1%2.").arg(prefix, childPropertySet->name())))
                     return false;
             }
             else

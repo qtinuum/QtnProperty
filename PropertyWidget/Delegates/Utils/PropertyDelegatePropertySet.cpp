@@ -156,7 +156,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context,
 
                 context.painter->setPen(context.palette().color(cg, (context.isActive) ? QPalette::HighlightedText : QPalette::Text));
 
-                QString elidedName = context.painter->fontMetrics().elidedText(property()->name(), Qt::ElideRight, item.rect.width());
+                QString elidedName = context.painter->fontMetrics().elidedText(property()->displayName(), Qt::ElideRight, item.rect.width());
                 context.painter->drawText(item.rect, Qt::AlignLeading|Qt::AlignVCenter|Qt::TextSingleLine, elidedName);
 
                 context.painter->setPen(oldPen);

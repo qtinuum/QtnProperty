@@ -43,7 +43,7 @@ enum QtnPropertyChangeReasonFlag
     QtnPropertyChangeReasonLoadedValue = 0x0002,
     QtnPropertyChangeReasonValue = QtnPropertyChangeReasonNewValue|QtnPropertyChangeReasonLoadedValue,
     QtnPropertyChangeReasonName = 0x0004,
-    QtnPropertyChangeReasonCppName = 0x0008,
+    QtnPropertyChangeReasonDisplayName = 0x0008,
     QtnPropertyChangeReasonDescription = 0x0010,
     QtnPropertyChangeReasonId = 0x0020,
     QtnPropertyChangeReasonStateLocal = 0x0040,

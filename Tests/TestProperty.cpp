@@ -106,8 +106,8 @@ void TestProperty::name()
     QCOMPARE(p.name(), QString("PropertyName"));
 
     QtnPropertySet p1(nullptr);
-    p1.setName("Another Name");
-    QCOMPARE(p1.name(), QString("Another Name"));
+    p1.setName("AnotherName");
+    QCOMPARE(p1.name(), QString("AnotherName"));
 }
 
 void TestProperty::description()
@@ -464,17 +464,17 @@ void TestProperty::propertySet()
     QtnPropertySet p(this);
 
     QtnPropertySet pp(&p);
-    pp.setCppName("pp");
+    pp.setName("pp");
 
     QtnPropertyBool b(&pp);
-    b.setCppName("b");
+    b.setName("b");
 
     QtnPropertyFloat f(nullptr);
-    f.setCppName("f");
+    f.setName("f");
     p.addChildProperty(&f);
 
     QtnPropertyBool bb(&p);
-    bb.setCppName("b");
+    bb.setName("b");
 
     QList<QtnPropertyBase*> res = p.findChildProperties("pp");
     QCOMPARE(res.size(), 1);
@@ -1437,13 +1437,13 @@ void TestProperty::stringConversions()
         QtnPropertySet ps(this);
 
         QtnPropertyBool pb(&ps);
-        pb.setCppName("AAAA");
-        pb.setName("AA AA");
+        pb.setName("AAAA");
+        pb.setDisplayName("AA AA");
         pb.setValue(false);
 
         QtnPropertyInt pi(&ps);
-        pi.setCppName("BBBB");
-        pi.setName("BB BB");
+        pi.setName("BBBB");
+        pi.setDisplayName("BB BB");
         pi.setValue(12);
 
         QString res;

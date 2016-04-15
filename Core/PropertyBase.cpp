@@ -170,21 +170,29 @@ QtnPropertyBase::~QtnPropertyBase()
 
 void QtnPropertyBase::setName(const QString& name)
 {
-    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonName, QtnPropertyValuePtr(&name));
+    if (name.contains(' ') || name.contains('.'))
+    {
+        // cannot set non-identifier name
+        // use displayName instead
+        Q_ASSERT(false);
+        return;
+    }
+
+    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonDisplayName|QtnPropertyChangeReasonName, QtnPropertyValuePtr(&name));
 
     setObjectName(name);
+    m_displayName = name;
 
-    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonName);
+    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonDisplayName|QtnPropertyChangeReasonName);
 }
 
-void QtnPropertyBase::setCppName(const QString& cppName)
+void QtnPropertyBase::setDisplayName(const QString& displayName)
 {
-    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonCppName|QtnPropertyChangeReasonName, QtnPropertyValuePtr(&cppName));
+    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonDisplayName, QtnPropertyValuePtr(&displayName));
 
-    m_cppName = cppName;
-    setObjectName(cppName);
+    m_displayName = displayName;
 
-    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonCppName|QtnPropertyChangeReasonName);
+    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonDisplayName);
 }
 
 void QtnPropertyBase::setDescription(const QString& description)
