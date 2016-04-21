@@ -4,7 +4,7 @@ QT += script
 
 TARGET = QtnPropertyCoreAC
 TEMPLATE = lib
-VERSION = 1.0.8
+VERSION = 1.0.9
 
 DEFINES += QTN_PE_CORE_LIBRARY
 

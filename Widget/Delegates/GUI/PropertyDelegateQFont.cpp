@@ -72,11 +72,14 @@ private:
         if (dlg.exec() == QDialog::Accepted)
         {
 			auto font = property().value();
+			auto style_strategy = font.styleStrategy();
 			int pixel_size = font.pixelSize();
 			font = dlg.currentFont();
 
 			if (pixel_size > 0)
 				font.setPixelSize(font.pointSize());
+
+			font.setStyleStrategy(style_strategy);
 
 			property().setValue(font);
         }
