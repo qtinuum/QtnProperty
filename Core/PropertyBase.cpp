@@ -426,7 +426,7 @@ bool QtnPropertyBase::saveImpl(QDataStream& stream) const
 bool QtnPropertyBase::fromStr(const QString& str)
 {
     if (!isEditableByUser())
-        return false;
+        return true;
 
     QString trimmedStr = str.trimmed();
     return fromStrImpl(trimmedStr);

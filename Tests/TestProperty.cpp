@@ -1446,10 +1446,19 @@ void TestProperty::stringConversions()
         pi.setDisplayName("BB BB");
         pi.setValue(12);
 
-        QString res;
-        QVERIFY(ps.toStr(res));
+        {
+            QString res;
+            QVERIFY(ps.toStr(res));
+            QVERIFY(ps.fromStr(res));
+        }
 
-        QVERIFY(ps.fromStr(res));
+        pb.addState(QtnPropertyStateInvisible);
+
+        {
+            QString res;
+            QVERIFY(ps.toStr(res));
+            QVERIFY(ps.fromStr(res));
+        }
     }
 }
 
