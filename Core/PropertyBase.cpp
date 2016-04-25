@@ -275,6 +275,11 @@ void QtnPropertyBase::switchStateAuto(QtnPropertyState stateToSwitch, bool force
         removeState(stateToSwitch, force);
 }
 
+bool QtnPropertyBase::isEditable() const
+{
+    return !(state()&(QtnPropertyStateImmutable));
+}
+
 bool QtnPropertyBase::isEditableByUser() const
 {
     return !(state()&(QtnPropertyStateImmutable|QtnPropertyStateInvisible));
@@ -425,7 +430,7 @@ bool QtnPropertyBase::saveImpl(QDataStream& stream) const
 
 bool QtnPropertyBase::fromStr(const QString& str)
 {
-    if (!isEditableByUser())
+    if (!isEditable())
         return true;
 
     QString trimmedStr = str.trimmed();
@@ -439,7 +444,7 @@ bool QtnPropertyBase::toStr(QString& str) const
 
 bool QtnPropertyBase::fromVariant(const QVariant& var)
 {
-    if (!isEditableByUser())
+    if (!isEditable())
         return false;
 
     return fromVariantImpl(var);

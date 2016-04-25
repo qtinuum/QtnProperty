@@ -792,7 +792,7 @@ void TestProperty::propertyScripting()
 
         b.setState(QtnPropertyStateInvisible);
         val = eng.evaluate("b.isEditable");
-        QCOMPARE(val.toBool(), false);
+        QCOMPARE(val.toBool(), true);
 
         val = eng.evaluate("b.state");
         QCOMPARE(val.toUInt32(), 2u);

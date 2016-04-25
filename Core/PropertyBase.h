@@ -59,6 +59,7 @@ public:
     void switchState(QtnPropertyState stateToSwitch, bool switchOn, bool force = false);
     void switchStateAuto(QtnPropertyState stateToSwitch, bool force = false);
 
+    bool isEditable() const;
     bool isEditableByUser() const;
     bool isVisible() const;
     bool isSimple() const { return !m_stateLocal.testFlag(QtnPropertyStateNonSimple); }
@@ -100,7 +101,7 @@ public: // properties for scripting
     Q_PROPERTY(QString displayName READ displayName)
     Q_PROPERTY(QString description READ description)
     Q_PROPERTY(qint32 id READ id)
-    Q_PROPERTY(bool isEditable READ isEditableByUser)
+    Q_PROPERTY(bool isEditable READ isEditable)
     Q_PROPERTY(quint32 state READ state)
     Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
