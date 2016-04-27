@@ -22,8 +22,10 @@ void TestEnum::find()
 {
     QVERIFY(COLOR::info().findByValue(COLOR::RED));
     QVERIFY(!COLOR::info().findByValue(333));
-    QVERIFY(COLOR::info().findByName("Blue"));
+    QVERIFY(COLOR::info().findByDisplayName("Blue"));
+    QVERIFY(COLOR::info().findByName("BLUE"));
     QVERIFY(!COLOR::info().findByName("Brown"));
+    QVERIFY(!COLOR::info().findByDisplayName("Brown"));
 }
 
 void TestEnum::state()

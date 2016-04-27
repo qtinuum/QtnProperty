@@ -58,6 +58,23 @@ const QtnEnumValueInfo* QtnEnumInfo::findByName(const QString& name, Qt::CaseSen
     return result;
 }
 
+const QtnEnumValueInfo* QtnEnumInfo::findByDisplayName(const QString& displayName, Qt::CaseSensitivity cs) const
+{
+    const QtnEnumValueInfo* result = nullptr;
+
+    forEachEnumValue([&result, &displayName, cs](const QtnEnumValueInfo& enumValue)->bool {
+        if (QString::compare(enumValue.displayName(), displayName, cs) == 0)
+        {
+            result = &enumValue;
+            return false;
+        }
+
+        return true;
+    });
+
+    return result;
+}
+
 const QtnEnumValueInfo* QtnEnumInfo::fromStr(const QString& str) const
 {
     static QRegExp parserEnum("^\\s*([^:\\s]+)::([^:\\s]+)\\s*$", Qt::CaseInsensitive);
@@ -87,4 +104,9 @@ bool QtnEnumInfo::toStr(QString& str, const QtnEnumValueInfo* value) const
 
     str = QString("%1::%2").arg(name(), value->name());
     return true;
+}
+
+void QtnEnumInfo::setDynamicValues(const QVector<QtnEnumValueInfo>& dynamicValues)
+{
+    m_dynamicValues = dynamicValues;
 }

@@ -738,7 +738,7 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
                     states += capitalize(state);
                 }
             }
-            s.newLine() << QString("staticValues.append(QtnEnumValueInfo(%1::%2, %3%4));").arg(
+            s.newLine() << QString("staticValues.append(QtnEnumValueInfo(%1::%2, \"%2\", %3%4));").arg(
                                name
                                , enumItem.name
                                , enumItem.text

@@ -72,7 +72,7 @@ QWidget* QtnPropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const Q
     {
         QComboBox* combo = new QComboBox(parent);
         info->forEachEnumValue([combo](const QtnEnumValueInfo &value)->bool {
-            combo->addItem(value.name(), QVariant(value.value()));
+            combo->addItem(value.displayName(), QVariant(value.value()));
             return true;
         });
 
@@ -93,7 +93,7 @@ QWidget* QtnPropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const Q
 
         QLineEdit* lineEdit = new QLineEdit(parent);
         lineEdit->setReadOnly(true);
-        lineEdit->setText(valueInfo->name());
+        lineEdit->setText(valueInfo->displayName());
 
         lineEdit->setGeometry(rect);
 
@@ -111,6 +111,6 @@ bool QtnPropertyDelegateEnum::propertyValueToStrImpl(QString& strValue) const
     if (!valueInfo)
         return false;
 
-    strValue = valueInfo->name();
+    strValue = valueInfo->displayName();
     return true;
 }

@@ -357,3 +357,18 @@ enum MY_TYPE
     MY_TYPE2(2, "My type 2")
 }
 */
+
+enum MY_TYPE
+{
+    MY_TYPE1(1, "My type 1"),
+    MY_TYPE2(2, "My type 2")
+}
+
+property_set Test12
+{
+    Enum p
+    {
+        value = MY_TYPE::MY_TYPE1;
+        enumInfo = &MY_TYPE::info();
+    }
+}

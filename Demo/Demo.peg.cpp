@@ -5,9 +5,9 @@
 static QtnEnumInfo& create_COLOR_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
-    staticValues.append(QtnEnumValueInfo(COLOR::red, "red"));
-    staticValues.append(QtnEnumValueInfo(COLOR::blue, "blue"));
-    staticValues.append(QtnEnumValueInfo(COLOR::green, "green"));
+    staticValues.append(QtnEnumValueInfo(COLOR::red, "red", "red"));
+    staticValues.append(QtnEnumValueInfo(COLOR::blue, "blue", "blue"));
+    staticValues.append(QtnEnumValueInfo(COLOR::green, "green", "green"));
     
     static QtnEnumInfo enumInfo("COLOR", staticValues);
     return enumInfo;
@@ -21,9 +21,9 @@ const QtnEnumInfo& COLOR::info()
 static QtnEnumInfo& create_FLAGS_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
-    staticValues.append(QtnEnumValueInfo(FLAGS::opt1, "Option1"));
-    staticValues.append(QtnEnumValueInfo(FLAGS::opt2, "Option2"));
-    staticValues.append(QtnEnumValueInfo(FLAGS::opt3, "Option3"));
+    staticValues.append(QtnEnumValueInfo(FLAGS::opt1, "opt1", "Option1"));
+    staticValues.append(QtnEnumValueInfo(FLAGS::opt2, "opt2", "Option2"));
+    staticValues.append(QtnEnumValueInfo(FLAGS::opt3, "opt3", "Option3"));
     
     static QtnEnumInfo enumInfo("FLAGS", staticValues);
     return enumInfo;

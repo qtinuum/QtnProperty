@@ -606,7 +606,7 @@ void QtnPropertySetTest3::connectDelegates()
 static QtnEnumInfo& create_LANGUAGE_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
-    staticValues.append(QtnEnumValueInfo(LANGUAGE::ENG, "English"));
+    staticValues.append(QtnEnumValueInfo(LANGUAGE::ENG, "ENG", "English"));
     
     static QtnEnumInfo enumInfo("LANGUAGE", staticValues);
     return enumInfo;
@@ -633,9 +633,9 @@ const QtnEnumInfo& TYPE::info()
 static QtnEnumInfo& create_COLOR_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
-    staticValues.append(QtnEnumValueInfo(COLOR::RED, "Red"));
-    staticValues.append(QtnEnumValueInfo(COLOR::BLUE, "Blue", QtnEnumValueStateHidden | QtnEnumValueStateObsolete));
-    staticValues.append(QtnEnumValueInfo(COLOR::YELLOW, "Yellow"));
+    staticValues.append(QtnEnumValueInfo(COLOR::RED, "RED", "Red"));
+    staticValues.append(QtnEnumValueInfo(COLOR::BLUE, "BLUE", "Blue", QtnEnumValueStateHidden | QtnEnumValueStateObsolete));
+    staticValues.append(QtnEnumValueInfo(COLOR::YELLOW, "YELLOW", "Yellow"));
     
     static QtnEnumInfo enumInfo("COLOR", staticValues);
     return enumInfo;
@@ -649,9 +649,9 @@ const QtnEnumInfo& COLOR::info()
 static QtnEnumInfo& create_MASK_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
-    staticValues.append(QtnEnumValueInfo(MASK::ONE, "One"));
-    staticValues.append(QtnEnumValueInfo(MASK::TWO, "Two"));
-    staticValues.append(QtnEnumValueInfo(MASK::FOUR, "Four"));
+    staticValues.append(QtnEnumValueInfo(MASK::ONE, "ONE", "One"));
+    staticValues.append(QtnEnumValueInfo(MASK::TWO, "TWO", "Two"));
+    staticValues.append(QtnEnumValueInfo(MASK::FOUR, "FOUR", "Four"));
     
     static QtnEnumInfo enumInfo("MASK", staticValues);
     return enumInfo;
@@ -1048,5 +1048,96 @@ void QtnPropertySetAllPropertyTypes::disconnectSlots()
 }
 
 void QtnPropertySetAllPropertyTypes::connectDelegates()
+{
+}
+static QtnEnumInfo& create_MY_TYPE_info()
+{
+    QVector<QtnEnumValueInfo> staticValues;
+    staticValues.append(QtnEnumValueInfo(MY_TYPE::MY_TYPE1, "MY_TYPE1", "My type 1"));
+    staticValues.append(QtnEnumValueInfo(MY_TYPE::MY_TYPE2, "MY_TYPE2", "My type 2"));
+    
+    static QtnEnumInfo enumInfo("MY_TYPE", staticValues);
+    return enumInfo;
+}
+
+const QtnEnumInfo& MY_TYPE::info()
+{
+    static QtnEnumInfo& enumInfo = create_MY_TYPE_info();
+    return enumInfo;
+}
+
+QtnPropertySetTest12::QtnPropertySetTest12(QObject* parent)
+    : QtnPropertySet(parent)
+    , p(*new QtnPropertyEnum(this))
+{
+    init();
+    connectSlots();
+    connectDelegates();
+}
+
+QtnPropertySetTest12::~QtnPropertySetTest12()
+{
+    disconnectSlots();
+}
+
+QtnPropertySetTest12& QtnPropertySetTest12::operator=(const QtnPropertySetTest12& other)
+{
+    Q_UNUSED(other);
+
+    p = other.p;
+
+    return *this;
+}
+
+QtnPropertySet* QtnPropertySetTest12::createNewImpl(QObject* parentForNew) const
+{
+    return new QtnPropertySetTest12(parentForNew);
+}
+
+QtnPropertySet* QtnPropertySetTest12::createCopyImpl(QObject* parentForCopy) const
+{
+    QtnPropertySetTest12* p = new QtnPropertySetTest12(parentForCopy);
+    *p = *this;
+    return p;
+}
+
+bool QtnPropertySetTest12::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
+{
+    Q_UNUSED(ignoreMask);
+
+    QtnPropertySetTest12* theCopyFrom = qobject_cast<QtnPropertySetTest12*>(propertySetCopyFrom);
+    if (!theCopyFrom)
+        return false;
+
+    if (!(theCopyFrom->p.state() & ignoreMask))
+    {
+        p = theCopyFrom->p;
+    }
+
+    return true;
+}
+
+void QtnPropertySetTest12::init()
+{
+    static QString Test12_name = tr("Test12");
+    setName(Test12_name);
+    
+    // start children initialization
+    static QString p_name = tr("p");
+    p.setName(p_name);
+    p.setEnumInfo(&MY_TYPE::info());
+    p.setValue(MY_TYPE::MY_TYPE1);
+    // end children initialization
+}
+
+void QtnPropertySetTest12::connectSlots()
+{
+}
+
+void QtnPropertySetTest12::disconnectSlots()
+{
+}
+
+void QtnPropertySetTest12::connectDelegates()
 {
 }

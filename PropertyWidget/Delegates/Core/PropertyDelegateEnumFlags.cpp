@@ -46,7 +46,7 @@ static QString enumFlagsProperty2Str(const QtnPropertyEnumFlagsBase& property)
         if (value & e.value())
         {
             if (!text.isEmpty()) text += "|";
-            text += e.name();
+            text += e.displayName();
         }
 
         return true;
@@ -88,8 +88,8 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(QtnPropertyEnumFlagsB
                 QtnPropertyEnumFlagsBase& _owner = owner;
 
                 QtnPropertyBoolCallback *flagProperty = new QtnPropertyBoolCallback(0);
-                flagProperty->setName(e.name());
-                flagProperty->setDescription(owner.tr("%1 flag for %2.").arg(e.name(), owner.name()));
+                flagProperty->setName(e.displayName());
+                flagProperty->setDescription(owner.tr("%1 flag for %2.").arg(e.displayName(), owner.name()));
                 flagProperty->setCallbackValueGet([&_owner, enum_value]()->bool {
                     return _owner.value() & enum_value;
                 });
