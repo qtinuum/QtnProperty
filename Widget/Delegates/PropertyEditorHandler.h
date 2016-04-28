@@ -69,11 +69,13 @@ class QtnPropertyEditorBttnHandler
 {
 private:
 	typedef QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass> Inherited;
+
 protected:
 	typedef QtnPropertyEditorBttnHandler QtnPropertyEditorHandlerType;
 
 	QtnPropertyEditorBttnHandler(PropertyClass& property, PropertyEditorClass& editor)
 		: Inherited(property, editor)
+		, double_clicked(false)
 	{
 
 	}
@@ -84,8 +86,17 @@ protected:
 		switch (event->type())
 		{
 			case QEvent::MouseButtonDblClick:
-				onToolButtonClick();
+				double_clicked = true;
 				return true;
+
+			case QEvent::MouseButtonRelease:
+				if (double_clicked)
+				{
+					double_clicked = false;
+					onToolButtonClick();
+					return true;
+				}
+				break;
 
 			default:
 				break;
@@ -93,6 +104,9 @@ protected:
 
 		return Inherited::eventFilter(obj, event);
 	}
+
+private:
+	bool double_clicked;
 };
 
 
