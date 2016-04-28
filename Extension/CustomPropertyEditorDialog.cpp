@@ -471,9 +471,15 @@ void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(co
 
 		auto menu = new QMenu(this);
 
-		menu->addAction(ui->actionPropertyAdd);
-		menu->addAction(ui->actionPropertyDuplicate);
 		menu->addAction(ui->actionPropertyOptions);
+		menu->addSeparator();
+		menu->addAction(ui->actionPropertyAdd);
+		menu->addAction(ui->actionPropertyDuplicate);		
+		menu->addSeparator();
+		menu->addAction(ui->actionPropertyCut);
+		menu->addAction(ui->actionPropertyCopy);
+		menu->addAction(ui->actionPropertyPaste);
+		menu->addSeparator();
 		menu->addAction(ui->actionPropertyRemove);
 
 		updateActions(property);
