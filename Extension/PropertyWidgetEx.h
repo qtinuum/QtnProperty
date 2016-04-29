@@ -81,5 +81,5 @@ private:
 	QPoint drag_start_pos;
 	QtnPropertyBase *dragged_property;
 	Qt::DropAction drop_action;
-	bool can_remove;	
+	bool can_remove;
 };

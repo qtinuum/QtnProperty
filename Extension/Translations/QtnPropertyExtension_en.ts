@@ -16,49 +16,45 @@
         <translation type="vanished">Custom Property Editor</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="354"/>
         <source>Do you want to insert new property from clipboard?
 If you press &apos;No&apos;, selected property will be replaced.</source>
-        <translation>Do you want to insert new property from clipboard?
+        <translation type="vanished">Do you want to insert new property from clipboard?
 If you press &apos;No&apos;, selected property will be replaced.</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="669"/>
         <source>Add Element</source>
-        <translation>Add Element</translation>
+        <translation type="vanished">Add Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="711"/>
         <source>Duplicate Element</source>
-        <translation>Duplicate Element</translation>
+        <translation type="vanished">Duplicate Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="761"/>
         <source>Element Options</source>
-        <translation>Element Options</translation>
+        <translation type="vanished">Element Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="906"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="188"/>
         <source>Add...</source>
         <translation>Add...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="914"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="196"/>
         <source>Add Property...</source>
         <translation>Add Property...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="918"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="200"/>
         <source>Add Element...</source>
         <translation>Add Element...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="947"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
         <source>Edit Custom Properties</source>
         <translation>Edit Custom Properties</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="947"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
         <source>Read-only Properties</source>
         <translation>Read-only Properties</translation>
     </message>
@@ -100,9 +96,8 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation>Duplicate...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="718"/>
         <source>Duplicate Property</source>
-        <translation>Duplicate Property</translation>
+        <translation type="vanished">Duplicate Property</translation>
     </message>
     <message>
         <location filename="../CustomPropertyEditorDialog.ui" line="97"/>
@@ -110,14 +105,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation>Options...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="750"/>
         <source>Property Options</source>
-        <translation>Property Options</translation>
+        <translation type="vanished">Property Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="675"/>
         <source>Add Property</source>
-        <translation>Add Property</translation>
+        <translation type="vanished">Add Property</translation>
     </message>
 </context>
 <context>
@@ -162,6 +155,46 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <location filename="../CustomPropertyOptionsDialog.cpp" line="112"/>
         <source>Index:</source>
         <translation>Index:</translation>
+    </message>
+</context>
+<context>
+    <name>CustomPropertyWidget</name>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="97"/>
+        <source>Add Element</source>
+        <translation>Add Element</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="103"/>
+        <source>Add Property</source>
+        <translation>Add Property</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="139"/>
+        <source>Duplicate Element</source>
+        <translation>Duplicate Element</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="146"/>
+        <source>Duplicate Property</source>
+        <translation>Duplicate Property</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="178"/>
+        <source>Property Options</source>
+        <translation>Property Options</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="189"/>
+        <source>Element Options</source>
+        <translation>Element Options</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="511"/>
+        <source>Do you want to insert new property from clipboard?
+If you press &apos;No&apos;, selected property will be replaced.</source>
+        <translation>Do you want to insert new property from clipboard?
+If you press &apos;No&apos;, selected property will be replaced.</translation>
     </message>
 </context>
 <context>

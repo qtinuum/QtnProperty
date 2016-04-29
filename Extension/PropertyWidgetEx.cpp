@@ -77,7 +77,7 @@ bool QtnPropertyWidgetEx::canCopyToClipboard()
 bool QtnPropertyWidgetEx::canPasteFromClipboard()
 {
 	return dataHasSupportedFormats(QApplication::clipboard()->mimeData())
-		&& (nullptr != propertyView()->activeProperty());
+			&& (nullptr != propertyView()->activeProperty());
 }
 
 bool QtnPropertyWidgetEx::dataHasSupportedFormats(const QMimeData *data)

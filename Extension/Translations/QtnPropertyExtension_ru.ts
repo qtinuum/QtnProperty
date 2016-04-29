@@ -16,49 +16,45 @@
         <translation type="vanished">Настраиваемые свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="354"/>
         <source>Do you want to insert new property from clipboard?
 If you press &apos;No&apos;, selected property will be replaced.</source>
-        <translation>Хотите вставить новое свойство из буфера обмена?
+        <translation type="vanished">Хотите вставить новое свойство из буфера обмена?
 Если вы нажмёте &quot;Нет&quot;, то выбранное свойство будет заменено.</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="669"/>
         <source>Add Element</source>
-        <translation>Добавить элемент</translation>
+        <translation type="vanished">Добавить элемент</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="711"/>
         <source>Duplicate Element</source>
-        <translation>Дублировать элемент</translation>
+        <translation type="vanished">Дублировать элемент</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="761"/>
         <source>Element Options</source>
-        <translation>Настройки элемента</translation>
+        <translation type="vanished">Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="906"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="188"/>
         <source>Add...</source>
         <translation>Добавить...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="914"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="196"/>
         <source>Add Property...</source>
         <translation>Добавить свойство...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="918"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="200"/>
         <source>Add Element...</source>
         <translation>Добавить элемент...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="947"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
         <source>Edit Custom Properties</source>
         <translation>Редактировать свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="947"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
         <source>Read-only Properties</source>
         <translation>Свойства только для чтения</translation>
     </message>
@@ -100,9 +96,8 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation>Дублировать...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="718"/>
         <source>Duplicate Property</source>
-        <translation>Дублировать свойство</translation>
+        <translation type="vanished">Дублировать свойство</translation>
     </message>
     <message>
         <location filename="../CustomPropertyEditorDialog.ui" line="97"/>
@@ -110,14 +105,12 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="750"/>
         <source>Property Options</source>
-        <translation>Настройки свойства</translation>
+        <translation type="vanished">Настройки свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="675"/>
         <source>Add Property</source>
-        <translation>Добавить свойство</translation>
+        <translation type="vanished">Добавить свойство</translation>
     </message>
 </context>
 <context>
@@ -162,6 +155,46 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <location filename="../CustomPropertyOptionsDialog.cpp" line="112"/>
         <source>Index:</source>
         <translation>Индекс:</translation>
+    </message>
+</context>
+<context>
+    <name>CustomPropertyWidget</name>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="97"/>
+        <source>Add Element</source>
+        <translation>Добавить элемент</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="103"/>
+        <source>Add Property</source>
+        <translation>Добавить свойство</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="139"/>
+        <source>Duplicate Element</source>
+        <translation>Дублировать элемент</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="146"/>
+        <source>Duplicate Property</source>
+        <translation>Дублировать свойство</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="178"/>
+        <source>Property Options</source>
+        <translation>Настройки свойства</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="189"/>
+        <source>Element Options</source>
+        <translation>Настройки элемента</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="511"/>
+        <source>Do you want to insert new property from clipboard?
+If you press &apos;No&apos;, selected property will be replaced.</source>
+        <translation>Хотите вставить новое свойство из буфера обмена?
+Если вы нажмёте &quot;Нет&quot;, то выбранное свойство будет заменено.</translation>
     </message>
 </context>
 <context>
