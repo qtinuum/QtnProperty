@@ -101,7 +101,8 @@ protected:
 
     ValueType partToValue(float valuePart) const
     {
-        return this->owner().minValue() + ValueType(valuePart * (this->owner().maxValue() - this->owner().minValue()));
+        float value = this->owner().minValue() + ValueType(valuePart * (this->owner().maxValue() - this->owner().minValue()));
+        return static_cast<int>(value/this->owner().stepValue())*this->owner().stepValue();
     }
 };
 

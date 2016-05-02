@@ -25,7 +25,7 @@ QtnPropertyDelegateSlideBox::QtnPropertyDelegateSlideBox()
       m_liveUpdate(false),
       m_drawBorder(true),
       m_updateByScroll(true),
-      m_animate(true),
+      m_animate(false),
       m_dragValuePart(0),
       m_oldValuePart(0),
       m_animateWidget(nullptr)
@@ -135,7 +135,7 @@ bool QtnPropertyDelegateSlideBox::event(QtnEventContext& context, const QtnSubIt
 
     case QtnSubItemEvent::PressMouse:
     {
-        context.widget->setCursor(Qt::SplitHCursor);
+        //context.widget->setCursor(Qt::SplitHCursor);
         if (!m_animate)
         {
             updateDragValuePart(context.eventAs<QtnSubItemEvent>()->x(), item.rect);
