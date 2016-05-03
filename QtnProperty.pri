@@ -1,4 +1,4 @@
-include(Common.pri)
+#include(Common.pri)
 
 CONFIG += unity_build
 QT += script widgets
