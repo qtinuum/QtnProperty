@@ -372,14 +372,14 @@ bool QtnPropertySet::fromStrImpl(const QString& str)
         if (subProperties.size() != 1)
         {
             qDebug() << "Ambiguous property path: " << propertyPath;
-            Q_ASSERT(false);
+            //Q_ASSERT(false);
             continue;
         }
 
         if (!subProperties[0]->fromStr(propertyStrValue))
         {
             qDebug() << QString("Cannot convert property %1<%2> from string \"%3\"").arg(subProperties[0]->name(), subProperties[0]->metaObject()->className(), propertyStrValue);
-            Q_ASSERT(false);
+            //Q_ASSERT(false);
             continue;
         }
 
