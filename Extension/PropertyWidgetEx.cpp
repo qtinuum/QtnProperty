@@ -34,9 +34,9 @@ QtnPropertyWidgetEx::QtnPropertyWidgetEx(QWidget *parent)
 	propertyView()->installEventFilter(this);
 }
 
-void QtnPropertyWidgetEx::connectRemoveAction(QAction *action, bool connect)
+void QtnPropertyWidgetEx::connectDeleteAction(QAction *action, bool connect)
 {
-	internalConnect(action, &QtnPropertyWidgetEx::removeActiveProperty, connect);
+	internalConnect(action, &QtnPropertyWidgetEx::deleteActiveProperty, connect);
 }
 
 void QtnPropertyWidgetEx::connectCutAction(QAction *action, bool connect)
@@ -54,12 +54,12 @@ void QtnPropertyWidgetEx::connectPasteAction(QAction *action, bool connect)
 	internalConnect(action, &QtnPropertyWidgetEx::pasteFromClipboard, connect);
 }
 
-bool QtnPropertyWidgetEx::canRemoveActiveProperty()
+bool QtnPropertyWidgetEx::canDeleteActiveProperty()
 {
-	return canRemoveProperty(propertyView()->activeProperty());
+	return canDeleteProperty(propertyView()->activeProperty());
 }
 
-bool QtnPropertyWidgetEx::canRemoveProperty(QtnPropertyBase *)
+bool QtnPropertyWidgetEx::canDeleteProperty(QtnPropertyBase *)
 {
 	return false;
 }
@@ -85,15 +85,15 @@ bool QtnPropertyWidgetEx::dataHasSupportedFormats(const QMimeData *data)
 	return (nullptr != data && data->hasFormat(kTextPlain));
 }
 
-void QtnPropertyWidgetEx::removeActiveProperty()
+void QtnPropertyWidgetEx::deleteActiveProperty()
 {
-	removeProperty(propertyView()->activeProperty());
+	deleteProperty(propertyView()->activeProperty());
 }
 
 void QtnPropertyWidgetEx::cutToClipboard()
 {
 	copyToClipboard();
-	removeActiveProperty();
+	deleteActiveProperty();
 }
 
 void QtnPropertyWidgetEx::copyToClipboard()
@@ -118,7 +118,7 @@ void QtnPropertyWidgetEx::pasteFromClipboard()
 	}
 }
 
-void QtnPropertyWidgetEx::removeProperty(QtnPropertyBase *)
+void QtnPropertyWidgetEx::deleteProperty(QtnPropertyBase *)
 {
 	// do nothing
 }
@@ -161,7 +161,7 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 			{
 				drag_start_pos = mevent->pos();
 				dragged_property = propertyView()->getPropertyAt(drag_start_pos);
-				can_remove = canRemoveProperty(dragged_property);
+				can_remove = canDeleteProperty(dragged_property);
 				return true;
 			}
 		}	break;
@@ -268,7 +268,7 @@ bool QtnPropertyWidgetEx::dragAndDrop()
 		if (nullptr != dragged_property)
 		{
 			if (Qt::MoveAction == drop_action)
-				removeProperty(dragged_property);
+				deleteProperty(dragged_property);
 		}
 		return true;
 	}

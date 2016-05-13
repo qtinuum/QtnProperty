@@ -18,7 +18,7 @@ public:
 	inline QVariant *getData() const;
 	void setData(QVariant *data_ptr, const QString &title = QString());
 
-	virtual bool canRemoveProperty(QtnPropertyBase *property) override;
+	virtual bool canDeleteProperty(QtnPropertyBase *property) override;
 	virtual bool canCutToClipboard() override;
 
 	void addProperty();
@@ -39,7 +39,7 @@ private slots:
 
 protected:
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
-	virtual void removeProperty(QtnPropertyBase *property) override;
+	virtual void deleteProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
 												Qt::DropAction drop_action) override;
 	virtual bool applyPropertyData(const QMimeData *data,

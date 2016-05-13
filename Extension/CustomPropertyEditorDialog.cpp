@@ -19,13 +19,13 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint)));
 
 	QObject::connect(ui->propertyWidget->propertyView(), &QtnPropertyView::activePropertyChanged,
-					 this, &CustomPropertyEditorDialog::onActivePropertyChanged);	
+					 this, &CustomPropertyEditorDialog::onActivePropertyChanged);
 
 	addShortcutForAction(ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions);
 #ifdef Q_OS_MAC
-	addShortcutForAction(QKeySequence(Qt::CTRL | Qt::Key_Backspace), ui->actionPropertyRemove);
+	addShortcutForAction(QKeySequence(Qt::CTRL | Qt::Key_Backspace), ui->actionPropertyDelete);
 #else
-	addShortcutForAction(ui->actionPropertyRemove->shortcut(), ui->actionPropertyRemove);
+	addShortcutForAction(ui->actionPropertyDelete->shortcut(), ui->actionPropertyDelete);
 #endif
 	addShortcutForAction(QKeySequence::Cut, ui->actionPropertyCut);
 	addShortcutForAction(QKeySequence::Copy, ui->actionPropertyCopy);
@@ -33,7 +33,7 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	addShortcutForAction(ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd);
 
-	ui->propertyWidget->connectRemoveAction(ui->actionPropertyRemove, true);
+	ui->propertyWidget->connectDeleteAction(ui->actionPropertyDelete, true);
 	ui->propertyWidget->connectCutAction(ui->actionPropertyCut, true);
 	ui->propertyWidget->connectCopyAction(ui->actionPropertyCopy, true);
 	ui->propertyWidget->connectPasteAction(ui->actionPropertyPaste, true);
@@ -136,13 +136,13 @@ void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(co
 		menu->addAction(ui->actionPropertyOptions);
 		menu->addSeparator();
 		menu->addAction(ui->actionPropertyAdd);
-		menu->addAction(ui->actionPropertyDuplicate);		
+		menu->addAction(ui->actionPropertyDuplicate);
 		menu->addSeparator();
 		menu->addAction(ui->actionPropertyCut);
 		menu->addAction(ui->actionPropertyCopy);
 		menu->addAction(ui->actionPropertyPaste);
 		menu->addSeparator();
-		menu->addAction(ui->actionPropertyRemove);
+		menu->addAction(ui->actionPropertyDelete);
 
 		updateActions(property);
 
@@ -208,13 +208,13 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 		ui->actionPropertyAdd->setEnabled(property->id() == VarProperty::PID_EXTRA);
 		ui->actionPropertyDuplicate->setEnabled(not_top_parent);
 		ui->actionPropertyOptions->setEnabled(true);
-		ui->actionPropertyRemove->setEnabled(not_top_parent && widget->canRemoveProperty(property));
+		ui->actionPropertyDelete->setEnabled(not_top_parent && widget->canDeleteProperty(property));
 	} else
 	{
 		ui->actionPropertyAdd->setEnabled(false);
 		ui->actionPropertyDuplicate->setEnabled(false);
 		ui->actionPropertyOptions->setEnabled(false);
-		ui->actionPropertyRemove->setEnabled(false);
+		ui->actionPropertyDelete->setEnabled(false);
 	}
 
 	ui->actionPropertyAdd->setText(add_text);

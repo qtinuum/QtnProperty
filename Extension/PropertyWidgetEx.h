@@ -17,12 +17,12 @@ struct QtnPropertyWidgetExDelegate
 {
 	virtual ~QtnPropertyWidgetExDelegate() {}
 
-	virtual bool canRemoveProperty(QtnPropertyBase *property) = 0;
+	virtual bool canDeleteProperty(QtnPropertyBase *property) = 0;
 	virtual bool canCutToClipboard() = 0;
 	virtual bool canCopyToClipboard() = 0;
 	virtual bool canPasteFromClipboard() = 0;
 	virtual bool dataHasSupportedFormats(const QMimeData *data) = 0;
-	virtual void removeProperty(QtnPropertyBase *property) = 0;
+	virtual void deleteProperty(QtnPropertyBase *property) = 0;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
 												Qt::DropAction action) = 0;
 	virtual bool applyPropertyData(const QMimeData *data,
@@ -39,27 +39,27 @@ class QtnPropertyWidgetEx
 public:
 	explicit QtnPropertyWidgetEx(QWidget *parent = nullptr);
 
-	void connectRemoveAction(QAction *drop_action, bool connect);
+	void connectDeleteAction(QAction *drop_action, bool connect);
 	void connectCutAction(QAction *drop_action, bool connect);
 	void connectCopyAction(QAction *drop_action, bool connect);
 	void connectPasteAction(QAction *drop_action, bool connect);
 
-	bool canRemoveActiveProperty();
+	bool canDeleteActiveProperty();
 
-	virtual bool canRemoveProperty(QtnPropertyBase *property) override;
+	virtual bool canDeleteProperty(QtnPropertyBase *property) override;
 	virtual bool canCutToClipboard() override;
 	virtual bool canCopyToClipboard() override;
-	virtual bool canPasteFromClipboard() override;	
+	virtual bool canPasteFromClipboard() override;
 
 public slots:
-	void removeActiveProperty();
+	void deleteActiveProperty();
 	void cutToClipboard();
 	void copyToClipboard();
 	void pasteFromClipboard();
 
 protected:
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
-	virtual void removeProperty(QtnPropertyBase *property) override;
+	virtual void deleteProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
 												Qt::DropAction drop_action) override;
 	virtual bool applyPropertyData(const QMimeData *data,

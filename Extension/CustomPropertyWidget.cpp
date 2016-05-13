@@ -66,7 +66,7 @@ void CustomPropertyWidget::setData(QVariant *data_ptr, const QString &title)
 	}
 }
 
-bool CustomPropertyWidget::canRemoveProperty(QtnPropertyBase *property)
+bool CustomPropertyWidget::canDeleteProperty(QtnPropertyBase *property)
 {
 	auto var_property = getVarProperty(property);
 	if (nullptr != var_property)
@@ -77,7 +77,7 @@ bool CustomPropertyWidget::canRemoveProperty(QtnPropertyBase *property)
 
 bool CustomPropertyWidget::canCutToClipboard()
 {
-	return canRemoveProperty(propertyView()->activeProperty());
+	return canDeleteProperty(propertyView()->activeProperty());
 }
 
 void CustomPropertyWidget::addProperty()
@@ -308,7 +308,7 @@ bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
 	return false;
 }
 
-void CustomPropertyWidget::removeProperty(QtnPropertyBase *property)
+void CustomPropertyWidget::deleteProperty(QtnPropertyBase *property)
 {
 	auto var_property = getVarProperty(property);
 

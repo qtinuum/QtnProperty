@@ -67,22 +67,26 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation type="vanished">Добавить свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="75"/>
         <source>Remove</source>
+        <translation type="vanished">Удалить</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.ui" line="75"/>
+        <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="114"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="111"/>
         <source>Cut</source>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="125"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="122"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="136"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="133"/>
         <source>Paste</source>
         <translation>Вставить</translation>
     </message>
@@ -91,7 +95,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation type="vanished">Удалить свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="89"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="86"/>
         <source>Duplicate...</source>
         <translation>Дублировать...</translation>
     </message>
@@ -100,7 +104,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation type="vanished">Дублировать свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="97"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="94"/>
         <source>Options...</source>
         <translation>Настройки...</translation>
     </message>

@@ -70,12 +70,9 @@
     <string notr="true">Ctrl++</string>
    </property>
   </action>
-  <action name="actionPropertyRemove">
+  <action name="actionPropertyDelete">
    <property name="text">
-    <string>Remove</string>
-   </property>
-   <property name="toolTip">
-    <string notr="true">Remove</string>
+    <string>Delete</string>
    </property>
    <property name="shortcut">
     <string notr="true">Del</string>
