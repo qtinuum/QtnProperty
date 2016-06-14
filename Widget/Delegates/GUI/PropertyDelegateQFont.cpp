@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,37 +41,43 @@ class QtnPropertyQFontLineEditBttnHandler
 		: public QtnPropertyEditorBttnHandler<QtnPropertyQFontBase, QtnLineEditBttn>
 {
 public:
-    QtnPropertyQFontLineEditBttnHandler(QtnPropertyQFontBase& property, QtnLineEditBttn& editor)
-        : QtnPropertyEditorHandlerType(property, editor)
-    {
-        editor.lineEdit->setReadOnly(true);
+	QtnPropertyQFontLineEditBttnHandler(QtnPropertyQFontBase& property, QtnLineEditBttn& editor)
+		: QtnPropertyEditorHandlerType(property, editor)
+	{
+		editor.lineEdit->setReadOnly(true);
 
-        if (!property.isEditableByUser())
-        {
+		if (!property.isEditableByUser())
+		{
 //            editor.lineEdit->setReadOnly(true);
-            editor.toolButton->setEnabled(false);
-        }
+			editor.toolButton->setEnabled(false);
+		}
 
-        updateEditor();
+		updateEditor();
 		editor.lineEdit->installEventFilter(this);
 		QObject::connect(editor.toolButton, &QToolButton::clicked,
 						 this, &QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked);
-    }
+	}
 
 protected:
 	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
 	virtual void updateEditor() override
-    {
+	{
 		editor().lineEdit->setText(FontToStr(property()));
-    }
+	}
 
 private:
 	void onToolButtonClicked(bool)
-    {
-        QFontDialog dlg(property(), &editor());
-        if (dlg.exec() == QDialog::Accepted)
-        {
-			auto font = property().value();
+	{
+		auto property = &this->property();
+		volatile bool destroyed = false;
+		auto connection = QObject::connect(property, &QObject::destroyed, [&destroyed]() mutable
+		{
+			destroyed = true;
+		});
+		QFontDialog dlg(property->value(), &editor());
+		if (dlg.exec() == QDialog::Accepted && !destroyed)
+		{
+			auto font = property->value();
 			auto style_strategy = font.styleStrategy();
 			int pixel_size = font.pixelSize();
 			font = dlg.currentFont();
@@ -81,29 +87,32 @@ private:
 
 			font.setStyleStrategy(style_strategy);
 
-			property().setValue(font);
-        }
-    }
+			property->setValue(font);
+		}
+
+		if (!destroyed)
+			QObject::disconnect(connection);
+	}
 };
 
 static bool regQFontDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyQFontBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>
-                                , "LineEditBttn");
+								.registerDelegateDefault(&QtnPropertyQFontBase::staticMetaObject
+								, &qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>
+								, "LineEditBttn");
 
 static QtnEnumInfo* styleStrategyEnum()
 {
-    static QtnEnumInfo* enumInfo = nullptr;
-    if (!enumInfo)
-    {
-        QVector<QtnEnumValueInfo> items;
+	static QtnEnumInfo* enumInfo = nullptr;
+	if (!enumInfo)
+	{
+		QVector<QtnEnumValueInfo> items;
 		items.append(QtnEnumValueInfo(QFont::PreferDefault, QtnPropertyQFont::getPreferDefaultStr()));
 		items.append(QtnEnumValueInfo(QFont::NoAntialias, QtnPropertyQFont::getNoAntialiasStr()));
 		items.append(QtnEnumValueInfo(QFont::PreferAntialias, QtnPropertyQFont::getPreferAntialiasStr()));
 		enumInfo = new QtnEnumInfo("FontStyleStrategy", items);
-    }
+	}
 
-    return enumInfo;
+	return enumInfo;
 }
 
 enum
@@ -128,25 +137,25 @@ static QtnEnumInfo* sizeUnitEnum()
 }
 
 QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
-    : QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>(owner)
+	: QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>(owner)
 {
-    QtnPropertyQStringCallback* propertyFamily = new QtnPropertyQStringCallback(0);
-    addSubProperty(propertyFamily);
+	QtnPropertyQStringCallback* propertyFamily = new QtnPropertyQStringCallback(0);
+	addSubProperty(propertyFamily);
 	propertyFamily->setName(QtnPropertyQFont::getFamilyLabel());
 	propertyFamily->setDescription(QtnPropertyQFont::getFamilyDescription(owner.name()));
-    propertyFamily->setCallbackValueGet([&owner]()->QString {
-        return owner.value().family();
-    });
-    propertyFamily->setCallbackValueSet([&owner](QString value) {
-        QFont font = owner.value();
-        font.setFamily(value);
-        owner.setValue(font);
-    });
-    QtnPropertyDelegateInfo delegate;
-    delegate.name = "List";
-    QFontDatabase fDB;
-    delegate.attributes["items"] = fDB.families();
-    propertyFamily->setDelegate(delegate);
+	propertyFamily->setCallbackValueGet([&owner]()->QString {
+		return owner.value().family();
+	});
+	propertyFamily->setCallbackValueSet([&owner](QString value) {
+		QFont font = owner.value();
+		font.setFamily(value);
+		owner.setValue(font);
+	});
+	QtnPropertyDelegateInfo delegate;
+	delegate.name = "List";
+	QFontDatabase fDB;
+	delegate.attributes["items"] = fDB.families();
+	propertyFamily->setDelegate(delegate);
 
 	QtnPropertyUIntCallback* propertySize = new QtnPropertyUIntCallback(0);
 	addSubProperty(propertySize);
@@ -154,19 +163,19 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	propertySize->setDescription(QtnPropertyQFont::getSizeDescription(owner.name()));
 	propertySize->setCallbackValueGet([&owner]() -> quint32
 	{
-        int ps = owner.value().pointSize();
+		int ps = owner.value().pointSize();
 		if (ps < 0)
 			ps = owner.value().pixelSize();
 		if (ps < 1)
 			ps = 1;
 		return ps;
-    });
+	});
 	propertySize->setCallbackValueSet([&owner](quint32 value)
 	{
 		if (value == 0)
 			value = 1;
 
-        QFont font = owner.value();
+		QFont font = owner.value();
 		if (font.pointSize() > 0)
 		{
 			if (value > 128)
@@ -180,8 +189,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
 			font.setPixelSize((int) value);
 		}
-        owner.setValue(font);
-    });
+		owner.setValue(font);
+	});
 
 	QtnPropertyEnumCallback* propertySizeUnit = new QtnPropertyEnumCallback(0);
 	addSubProperty(propertySizeUnit);
@@ -218,129 +227,129 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 		owner.setValue(font);
 	});
 
-    QtnPropertyBoolCallback* propertyBold = new QtnPropertyBoolCallback(0);
-    addSubProperty(propertyBold);
+	QtnPropertyBoolCallback* propertyBold = new QtnPropertyBoolCallback(0);
+	addSubProperty(propertyBold);
 	propertyBold->setName(QtnPropertyQFont::getBoldLabel());
 	propertyBold->setDescription(QtnPropertyQFont::getBoldDescription(owner.name()));
-    propertyBold->setCallbackValueGet([&owner]()->bool {
-        return owner.value().bold();
-    });
-    propertyBold->setCallbackValueSet([&owner](bool value) {
-        QFont font = owner.value();
-        font.setBold(value);
-        owner.setValue(font);
-    });
+	propertyBold->setCallbackValueGet([&owner]()->bool {
+		return owner.value().bold();
+	});
+	propertyBold->setCallbackValueSet([&owner](bool value) {
+		QFont font = owner.value();
+		font.setBold(value);
+		owner.setValue(font);
+	});
 
-    QtnPropertyBoolCallback* propertyItalic = new QtnPropertyBoolCallback(0);
-    addSubProperty(propertyItalic);
+	QtnPropertyBoolCallback* propertyItalic = new QtnPropertyBoolCallback(0);
+	addSubProperty(propertyItalic);
 	propertyItalic->setName(QtnPropertyQFont::getItalicLabel());
 	propertyItalic->setDescription(QtnPropertyQFont::getItalicDescription(owner.name()));
-    propertyItalic->setCallbackValueGet([&owner]()->bool {
-        return owner.value().italic();
-    });
-    propertyItalic->setCallbackValueSet([&owner](bool value) {
-        QFont font = owner.value();
-        font.setItalic(value);
-        owner.setValue(font);
-    });
+	propertyItalic->setCallbackValueGet([&owner]()->bool {
+		return owner.value().italic();
+	});
+	propertyItalic->setCallbackValueSet([&owner](bool value) {
+		QFont font = owner.value();
+		font.setItalic(value);
+		owner.setValue(font);
+	});
 
-    QtnPropertyBoolCallback* propertyUnderline = new QtnPropertyBoolCallback(0);
-    addSubProperty(propertyUnderline);
+	QtnPropertyBoolCallback* propertyUnderline = new QtnPropertyBoolCallback(0);
+	addSubProperty(propertyUnderline);
 	propertyUnderline->setName(QtnPropertyQFont::getUnderlineLabel());
 	propertyUnderline->setDescription(QtnPropertyQFont::getUnderlineDescription(owner.name()));
-    propertyUnderline->setCallbackValueGet([&owner]()->bool {
-        return owner.value().underline();
-    });
-    propertyUnderline->setCallbackValueSet([&owner](bool value) {
-        QFont font = owner.value();
-        font.setUnderline(value);
-        owner.setValue(font);
-    });
+	propertyUnderline->setCallbackValueGet([&owner]()->bool {
+		return owner.value().underline();
+	});
+	propertyUnderline->setCallbackValueSet([&owner](bool value) {
+		QFont font = owner.value();
+		font.setUnderline(value);
+		owner.setValue(font);
+	});
 
-    QtnPropertyBoolCallback* propertyStrikeout = new QtnPropertyBoolCallback(0);
-    addSubProperty(propertyStrikeout);
+	QtnPropertyBoolCallback* propertyStrikeout = new QtnPropertyBoolCallback(0);
+	addSubProperty(propertyStrikeout);
 	propertyStrikeout->setName(QtnPropertyQFont::getStrikeoutLabel());
 	propertyStrikeout->setDescription(QtnPropertyQFont::getStrikeoutDescription(owner.name()));
-    propertyStrikeout->setCallbackValueGet([&owner]()->bool {
-        return owner.value().strikeOut();
-    });
-    propertyStrikeout->setCallbackValueSet([&owner](bool value) {
-        QFont font = owner.value();
-        font.setStrikeOut(value);
-        owner.setValue(font);
-    });
+	propertyStrikeout->setCallbackValueGet([&owner]()->bool {
+		return owner.value().strikeOut();
+	});
+	propertyStrikeout->setCallbackValueSet([&owner](bool value) {
+		QFont font = owner.value();
+		font.setStrikeOut(value);
+		owner.setValue(font);
+	});
 
-    QtnPropertyBoolCallback* propertyKerning = new QtnPropertyBoolCallback(0);
-    addSubProperty(propertyKerning);
+	QtnPropertyBoolCallback* propertyKerning = new QtnPropertyBoolCallback(0);
+	addSubProperty(propertyKerning);
 	propertyKerning->setName(QtnPropertyQFont::getKerningLabel());
 	propertyKerning->setDescription(QtnPropertyQFont::getKerningDescription(owner.name()));
-    propertyKerning->setCallbackValueGet([&owner]()->bool {
-        return owner.value().kerning();
-    });
-    propertyKerning->setCallbackValueSet([&owner](bool value) {
-        QFont font = owner.value();
-        font.setKerning(value);
-        owner.setValue(font);
-    });
+	propertyKerning->setCallbackValueGet([&owner]()->bool {
+		return owner.value().kerning();
+	});
+	propertyKerning->setCallbackValueSet([&owner](bool value) {
+		QFont font = owner.value();
+		font.setKerning(value);
+		owner.setValue(font);
+	});
 
-    QtnPropertyEnumCallback* propertyAntialiasing = new QtnPropertyEnumCallback(0);
-    addSubProperty(propertyAntialiasing);
+	QtnPropertyEnumCallback* propertyAntialiasing = new QtnPropertyEnumCallback(0);
+	addSubProperty(propertyAntialiasing);
 	propertyAntialiasing->setName(QtnPropertyQFont::getAntialiasingLabel());
 	propertyAntialiasing->setDescription(QtnPropertyQFont::getAntialiasingDescription(owner.name()));
-    propertyAntialiasing->setEnumInfo(styleStrategyEnum());
-    propertyAntialiasing->setCallbackValueGet([&owner]()->QtnEnumValueType {
-        return owner.value().styleStrategy();
-    });
-    propertyAntialiasing->setCallbackValueSet([&owner](QtnEnumValueType value) {
-        QFont font = owner.value();
-        font.setStyleStrategy((QFont::StyleStrategy)value);
-        owner.setValue(font);
-    });
+	propertyAntialiasing->setEnumInfo(styleStrategyEnum());
+	propertyAntialiasing->setCallbackValueGet([&owner]()->QtnEnumValueType {
+		return owner.value().styleStrategy();
+	});
+	propertyAntialiasing->setCallbackValueSet([&owner](QtnEnumValueType value) {
+		QFont font = owner.value();
+		font.setStyleStrategy((QFont::StyleStrategy)value);
+		owner.setValue(font);
+	});
 }
 
 void QtnPropertyDelegateQFont::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
-    QFont value = owner().value();
+	QFont value = owner().value();
 
-    QRect textRect = rect;
+	QRect textRect = rect;
 
-    if (textRect.isValid())
-    {
-        QRect br;
+	if (textRect.isValid())
+	{
+		QRect br;
 
-        QFont oldFont = painter.font();
-        QFont newFont(value);
-        newFont.setPointSize(oldFont.pointSize());
-        painter.setFont(newFont);
-        painter.drawText(textRect, Qt::AlignLeading | Qt::AlignVCenter, "A", &br);
-        painter.setFont(oldFont);
+		QFont oldFont = painter.font();
+		QFont newFont(value);
+		newFont.setPointSize(oldFont.pointSize());
+		painter.setFont(newFont);
+		painter.drawText(textRect, Qt::AlignLeading | Qt::AlignVCenter, "A", &br);
+		painter.setFont(oldFont);
 
-        textRect.setLeft(br.right() + 3);
-    }
+		textRect.setLeft(br.right() + 3);
+	}
 
-    if (textRect.isValid())
-    {
-        QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>::drawValueImpl(painter, textRect, state, needTooltip);
-    }
+	if (textRect.isValid())
+	{
+		QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>::drawValueImpl(painter, textRect, state, needTooltip);
+	}
 }
 
 QWidget* QtnPropertyDelegateQFont::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QtnLineEditBttn* editor = new QtnLineEditBttn(parent);
-    editor->setGeometry(rect);
+	QtnLineEditBttn* editor = new QtnLineEditBttn(parent);
+	editor->setGeometry(rect);
 
-    new QtnPropertyQFontLineEditBttnHandler(owner(), *editor);
+	new QtnPropertyQFontLineEditBttnHandler(owner(), *editor);
 
-    if (inplaceInfo)
-    {
-        editor->lineEdit->selectAll();
-    }
+	if (inplaceInfo)
+	{
+		editor->lineEdit->selectAll();
+	}
 
-    return editor;
+	return editor;
 }
 
 bool QtnPropertyDelegateQFont::propertyValueToStr(QString& strValue) const
 {
 	strValue = FontToStr(owner().value());
-    return true;
+	return true;
 }
