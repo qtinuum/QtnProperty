@@ -202,6 +202,19 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     </message>
 </context>
 <context>
+    <name>QObjectPropertyWidget</name>
+    <message>
+        <location filename="../QObjectPropertyWidget.cpp" line="42"/>
+        <source>Reset to default</source>
+        <translation>Сбросить значение</translation>
+    </message>
+    <message>
+        <location filename="../QObjectPropertyWidget.cpp" line="43"/>
+        <source>Reset value of %1 to default</source>
+        <translation>%1: Установить значение по умолчанию</translation>
+    </message>
+</context>
+<context>
     <name>QtnPropertyQPointF</name>
     <message>
         <location filename="../PropertyQPointF.cpp" line="33"/>
