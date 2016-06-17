@@ -11,6 +11,8 @@ namespace QtnPropertyExtension
 
 class QObjectPropertyWidget : public QtnPropertyWidgetEx
 {
+	Q_OBJECT
+
 public:
 	explicit QObjectPropertyWidget(QWidget *parent = nullptr);
 
