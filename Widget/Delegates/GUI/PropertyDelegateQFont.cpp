@@ -23,7 +23,7 @@
 #include "../PropertyDelegateFactory.h"
 #include "../PropertyEditorHandler.h"
 #include "../PropertyEditorAux.h"
-
+#include "../Core/PropertySet.h"
 #include <QFontDialog>
 #include <QFontDatabase>
 
@@ -48,7 +48,6 @@ public:
 
 		if (!property.isEditableByUser())
 		{
-//            editor.lineEdit->setReadOnly(true);
 			editor.toolButton->setEnabled(false);
 		}
 
@@ -139,6 +138,8 @@ static QtnEnumInfo* sizeUnitEnum()
 QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>(owner)
 {
+	QtnPropertyQStringCallback* propertyStyle = new QtnPropertyQStringCallback(0);
+
 	QtnPropertyQStringCallback* propertyFamily = new QtnPropertyQStringCallback(0);
 	addSubProperty(propertyFamily);
 	propertyFamily->setName(QtnPropertyQFont::getFamilyLabel());
@@ -146,16 +147,51 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	propertyFamily->setCallbackValueGet([&owner]()->QString {
 		return owner.value().family();
 	});
-	propertyFamily->setCallbackValueSet([&owner](QString value) {
+	propertyFamily->setCallbackValueSet([&owner, propertyStyle, propertyFamily](QString value) {
 		QFont font = owner.value();
 		font.setFamily(value);
+
+		QtnPropertyDelegateInfo delegate;
+		delegate.name = "List";
+		QFontDatabase fDB;
+		delegate.attributes["items"] = QStringList("") + fDB.styles(value);
+		delegate.attributes["editable"] = true;
+		propertyStyle->setDelegate(delegate);
+
 		owner.setValue(font);
+
+		std::shared_ptr<QMetaObject::Connection> c(new QMetaObject::Connection);
+		*c.get() = QObject::connect(propertyFamily, &QtnPropertyBase::propertyDidChange, [&owner, c]() mutable
+		{
+			QObject::disconnect(*c.get());
+			c = nullptr;
+
+			owner.propertyDidChange(&owner, &owner, QtnPropertyChangeReasonChildren);
+		});
 	});
 	QtnPropertyDelegateInfo delegate;
 	delegate.name = "List";
 	QFontDatabase fDB;
 	delegate.attributes["items"] = fDB.families();
 	propertyFamily->setDelegate(delegate);
+
+	propertyStyle->setName(QtnPropertyQFont::getStyleLabel());
+	propertyStyle->setDescription(QtnPropertyQFont::getStyleDescription(owner.name()));
+	propertyStyle->setCallbackValueGet([&owner]()->QString {
+		return owner.value().styleName();
+	});
+	propertyStyle->setCallbackValueSet([&owner](QString value) {
+		QFont font = owner.value();
+		font.setStyleName(value);
+		owner.setValue(font);
+	});
+
+	delegate.name = "List";
+	delegate.attributes["items"] = QStringList("") + fDB.styles(owner.value().family());
+	delegate.attributes["editable"] = true;
+	propertyStyle->setDelegate(delegate);
+
+	addSubProperty(propertyStyle);
 
 	QtnPropertyUIntCallback* propertySize = new QtnPropertyUIntCallback(0);
 	addSubProperty(propertySize);

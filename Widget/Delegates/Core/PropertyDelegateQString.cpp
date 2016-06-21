@@ -394,6 +394,15 @@ public:
 						 this, &QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged);
 	}
 
+	void applyAttributes(const QtnPropertyDelegateAttributes &attributes)
+	{
+		bool editable = false;
+		qtnGetAttribute(attributes, "editable", editable);
+
+		editor().setEditable(editable);
+		editor().setAutoCompletion(false);
+	}
+
 private:
 	void updateEditor() override
 	{
@@ -415,6 +424,7 @@ QtnPropertyDelegateQStringList::QtnPropertyDelegateQStringList(QtnPropertyQStrin
 void QtnPropertyDelegateQStringList::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
 {
 	qtnGetAttribute(attributes, "items", m_items);
+	m_editorAttributes = attributes;
 }
 
 QWidget* QtnPropertyDelegateQStringList::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
@@ -435,7 +445,8 @@ QWidget* QtnPropertyDelegateQStringList::createValueEditorImpl(QWidget* parent, 
 
 	editor->addItems(m_items);
 
-	new QtnPropertyQStringListComboBoxHandler(owner(), *editor);
+	auto handler = new QtnPropertyQStringListComboBoxHandler(owner(), *editor);
+	handler->applyAttributes(m_editorAttributes);
 
 	if (inplaceInfo)
 	{

@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,25 +18,25 @@
 #include <QFontDatabase>
 
 QtnPropertyQFontBase::QtnPropertyQFontBase(QObject *parent)
-    : QtnSinglePropertyBase<QFont>(parent)
+	: QtnSinglePropertyBase<QFont>(parent)
 {
-    addState(QtnPropertyStateCollapsed);
+	addState(QtnPropertyStateCollapsed);
 }
 
 bool QtnPropertyQFontBase::fromStrImpl(const QString& str)
 {
-    QFont font;
-    if (!font.fromString(str.trimmed()))
-        return false;
+	QFont font;
+	if (!font.fromString(str.trimmed()))
+		return false;
 
-    return setValue(font);
+	return setValue(font);
 }
 
 bool QtnPropertyQFontBase::toStrImpl(QString& str) const
 {
-    QFont v = value();
-    str = v.toString();
-    return true;
+	QFont v = value();
+	str = v.toString();
+	return true;
 }
 
 QString QtnPropertyQFont::getPixelStr()
@@ -72,6 +72,16 @@ QString QtnPropertyQFont::getFamilyLabel()
 QString QtnPropertyQFont::getFamilyDescription(const QString &owner_name)
 {
 	return tr("Family for %1").arg(owner_name);
+}
+
+QString QtnPropertyQFont::getStyleLabel()
+{
+	return tr("Style");
+}
+
+QString QtnPropertyQFont::getStyleDescription(const QString &owner_name)
+{
+	return tr("Style for %1").arg(owner_name);
 }
 
 QString QtnPropertyQFont::getSizeLabel()

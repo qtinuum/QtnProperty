@@ -131,22 +131,22 @@ void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(co
 	{
 		qtnStopInplaceEdit(false);
 
-		auto menu = new QMenu(this);
+		QMenu menu(this);
 
-		menu->addAction(ui->actionPropertyOptions);
-		menu->addSeparator();
-		menu->addAction(ui->actionPropertyAdd);
-		menu->addAction(ui->actionPropertyDuplicate);
-		menu->addSeparator();
-		menu->addAction(ui->actionPropertyCut);
-		menu->addAction(ui->actionPropertyCopy);
-		menu->addAction(ui->actionPropertyPaste);
-		menu->addSeparator();
-		menu->addAction(ui->actionPropertyDelete);
+		menu.addAction(ui->actionPropertyOptions);
+		menu.addSeparator();
+		menu.addAction(ui->actionPropertyAdd);
+		menu.addAction(ui->actionPropertyDuplicate);
+		menu.addSeparator();
+		menu.addAction(ui->actionPropertyCut);
+		menu.addAction(ui->actionPropertyCopy);
+		menu.addAction(ui->actionPropertyPaste);
+		menu.addSeparator();
+		menu.addAction(ui->actionPropertyDelete);
 
 		updateActions(property);
 
-		menu->exec(ui->propertyWidget->mapToGlobal(pos));
+		menu.exec(ui->propertyWidget->mapToGlobal(pos));
 	}
 }
 
