@@ -24,8 +24,11 @@
 #include "../PropertyEditorHandler.h"
 #include "../PropertyEditorAux.h"
 #include "../Core/PropertySet.h"
+
 #include <QFontDialog>
 #include <QFontDatabase>
+
+#include <memory>
 
 static QString FontToStr(const QFont &font)
 {
