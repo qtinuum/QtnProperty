@@ -47,8 +47,8 @@ namespace QtnPropertyExtension
 				return nullptr;
 			}
 
-			if (!meta_property.isWritable()
-			||	meta_property.isConstant())
+			if (meta_property.isConstant()
+			||	(!meta_property.isWritable() && !meta_property.isResettable()))
 			{
 				property->addState(QtnPropertyStateImmutable);
 			}
@@ -130,7 +130,7 @@ namespace QtnPropertyExtension
 		for (auto &class_name : class_names)
 		{
 			propertySet->addChildProperty(propertySetsByClass[class_name]);
-		}		
+		}
 
 		return propertySet;
 	}
