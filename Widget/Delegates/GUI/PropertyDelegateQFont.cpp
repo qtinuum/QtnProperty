@@ -90,6 +90,7 @@ private:
 			font.setStyleStrategy(style_strategy);
 
 			property->setValue(font);
+			property->propertyDidChange(property, property, QtnPropertyChangeReasonChildren);
 		}
 
 		if (!destroyed)
