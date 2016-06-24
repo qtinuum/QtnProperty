@@ -36,10 +36,10 @@ void regDoubleDelegates()
                   , "SliderBox");
 }
 
-class QtnPropertyDoubleSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, QDoubleSpinBox>
+class QtnPropertyDoubleSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, CustomeDoubleSpinBox>
 {
 public:
-    QtnPropertyDoubleSpinBoxHandler(QtnPropertyDoubleBase& property, QDoubleSpinBox& editor)
+    QtnPropertyDoubleSpinBoxHandler(QtnPropertyDoubleBase& property, CustomeDoubleSpinBox& editor)
         : QtnPropertyEditorHandlerType(property, editor)
     {
         if (!property.isEditableByUser())
@@ -51,7 +51,7 @@ public:
 
         updateEditor();
 
-        QObject::connect(  &editor, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged)
+        QObject::connect(  &editor, static_cast<void (CustomeDoubleSpinBox::*)(double)>(&CustomeDoubleSpinBox::valueChanged)
                          , this, &QtnPropertyDoubleSpinBoxHandler::onValueChanged);
     }
 
@@ -69,7 +69,7 @@ private:
 
 QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QDoubleSpinBox* spinBox = new QDoubleSpinBox(parent);
+    CustomeDoubleSpinBox* spinBox = new CustomeDoubleSpinBox(parent);
     spinBox->setGeometry(rect);
 
     new QtnPropertyDoubleSpinBoxHandler(owner(), *spinBox);
