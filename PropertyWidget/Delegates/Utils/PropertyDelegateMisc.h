@@ -19,6 +19,8 @@
 
 #include "../PropertyDelegate.h"
 
+#include <QDoubleSpinBox>
+
 class QTN_PW_EXPORT QtnInplaceInfo
 {
 public:
@@ -148,6 +150,16 @@ protected:
 private:
     QtnPropertyBase& m_owner;
     QString m_error;
+};
+
+class QTN_PW_EXPORT CustomeDoubleSpinBox : public QDoubleSpinBox
+{
+    Q_OBJECT
+public:
+    explicit CustomeDoubleSpinBox(QWidget *parent = 0);
+
+protected:
+    virtual QString textFromValue(double value) const;
 };
 
 QTN_PW_EXPORT QtnPropertyDelegate* qtnCreateDelegateError(QtnPropertyBase& owner, QString error);

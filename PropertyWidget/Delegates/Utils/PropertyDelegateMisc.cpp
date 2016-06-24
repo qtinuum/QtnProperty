@@ -390,6 +390,22 @@ bool QtnPropertyDelegateError::createSubItemValueImpl(QtnDrawContext& /*context*
     return true;
 }
 
+CustomeDoubleSpinBox::CustomeDoubleSpinBox(QWidget *parent) :
+    QDoubleSpinBox(parent)
+{
+
+}
+
+QString CustomeDoubleSpinBox::textFromValue(double value) const
+{
+    //Q_D(const QDoubleSpinBox);
+    QString str = locale().toString(value, 'g', 12);
+    if (qAbs(value) >= 1000.0) {
+        str.remove(locale().groupSeparator());
+    }
+    return str;
+}
+
 QtnPropertyDelegate* qtnCreateDelegateError(QtnPropertyBase& owner, QString error)
 {
     return new QtnPropertyDelegateError(owner, error);
