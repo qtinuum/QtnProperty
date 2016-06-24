@@ -153,15 +153,15 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	propertyFamily->setCallbackValueSet([&owner, propertyStyle, propertyFamily](QString value) {
 		QFont font = owner.value();
 		font.setFamily(value);
+		owner.setValue(font);
 
+#ifdef Q_OS_MAC
 		QtnPropertyDelegateInfo delegate;
 		delegate.name = "List";
 		QFontDatabase fDB;
 		delegate.attributes["items"] = QStringList("") + fDB.styles(value);
 		delegate.attributes["editable"] = true;
 		propertyStyle->setDelegate(delegate);
-
-		owner.setValue(font);
 
 		std::shared_ptr<QMetaObject::Connection> c(new QMetaObject::Connection);
 		*c.get() = QObject::connect(propertyFamily, &QtnPropertyBase::propertyDidChange, [&owner, c]() mutable
@@ -171,7 +171,9 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 
 			owner.propertyDidChange(&owner, &owner, QtnPropertyChangeReasonChildren);
 		});
+#endif
 	});
+
 	QtnPropertyDelegateInfo delegate;
 	delegate.name = "List";
 	QFontDatabase fDB;
@@ -189,10 +191,16 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 		owner.setValue(font);
 	});
 
+#ifdef Q_OS_MAC
 	delegate.name = "List";
 	delegate.attributes["items"] = QStringList("") + fDB.styles(owner.value().family());
 	delegate.attributes["editable"] = true;
+#else
+	delegate.name = "LineEdit";
+	delegate.attributes["multiline_edit"] = false;
+#endif
 	propertyStyle->setDelegate(delegate);
+
 
 	addSubProperty(propertyStyle);
 

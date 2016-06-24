@@ -31,6 +31,7 @@ public:
 	QtnPropertyDelegateQString(QtnPropertyQStringBase& owner);
 
 protected:
+	virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
 	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const override;
 	virtual QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 	virtual bool propertyValueToStr(QString& strValue) const override;

@@ -183,6 +183,11 @@ QtnPropertyDelegateQString::QtnPropertyDelegateQString(QtnPropertyQStringBase& o
 {
 }
 
+void QtnPropertyDelegateQString::applyAttributesImpl(const QtnPropertyDelegateAttributes &attributes)
+{
+	qtnGetAttribute(attributes, "multiline_edit", check_multiline);
+}
+
 bool QtnPropertyDelegateQString::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
 {
 	if (QtnPropertyDelegateTyped<QtnPropertyQStringBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
