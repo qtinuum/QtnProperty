@@ -16,7 +16,8 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	updateTitle();
 
-	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint)));
+	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint))
+				   | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
 
 	QObject::connect(ui->propertyWidget->propertyView(), &QtnPropertyView::activePropertyChanged,
 					 this, &CustomPropertyEditorDialog::onActivePropertyChanged);
