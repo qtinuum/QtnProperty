@@ -34,27 +34,27 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Element Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="188"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="189"/>
         <source>Add...</source>
         <translation>Add...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="196"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="197"/>
         <source>Add Property...</source>
         <translation>Add Property...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="200"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="201"/>
         <source>Add Element...</source>
         <translation>Add Element...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="230"/>
         <source>Edit Custom Properties</source>
         <translation>Edit Custom Properties</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="230"/>
         <source>Read-only Properties</source>
         <translation>Read-only Properties</translation>
     </message>

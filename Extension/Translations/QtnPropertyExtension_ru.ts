@@ -34,27 +34,27 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation type="vanished">Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="188"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="189"/>
         <source>Add...</source>
         <translation>Добавить...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="196"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="197"/>
         <source>Add Property...</source>
         <translation>Добавить свойство...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="200"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="201"/>
         <source>Add Element...</source>
         <translation>Добавить элемент...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="230"/>
         <source>Edit Custom Properties</source>
         <translation>Редактировать свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="230"/>
         <source>Read-only Properties</source>
         <translation>Свойства только для чтения</translation>
     </message>
