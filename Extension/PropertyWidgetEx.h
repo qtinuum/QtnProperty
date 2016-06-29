@@ -51,6 +51,8 @@ public:
 	virtual bool canCopyToClipboard() override;
 	virtual bool canPasteFromClipboard() override;
 
+	QtnPropertyBase *getActiveProperty() const;
+
 public slots:
 	void deleteActiveProperty();
 	void cutToClipboard();

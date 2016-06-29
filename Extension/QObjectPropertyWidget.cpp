@@ -50,11 +50,6 @@ void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 	}
 }
 
-QtnPropertyBase *QObjectPropertyWidget::getActiveProperty()
-{
-	return propertyView()->activeProperty();
-}
-
 PropertyConnector *QObjectPropertyWidget::getPropertyConnector()
 {
 	auto property = getActiveProperty();

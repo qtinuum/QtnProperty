@@ -25,7 +25,6 @@ private slots:
 protected:
 	virtual void contextMenuEvent(QContextMenuEvent *event) override;
 
-	QtnPropertyBase *getActiveProperty();
 	QtnPropertyExtension::PropertyConnector *getPropertyConnector();
 
 	void onObjectSelect();

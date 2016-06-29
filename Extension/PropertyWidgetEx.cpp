@@ -53,7 +53,7 @@ void QtnPropertyWidgetEx::connectPasteAction(QAction *action, bool connect)
 
 bool QtnPropertyWidgetEx::canDeleteActiveProperty()
 {
-	return canDeleteProperty(propertyView()->activeProperty());
+	return canDeleteProperty(getActiveProperty());
 }
 
 bool QtnPropertyWidgetEx::canDeleteProperty(QtnPropertyBase *)
@@ -68,13 +68,18 @@ bool QtnPropertyWidgetEx::canCutToClipboard()
 
 bool QtnPropertyWidgetEx::canCopyToClipboard()
 {
-	return (nullptr != propertyView()->activeProperty());
+	return (nullptr != getActiveProperty());
 }
 
 bool QtnPropertyWidgetEx::canPasteFromClipboard()
 {
 	return dataHasSupportedFormats(QApplication::clipboard()->mimeData())
-			&& (nullptr != propertyView()->activeProperty());
+			&& (nullptr != getActiveProperty());
+}
+
+QtnPropertyBase *QtnPropertyWidgetEx::getActiveProperty() const
+{
+	return propertyView()->activeProperty();
 }
 
 bool QtnPropertyWidgetEx::dataHasSupportedFormats(const QMimeData *data)
@@ -89,7 +94,7 @@ bool QtnPropertyWidgetEx::dataHasSupportedFormats(const QMimeData *data)
 
 void QtnPropertyWidgetEx::deleteActiveProperty()
 {
-	deleteProperty(propertyView()->activeProperty());
+	deleteProperty(getActiveProperty());
 }
 
 void QtnPropertyWidgetEx::cutToClipboard()
@@ -100,7 +105,7 @@ void QtnPropertyWidgetEx::cutToClipboard()
 
 void QtnPropertyWidgetEx::copyToClipboard()
 {
-	auto property = propertyView()->activeProperty();
+	auto property = getActiveProperty();
 	if (nullptr != property)
 	{
 		auto mime = getPropertyDataForAction(property, Qt::IgnoreAction);
@@ -115,7 +120,7 @@ void QtnPropertyWidgetEx::pasteFromClipboard()
 	if (dataHasSupportedFormats(data))
 	{
 		applyPropertyData(data,
-						  propertyView()->activeProperty(),
+						  getActiveProperty(),
 						  QtnApplyPosition::Over);
 	}
 }

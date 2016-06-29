@@ -49,7 +49,7 @@ public:
     QtnPropertySet* propertySet() { return m_propertyView->propertySet(); }
     void setPropertySet(QtnPropertySet* newPropertySet) { m_propertyView->setPropertySet(newPropertySet); }
 
-    QtnPropertyView* propertyView() { return m_propertyView; }
+	QtnPropertyView* propertyView() const { return m_propertyView; }
 
 private:
     void updateParts();
