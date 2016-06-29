@@ -7,10 +7,7 @@
 #include <QShortcut>
 #include <QClipboard>
 #include <QAction>
-#include <QDebug>
-
-static const QString kTextPlain = "text/plain";
-const QString *pTextPlain = &kTextPlain;
+#include <QColor>
 
 QtnPropertyWidgetEx::QtnPropertyWidgetEx(QWidget *parent)
 	: QtnPropertyWidget(parent)
@@ -82,7 +79,12 @@ bool QtnPropertyWidgetEx::canPasteFromClipboard()
 
 bool QtnPropertyWidgetEx::dataHasSupportedFormats(const QMimeData *data)
 {
-	return (nullptr != data && data->hasFormat(kTextPlain));
+	if (nullptr != data)
+	{
+		return data->hasText() || data->hasUrls() || data->hasColor();
+	}
+
+	return false;
 }
 
 void QtnPropertyWidgetEx::deleteActiveProperty()
@@ -144,7 +146,26 @@ bool QtnPropertyWidgetEx::applyPropertyData(const QMimeData *data,
 	if (nullptr != destination)
 	{
 		Q_ASSERT(nullptr != data);
-		return destination->fromStr(data->text());
+		if (data->hasUrls())
+		{
+			QStringList list;
+
+			for (auto &url : data->urls())
+			{
+				if (url.isLocalFile())
+					list.push_back(url.toLocalFile());
+				else
+					list.push_back(url.toString());
+			}
+
+			return destination->fromStr(list.join('\n'));
+		}
+
+		if (data->hasColor())
+			return destination->fromStr(data->colorData().value<QColor>().name());
+
+		if (data->hasText())
+			return destination->fromStr(data->text());
 	}
 
 	return false;
@@ -160,7 +181,6 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 			if (mevent->button() == Qt::LeftButton)
 			{
 				drag_start_pos = mevent->pos();
-				dragged_property = propertyView()->getPropertyAt(drag_start_pos);
 				can_remove = canDeleteProperty(dragged_property);
 				return true;
 			}
@@ -176,7 +196,11 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 					 < QApplication::startDragDistance())
 				{
 					drop_action = Qt::IgnoreAction;
-					if (dragAndDrop())
+					dragged_property = propertyView()->getPropertyAt(drag_start_pos);
+					bool drop_ok = dragAndDrop();
+					dragged_property = nullptr;
+
+					if (drop_ok)
 						return true;
 				}
 			}
@@ -204,7 +228,7 @@ void QtnPropertyWidgetEx::dragMoveEvent(QDragMoveEvent *event)
 		drop_action = Qt::CopyAction;
 	} else
 	{
-		event->setDropAction(Qt::MoveAction);		
+		event->setDropAction(Qt::MoveAction);
 		drop_action = Qt::MoveAction;
 	}
 
@@ -222,6 +246,13 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			auto pos = view->mapFrom(this, event->pos());
 			QRect rect;
 			auto property = view->getPropertyAt(pos, &rect);
+
+			if (property == dragged_property
+			||	nullptr == property)
+			{
+				break;
+			}
+
 			int part_height = view->itemHeight() / 3;
 
 			QtnApplyPosition apply_position;
@@ -234,15 +265,8 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			else
 				apply_position = QtnApplyPosition::Over;
 
-			if (property == dragged_property
-			||	nullptr == property)
-			{
-				dragged_property = nullptr;
-			}
-
 			auto data = event->mimeData();
-			if (nullptr != dragged_property
-			&&	dataHasSupportedFormats(data)
+			if (dataHasSupportedFormats(data)
 			&&	applyPropertyData(data, property, apply_position))
 				event->accept();
 		}	break;
@@ -270,6 +294,7 @@ bool QtnPropertyWidgetEx::dragAndDrop()
 			if (Qt::MoveAction == drop_action)
 				deleteProperty(dragged_property);
 		}
+
 		return true;
 	}
 

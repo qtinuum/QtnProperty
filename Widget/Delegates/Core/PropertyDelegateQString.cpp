@@ -179,13 +179,15 @@ private:
 
 QtnPropertyDelegateQString::QtnPropertyDelegateQString(QtnPropertyQStringBase& owner)
 	: QtnPropertyDelegateTyped<QtnPropertyQStringBase>(owner)
-	, check_multiline(true)
 {
+	owner.setMultilineEnabled(true);
 }
 
 void QtnPropertyDelegateQString::applyAttributesImpl(const QtnPropertyDelegateAttributes &attributes)
 {
+	bool check_multiline;
 	qtnGetAttribute(attributes, "multiline_edit", check_multiline);
+	owner().setMultilineEnabled(check_multiline);
 }
 
 bool QtnPropertyDelegateQString::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
@@ -199,7 +201,7 @@ bool QtnPropertyDelegateQString::acceptKeyPressedForInplaceEditImpl(QKeyEvent *k
 
 QWidget* QtnPropertyDelegateQString::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-	if (check_multiline)
+	if (owner().isMultilineEnabled())
 	{
 		QtnLineEditBttn* editor = new QtnLineEditBttn(parent);
 		editor->setGeometry(rect);
@@ -224,7 +226,7 @@ QWidget* QtnPropertyDelegateQString::createValueEditorImpl(QWidget* parent, cons
 bool QtnPropertyDelegateQString::propertyValueToStr(QString& strValue) const
 {
 	strValue = owner().value();
-	auto placeholder = QtnPropertyQString::getPlaceholderStr(strValue, check_multiline);
+	auto placeholder = QtnPropertyQString::getPlaceholderStr(strValue, owner().isMultilineEnabled());
 	if (!placeholder.isEmpty())
 		strValue.swap(placeholder);
 
@@ -234,7 +236,7 @@ bool QtnPropertyDelegateQString::propertyValueToStr(QString& strValue) const
 void QtnPropertyDelegateQString::drawValueImpl(QStylePainter &painter, const QRect &rect, const QStyle::State &state, bool *needTooltip) const
 {
 	QPen oldPen = painter.pen();
-	if (!QtnPropertyQString::getPlaceholderStr(owner().value(), check_multiline).isEmpty())
+	if (!owner().getPlaceholderText().isEmpty())
 		painter.setPen(Qt::darkGray);
 
 	Inherited::drawValueImpl(painter, rect, state, needTooltip);
@@ -336,7 +338,7 @@ QtnPropertyDelegateQStringInvalidBase::QtnPropertyDelegateQStringInvalidBase(Qtn
 	: QtnPropertyDelegateQString(owner),
 	  m_invalidColor(Qt::red)
 {
-	check_multiline = false;
+	owner.setMultilineEnabled(false);
 }
 
 void QtnPropertyDelegateQStringInvalidBase::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
@@ -423,7 +425,6 @@ private:
 QtnPropertyDelegateQStringList::QtnPropertyDelegateQStringList(QtnPropertyQStringBase& owner)
 	: QtnPropertyDelegateQString(owner)
 {
-	check_multiline = false;
 }
 
 void QtnPropertyDelegateQStringList::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
