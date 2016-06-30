@@ -194,7 +194,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation>Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="511"/>
+        <location filename="../CustomPropertyWidget.cpp" line="551"/>
         <source>Do you want to insert new property from clipboard?
 If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation>Хотите вставить новое свойство из буфера обмена?

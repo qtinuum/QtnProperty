@@ -318,17 +318,17 @@
 <context>
     <name>QtnPropertyQString</name>
     <message>
-        <location filename="../Core/PropertyQString.cpp" line="49"/>
+        <location filename="../Core/PropertyQString.cpp" line="84"/>
         <source>(Multiline Text)</source>
         <translation>(Многострочный текст)</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQString.cpp" line="52"/>
+        <location filename="../Core/PropertyQString.cpp" line="87"/>
         <source>(Empty)</source>
         <translation>(Пусто)</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQString.cpp" line="59"/>
+        <location filename="../Core/PropertyQString.cpp" line="94"/>
         <source>%1 (Read only)</source>
         <translation>%1 (Только чтение)</translation>
     </message>
