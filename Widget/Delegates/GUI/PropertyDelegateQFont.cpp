@@ -139,6 +139,29 @@ static QtnEnumInfo* sizeUnitEnum()
 	return enumInfo;
 }
 
+static void applyFontStyle(QFont &font)
+{
+#ifdef Q_OS_MAC
+		auto style = font.styleName();
+		if (!style.isEmpty())
+		{
+			auto family = font.family();
+			QFontDatabase db;
+			for (auto &s : db.styles(family))
+			{
+				if (s == style)
+				{
+					font.setBold(db.bold(family, style));
+					font.setItalic(db.italic(family, style));
+					return;
+				}
+			}
+		}
+#else
+	Q_UNUSED(font);
+#endif
+}
+
 QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>(owner)
 {
@@ -154,6 +177,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	propertyFamily->setCallbackValueSet([&owner, propertyStyle, propertyFamily](QString value) {
 		QFont font = owner.value();
 		font.setFamily(value);
+		applyFontStyle(font);
 		owner.setValue(font);
 
 #ifdef Q_OS_MAC
@@ -189,6 +213,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	propertyStyle->setCallbackValueSet([&owner](QString value) {
 		QFont font = owner.value();
 		font.setStyleName(value);
+		applyFontStyle(font);
 		owner.setValue(font);
 	});
 
@@ -284,8 +309,29 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	});
 	propertyBold->setCallbackValueSet([&owner](bool value) {
 		QFont font = owner.value();
-		font.setBold(value);
-		owner.setValue(font);
+		if (font.bold() != value)
+		{
+#ifdef Q_OS_MAC
+			auto style = font.styleName();
+			if (!style.isEmpty())
+			{
+				auto family = font.family();
+				QFontDatabase db;
+				for (auto &s : db.styles(family))
+				{
+					if (s == style)
+					{
+						if (value != db.bold(family, style))
+							return;
+
+						break;
+					}
+				}
+			}
+#endif
+			font.setBold(value);
+			owner.setValue(font);
+		}
 	});
 
 	QtnPropertyBoolCallback* propertyItalic = new QtnPropertyBoolCallback(0);
@@ -297,8 +343,29 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	});
 	propertyItalic->setCallbackValueSet([&owner](bool value) {
 		QFont font = owner.value();
-		font.setItalic(value);
-		owner.setValue(font);
+		if (font.italic() != value)
+		{
+#ifdef Q_OS_MAC
+			auto style = font.styleName();
+			if (!style.isEmpty())
+			{
+				auto family = font.family();
+				QFontDatabase db;
+				for (auto &s : db.styles(family))
+				{
+					if (s == style)
+					{
+						if (value != db.italic(family, style))
+							return;
+
+						break;
+					}
+				}
+			}
+#endif
+			font.setItalic(value);
+			owner.setValue(font);
+		}
 	});
 
 	QtnPropertyBoolCallback* propertyUnderline = new QtnPropertyBoolCallback(0);
