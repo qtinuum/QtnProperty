@@ -28,10 +28,13 @@ class QTN_PW_EXPORT QtnPropertyDelegateQFont: public QtnPropertyDelegateTypedEx<
 public:
     QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner);
 
+	static QString fontToStrWithFormat(const QFont &font, const QString &format = QString("[%1]"));
+	static QString fontToStr(const QFont &font);
+
 protected:
     void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-    bool propertyValueToStr(QString& strValue) const override;
+	bool propertyValueToStr(QString& strValue) const override;
 };
 
 #endif // PROPERTY_DELEGATE_QFONT_H

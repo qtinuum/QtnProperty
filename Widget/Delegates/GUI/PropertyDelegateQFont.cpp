@@ -30,16 +30,6 @@
 
 #include <memory>
 
-static QString FontToStr(const QFont &font)
-{
-	int size = font.pointSize();
-	bool pixels = (size < 0);
-	if (pixels)
-		size = font.pixelSize();
-
-	return QString("[%1, %2 %3]").arg(font.family(), QString::number(size), QString(pixels ? "px" : "pt"));
-}
-
 class QtnPropertyQFontLineEditBttnHandler
 		: public QtnPropertyEditorBttnHandler<QtnPropertyQFontBase, QtnLineEditBttn>
 {
@@ -64,7 +54,7 @@ protected:
 	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
 	virtual void updateEditor() override
 	{
-		editor().lineEdit->setText(FontToStr(property()));
+		editor().lineEdit->setText(QtnPropertyDelegateQFont::fontToStrWithFormat(property()));
 	}
 
 private:
@@ -422,6 +412,22 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	});
 }
 
+QString QtnPropertyDelegateQFont::fontToStrWithFormat(const QFont &font,
+													  const QString &format)
+{
+	return QString(format).arg(fontToStr(font));
+}
+
+QString QtnPropertyDelegateQFont::fontToStr(const QFont &font)
+{
+	int size = font.pointSize();
+	bool pixels = (size < 0);
+	if (pixels)
+		size = font.pixelSize();
+
+	return QString("%1, %2 %3").arg(font.family(), QString::number(size), QString(pixels ? "px" : "pt"));
+}
+
 void QtnPropertyDelegateQFont::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
 	QFont value = owner().value();
@@ -465,6 +471,6 @@ QWidget* QtnPropertyDelegateQFont::createValueEditorImpl(QWidget* parent, const 
 
 bool QtnPropertyDelegateQFont::propertyValueToStr(QString& strValue) const
 {
-	strValue = FontToStr(owner().value());
+	strValue = fontToStrWithFormat(owner().value());
 	return true;
 }
