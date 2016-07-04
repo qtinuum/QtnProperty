@@ -751,7 +751,7 @@ void CustomPropertyWidget::addProperty(QtnPropertyBase *source, const CustomProp
 		std::sort(children.begin(), children.end(),
 		[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool
 		{
-			return QString::compare(a->name(), b->name(), Qt::CaseInsensitive) < 0;
+			return QString::localeAwareCompare(a->name(), b->name()) < 0;
 		});
 	}
 
@@ -826,7 +826,7 @@ void CustomPropertyWidget::updatePropertyOptions(QtnPropertyBase *source, const 
 		{
 			std::sort(children.begin(), children.end(), [](VarProperty *a, VarProperty *b) -> bool
 			{
-				return QString::compare(a->GetName(), b->GetName(), Qt::CaseInsensitive) < 0;
+				return QString::localeAwareCompare(a->GetName(), b->GetName()) < 0;
 			});
 
 			auto it = std::find(children.begin(), children.end(), var_property);
