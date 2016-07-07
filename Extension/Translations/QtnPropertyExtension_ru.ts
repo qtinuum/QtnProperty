@@ -34,19 +34,31 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation type="vanished">Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="189"/>
         <source>Add...</source>
-        <translation>Добавить...</translation>
+        <translation type="vanished">Добавить...</translation>
+    </message>
+    <message>
+        <source>Add Property...</source>
+        <translation type="vanished">Добавить свойство...</translation>
+    </message>
+    <message>
+        <source>Add Element...</source>
+        <translation type="vanished">Добавить элемент...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="189"/>
+        <source>New...</source>
+        <translation>Создать...</translation>
     </message>
     <message>
         <location filename="../CustomPropertyEditorDialog.cpp" line="197"/>
-        <source>Add Property...</source>
-        <translation>Добавить свойство...</translation>
+        <source>New Property...</source>
+        <translation>Новое свойство...</translation>
     </message>
     <message>
         <location filename="../CustomPropertyEditorDialog.cpp" line="201"/>
-        <source>Add Element...</source>
-        <translation>Добавить элемент...</translation>
+        <source>New Element...</source>
+        <translation>Новый элемент...</translation>
     </message>
     <message>
         <location filename="../CustomPropertyEditorDialog.cpp" line="230"/>
@@ -164,14 +176,22 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>CustomPropertyWidget</name>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="97"/>
         <source>Add Element</source>
-        <translation>Добавить элемент</translation>
+        <translation type="vanished">Добавить элемент</translation>
+    </message>
+    <message>
+        <source>Add Property</source>
+        <translation type="vanished">Добавить свойство</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="97"/>
+        <source>New Element</source>
+        <translation>Новый элемент</translation>
     </message>
     <message>
         <location filename="../CustomPropertyWidget.cpp" line="103"/>
-        <source>Add Property</source>
-        <translation>Добавить свойство</translation>
+        <source>New Property</source>
+        <translation>Новое свойство</translation>
     </message>
     <message>
         <location filename="../CustomPropertyWidget.cpp" line="139"/>

@@ -94,13 +94,13 @@ void CustomPropertyWidget::addProperty()
 		{
 			case VarProperty::List:
 			{
-				dialog.setWindowTitle(tr("Add Element"));
+				dialog.setWindowTitle(tr("New Element"));
 				dialog.initWithCount(-1, var_property->GetChildrenCount());
 			} break;
 
 			case VarProperty::Map:
 			{
-				dialog.setWindowTitle(tr("Add Property"));
+				dialog.setWindowTitle(tr("New Property"));
 				dialog.initWithName(QString(),
 									std::bind(&VarProperty::IsChildNameAvailable,
 											  var_property, std::placeholders::_1, nullptr));

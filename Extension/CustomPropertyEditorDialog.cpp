@@ -186,7 +186,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 	if (nullptr == property)
 		property = ui->propertyWidget->propertyView()->activeProperty();
 
-	auto add_text = tr("Add...");
+	auto add_text = tr("New...");
 
 	auto var_property = CustomPropertyWidget::getVarProperty(property);
 	if (nullptr != var_property)
@@ -194,11 +194,11 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 		switch (var_property->GetType())
 		{
 			case VarProperty::Map:
-				add_text = tr("Add Property...");
+				add_text = tr("New Property...");
 				break;
 
 			case VarProperty::List:
-				add_text = tr("Add Element...");
+				add_text = tr("New Element...");
 				break;
 
 			default:

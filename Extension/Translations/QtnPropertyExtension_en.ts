@@ -34,19 +34,31 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Element Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="189"/>
         <source>Add...</source>
-        <translation>Add...</translation>
+        <translation type="vanished">Add...</translation>
+    </message>
+    <message>
+        <source>Add Property...</source>
+        <translation type="vanished">Add Property...</translation>
+    </message>
+    <message>
+        <source>Add Element...</source>
+        <translation type="vanished">Add Element...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="189"/>
+        <source>New...</source>
+        <translation>New...</translation>
     </message>
     <message>
         <location filename="../CustomPropertyEditorDialog.cpp" line="197"/>
-        <source>Add Property...</source>
-        <translation>Add Property...</translation>
+        <source>New Property...</source>
+        <translation>New Property...</translation>
     </message>
     <message>
         <location filename="../CustomPropertyEditorDialog.cpp" line="201"/>
-        <source>Add Element...</source>
-        <translation>Add Element...</translation>
+        <source>New Element...</source>
+        <translation>New Element...</translation>
     </message>
     <message>
         <location filename="../CustomPropertyEditorDialog.cpp" line="230"/>
@@ -164,14 +176,22 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>CustomPropertyWidget</name>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="97"/>
         <source>Add Element</source>
-        <translation>Add Element</translation>
+        <translation type="vanished">Add Element</translation>
+    </message>
+    <message>
+        <source>Add Property</source>
+        <translation type="vanished">Add Property</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="97"/>
+        <source>New Element</source>
+        <translation>New Element</translation>
     </message>
     <message>
         <location filename="../CustomPropertyWidget.cpp" line="103"/>
-        <source>Add Property</source>
-        <translation>Add Property</translation>
+        <source>New Property</source>
+        <translation>New Property</translation>
     </message>
     <message>
         <location filename="../CustomPropertyWidget.cpp" line="139"/>
