@@ -17,6 +17,8 @@
 #include "PropertyBase.h"
 #include <QtScript/QScriptEngine>
 
+#include <QCoreApplication>
+
 static int qtnPropertyChangeReasonMetaId = qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
 static int qtnPropertyPtrId = qRegisterMetaType<QtnPropertyBase*>("QtnPropertyBase*");
 static quint16 qtnPropertyMagicNumber = 0x1984;
@@ -95,12 +97,39 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
 }
 
 QtnPropertyBase::QtnPropertyBase(QObject *parent)
-	: QObject(parent),
-	  m_id(QtnPropertyIDInvalid),
-	  m_stateLocal(QtnPropertyStateNone),
-	  m_stateInherited(QtnPropertyStateNone)
+	: QObject(parent)
+	, m_id(QtnPropertyIDInvalid)
+	, m_stateLocal(QtnPropertyStateNone)
+	, m_stateInherited(QtnPropertyStateNone)
+	, changeReasons(0)
+	, timer(0)
 {
 	qtnAddPropertyAsChild(parent, this, false);
+}
+
+bool QtnPropertyBase::event(QEvent *e)
+{
+	switch (e->type())
+	{
+		case QEvent::Timer:
+		{
+			int reasons = changeReasons;
+			if (reasons != 0)
+			{
+				emit propertyDidChange(this, this, (QtnPropertyChangeReasonFlag) reasons);
+				changeReasons = 0;
+			} else
+			{
+				killTimer(timer);
+				timer = 0;
+			}
+		}	break;
+
+		default:
+			break;
+	}
+
+	return QObject::event(e);
 }
 
 QtnPropertyBase::~QtnPropertyBase()
@@ -398,6 +427,13 @@ QMetaObject::Connection QtnPropertyBase::connectMasterState(const QtnPropertyBas
 bool QtnPropertyBase::disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
 {
 	return QObject::disconnect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyStateDidChange);
+}
+
+void QtnPropertyBase::postUpdateEvent(QtnPropertyChangeReason reason)
+{
+	changeReasons.store(changeReasons | reason);
+	if (timer == 0)
+		timer = startTimer(20);
 }
 
 void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)

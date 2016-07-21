@@ -163,9 +163,9 @@ namespace QtnPropertyExtension
 
 	void PropertyConnector::onValueChanged()
 	{
-		auto property = dynamic_cast<QtnProperty *>(parent());
+		auto property = dynamic_cast<QtnPropertyBase *>(parent());
 		if (nullptr != property)
-			emit property->propertyDidChange(property, property, QtnPropertyChangeReasonNewValue);
+			property->postUpdateEvent(QtnPropertyChangeReasonNewValue);
 	}
 
 	void InstallTranslations(const QLocale &locale)

@@ -21,6 +21,8 @@
 #include <QDataStream>
 #include <QVariant>
 
+#include <atomic>
+
 class QScriptEngine;
 class QtnPropertySet;
 class QtnProperty;
@@ -88,6 +90,8 @@ public:
 	static QMetaObject::Connection connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
 	static bool disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
 
+	void postUpdateEvent(QtnPropertyChangeReason reason);
+
 public: // properties for scripting
 	Q_PROPERTY(QString name READ name)
 	Q_PROPERTY(QString description READ description)
@@ -102,6 +106,8 @@ Q_SIGNALS:
 
 protected:
 	QtnPropertyBase(QObject* parent);
+
+	virtual bool event(QEvent *e) override;
 
 	// serialization implementation
 	virtual bool loadImpl(QDataStream& stream);
@@ -131,6 +137,9 @@ private:
 
 	QtnPropertyState m_stateLocal;
 	QtnPropertyState m_stateInherited;
+
+	std::atomic<int> changeReasons;
+	int timer;
 
 	friend class QtnPropertySet;
 };
