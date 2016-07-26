@@ -21,7 +21,8 @@ HEADERS += \
     VarProperty.h \
     PropertyQVariant.h \
     CustomPropertyWidget.h \
-    QObjectPropertyWidget.h
+    QObjectPropertyWidget.h \
+    IQtnPropertyStateProvider.h
 
 SOURCES += \
     PropertyInt64.cpp \

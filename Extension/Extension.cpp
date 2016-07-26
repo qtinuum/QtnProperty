@@ -8,6 +8,8 @@
 #include "PropertyQRectF.h"
 #include "PropertyQVariant.h"
 
+#include "IQtnPropertyStateProvider.h"
+
 #include <QCoreApplication>
 #include <QTranslator>
 #include <QLocale>
@@ -35,31 +37,37 @@ namespace QtnPropertyExtension
 		QtnPropertyQVariant::Register();
 	}
 
-	QtnProperty* CreateQObjectProperty(QObject* object, const char *class_name, const QMetaProperty& meta_property)
+	QtnProperty* CreateQObjectProperty(QObject* object, const char *className, const QMetaProperty& metaProperty)
 	{
-		auto property =	qtnCreateQObjectProperty(object, meta_property);
+		auto property =	qtnCreateQObjectProperty(object, metaProperty);
 
 		if (nullptr != property)
 		{
-			if (!meta_property.isDesignable(object))
+			if (!metaProperty.isDesignable(object))
 			{
 				delete property;
 				return nullptr;
 			}
 
-			if (meta_property.isConstant()
-			||	(!meta_property.isWritable() && !meta_property.isResettable()))
+			auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
+			if (nullptr != stateProvider)
+			{
+				auto state = stateProvider->getPropertyState(metaProperty);
+			}
+
+			if (metaProperty.isConstant()
+			||	(!metaProperty.isWritable() && !metaProperty.isResettable()))
 			{
 				property->addState(QtnPropertyStateImmutable);
 			}
 
-			property->setName(QCoreApplication::translate(class_name,
-														  meta_property.name()));
+			property->setName(QCoreApplication::translate(className,
+														  metaProperty.name()));
 
-			if (meta_property.hasNotifySignal())
+			if (metaProperty.hasNotifySignal())
 			{
 				auto connector = new PropertyConnector(property);
-				connector->connectProperty(object, meta_property);
+				connector->connectProperty(object, metaProperty);
 			}
 		}
 
@@ -141,24 +149,24 @@ namespace QtnPropertyExtension
 	{
 	}
 
-	void PropertyConnector::connectProperty(QObject *object, const QMetaProperty &meta_property)
+	void PropertyConnector::connectProperty(QObject *object, const QMetaProperty &metaProperty)
 	{
 		this->object = object;
-		this->meta_property = meta_property;
+		this->metaProperty = metaProperty;
 		auto meta_object = metaObject();
 		auto slot = meta_object->method(meta_object->indexOfSlot("onValueChanged()"));
-		QObject::connect(object, meta_property.notifySignal(), this, slot);
+		QObject::connect(object, metaProperty.notifySignal(), this, slot);
 	}
 
 	bool PropertyConnector::isResettablePropertyValue() const
 	{
-		return meta_property.isResettable();
+		return metaProperty.isResettable();
 	}
 
 	void PropertyConnector::resetPropertyValue()
 	{
-		if (nullptr != object && meta_property.isResettable())
-			meta_property.reset(object);
+		if (nullptr != object && metaProperty.isResettable())
+			metaProperty.reset(object);
 	}
 
 	void PropertyConnector::onValueChanged()

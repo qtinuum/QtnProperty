@@ -58,7 +58,7 @@ namespace QtnPropertyExtension
 	public:
 		explicit PropertyConnector(QtnProperty *parent);
 
-		void connectProperty(QObject *object, const QMetaProperty &meta_property);
+		void connectProperty(QObject *object, const QMetaProperty &metaProperty);
 
 		bool isResettablePropertyValue() const;
 		void resetPropertyValue();
@@ -68,7 +68,7 @@ namespace QtnPropertyExtension
 
 	private:
 		QObject *object;
-		QMetaProperty meta_property;
+		QMetaProperty metaProperty;
 	};
 
 
