@@ -53,6 +53,7 @@ namespace QtnPropertyExtension
 			if (nullptr != stateProvider)
 			{
 				auto state = stateProvider->getPropertyState(metaProperty);
+				property->setState(state);
 			}
 
 			if (metaProperty.isConstant()
