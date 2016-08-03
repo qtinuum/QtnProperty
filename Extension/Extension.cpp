@@ -174,7 +174,20 @@ namespace QtnPropertyExtension
 	{
 		auto property = dynamic_cast<QtnPropertyBase *>(parent());
 		if (nullptr != property)
+		{
+			auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
+			if (nullptr != stateProvider)
+			{
+				auto state = stateProvider->getPropertyState(metaProperty);
+				bool collapsed = property->isCollapsed();
+				if (collapsed)
+					state |= QtnPropertyStateCollapsed;
+				else
+					state &= ~QtnPropertyStateCollapsed;
+				property->setState(state);
+			}
 			property->postUpdateEvent(QtnPropertyChangeReasonNewValue);
+		}
 	}
 
 	void InstallTranslations(const QLocale &locale)
