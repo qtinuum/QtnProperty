@@ -20,7 +20,6 @@
 #include "../Utils/PropertyEditorHandler.h"
 #include "../Utils/PropertyDelegateSliderBox.h"
 
-#include <QDoubleSpinBox>
 #include <QKeyEvent>
 
 void regFloatDelegates()
@@ -58,7 +57,11 @@ public:
 private:
     void updateEditor() override
     {
-        editor().setValue((float)property());
+        float editorValue = (float)editor().value();
+        float propertyValue = (float)property();
+        // update editor if property value differs from editor value
+        if (editorValue != propertyValue)
+            editor().setValue(propertyValue);
     }
 
     void onValueChanged(double value)
@@ -67,9 +70,10 @@ private:
     }
 };
 
+
 QWidget* QtnPropertyDelegateFloat::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QDoubleSpinBox *spinBox = new QDoubleSpinBox(parent);
+    QDoubleSpinBox *spinBox = new QtnDoubleSpinBox(parent);
     spinBox->setGeometry(rect);
 
     new QtnPropertyFloatSpinBoxHandler(owner(), *spinBox);

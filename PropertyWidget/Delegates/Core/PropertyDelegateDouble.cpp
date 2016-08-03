@@ -58,7 +58,11 @@ public:
 private:
     void updateEditor() override
     {
-        editor().setValue(property());
+        double editorValue = (float)editor().value();
+        double propertyValue = (float)property();
+        // update editor if property value differs from editor value
+        if (editorValue != propertyValue)
+            editor().setValue(propertyValue);
     }
 
     void onValueChanged(double value)
@@ -69,7 +73,7 @@ private:
 
 QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QDoubleSpinBox* spinBox = new QDoubleSpinBox(parent);
+    QDoubleSpinBox* spinBox = new QtnDoubleSpinBox(parent);
     spinBox->setGeometry(rect);
 
     new QtnPropertyDoubleSpinBoxHandler(owner(), *spinBox);

@@ -18,6 +18,7 @@
 #define QTN_PROPERTY_DELEGATE_MISC_H
 
 #include "../PropertyDelegate.h"
+#include <QDoubleSpinBox>
 
 class QTN_PW_EXPORT QtnInplaceInfo
 {
@@ -151,5 +152,12 @@ private:
 };
 
 QTN_PW_EXPORT QtnPropertyDelegate* qtnCreateDelegateError(QtnPropertyBase& owner, QString error);
+
+class QTN_PW_EXPORT QtnDoubleSpinBox : public QDoubleSpinBox
+{
+public:
+    explicit QtnDoubleSpinBox(QWidget* parent);
+    QString textFromValue(double val) const override;
+};
 
 #endif // QTN_PROPERTY_DELEGATE_MISC_H

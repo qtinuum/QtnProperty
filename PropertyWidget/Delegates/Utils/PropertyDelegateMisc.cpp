@@ -395,3 +395,35 @@ QtnPropertyDelegate* qtnCreateDelegateError(QtnPropertyBase& owner, QString erro
     return new QtnPropertyDelegateError(owner, error);
 }
 
+QtnDoubleSpinBox::QtnDoubleSpinBox(QWidget* parent)
+    : QDoubleSpinBox(parent)
+{}
+
+QString QtnDoubleSpinBox::textFromValue(double val) const
+{
+    // get original text
+    QString text = QDoubleSpinBox::textFromValue(val);
+
+    // remove thousand separator
+    text.remove(locale().groupSeparator());
+
+    // remove trailing zero chars after decimal point
+    int index = text.lastIndexOf(locale().decimalPoint());
+    if (index != -1)
+    {
+        int lastDigit = text.length() - 1;
+        for (int i = lastDigit; i > index; --i)
+        {
+            if (text[i] == '0')
+                lastDigit = i;
+            else
+                break;
+        }
+        if (lastDigit == index + 1)
+            lastDigit = index;
+
+        text.remove(lastDigit, text.length() - 1);
+    }
+
+    return text;
+}
