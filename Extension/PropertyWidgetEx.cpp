@@ -186,6 +186,7 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 			if (mevent->button() == Qt::LeftButton)
 			{
 				drag_start_pos = mevent->pos();
+				dragged_property = propertyView()->getPropertyAt(drag_start_pos);
 				can_remove = canDeleteProperty(dragged_property);
 				return true;
 			}
@@ -201,7 +202,6 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 					 < QApplication::startDragDistance())
 				{
 					drop_action = Qt::IgnoreAction;
-					dragged_property = propertyView()->getPropertyAt(drag_start_pos);
 					bool drop_ok = dragAndDrop();
 					dragged_property = nullptr;
 
@@ -210,6 +210,10 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 				}
 			}
 		}	break;
+
+		case QEvent::MouseButtonRelease:
+			dragged_property = nullptr;
+			break;
 
 		default:
 			break;
