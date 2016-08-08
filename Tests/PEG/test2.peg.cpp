@@ -78,7 +78,7 @@ void QtnPropertySetA::disconnectSlots()
 
 void QtnPropertySetA::connectDelegates()
 {
-    b.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    b.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "Combobox";
         info->attributes["labelFalse"] = "Off";

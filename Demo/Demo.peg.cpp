@@ -179,14 +179,14 @@ void QtnPropertySetSubPropertySetType::disconnectSlots()
 
 void QtnPropertySetSubPropertySetType::connectDelegates()
 {
-    SwitchProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    SwitchProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "ComboBox";
         info->attributes["labelFalse"] = "Off";
         info->attributes["labelTrue"] = "On";
         return info.take();
     });
-    FileNameProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    FileNameProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "File";
         info->attributes["acceptMode"] = QFileDialog::AcceptSave;
@@ -194,20 +194,20 @@ void QtnPropertySetSubPropertySetType::connectDelegates()
         info->attributes["nameFilters"] = QStringList() << "Text files (*.txt)" << "All files (*)";
         return info.take();
     });
-    FolderNameProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    FolderNameProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "File";
         info->attributes["fileMode"] = QFileDialog::DirectoryOnly;
         info->attributes["invalidColor"] = QColor(Qt::blue);
         return info.take();
     });
-    StringFromList.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    StringFromList.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "List";
         info->attributes["items"] = QStringList() << "one" << "two" << "three" << "four";
         return info.take();
     });
-    CircleShapeColor.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    CircleShapeColor.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["shape"] = QtnColorDelegateShapeCircle;
         return info.take();
@@ -224,6 +224,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , DoubleProperty(*new QtnPropertyDouble(this))
     , FloatProperty(*new QtnPropertyFloat(this))
     , IntProperty(*new QtnPropertyInt(this))
+    , IntPropertyComboBox(*new QtnPropertyInt(this))
     , UIntProperty(*new QtnPropertyUInt(this))
     , EnumProperty(*new QtnPropertyEnum(this))
     , EnumFlagsProperty(*new QtnPropertyEnumFlags(this))
@@ -259,6 +260,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     DoubleProperty = other.DoubleProperty;
     FloatProperty = other.FloatProperty;
     IntProperty = other.IntProperty;
+    IntPropertyComboBox = other.IntPropertyComboBox;
     UIntProperty = other.UIntProperty;
     EnumProperty = other.EnumProperty;
     EnumFlagsProperty = other.EnumFlagsProperty;
@@ -333,6 +335,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->IntProperty.state() & ignoreMask))
     {
         IntProperty = theCopyFrom->IntProperty;
+    }
+
+    if (!(theCopyFrom->IntPropertyComboBox.state() & ignoreMask))
+    {
+        IntPropertyComboBox = theCopyFrom->IntPropertyComboBox;
     }
 
     if (!(theCopyFrom->UIntProperty.state() & ignoreMask))
@@ -458,6 +465,12 @@ void QtnPropertySetSamplePS::init()
     IntProperty.setDescription(IntProperty_description);
     IntProperty.setStepValue(15);
     IntProperty.setValue(10);
+    static QString IntPropertyComboBox_name = tr("IntPropertyComboBox");
+    IntPropertyComboBox.setName(IntPropertyComboBox_name);
+    static QString IntPropertyComboBox_description = "Property to hold integer values with changing step 15.";
+    IntPropertyComboBox.setDescription(IntPropertyComboBox_description);
+    IntPropertyComboBox.setStepValue(15);
+    IntPropertyComboBox.setValue(10);
     static QString UIntProperty_name = tr("UIntProperty");
     UIntProperty.setName(UIntProperty_name);
     static QString UIntProperty_description = "Property to hold unsigned integer values in range [100, 200].";
@@ -553,27 +566,33 @@ void QtnPropertySetSamplePS::on_QColorProperty_propertyDidChange(const QtnProper
 
 void QtnPropertySetSamplePS::connectDelegates()
 {
-    ButtonProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    ButtonProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["title"] = "Click me";
         return info.take();
     });
-    ButtonLinkProperty.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    ButtonLinkProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "Link";
         info->attributes["title"] = "Click on me";
         return info.take();
     });
-    RGBColor.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    RGBColor.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["rgbSubItems"] = true;
         return info.take();
     });
-    FloatPropertySliderBox.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
+    FloatPropertySliderBox.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "SliderBox";
         info->attributes["drawBorder"] = false;
         info->attributes["fillColor"] = QColor::fromRgb(170, 170, 255);
+        return info.take();
+    });
+    IntPropertyComboBox.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->name = "IntList";
+        info->attributes["values"] = QVariant::fromValue(QList<int>() << 10 << 12 << 15);
         return info.take();
     });
 }

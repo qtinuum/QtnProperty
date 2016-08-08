@@ -244,7 +244,7 @@ void TestProperty::propertyDelegateCallback()
     QtnPropertyBool p(this);
     QVERIFY(!p.delegate());
 
-    p.setDelegateCallback([]()->const QtnPropertyDelegateInfo* {
+    p.setDelegateCallback([]()->QtnPropertyDelegateInfo* {
         QtnPropertyDelegateInfo *info(new QtnPropertyDelegateInfo());
         info->name = "delegate";
         info->attributes["one"] = 1;

@@ -105,6 +105,17 @@ property_set SamplePS
         stepValue = 15;
     }
 
+    Int IntPropertyComboBox
+    {
+        description = "Property to hold integer values with changing step 15.";
+        value = 10;
+        stepValue = 15;
+        delegate IntList
+        {
+            values = QVariant::fromValue(QList<int>() << 10 << 12 << 15);
+        }
+    }
+
     UInt UIntProperty
     {
         description = "Property to hold unsigned integer values in range [100, 200].";

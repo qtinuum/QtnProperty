@@ -564,7 +564,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent& s) const
 {
     if (!delegateInfo.isNull())
     {
-        s.newLine() << QString("setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {");
+        s.newLine() << QString("setDelegateCallback([] () -> QtnPropertyDelegateInfo * {");
         s.addIndent();
             delegateInfo->generateCode(s);
         s.delIndent();
@@ -575,7 +575,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent& s) const
     {
         if (!p->delegateInfo.isNull())
         {
-            s.newLine() << QString("%1.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {").arg(p->name);
+            s.newLine() << QString("%1.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {").arg(p->name);
             s.addIndent();
                 p->delegateInfo->generateCode(s);
             s.delIndent();

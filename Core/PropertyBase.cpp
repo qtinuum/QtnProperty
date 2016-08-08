@@ -23,7 +23,7 @@ class QtnPropertyDelegateInfoGetter
     Q_DISABLE_COPY(QtnPropertyDelegateInfoGetter)
 
 public:
-    virtual const QtnPropertyDelegateInfo* delegate() const = 0;
+    virtual QtnPropertyDelegateInfo* delegate() = 0;
 
     virtual ~QtnPropertyDelegateInfoGetter() {}
 
@@ -39,7 +39,7 @@ public:
     {
     }
 
-    const QtnPropertyDelegateInfo* delegate() const override
+    QtnPropertyDelegateInfo* delegate() override
     {
         return &m_delegate;
     }
@@ -51,12 +51,12 @@ private:
 class QtnPropertyDelegateInfoGetterCallback: public QtnPropertyDelegateInfoGetter
 {
 public:
-    QtnPropertyDelegateInfoGetterCallback(const std::function<const QtnPropertyDelegateInfo* ()>& callback)
+    QtnPropertyDelegateInfoGetterCallback(const std::function<QtnPropertyDelegateInfo* ()>& callback)
         : m_callback(callback)
     {
     }
 
-    const QtnPropertyDelegateInfo* delegate() const override
+    QtnPropertyDelegateInfo* delegate() override
     {
         if (m_delegate.isNull())
         {
@@ -67,8 +67,8 @@ public:
     }
 
 private:
-    std::function<const QtnPropertyDelegateInfo* ()> m_callback;
-    mutable QScopedPointer<const QtnPropertyDelegateInfo> m_delegate;
+    std::function<QtnPropertyDelegateInfo* ()> m_callback;
+    mutable QScopedPointer<QtnPropertyDelegateInfo> m_delegate;
 };
 
 
@@ -486,9 +486,21 @@ void QtnPropertyBase::setDelegate(const QtnPropertyDelegateInfo& delegate)
     m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterValue(delegate));
 }
 
-void QtnPropertyBase::setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback)
+void QtnPropertyBase::setDelegateCallback(const std::function<QtnPropertyDelegateInfo*()>& callback)
 {
     m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterCallback(callback));
+}
+
+void QtnPropertyBase::setDelegateAttribute(const QByteArray& attributeName, const QVariant& attributeValue)
+{
+    if (m_delegateInfoGetter.isNull())
+    {
+        Q_ASSERT(false);
+        return;
+    }
+
+    auto delegate = m_delegateInfoGetter->delegate();
+    delegate->attributes[attributeName] = attributeValue;
 }
 
 void QtnPropertyBase::setResetCallback(const std::function<void(QtnPropertyBase&)>& resetCallback)

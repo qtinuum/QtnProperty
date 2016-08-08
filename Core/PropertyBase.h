@@ -86,7 +86,9 @@ public:
     // delegates
     const QtnPropertyDelegateInfo* delegate() const;
     void setDelegate(const QtnPropertyDelegateInfo& delegate);
-    void setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback);
+    void setDelegateCallback(const std::function<QtnPropertyDelegateInfo*()>& callback);
+
+    void setDelegateAttribute(const QByteArray& attributeName, const QVariant& attributeValue);
 
     // reset callback
     bool hasResetCallback() const { return (bool)m_resetCallback; }

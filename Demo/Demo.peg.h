@@ -91,6 +91,7 @@ public:
     QtnPropertyDouble& DoubleProperty;
     QtnPropertyFloat& FloatProperty;
     QtnPropertyInt& IntProperty;
+    QtnPropertyInt& IntPropertyComboBox;
     QtnPropertyUInt& UIntProperty;
     QtnPropertyEnum& EnumProperty;
     QtnPropertyEnumFlags& EnumFlagsProperty;
