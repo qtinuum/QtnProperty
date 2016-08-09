@@ -278,10 +278,10 @@ bool VarProperty::IsChildNameAvailable(const QString &name, VarProperty *skip) c
 			continue;
 
 		if (prop->name == name)
-			return true;
+			return false;
 	}
 
-	return false;
+	return true;
 }
 
 QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVariant &value,
