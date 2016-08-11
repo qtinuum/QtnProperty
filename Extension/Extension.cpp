@@ -23,10 +23,11 @@ static void QtnPropertyExtension_InitResources()
 
 namespace QtnPropertyExtension
 {
-
 	void Register()
 	{
 		QtnPropertyExtension_InitResources();
+
+
 
 		QtnPropertyInt64::Register();
 		QtnPropertyUInt64::Register();

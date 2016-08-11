@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,136 +23,136 @@
 
 bool qtnRegisterDefaultMetaPropertyFactory()
 {
-    qtnRegisterMetaPropertyFactory(QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::String, qtnCreateFactory<QtnPropertyQStringCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::Double, qtnCreateFactory<QtnPropertyDoubleCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::String, qtnCreateFactory<QtnPropertyQStringCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::Double, qtnCreateFactory<QtnPropertyDoubleCallback>());
 //    qtnRegisterMetaPropertyFactory(QVariant::Float, qtnCreateFactory<QtnPropertyFloatCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::Int, qtnCreateFactory<QtnPropertyIntCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::UInt, qtnCreateFactory<QtnPropertyUIntCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::Point, qtnCreateFactory<QtnPropertyQPointCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::Rect, qtnCreateFactory<QtnPropertyQRectCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::Size, qtnCreateFactory<QtnPropertyQSizeCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::Color, qtnCreateFactory<QtnPropertyQColorCallback>());
-    qtnRegisterMetaPropertyFactory(QVariant::Font, qtnCreateFactory<QtnPropertyQFontCallback>());
-    return true;
+	qtnRegisterMetaPropertyFactory(QVariant::Int, qtnCreateFactory<QtnPropertyIntCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::UInt, qtnCreateFactory<QtnPropertyUIntCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::Point, qtnCreateFactory<QtnPropertyQPointCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::Rect, qtnCreateFactory<QtnPropertyQRectCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::Size, qtnCreateFactory<QtnPropertyQSizeCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::Color, qtnCreateFactory<QtnPropertyQColorCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::Font, qtnCreateFactory<QtnPropertyQFontCallback>());
+	return true;
 }
 
 static QMap<int, QtnMetaPropertyFactory_t> qtnFactoryMap;
 static bool success = qtnRegisterDefaultMetaPropertyFactory();
 
-bool qtnRegisterMetaPropertyFactory(int metaPropertyType, const QtnMetaPropertyFactory_t& factory)
+bool qtnRegisterMetaPropertyFactory(int metaPropertyType, const QtnMetaPropertyFactory_t& factory, bool force)
 {
-    Q_ASSERT(factory);
+	Q_ASSERT(factory);
 
-    if (qtnFactoryMap.contains(metaPropertyType))
-        return false;
+	if (!force && qtnFactoryMap.contains(metaPropertyType))
+		return false;
 
-    qtnFactoryMap.insert(metaPropertyType, factory);
-    return true;
+	qtnFactoryMap.insert(metaPropertyType, factory);
+	return true;
 }
 
 QtnProperty* qtnCreateQObjectProperty(QObject* object, const QMetaProperty& metaProperty)
 {
-    if (!object)
-        return nullptr;
+	if (!object)
+		return nullptr;
 
-    auto it = qtnFactoryMap.find(metaProperty.type());
-    if (it == qtnFactoryMap.end())
-        it = qtnFactoryMap.find(metaProperty.userType());
-    if (it == qtnFactoryMap.end())
-        return nullptr;
+	auto it = qtnFactoryMap.find(metaProperty.type());
+	if (it == qtnFactoryMap.end())
+		it = qtnFactoryMap.find(metaProperty.userType());
+	if (it == qtnFactoryMap.end())
+		return nullptr;
 
-    QtnProperty* property = it.value()(object, metaProperty);
-    if (!property)
-        return property;
+	QtnProperty* property = it.value()(object, metaProperty);
+	if (!property)
+		return property;
 
-    property->setName(metaProperty.name());
-    if (!metaProperty.isDesignable(object))
-        property->addState(QtnPropertyStateImmutable);
+	property->setName(metaProperty.name());
+	if (!metaProperty.isDesignable(object))
+		property->addState(QtnPropertyStateImmutable);
 
-    return property;
+	return property;
 }
 
 QtnProperty* qtnCreateQObjectProperty(QObject* object, const char* propertyName)
 {
-    if (!object)
-        return nullptr;
+	if (!object)
+		return nullptr;
 
-    const QMetaObject* metaObject = object->metaObject();
-    int propertyIndex = -1;
+	const QMetaObject* metaObject = object->metaObject();
+	int propertyIndex = -1;
 
-    while (metaObject)
-    {
-        propertyIndex = object->metaObject()->indexOfProperty(propertyName);
-        if (propertyIndex != -1)
-            break;
+	while (metaObject)
+	{
+		propertyIndex = object->metaObject()->indexOfProperty(propertyName);
+		if (propertyIndex != -1)
+			break;
 
-        metaObject = metaObject->superClass();
-    }
+		metaObject = metaObject->superClass();
+	}
 
-    if (!metaObject)
-        return nullptr;
+	if (!metaObject)
+		return nullptr;
 
-    if (propertyIndex == -1)
-        return nullptr;
+	if (propertyIndex == -1)
+		return nullptr;
 
-    Q_ASSERT(propertyIndex >= 0 && propertyIndex < metaObject->propertyCount());
+	Q_ASSERT(propertyIndex >= 0 && propertyIndex < metaObject->propertyCount());
 
-    return qtnCreateQObjectProperty(object, metaObject->property(propertyIndex));
+	return qtnCreateQObjectProperty(object, metaObject->property(propertyIndex));
 }
 
 
 QtnPropertySet* qtnCreateQObjectPropertySet(QObject* object)
 {
-    if (!object)
-        return nullptr;
+	if (!object)
+		return nullptr;
 
-    // collect property sets by object's classes
-    QList<QtnPropertySet*> propertySetsByClass;
+	// collect property sets by object's classes
+	QList<QtnPropertySet*> propertySetsByClass;
 
-    const QMetaObject* metaObject = object->metaObject();
-    while (metaObject)
-    {
-        if (metaObject->propertyCount() > 0)
-        {
-            QList<QtnProperty*> properties;
-            for (int propertyIndex = metaObject->propertyOffset(), n = metaObject->propertyCount(); propertyIndex < n; ++propertyIndex)
-            {
-                QMetaProperty metaProperty = metaObject->property(propertyIndex);
-                QtnProperty* property = qtnCreateQObjectProperty(object, metaProperty);
-                if (property)
-                    properties.append(property);
-            }
+	const QMetaObject* metaObject = object->metaObject();
+	while (metaObject)
+	{
+		if (metaObject->propertyCount() > 0)
+		{
+			QList<QtnProperty*> properties;
+			for (int propertyIndex = metaObject->propertyOffset(), n = metaObject->propertyCount(); propertyIndex < n; ++propertyIndex)
+			{
+				QMetaProperty metaProperty = metaObject->property(propertyIndex);
+				QtnProperty* property = qtnCreateQObjectProperty(object, metaProperty);
+				if (property)
+					properties.append(property);
+			}
 
-            if (!properties.isEmpty())
-            {
-                QScopedPointer<QtnPropertySet> propertySetByClass(new QtnPropertySet(nullptr));
+			if (!properties.isEmpty())
+			{
+				QScopedPointer<QtnPropertySet> propertySetByClass(new QtnPropertySet(nullptr));
 
-                propertySetByClass->setName(metaObject->className());
-                foreach (QtnProperty* property, properties)
-                {
-                    propertySetByClass->addChildProperty(property);
-                }
+				propertySetByClass->setName(metaObject->className());
+				foreach (QtnProperty* property, properties)
+				{
+					propertySetByClass->addChildProperty(property);
+				}
 
-                propertySetsByClass.prepend(propertySetByClass.take());
-            }
-        }
+				propertySetsByClass.prepend(propertySetByClass.take());
+			}
+		}
 
-        // move up in class hierarchy
-        metaObject = metaObject->superClass();
-    }
+		// move up in class hierarchy
+		metaObject = metaObject->superClass();
+	}
 
-    if (propertySetsByClass.isEmpty())
-        return nullptr;
+	if (propertySetsByClass.isEmpty())
+		return nullptr;
 
-    // move collected property sets to object's property set
-    QScopedPointer<QtnPropertySet> propertySet(new QtnPropertySet(object));
-    propertySet->setName(object->objectName());
+	// move collected property sets to object's property set
+	QScopedPointer<QtnPropertySet> propertySet(new QtnPropertySet(object));
+	propertySet->setName(object->objectName());
 
-    foreach (QtnPropertySet* propertySetByClass, propertySetsByClass)
-    {
-        propertySet->addChildProperty(propertySetByClass);
-    }
+	foreach (QtnPropertySet* propertySetByClass, propertySetsByClass)
+	{
+		propertySet->addChildProperty(propertySetByClass);
+	}
 
-    return propertySet.take();
+	return propertySet.take();
 }
