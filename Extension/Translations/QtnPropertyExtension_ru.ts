@@ -34,27 +34,39 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation type="vanished">Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="188"/>
         <source>Add...</source>
-        <translation>Добавить...</translation>
+        <translation type="vanished">Добавить...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="196"/>
         <source>Add Property...</source>
-        <translation>Добавить свойство...</translation>
+        <translation type="vanished">Добавить свойство...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="200"/>
         <source>Add Element...</source>
-        <translation>Добавить элемент...</translation>
+        <translation type="vanished">Добавить элемент...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="189"/>
+        <source>New...</source>
+        <translation>Создать...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="197"/>
+        <source>New Property...</source>
+        <translation>Новое свойство...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="201"/>
+        <source>New Element...</source>
+        <translation>Новый элемент...</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="230"/>
         <source>Edit Custom Properties</source>
         <translation>Редактировать свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="229"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="230"/>
         <source>Read-only Properties</source>
         <translation>Свойства только для чтения</translation>
     </message>
@@ -164,14 +176,22 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>CustomPropertyWidget</name>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="97"/>
         <source>Add Element</source>
-        <translation>Добавить элемент</translation>
+        <translation type="vanished">Добавить элемент</translation>
+    </message>
+    <message>
+        <source>Add Property</source>
+        <translation type="vanished">Добавить свойство</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="97"/>
+        <source>New Element</source>
+        <translation>Новый элемент</translation>
     </message>
     <message>
         <location filename="../CustomPropertyWidget.cpp" line="103"/>
-        <source>Add Property</source>
-        <translation>Добавить свойство</translation>
+        <source>New Property</source>
+        <translation>Новое свойство</translation>
     </message>
     <message>
         <location filename="../CustomPropertyWidget.cpp" line="139"/>
@@ -194,11 +214,24 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation>Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="511"/>
+        <location filename="../CustomPropertyWidget.cpp" line="551"/>
         <source>Do you want to insert new property from clipboard?
 If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation>Хотите вставить новое свойство из буфера обмена?
 Если вы нажмёте &quot;Нет&quot;, то выбранное свойство будет заменено.</translation>
+    </message>
+</context>
+<context>
+    <name>QObjectPropertyWidget</name>
+    <message>
+        <location filename="../QObjectPropertyWidget.cpp" line="42"/>
+        <source>Reset to default</source>
+        <translation>Сбросить значение</translation>
+    </message>
+    <message>
+        <location filename="../QObjectPropertyWidget.cpp" line="43"/>
+        <source>Reset value of %1 to default</source>
+        <translation>%1: Установить значение по умолчанию</translation>
     </message>
 </context>
 <context>

@@ -39,10 +39,10 @@ class QtnPropertyWidgetEx
 public:
 	explicit QtnPropertyWidgetEx(QWidget *parent = nullptr);
 
-	void connectDeleteAction(QAction *drop_action, bool connect);
-	void connectCutAction(QAction *drop_action, bool connect);
-	void connectCopyAction(QAction *drop_action, bool connect);
-	void connectPasteAction(QAction *drop_action, bool connect);
+	void connectDeleteAction(QAction *dropAction, bool connect);
+	void connectCutAction(QAction *dropAction, bool connect);
+	void connectCopyAction(QAction *dropAction, bool connect);
+	void connectPasteAction(QAction *dropAction, bool connect);
 
 	bool canDeleteActiveProperty();
 
@@ -50,6 +50,11 @@ public:
 	virtual bool canCutToClipboard() override;
 	virtual bool canCopyToClipboard() override;
 	virtual bool canPasteFromClipboard() override;
+
+	QtnPropertyBase *getActiveProperty() const;
+
+private slots:
+	void onMouseReleased();
 
 public slots:
 	void deleteActiveProperty();
@@ -61,7 +66,7 @@ protected:
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void deleteProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
-												Qt::DropAction drop_action) override;
+												Qt::DropAction dropAction) override;
 	virtual bool applyPropertyData(const QMimeData *data,
 								   QtnPropertyBase *destination,
 								   QtnApplyPosition position) override;
@@ -74,12 +79,12 @@ protected:
 
 private:
 	bool dragAndDrop();
-	void internalConnect(QAction *drop_action,
+	void internalConnect(QAction *dropAction,
 						 void (QtnPropertyWidgetEx::*slot)(),
 						 bool connect);
 
-	QPoint drag_start_pos;
-	QtnPropertyBase *dragged_property;
-	Qt::DropAction drop_action;
-	bool can_remove;
+	QPoint dragStartPos;
+	QtnPropertyBase *draggedProperty;
+	Qt::DropAction dropAction;
+	bool canRemove;
 };

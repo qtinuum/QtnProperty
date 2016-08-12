@@ -44,9 +44,9 @@ void CustomPropertyWidget::setReadOnly(bool value)
 	}
 }
 
-void CustomPropertyWidget::setData(QVariant *data_ptr, const QString &title)
+void CustomPropertyWidget::setData(QVariant *data_ptr, const QString &title, bool force)
 {
-	if (this->data_ptr != data_ptr)
+	if (force || this->data_ptr != data_ptr)
 	{
 		this->data_ptr = data_ptr;
 		setPropertySet(nullptr);
@@ -94,13 +94,13 @@ void CustomPropertyWidget::addProperty()
 		{
 			case VarProperty::List:
 			{
-				dialog.setWindowTitle(tr("Add Element"));
+				dialog.setWindowTitle(tr("New Element"));
 				dialog.initWithCount(-1, var_property->GetChildrenCount());
 			} break;
 
 			case VarProperty::Map:
 			{
-				dialog.setWindowTitle(tr("Add Property"));
+				dialog.setWindowTitle(tr("New Property"));
 				dialog.initWithName(QString(),
 									std::bind(&VarProperty::IsChildNameAvailable,
 											  var_property, std::placeholders::_1, nullptr));
@@ -301,8 +301,8 @@ bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
 {
 	if (nullptr != data)
 	{
-		return (data->hasFormat(kCustomPropertyData)
-			||	data->hasFormat(*pTextPlain));
+		return (QtnPropertyWidgetEx::dataHasSupportedFormats(data)
+			||	data->hasFormat(kCustomPropertyData));
 	}
 
 	return false;
@@ -382,6 +382,7 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 	auto var_property = getVarProperty(destination);
 	if (nullptr != var_property)
 	{
+		CustomPropertyData custom_data;
 		if (data->hasFormat(kCustomPropertyData))
 		{
 			auto doc = QJsonDocument::fromBinaryData(data->data(kCustomPropertyData));
@@ -389,7 +390,6 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 			if (doc.isObject())
 			{
 				auto obj = doc.object();
-				CustomPropertyData custom_data;
 
 				if (QtnApplyPosition::Over == position
 				&&	var_property->GetType() == VarProperty::Value)
@@ -477,99 +477,153 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 			}
 
 		} else
-		if (data->hasFormat(*pTextPlain))
 		{
-			QByteArray text(data->data(*pTextPlain));
-			text.prepend('{');
-			text.append('}');
-			QJsonParseError parse_result;
-			auto doc = QJsonDocument::fromJson(text, &parse_result);
-
-			if (QJsonParseError::NoError == parse_result.error)
+			if (data->hasColor())
 			{
-				auto object = doc.object();
-				for (auto it = object.begin(); it != object.end(); ++it)
+				CustomPropertyData custom_data;
+				custom_data.index = var_property->GetIndex();
+				custom_data.name = var_property->GetName();
+				custom_data.value = data->colorData();
+				updatePropertyOptions(destination, custom_data);
+
+				return true;
+			}
+
+			if (data->hasUrls())
+			{
+				QVariantList list;
+
+				for (auto &url : data->urls())
 				{
-					CustomPropertyData custom_data;
-					custom_data.index = var_property->GetIndex();
-					custom_data.name = it.key();
-					custom_data.value = it.value().toVariant();
-
-					QMessageBox::StandardButton choice = QMessageBox::No;
-
-					auto insert_destination = dynamic_cast<QtnPropertySet *>(destination);
-
-					if (nullptr == insert_destination)
-					{
-						if (var_property != var_property->TopParent())
-							insert_destination = dynamic_cast<QtnPropertySet *>(destination->parent());
-					}
-
-					if (nullptr != insert_destination)
-					{
-						choice = QMessageBox::question(this, QCoreApplication::applicationName(),
-													   tr("Do you want to insert new property from clipboard?\n"
-														  "If you press 'No', selected property will be replaced."),
-													   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-					}
-
-					switch (choice)
-					{
-						case QMessageBox::Yes:
-						{
-							if (insert_destination == destination)
-							{
-								switch (var_property->GetType())
-								{
-									case VarProperty::List:
-										custom_data.index = var_property->GetChildrenCount();
-										break;
-
-									case VarProperty::Map:
-										custom_data.index = -1;
-										break;
-
-									default:
-										break;
-								}
-							}
-							addProperty(insert_destination, custom_data);
-						}	break;
-
-						case QMessageBox::No:
-						{
-							updatePropertyOptions(destination, custom_data);
-						}	break;
-
-						default:
-							return false;
-					}
-
-					return true;
+					if (url.isLocalFile())
+						list.push_back(url.toLocalFile());
+					else
+						list.push_back(url.toString());
 				}
-			} else
-			{
-				QByteArray text(data->data(*pTextPlain));
-				text.prepend('[');
-				text.append(']');
 
-				doc = QJsonDocument::fromJson(text, &parse_result);
+				CustomPropertyData custom_data;
+				custom_data.index = var_property->GetIndex();
+				custom_data.name = var_property->GetName();
+
+				if (list.size() > 1)
+				{
+					custom_data.value = list;
+				} else
+				{
+					custom_data.value = list.at(0);
+				}
+
+				updatePropertyOptions(destination, custom_data);
+
+				return true;
+			}
+
+			if (data->hasText())
+			{
+				auto text = data->text().toUtf8();
+				text.prepend('{');
+				text.append('}');
+				QJsonParseError parse_result;
+				auto doc = QJsonDocument::fromJson(text, &parse_result);
 
 				if (QJsonParseError::NoError == parse_result.error)
 				{
-					auto array = doc.array();
-
-					if (array.size() > 0)
+					auto object = doc.object();
+					for (auto it = object.begin(); it != object.end(); ++it)
 					{
-						CustomPropertyData custom_data;
 						custom_data.index = var_property->GetIndex();
-						custom_data.name = var_property->GetName();
-						custom_data.value = array.at(0).toVariant();
-						updatePropertyOptions(destination, custom_data);
+						custom_data.name = it.key();
+						custom_data.value = it.value().toVariant();
+
+						QMessageBox::StandardButton choice = QMessageBox::No;
+
+						auto insert_destination = dynamic_cast<QtnPropertySet *>(destination);
+
+						if (nullptr == insert_destination)
+						{
+							if (var_property != var_property->TopParent())
+								insert_destination = dynamic_cast<QtnPropertySet *>(destination->parent());
+						}
+
+						if (nullptr != insert_destination)
+						{
+							choice = QMessageBox::question(this, QCoreApplication::applicationName(),
+														   tr("Do you want to insert new property from clipboard?\n"
+															  "If you press 'No', selected property will be replaced."),
+														   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+						}
+
+						switch (choice)
+						{
+							case QMessageBox::Yes:
+							{
+								if (insert_destination == destination)
+								{
+									switch (var_property->GetType())
+									{
+										case VarProperty::List:
+											custom_data.index = var_property->GetChildrenCount();
+											break;
+
+										case VarProperty::Map:
+											custom_data.index = -1;
+											break;
+
+										default:
+											break;
+									}
+								}
+								addProperty(insert_destination, custom_data);
+							}	break;
+
+							case QMessageBox::No:
+							{
+								updatePropertyOptions(destination, custom_data);
+							}	break;
+
+							default:
+								return false;
+						}
 
 						return true;
 					}
+				} else
+				{
+					text = data->text().toUtf8();
+					text.prepend('[');
+					text.append(']');
+
+					doc = QJsonDocument::fromJson(text, &parse_result);
+
+					if (QJsonParseError::NoError == parse_result.error)
+					{
+						auto array = doc.array();
+
+						custom_data.index = var_property->GetIndex();
+						custom_data.name = var_property->GetName();
+
+						if (array.size() == 1)
+						{
+							custom_data.value = array.at(0).toVariant();
+							updatePropertyOptions(destination, custom_data);
+
+							return true;
+						}
+
+						if (array.size() > 1)
+						{
+							custom_data.value = array.toVariantList();
+							updatePropertyOptions(destination, custom_data);
+							return true;
+						}
+					}
 				}
+
+				custom_data.index = var_property->GetIndex();
+				custom_data.name = var_property->GetName();
+				custom_data.value = data->text();
+				updatePropertyOptions(destination, custom_data);
+				return true;
 			}
 		}
 	}
@@ -697,7 +751,7 @@ void CustomPropertyWidget::addProperty(QtnPropertyBase *source, const CustomProp
 		std::sort(children.begin(), children.end(),
 		[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool
 		{
-			return QString::compare(a->name(), b->name(), Qt::CaseInsensitive) < 0;
+			return QString::localeAwareCompare(a->name(), b->name()) < 0;
 		});
 	}
 
@@ -772,7 +826,7 @@ void CustomPropertyWidget::updatePropertyOptions(QtnPropertyBase *source, const 
 		{
 			std::sort(children.begin(), children.end(), [](VarProperty *a, VarProperty *b) -> bool
 			{
-				return QString::compare(a->GetName(), b->GetName(), Qt::CaseInsensitive) < 0;
+				return QString::localeAwareCompare(a->GetName(), b->GetName()) < 0;
 			});
 
 			auto it = std::find(children.begin(), children.end(), var_property);

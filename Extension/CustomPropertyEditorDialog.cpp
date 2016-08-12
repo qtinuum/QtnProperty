@@ -16,14 +16,15 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	updateTitle();
 
-	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint)));
+	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint))
+				   | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
 
 	QObject::connect(ui->propertyWidget->propertyView(), &QtnPropertyView::activePropertyChanged,
 					 this, &CustomPropertyEditorDialog::onActivePropertyChanged);
 
 	addShortcutForAction(ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions);
 #ifdef Q_OS_MAC
-	addShortcutForAction(QKeySequence(Qt::CTRL | Qt::Key_Backspace), ui->actionPropertyDelete);
+	addShortcutForAction(QKeySequence(Qt::Key_Backspace), ui->actionPropertyDelete);
 #else
 	addShortcutForAction(ui->actionPropertyDelete->shortcut(), ui->actionPropertyDelete);
 #endif
@@ -131,22 +132,22 @@ void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(co
 	{
 		qtnStopInplaceEdit(false);
 
-		auto menu = new QMenu(this);
+		QMenu menu(this);
 
-		menu->addAction(ui->actionPropertyOptions);
-		menu->addSeparator();
-		menu->addAction(ui->actionPropertyAdd);
-		menu->addAction(ui->actionPropertyDuplicate);
-		menu->addSeparator();
-		menu->addAction(ui->actionPropertyCut);
-		menu->addAction(ui->actionPropertyCopy);
-		menu->addAction(ui->actionPropertyPaste);
-		menu->addSeparator();
-		menu->addAction(ui->actionPropertyDelete);
+		menu.addAction(ui->actionPropertyOptions);
+		menu.addSeparator();
+		menu.addAction(ui->actionPropertyAdd);
+		menu.addAction(ui->actionPropertyDuplicate);
+		menu.addSeparator();
+		menu.addAction(ui->actionPropertyCut);
+		menu.addAction(ui->actionPropertyCopy);
+		menu.addAction(ui->actionPropertyPaste);
+		menu.addSeparator();
+		menu.addAction(ui->actionPropertyDelete);
 
 		updateActions(property);
 
-		menu->exec(ui->propertyWidget->mapToGlobal(pos));
+		menu.exec(ui->propertyWidget->mapToGlobal(pos));
 	}
 }
 
@@ -185,7 +186,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 	if (nullptr == property)
 		property = ui->propertyWidget->propertyView()->activeProperty();
 
-	auto add_text = tr("Add...");
+	auto add_text = tr("New...");
 
 	auto var_property = CustomPropertyWidget::getVarProperty(property);
 	if (nullptr != var_property)
@@ -193,11 +194,11 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 		switch (var_property->GetType())
 		{
 			case VarProperty::Map:
-				add_text = tr("Add Property...");
+				add_text = tr("New Property...");
 				break;
 
 			case VarProperty::List:
-				add_text = tr("Add Element...");
+				add_text = tr("New Element...");
 				break;
 
 			default:

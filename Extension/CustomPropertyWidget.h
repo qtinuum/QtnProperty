@@ -16,7 +16,7 @@ public:
 	inline bool isReadOnly() const;
 	void setReadOnly(bool value);
 	inline QVariant *getData() const;
-	void setData(QVariant *data_ptr, const QString &title = QString());
+	void setData(QVariant *data_ptr, const QString &title = QString(), bool force = false);
 
 	virtual bool canDeleteProperty(QtnPropertyBase *property) override;
 	virtual bool canCutToClipboard() override;
@@ -41,7 +41,7 @@ protected:
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void deleteProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
-												Qt::DropAction drop_action) override;
+												Qt::DropAction dropAction) override;
 	virtual bool applyPropertyData(const QMimeData *data,
 								   QtnPropertyBase *destination,
 								   QtnApplyPosition position) override;

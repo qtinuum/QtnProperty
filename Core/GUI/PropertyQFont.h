@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,46 +22,46 @@
 
 class QTN_PE_CORE_EXPORT QtnPropertyQFontBase: public QtnSinglePropertyBase<QFont>
 {
-    Q_OBJECT
-    QtnPropertyQFontBase(const QtnPropertyQFontBase& other) Q_DECL_EQ_DELETE;
+	Q_OBJECT
+	QtnPropertyQFontBase(const QtnPropertyQFontBase& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit QtnPropertyQFontBase(QObject *parent);
+	explicit QtnPropertyQFontBase(QObject *parent);
 
 protected:
-    // string conversion implementation
-    bool fromStrImpl(const QString& str) override;
-    bool toStrImpl(QString& str) const override;
+	// string conversion implementation
+	bool fromStrImpl(const QString& str) override;
+	bool toStrImpl(QString& str) const override;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQFontBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQFontBase)
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQFontBase, QFont)
 
 class QTN_PE_CORE_EXPORT QtnPropertyQFontCallback: public QtnSinglePropertyCallback<QtnPropertyQFontBase>
 {
-    Q_OBJECT
-    QtnPropertyQFontCallback(const QtnPropertyQFontCallback& other) Q_DECL_EQ_DELETE;
+	Q_OBJECT
+	QtnPropertyQFontCallback(const QtnPropertyQFontCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit QtnPropertyQFontCallback(QObject *parent)
-        : QtnSinglePropertyCallback<QtnPropertyQFontBase>(parent)
-    {
-    }
+	explicit QtnPropertyQFontCallback(QObject *parent)
+		: QtnSinglePropertyCallback<QtnPropertyQFontBase>(parent)
+	{
+	}
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFontCallback, QtnPropertyQFontBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFontCallback, QtnPropertyQFontBase)
 };
 
 class QTN_PE_CORE_EXPORT QtnPropertyQFont: public QtnSinglePropertyValue<QtnPropertyQFontBase>
 {
-    Q_OBJECT
-    QtnPropertyQFont(const QtnPropertyQFont& other) Q_DECL_EQ_DELETE;
+	Q_OBJECT
+	QtnPropertyQFont(const QtnPropertyQFont& other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit QtnPropertyQFont(QObject *parent)
-        : QtnSinglePropertyValue<QtnPropertyQFontBase>(parent)
-    {
-    }
+	explicit QtnPropertyQFont(QObject *parent)
+		: QtnSinglePropertyValue<QtnPropertyQFontBase>(parent)
+	{
+	}
 
 	static QString getPixelStr();
 	static QString getPointStr();
@@ -70,6 +70,8 @@ public:
 	static QString getPreferAntialiasStr();
 	static QString getFamilyLabel();
 	static QString getFamilyDescription(const QString &owner_name);
+	static QString getStyleLabel();
+	static QString getStyleDescription(const QString &owner_name);
 	static QString getSizeLabel();
 	static QString getSizeDescription(const QString &owner_name);
 	static QString getSizeUnitLabel();
@@ -87,7 +89,7 @@ public:
 	static QString getAntialiasingLabel();
 	static QString getAntialiasingDescription(const QString &owner_name);
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFont, QtnPropertyQFontBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFont, QtnPropertyQFontBase)
 };
 
 #endif // PROPERTYFONT_H

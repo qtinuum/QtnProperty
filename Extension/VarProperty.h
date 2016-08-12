@@ -31,8 +31,8 @@ public:
 
 	void ChangePropertyValue(const QVariant &value, QVariant *dest = nullptr);
 	void RemoveFromParent();
-	VarProperty *Duplicate(VarProperty *child, int new_index);
-	VarProperty *Duplicate(VarProperty *child, const QString &new_name);
+	VarProperty *Duplicate(VarProperty *child, int newIndex);
+	VarProperty *Duplicate(VarProperty *child, const QString &newName);
 
 	VarProperty *Duplicate(int new_index);
 	VarProperty *Duplicate(const QString &new_name);
@@ -46,10 +46,10 @@ public:
 	QVariant::Type GetVariantType() const;
 
 	int GetIndex() const;
-	bool SetIndex(int new_index);
+	bool SetIndex(int newIndex);
 
 	const QString &GetName() const;
-	bool SetName(const QString &new_name);
+	bool SetName(const QString &newName);
 
 	VarProperty *TopParent();
 	VarProperty *VarParent();
@@ -61,8 +61,8 @@ public:
 	bool IsChildNameAvailable(const QString &name, VarProperty *skip) const;
 
 	static QtnPropertyBase *NewExtraProperty(QtnPropertySet *set, const QVariant &value,
-											 const QString &key, int index, VarProperty *map_parent,
-											 const RegisterPropertyCallback &register_property);
+											 const QString &key, int index, VarProperty *mapParent,
+											 const RegisterPropertyCallback &registerProperty);
 
 	static bool PropertyValueAccept(const QtnProperty *property, void *valueToAccept, QVariant *dest = nullptr);
 
@@ -81,14 +81,14 @@ public:
 
 private:
 	static QtnPropertySet *NewExtraPropertySet(QObject *parent, const QVariantMap &map,
-											   VarProperty *map_parent, const QString &name, int index,
-									const RegisterPropertyCallback &register_property);
-	static QtnPropertySet *NewExtraPropertyList(QObject *parent, const QVariantList &list, VarProperty *map_parent,
+											   VarProperty *mapParent, const QString &name, int index,
+									const RegisterPropertyCallback &registerProperty);
+	static QtnPropertySet *NewExtraPropertyList(QObject *parent, const QVariantList &list, VarProperty *mapParent,
 												const QString &name, int index,
-									 const RegisterPropertyCallback &register_property);
+									 const RegisterPropertyCallback &registerProperty);
 
-	VarProperty *var_parent;
-	VarChildren var_children;
+	VarProperty *varParent;
+	VarChildren varChildren;
 	QVariant value;
 	QString name;
 	int index;
