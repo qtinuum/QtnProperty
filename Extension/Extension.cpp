@@ -7,6 +7,7 @@
 #include "PropertyQSizeF.h"
 #include "PropertyQRectF.h"
 #include "PropertyQVariant.h"
+#include "MultiProperty.h"
 
 #include "IQtnPropertyStateProvider.h"
 
@@ -27,8 +28,6 @@ namespace QtnPropertyExtension
 	{
 		QtnPropertyExtension_InitResources();
 
-
-
 		QtnPropertyInt64::Register();
 		QtnPropertyUInt64::Register();
 		QtnPropertyPercent::Register();
@@ -36,6 +35,7 @@ namespace QtnPropertyExtension
 		QtnPropertyQSizeF::Register();
 		QtnPropertyQRectF::Register();
 		QtnPropertyQVariant::Register();
+		QtnMultiProperty::Register();
 	}
 
 	QtnProperty* CreateQObjectProperty(QObject* object, const char *className, const QMetaProperty& metaProperty)
@@ -82,7 +82,7 @@ namespace QtnPropertyExtension
 			return nullptr;
 
 		// collect property sets by object's classes
-		QStringList class_names;
+		QStringList classNames;
 		std::map<QString, QtnPropertySet *> propertySetsByClass;
 
 		auto metaObject = object->metaObject();
@@ -116,7 +116,7 @@ namespace QtnPropertyExtension
 						propertySetByClass->setName(class_name);
 						propertySetsByClass[class_name] = propertySetByClass;
 
-						class_names.push_back(class_name);
+						classNames.push_back(class_name);
 					}
 
 					for (auto property : properties)
@@ -137,7 +137,7 @@ namespace QtnPropertyExtension
 		auto propertySet = new QtnPropertySet(nullptr);
 		propertySet->setName(object->objectName());
 
-		for (auto &class_name : class_names)
+		for (auto &class_name : classNames)
 		{
 			propertySet->addChildProperty(propertySetsByClass[class_name]);
 		}
@@ -202,4 +202,47 @@ namespace QtnPropertyExtension
 			QCoreApplication::installTranslator(&extension_translator);
 	}
 
+}
+
+QtnMultiObject::QtnMultiObject(QObject *parent)
+	: QObject(parent)
+{
+
+}
+
+QtnPropertySet *QtnMultiObject::createPropertySet() const
+{
+	typedef std::unique_ptr<QtnPropertySet> SetPtr;
+	std::vector<SetPtr> subSets;
+
+	for (auto object : *this)
+	{
+		auto propertySet = qtnCreateQObjectPropertySet(object);
+
+		for (auto property : propertySet->childProperties())
+		{
+			auto subSet = dynamic_cast<QtnPropertySet *>(property);
+			Q_ASSERT(nullptr != subSet);
+
+			auto it = std::find_if(subSets.begin(), subSets.end(), [subSet](const SetPtr &ptr) -> bool
+			{
+				return (subSet->name() == ptr->name());
+			});
+
+			QtnPropertySet *newSubSet;
+			if (it == subSets.end())
+			{
+				newSubSet = new QtnPropertySet(nullptr);
+				newSubSet->setName(subSet->name());
+				newSubSet->setDescription(subSet->description());
+				newSubSet->setId(subSet->id());
+				newSubSet->setState(subSet->state());
+
+				subSets.push_back(newSubSet);
+			} else
+			{
+				newSubSet = it->get();
+			}
+		}
+	}
 }

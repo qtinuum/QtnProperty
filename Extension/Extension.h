@@ -7,6 +7,16 @@
 
 #include <functional>
 
+class QtnMultiObject : public QObject, public QObjectList
+{
+	Q_OBJECT
+
+public:
+	QtnMultiObject(QObject *parent = nullptr);
+
+	QtnPropertySet *createPropertySet() const;
+};
+
 template <typename VALUE_T, typename FIELD_PROP_T, typename FIELD_T = typename FIELD_PROP_T::ValueType>
 class QtnStructPropertyBase : public QtnSinglePropertyBase<VALUE_T>
 {
