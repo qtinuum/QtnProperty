@@ -44,9 +44,9 @@ void CustomPropertyWidget::setReadOnly(bool value)
 	}
 }
 
-void CustomPropertyWidget::setData(QVariant *data_ptr, const QString &title)
+void CustomPropertyWidget::setData(QVariant *data_ptr, const QString &title, bool force)
 {
-	if (this->data_ptr != data_ptr)
+	if (force || this->data_ptr != data_ptr)
 	{
 		this->data_ptr = data_ptr;
 		setPropertySet(nullptr);

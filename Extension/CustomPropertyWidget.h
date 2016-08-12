@@ -16,7 +16,7 @@ public:
 	inline bool isReadOnly() const;
 	void setReadOnly(bool value);
 	inline QVariant *getData() const;
-	void setData(QVariant *data_ptr, const QString &title = QString());
+	void setData(QVariant *data_ptr, const QString &title = QString(), bool force = false);
 
 	virtual bool canDeleteProperty(QtnPropertyBase *property) override;
 	virtual bool canCutToClipboard() override;
