@@ -41,7 +41,7 @@ protected:
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void deleteProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
-												Qt::DropAction drop_action) override;
+												Qt::DropAction dropAction) override;
 	virtual bool applyPropertyData(const QMimeData *data,
 								   QtnPropertyBase *destination,
 								   QtnApplyPosition position) override;

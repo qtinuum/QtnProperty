@@ -544,6 +544,8 @@ void QtnPropertyView::mouseReleaseEvent(QMouseEvent* e)
 	else
 	{
 		processItemActionByMouse(visibleItemIndexByPoint(e->pos()), e);
+
+		emit mouseReleased(e);
 	}
 }
 
@@ -589,6 +591,7 @@ void QtnPropertyView::mouseDoubleClickEvent(QMouseEvent* e)
 	if (!m_rubberBand)
 	{
 	   processItemActionByMouse(visibleItemIndexByPoint(e->pos()), e);
+	   QAbstractScrollArea::mouseDoubleClickEvent(e);
 	}
 }
 

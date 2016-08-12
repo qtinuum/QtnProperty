@@ -11,9 +11,9 @@
 
 QtnPropertyWidgetEx::QtnPropertyWidgetEx(QWidget *parent)
 	: QtnPropertyWidget(parent)
-	, dragged_property(nullptr)
-	, drop_action(Qt::IgnoreAction)
-	, can_remove(false)
+	, draggedProperty(nullptr)
+	, dropAction(Qt::IgnoreAction)
+	, canRemove(false)
 {
 	for (auto child : children())
 	{
@@ -29,6 +29,9 @@ QtnPropertyWidgetEx::QtnPropertyWidgetEx(QWidget *parent)
 
 	setAcceptDrops(true);
 	propertyView()->installEventFilter(this);
+
+	QObject::connect(propertyView(), &QtnPropertyView::mouseReleased,
+					 this, &QtnPropertyWidgetEx::onMouseReleased);
 }
 
 void QtnPropertyWidgetEx::connectDeleteAction(QAction *action, bool connect)
@@ -80,6 +83,11 @@ bool QtnPropertyWidgetEx::canPasteFromClipboard()
 QtnPropertyBase *QtnPropertyWidgetEx::getActiveProperty() const
 {
 	return propertyView()->activeProperty();
+}
+
+void QtnPropertyWidgetEx::onMouseReleased()
+{
+	draggedProperty = nullptr;
 }
 
 bool QtnPropertyWidgetEx::dataHasSupportedFormats(const QMimeData *data)
@@ -185,9 +193,9 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 			auto mevent = static_cast<QMouseEvent *>(event);
 			if (mevent->button() == Qt::LeftButton)
 			{
-				drag_start_pos = mevent->pos();
-				dragged_property = propertyView()->getPropertyAt(drag_start_pos);
-				can_remove = canDeleteProperty(dragged_property);
+				dragStartPos = mevent->pos();
+				draggedProperty = propertyView()->getPropertyAt(dragStartPos);
+				canRemove = canDeleteProperty(draggedProperty);
 				return true;
 			}
 		}	break;
@@ -195,25 +203,19 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 		case QEvent::MouseMove:
 		{
 			auto mevent = static_cast<QMouseEvent *>(event);
-			if (nullptr != dragged_property
+			if (nullptr != draggedProperty
 			&&	0 != (mevent->buttons() & Qt::LeftButton))
 			{
-				if ((mevent->pos() - drag_start_pos).manhattanLength()
+				if ((mevent->pos() - dragStartPos).manhattanLength()
 					 < QApplication::startDragDistance())
 				{
-					drop_action = Qt::IgnoreAction;
-					bool drop_ok = dragAndDrop();
-					dragged_property = nullptr;
-
-					if (drop_ok)
-						return true;
+					dropAction = Qt::IgnoreAction;
+					dragAndDrop();
+					draggedProperty = nullptr;
+					return true;
 				}
 			}
 		}	break;
-
-		case QEvent::MouseButtonRelease:
-			dragged_property = nullptr;
-			break;
 
 		default:
 			break;
@@ -231,14 +233,14 @@ void QtnPropertyWidgetEx::dragEnterEvent(QDragEnterEvent *event)
 void QtnPropertyWidgetEx::dragMoveEvent(QDragMoveEvent *event)
 {
 	if (Qt::ControlModifier == QApplication::keyboardModifiers()
-	||	!can_remove)
+	||	!canRemove)
 	{
 		event->setDropAction(Qt::CopyAction);
-		drop_action = Qt::CopyAction;
+		dropAction = Qt::CopyAction;
 	} else
 	{
 		event->setDropAction(Qt::MoveAction);
-		drop_action = Qt::MoveAction;
+		dropAction = Qt::MoveAction;
 	}
 
 	event->accept();
@@ -256,7 +258,7 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			QRect rect;
 			auto property = view->getPropertyAt(pos, &rect);
 
-			if (property == dragged_property
+			if (property == draggedProperty
 			||	nullptr == property)
 			{
 				break;
@@ -287,7 +289,7 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 
 bool QtnPropertyWidgetEx::dragAndDrop()
 {
-	auto data = getPropertyDataForAction(dragged_property, Qt::CopyAction);
+	auto data = getPropertyDataForAction(draggedProperty, Qt::CopyAction);
 	if (nullptr != data)
 	{
 		auto drag = new QDrag(this);
@@ -298,10 +300,10 @@ bool QtnPropertyWidgetEx::dragAndDrop()
 
 		drag->exec(Qt::CopyAction | Qt::MoveAction);
 
-		if (nullptr != dragged_property)
+		if (nullptr != draggedProperty)
 		{
-			if (Qt::MoveAction == drop_action)
-				deleteProperty(dragged_property);
+			if (Qt::MoveAction == dropAction)
+				deleteProperty(draggedProperty);
 		}
 
 		return true;

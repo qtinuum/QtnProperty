@@ -90,6 +90,7 @@ public slots:
 Q_SIGNALS:
 	// emits when active property has changed
 	void activePropertyChanged(QtnPropertyBase* activeProperty);
+	void mouseReleased(QMouseEvent *e);
 
 private slots:
 	void onActivePropertyDestroyed();
