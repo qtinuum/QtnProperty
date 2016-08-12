@@ -24,7 +24,7 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	addShortcutForAction(ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions);
 #ifdef Q_OS_MAC
-	addShortcutForAction(QKeySequence(Qt::CTRL | Qt::Key_Backspace), ui->actionPropertyDelete);
+	addShortcutForAction(QKeySequence(Qt::Key_Backspace), ui->actionPropertyDelete);
 #else
 	addShortcutForAction(ui->actionPropertyDelete->shortcut(), ui->actionPropertyDelete);
 #endif
