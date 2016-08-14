@@ -23,38 +23,20 @@
 
 #include <QLocale>
 
-class QtnPropertyDoubleSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, QDoubleSpinBox>
+class QtnPropertyDoubleSpinBoxHandler
+	: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, QDoubleSpinBox>
 {
 public:
-    QtnPropertyDoubleSpinBoxHandler(QtnPropertyDoubleBase& property, QDoubleSpinBox& editor)
-        : QtnPropertyEditorHandlerType(property, editor)
-    {
-        if (!property.isEditableByUser())
-            editor.setReadOnly(true);
+	QtnPropertyDoubleSpinBoxHandler(QtnPropertyDoubleBase &property,
+									QDoubleSpinBox &editor);
 
-        editor.setRange(property.minValue(), property.maxValue());
-        editor.setSingleStep(property.stepValue());
-		editor.setDecimals(12);
-
-        updateEditor();
-
-		editor.setKeyboardTracking(false);
-		QObject::connect(&editor,
-		static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-						 this,
-						 &QtnPropertyDoubleSpinBoxHandler::onValueChanged);
-    }
+protected:
+	virtual void updateEditor() override;
 
 private:
-    void updateEditor() override
-    {
-        editor().setValue(property());
-    }
+	void onValueChanged(double value);
 
-	void onValueChanged(double value)
-    {
-		property() = value;
-    }
+	unsigned updating;
 };
 
 static bool regDoubleDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -91,4 +73,46 @@ bool QtnPropertyDelegateDouble::propertyValueToStr(QString& strValue) const
 	if (percent_suffix)
 		strValue.append(locale.percent());
 	return true;
+}
+
+QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
+		QtnPropertyDoubleBase &property, QDoubleSpinBox &editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+	, updating(0)
+{
+	if (!property.isEditableByUser())
+		editor.setReadOnly(true);
+
+	editor.setRange(property.minValue(), property.maxValue());
+	editor.setSingleStep(property.stepValue());
+	editor.setDecimals(12);
+
+	updateEditor();
+
+	editor.setKeyboardTracking(false);
+	editor.installEventFilter(this);
+	QObject::connect(&editor,
+					 static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+					 this,
+					 &QtnPropertyDoubleSpinBoxHandler::onValueChanged);
+}
+
+void QtnPropertyDoubleSpinBoxHandler::updateEditor()
+{
+	updating++;
+
+	if (property().valueIsHidden())
+		editor().setValue(0);
+	else
+		editor().setValue(property());
+
+	updating--;
+}
+
+void QtnPropertyDoubleSpinBoxHandler::onValueChanged(double value)
+{
+	if (updating > 0)
+		return;
+
+	property().edit(value);
 }

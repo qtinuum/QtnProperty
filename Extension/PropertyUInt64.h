@@ -13,11 +13,11 @@ public:
 
 protected:
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString& str) override;
+	virtual bool fromStrImpl(const QString& str, bool edit) override;
 	virtual bool toStrImpl(QString& str) const override;
 
 	// variant conversion implementation
-	virtual bool fromVariantImpl(const QVariant& var) override;
+	virtual bool fromVariantImpl(const QVariant& var, bool edit) override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyUInt64Base)
 };
@@ -73,4 +73,6 @@ private:
 	void updateEditor();
 
 	QLineEdit *editor;
+	bool reverted;
+	bool applied;
 };

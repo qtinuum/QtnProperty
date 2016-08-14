@@ -12,7 +12,7 @@ QtnPropertyPercentBase::QtnPropertyPercentBase(QObject *parent)
 
 }
 
-bool QtnPropertyPercentBase::fromStrImpl(const QString &str)
+bool QtnPropertyPercentBase::fromStrImpl(const QString &str, bool edit)
 {
 	auto value = str;
 	int new_len = value.length() - 1;
@@ -22,7 +22,7 @@ bool QtnPropertyPercentBase::fromStrImpl(const QString &str)
 		if (c == '%' || c == QLocale().percent())
 			value.resize(new_len);
 	}
-	return QtnPropertyDoubleBase::fromStrImpl(value);
+	return QtnPropertyDoubleBase::fromStrImpl(value, edit);
 }
 
 bool QtnPropertyPercentBase::toStrImpl(QString &str) const

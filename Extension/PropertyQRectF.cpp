@@ -78,7 +78,7 @@ QtnProperty *QtnPropertyQRectFBase::createHeightProperty()
 							   &QRectF::height, &QRectF::setHeight);
 }
 
-bool QtnPropertyQRectFBase::fromStrImpl(const QString &str)
+bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
 {
 	if (!rect_parser.exactMatch(str))
 		return false;
@@ -113,7 +113,7 @@ bool QtnPropertyQRectFBase::fromStrImpl(const QString &str)
 	if (!ok)
 		return false;
 
-	return setValue(QRectF(x, y, width, height));
+	return setValue(QRectF(x, y, width, height), edit);
 }
 
 bool QtnPropertyQRectFBase::toStrImpl(QString &str) const

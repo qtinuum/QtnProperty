@@ -69,6 +69,12 @@ QWidget* QtnPropertyDelegate::createValueEditor(QWidget* parent, const QRect& re
     return valueEditor;
 }
 
+QtnPropertyDelegate::QtnPropertyDelegate(QtnProperty *ownerProperty)
+	: ownerProperty(ownerProperty)
+{
+
+}
+
 void QtnPropertyDelegate::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
     QString strValue;
@@ -107,7 +113,8 @@ QWidget* QtnPropertyDelegate::createValueEditorLineEdit(QWidget* parent, const Q
     lineEdit->setReadOnly(readOnly);
 
     QString strValue;
-    propertyValueToStr(strValue);
+	if (!ownerProperty->valueIsHidden())
+		propertyValueToStr(strValue);
     lineEdit->setText(strValue);
 
     if (inplaceInfo)

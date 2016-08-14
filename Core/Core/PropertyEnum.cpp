@@ -16,7 +16,7 @@
 
 #include "PropertyEnum.h"
 
-bool QtnPropertyEnumBase::fromStrImpl(const QString& str)
+bool QtnPropertyEnumBase::fromStrImpl(const QString& str, bool edit)
 {
     if (!m_enumInfo)
         return false;
@@ -25,7 +25,7 @@ bool QtnPropertyEnumBase::fromStrImpl(const QString& str)
     if (!enumValue)
         return false;
 
-    return setValue(enumValue->value());
+	return setValue(enumValue->value(), edit);
 }
 
 bool QtnPropertyEnumBase::toStrImpl(QString& str) const

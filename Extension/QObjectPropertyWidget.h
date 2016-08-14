@@ -3,11 +3,14 @@
 #include "PropertyWidgetEx.h"
 
 #include <QMetaObject>
+#include <set>
 
 namespace QtnPropertyExtension
 {
 	class PropertyConnector;
 }
+
+class QtnMultiProperty;
 
 class QObjectPropertyWidget : public QtnPropertyWidgetEx
 {
@@ -16,24 +19,37 @@ class QObjectPropertyWidget : public QtnPropertyWidgetEx
 public:
 	explicit QObjectPropertyWidget(QWidget *parent = nullptr);
 
+	typedef std::set<QObject *> Objects;
+
+	inline const Objects &getSelectedObjects() const;
+
 public slots:
-	void selectObject(QObject *object);
+	void deselectAllObjects();
+	void selectObject(QObject *object, bool addSelection = true);
+	void selectObjects(const Objects &objects, bool addSelection = true);
+	void deselectObject(QObject *object, bool destroyed = false);
 
 private slots:
 	void onResetTriggered();
+	void onObjectDestroyed(QObject *object);
 
-protected:
+protected:	
 	virtual void contextMenuEvent(QContextMenuEvent *event) override;
 
-	QtnPropertyExtension::PropertyConnector *getPropertyConnector();
-
-	void onObjectSelect();
-	void onObjectDeselect(bool disconnect = true);
-
-	QObject *selected_object;
-
-private:
+	QtnMultiProperty *getMultiProperty() const;
+	QtnPropertyExtension::PropertyConnector *getPropertyConnector() const;
 	void hack();
 
-	QMetaObject::Connection connection;
+	void connectObjects();
+	void disconnectObjects();
+
+	void disconnectObject(QObject *object);
+	void connectObject(QObject *object);
+
+	Objects selectedObjects;
 };
+
+const QObjectPropertyWidget::Objects &QObjectPropertyWidget::getSelectedObjects() const
+{
+	return selectedObjects;
+}

@@ -18,7 +18,7 @@
 
 #include <QLocale>
 
-bool QtnPropertyDoubleBase::fromStrImpl(const QString& str)
+bool QtnPropertyDoubleBase::fromStrImpl(const QString& str, bool edit)
 {
     bool ok = false;
 	ValueType value = str.toDouble(&ok);
@@ -29,7 +29,7 @@ bool QtnPropertyDoubleBase::fromStrImpl(const QString& str)
 			return false;
 	}
 
-    return setValue(value);
+	return setValue(value, edit);
 }
 
 bool QtnPropertyDoubleBase::toStrImpl(QString& str) const
@@ -38,12 +38,12 @@ bool QtnPropertyDoubleBase::toStrImpl(QString& str) const
     return true;
 }
 
-bool QtnPropertyDoubleBase::fromVariantImpl(const QVariant& var)
+bool QtnPropertyDoubleBase::fromVariantImpl(const QVariant& var, bool edit)
 {
     bool ok = false;
     ValueType value = var.toDouble(&ok);
     if (!ok)
         return false;
 
-    return setValue(value);
+	return setValue(value, edit);
 }

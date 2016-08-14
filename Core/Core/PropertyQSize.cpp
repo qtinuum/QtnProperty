@@ -23,7 +23,7 @@ QtnPropertyQSizeBase::QtnPropertyQSizeBase(QObject *parent)
     addState(QtnPropertyStateCollapsed);
 }
 
-bool QtnPropertyQSizeBase::fromStrImpl(const QString& str)
+bool QtnPropertyQSizeBase::fromStrImpl(const QString& str, bool edit)
 {
     static QRegExp parserSize("^\\s*QSize\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
     static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
@@ -51,7 +51,7 @@ bool QtnPropertyQSizeBase::fromStrImpl(const QString& str)
     if (!ok)
         return false;
 
-    return setValue(QSize(width, height));
+	return setValue(QSize(width, height), edit);
 }
 
 bool QtnPropertyQSizeBase::toStrImpl(QString& str) const

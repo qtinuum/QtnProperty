@@ -24,11 +24,15 @@
 
 class QKeyEvent;
 class QtnInplaceInfo;
+class QtnProperty;
 
 class QTN_PW_EXPORT QtnLineEditBttn: public QWidget
 {
 public:
     QtnLineEditBttn(QWidget *parent);
+
+	void setTextForProperty(QtnProperty *property,
+							const QString &text);
 
     QLineEdit *lineEdit;
     QToolButton *toolButton;

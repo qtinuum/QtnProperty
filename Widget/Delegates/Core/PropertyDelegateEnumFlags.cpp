@@ -50,20 +50,11 @@ static QString enumFlagsProperty2Str(const QtnPropertyEnumFlagsBase& property)
 class QtnPropertyEnumFlagsLineEditHandler: public QtnPropertyEditorHandler<QtnPropertyEnumFlagsBase, QLineEdit>
 {
 public:
-	QtnPropertyEnumFlagsLineEditHandler(QtnPropertyEnumFlagsBase& property, QLineEdit& editor)
-		: QtnPropertyEditorHandlerType(property, editor)
-	{
-//        if (!property.isEditableByUser())
-			editor.setReadOnly(true);
+	QtnPropertyEnumFlagsLineEditHandler(QtnPropertyEnumFlagsBase &property,
+										QLineEdit &editor);
 
-		updateEditor();
-	}
-
-private:
-	void updateEditor() override
-	{
-		editor().setText(enumFlagsProperty2Str(property()));
-	}
+protected:
+	virtual void updateEditor() override;
 };
 
 static bool regEnumFlagsDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -125,4 +116,20 @@ bool QtnPropertyDelegateEnumFlags::propertyValueToStr(QString& strValue) const
 {
 	strValue = enumFlagsProperty2Str(owner());
 	return true;
+}
+
+QtnPropertyEnumFlagsLineEditHandler::QtnPropertyEnumFlagsLineEditHandler(QtnPropertyEnumFlagsBase &property, QLineEdit &editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+{
+	editor.setReadOnly(true);
+
+	updateEditor();
+}
+
+void QtnPropertyEnumFlagsLineEditHandler::updateEditor()
+{
+	if (property().valueIsHidden())
+		editor().clear();
+	else
+		editor().setText(enumFlagsProperty2Str(property()));
 }

@@ -42,6 +42,7 @@ public:
 
 Q_SIGNALS:
     void propertyValueAccept(const QtnProperty* property, QtnPropertyValuePtr valueToAccept, bool* accept);
+	void propertyEdited();
 
 protected:
     explicit QtnProperty(QObject* parent);

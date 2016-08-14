@@ -43,17 +43,17 @@ QtnPropertyQStringBase &QtnPropertyQStringBase::operator=(const char *newValue)
 	return *this;
 }
 
-bool QtnPropertyQStringBase::fromStrImpl(const QString& str)
+bool QtnPropertyQStringBase::fromStrImpl(const QString& str, bool edit)
 {
 	if (!multiline)
 	{
 		int n = str.indexOf('\n');
 		int r = str.indexOf('\r');
 		int len = n < 0 ? r : (r < 0 ? n : qMin(n, r));
-		return setValue(QString(str.data(), len));
+		return setValue(QString(str.data(), len), edit);
 	}
 
-	return setValue(str);
+	return setValue(str, edit);
 }
 
 bool QtnPropertyQStringBase::toStrImpl(QString& str) const

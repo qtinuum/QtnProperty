@@ -19,7 +19,10 @@
 #include <QDebug>
 #include <QKeyEvent>
 
-QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor)
+QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property,
+														   QWidget& editor)
+	: reverted(false)
+	, returned(false)
 {
 	setParent(&editor);
 	QObject::connect(&property, &QtnPropertyBase::propertyDidChange,
@@ -30,6 +33,7 @@ QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property
 
 void QtnPropertyEditorHandlerBase::revertInput()
 {
+	reverted = true;
 	updateEditor();
 }
 
@@ -41,8 +45,20 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 		{
 			auto keyEvent = static_cast<QKeyEvent*>(event);
 			// revert all changes
-			if (keyEvent->key() == Qt::Key_Escape)
-				revertInput();
+			switch (keyEvent->key())
+			{
+				case Qt::Key_Escape:
+					revertInput();
+					break;
+
+				case Qt::Key_Enter:
+				case Qt::Key_Return:
+					returned = true;
+					break;
+
+				default:
+					break;
+			}
 
 		}	break;
 
@@ -53,13 +69,34 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 	return QObject::eventFilter(obj, event);
 }
 
+bool QtnPropertyEditorHandlerBase::canApply() const
+{
+	auto thiz = const_cast<QtnPropertyEditorHandlerBase *>(this);
+	auto property = thiz->propertyBase();
+	if (nullptr != property)
+		return (!reverted && (returned || !property->valueIsHidden()));
+
+	return false;
+}
+
+void QtnPropertyEditorHandlerBase::applyReset()
+{
+	reverted = false;
+	returned = false;
+}
+
 void QtnPropertyEditorHandlerBase::onPropertyDestroyed()
 {
 	propertyBase() = nullptr;
 }
 
-void QtnPropertyEditorHandlerBase::onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertyEditorHandlerBase::onPropertyDidChange(const QtnPropertyBase *,
+													   const QtnPropertyBase *firedProperty,
+													   QtnPropertyChangeReason reason)
 {
-	if ((reason & QtnPropertyChangeReasonValue) && (propertyBase() == firedProperty))
+	if (0 != (reason & (QtnPropertyChangeReasonValue | QtnPropertyChangeReasonState))
+	&&	propertyBase() == firedProperty)
+	{
         updateEditor();
+	}
 }

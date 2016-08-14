@@ -236,6 +236,11 @@ bool QtnPropertyBase::isVisible() const
 	return !(state()&(QtnPropertyStateInvisible));
 }
 
+bool QtnPropertyBase::valueIsHidden() const
+{
+	return 0 != (m_stateLocal & QtnPropertyStateHiddenValue);
+}
+
 bool QtnPropertyBase::load(QDataStream &stream)
 {
 	if (stream.status() != QDataStream::Ok)
@@ -374,12 +379,12 @@ bool QtnPropertyBase::saveImpl(QDataStream& stream) const
 	return stream.status() == QDataStream::Ok;
 }
 
-bool QtnPropertyBase::fromStr(const QString& str)
+bool QtnPropertyBase::fromStr(const QString& str, bool edit)
 {
 	if (!isEditableByUser())
 		return false;
 
-	return fromStrImpl(str);
+	return fromStrImpl(str, edit);
 }
 
 bool QtnPropertyBase::toStr(QString& str) const
@@ -387,12 +392,12 @@ bool QtnPropertyBase::toStr(QString& str) const
 	return toStrImpl(str);
 }
 
-bool QtnPropertyBase::fromVariant(const QVariant& var)
+bool QtnPropertyBase::fromVariant(const QVariant& var, bool edit)
 {
 	if (!isEditableByUser())
 		return false;
 
-	return fromVariantImpl(var);
+	return fromVariantImpl(var, edit);
 }
 
 bool QtnPropertyBase::toVariant(QVariant& var) const
@@ -400,10 +405,10 @@ bool QtnPropertyBase::toVariant(QVariant& var) const
 	return toVariantImpl(var);
 }
 
-bool QtnPropertyBase::fromVariantImpl(const QVariant& var)
+bool QtnPropertyBase::fromVariantImpl(const QVariant& var, bool edit)
 {
 	if (var.canConvert<QString>())
-		return fromStr(var.value<QString>());
+		return fromStr(var.value<QString>(), edit);
 	else
 		return false;
 }
@@ -468,7 +473,7 @@ QVariant QtnPropertyBase::valueAsVariant() const
 
 void QtnPropertyBase::setValueAsVariant(const QVariant& value)
 {
-	fromVariant(value);
+	fromVariant(value, false);
 }
 
 QDataStream& operator<< (QDataStream& stream, const QtnPropertyBase& property)

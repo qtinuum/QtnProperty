@@ -58,63 +58,15 @@ protected:
 class QtnPropertyUIntSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyUIntBase, SpinBoxUnsigned>
 {
 public:
-	QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase& property, SpinBoxUnsigned& editor)
-        : QtnPropertyEditorHandlerType(property, editor)
-		, block(0)
-    {
-        if (!property.isEditableByUser())
-            editor.setReadOnly(true);
-
-        editor.setRange(qtn_u2i(property.minValue()), qtn_u2i(property.maxValue()));
-        editor.setSingleStep(qtn_u2i(property.stepValue()));
-
-        updateEditor();
-
-		editor.setKeyboardTracking(false);
-		QObject::connect(&editor,
-						 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-						 this,
-						 &QtnPropertyUIntSpinBoxHandler::onValueChanged);
-		QObject::connect(editor.lineEdit(),
-						 &QLineEdit::textEdited,
-						 this,
-						 &QtnPropertyUIntSpinBoxHandler::onTextEdited);
-		QObject::connect(&editor,
-						 &QSpinBox::editingFinished,
-						 this,
-						 &QtnPropertyUIntSpinBoxHandler::onEditingFinished);
-    }
+	QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase &property,
+								  SpinBoxUnsigned &editor);
 
 private:
-    void updateEditor() override
-    {
-        editor().setValue(qtn_u2i(property().value()));
-    }
+	virtual void updateEditor() override;
 
-	void onTextEdited(const QString &text)
-	{
-		bool ok = false;
-		auto value = text.toUInt(&ok);
-
-		if (ok)
-		{
-			block++;
-			editor().setValue(qtn_u2i(value));
-			block--;
-		}
-	}
-
-	void onValueChanged(int value)
-    {
-		if (0 == block)
-			property() = qtn_i2u(value);
-    }
-
-	void onEditingFinished()
-	{
-		if (nullptr != propertyBase())
-			property() = qtn_i2u(editor().value());
-	}
+	void onTextEdited(const QString &text);
+	void onValueChanged(int value);
+	void onEditingFinished();
 
 	unsigned block;
 };
@@ -143,4 +95,73 @@ bool QtnPropertyDelegateUInt::propertyValueToStr(QString& strValue) const
 {
 	strValue = QLocale().toString(owner().value());
 	return true;
+}
+
+QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase &property, SpinBoxUnsigned &editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+	, block(0)
+{
+	if (!property.isEditableByUser())
+		editor.setReadOnly(true);
+
+	editor.setRange(qtn_u2i(property.minValue()), qtn_u2i(property.maxValue()));
+	editor.setSingleStep(qtn_u2i(property.stepValue()));
+
+	updateEditor();
+
+	editor.setKeyboardTracking(false);
+	editor.installEventFilter(this);
+	QObject::connect(&editor,
+					 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this,
+					 &QtnPropertyUIntSpinBoxHandler::onValueChanged);
+	QObject::connect(editor.lineEdit(),
+					 &QLineEdit::textEdited,
+					 this,
+					 &QtnPropertyUIntSpinBoxHandler::onTextEdited);
+	QObject::connect(&editor,
+					 &QSpinBox::editingFinished,
+					 this,
+					 &QtnPropertyUIntSpinBoxHandler::onEditingFinished);
+}
+
+void QtnPropertyUIntSpinBoxHandler::updateEditor()
+{
+	block++;
+
+	if (property().valueIsHidden())
+		editor().setValue(0);
+	else
+		editor().setValue(qtn_u2i(property().value()));
+
+	block--;
+}
+
+void QtnPropertyUIntSpinBoxHandler::onTextEdited(const QString &text)
+{
+	bool ok = false;
+	auto value = text.toUInt(&ok);
+
+	if (ok)
+	{
+		block++;
+		editor().setValue(qtn_u2i(value));
+		block--;
+	}
+}
+
+void QtnPropertyUIntSpinBoxHandler::onValueChanged(int value)
+{
+	if (block > 0)
+		return;
+
+	property().edit(qtn_i2u(value));
+}
+
+void QtnPropertyUIntSpinBoxHandler::onEditingFinished()
+{
+	if (canApply())
+		property().edit(qtn_i2u(editor().value()));
+
+	applyReset();
 }

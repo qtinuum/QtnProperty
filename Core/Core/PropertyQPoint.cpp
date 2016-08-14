@@ -23,7 +23,7 @@ QtnPropertyQPointBase::QtnPropertyQPointBase(QObject *parent)
     addState(QtnPropertyStateCollapsed);
 }
 
-bool QtnPropertyQPointBase::fromStrImpl(const QString& str)
+bool QtnPropertyQPointBase::fromStrImpl(const QString& str, bool edit)
 {
     static QRegExp parserPoint("^\\s*QPoint\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
     static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
@@ -49,9 +49,9 @@ bool QtnPropertyQPointBase::fromStrImpl(const QString& str)
 
     int y = params[2].toInt(&ok);
     if (!ok)
-        return false;
+        return false;;
 
-    return setValue(QPoint(x, y));
+	return setValue(QPoint(x, y), edit);
 }
 
 bool QtnPropertyQPointBase::toStrImpl(QString& str) const

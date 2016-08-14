@@ -22,7 +22,8 @@ HEADERS += \
     PropertyQVariant.h \
     CustomPropertyWidget.h \
     QObjectPropertyWidget.h \
-    IQtnPropertyStateProvider.h
+    IQtnPropertyStateProvider.h \
+    MultiProperty.h
 
 SOURCES += \
     PropertyInt64.cpp \
@@ -38,7 +39,8 @@ SOURCES += \
     VarProperty.cpp \
     PropertyQVariant.cpp \
     CustomPropertyWidget.cpp \
-    QObjectPropertyWidget.cpp
+    QObjectPropertyWidget.cpp \
+    MultiProperty.cpp
 
 TRANSLATIONS = \
     Translations/QtnPropertyExtension_en.ts \

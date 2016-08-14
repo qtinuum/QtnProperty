@@ -32,7 +32,7 @@ public:
 
 protected:
     // string conversion implementation
-    bool fromStrImpl(const QString& str) override;
+	bool fromStrImpl(const QString& str, bool edit) override;
     bool toStrImpl(QString& str) const override;
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyBoolBase)

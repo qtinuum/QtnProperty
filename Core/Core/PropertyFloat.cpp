@@ -18,7 +18,7 @@
 
 #include <QLocale>
 
-bool QtnPropertyFloatBase::fromStrImpl(const QString& str)
+bool QtnPropertyFloatBase::fromStrImpl(const QString& str, bool edit)
 {
     bool ok = false;
 	ValueType value = str.toFloat(&ok);
@@ -29,7 +29,7 @@ bool QtnPropertyFloatBase::fromStrImpl(const QString& str)
 			return false;
 	}
 
-    return setValue(value);
+	return setValue(value, edit);
 }
 
 bool QtnPropertyFloatBase::toStrImpl(QString& str) const
@@ -38,12 +38,12 @@ bool QtnPropertyFloatBase::toStrImpl(QString& str) const
 	return true;
 }
 
-bool QtnPropertyFloatBase::fromVariantImpl(const QVariant& var)
+bool QtnPropertyFloatBase::fromVariantImpl(const QVariant& var, bool edit)
 {
     bool ok = false;
     ValueType value = var.toFloat(&ok);
     if (!ok)
         return false;
 
-    return setValue(value);
+	return setValue(value, edit);
 }

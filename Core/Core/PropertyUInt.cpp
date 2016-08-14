@@ -16,14 +16,14 @@
 
 #include "PropertyUInt.h"
 
-bool QtnPropertyUIntBase::fromStrImpl(const QString& str)
+bool QtnPropertyUIntBase::fromStrImpl(const QString& str, bool edit)
 {
     bool ok = false;
     ValueType value = str.toUInt(&ok);
     if (!ok)
         return false;
 
-    return setValue(value);
+	return setValue(value, edit);
 }
 
 bool QtnPropertyUIntBase::toStrImpl(QString& str) const
@@ -32,12 +32,12 @@ bool QtnPropertyUIntBase::toStrImpl(QString& str) const
     return true;
 }
 
-bool QtnPropertyUIntBase::fromVariantImpl(const QVariant& var)
+bool QtnPropertyUIntBase::fromVariantImpl(const QVariant& var, bool edit)
 {
     bool ok = false;
     ValueType value = var.toUInt(&ok);
     if (!ok)
         return false;
 
-    return setValue(value);
+	return setValue(value, edit);
 }
