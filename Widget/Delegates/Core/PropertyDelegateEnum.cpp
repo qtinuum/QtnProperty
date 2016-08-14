@@ -22,35 +22,19 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-class QtnPropertyEnumComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyEnumBase, QComboBox>
+class QtnPropertyEnumComboBoxHandler
+	: public QtnPropertyEditorHandler<QtnPropertyEnumBase, QComboBox>
 {
 public:
-    QtnPropertyEnumComboBoxHandler(QtnPropertyEnumBase& property, QComboBox& editor)
-        : QtnPropertyEditorHandlerType(property, editor)
-    {
-        updateEditor();
+	QtnPropertyEnumComboBoxHandler(QtnPropertyEnumBase &property, QComboBox &editor);
 
-        if (!property.isEditableByUser())
-            editor.setDisabled(true);
-
-        QObject::connect(  &editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
-                         , this, &QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged);
-    }
+protected:
+	virtual void updateEditor() override;
 
 private:
-    void updateEditor() override
-    {
-        int index = editor().findData((int)property());
-        Q_ASSERT(index >= 0);
-        editor().setCurrentIndex(index);
-    }
+	void onCurrentIndexChanged(int index);
 
-    void onCurrentIndexChanged(int index)
-    {
-        QVariant data = editor().itemData(index);
-        if (data.canConvert<int>())
-            property() = data.toInt();
-    }
+	unsigned updating;
 };
 
 
@@ -111,4 +95,46 @@ bool QtnPropertyDelegateEnum::propertyValueToStr(QString& strValue) const
 
     strValue = valueInfo->name();
     return true;
+}
+
+QtnPropertyEnumComboBoxHandler::QtnPropertyEnumComboBoxHandler(QtnPropertyEnumBase &property, QComboBox &editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+	, updating(0)
+{
+	updateEditor();
+
+	if (!property.isEditableByUser())
+		editor.setDisabled(true);
+
+	QObject::connect(  &editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
+					   , this, &QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged);
+}
+
+void QtnPropertyEnumComboBoxHandler::updateEditor()
+{
+	updating++;
+
+	if (property().valueIsHidden())
+		editor().setCurrentIndex(-1);
+	else
+	{
+		int index = editor().findData((int)property());
+		Q_ASSERT(index >= 0);
+		editor().setCurrentIndex(index);
+	}
+
+	updating--;
+}
+
+void QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged(int index)
+{
+	if (updating)
+		return;
+
+	if (index >= 0)
+	{
+		QVariant data = editor().itemData(index);
+		if (data.canConvert<int>())
+			property().edit(data.toInt());
+	}
 }

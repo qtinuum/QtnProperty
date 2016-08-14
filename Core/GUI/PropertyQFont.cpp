@@ -23,13 +23,13 @@ QtnPropertyQFontBase::QtnPropertyQFontBase(QObject *parent)
 	addState(QtnPropertyStateCollapsed);
 }
 
-bool QtnPropertyQFontBase::fromStrImpl(const QString& str)
+bool QtnPropertyQFontBase::fromStrImpl(const QString& str, bool edit)
 {
 	QFont font;
 	if (!font.fromString(str.trimmed()))
 		return false;
 
-	return setValue(font);
+	return setValue(font, edit);
 }
 
 bool QtnPropertyQFontBase::toStrImpl(QString& str) const

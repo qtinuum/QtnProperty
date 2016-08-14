@@ -6,16 +6,7 @@
 #include <QMetaProperty>
 
 #include <functional>
-
-class QtnMultiObject : public QObject, public QObjectList
-{
-	Q_OBJECT
-
-public:
-	QtnMultiObject(QObject *parent = nullptr);
-
-	QtnPropertySet *createPropertySet() const;
-};
+#include <set>
 
 template <typename VALUE_T, typename FIELD_PROP_T, typename FIELD_T = typename FIELD_PROP_T::ValueType>
 class QtnStructPropertyBase : public QtnSinglePropertyBase<VALUE_T>
@@ -84,6 +75,8 @@ namespace QtnPropertyExtension
 
 	void InstallTranslations(const QLocale &locale);
 	void Register();
+
 	QtnPropertySet *CreateQObjectPropertySet(QObject *object);
+	QtnPropertySet *CreateQObjectMultiPropertySet(const std::set<QObject *> &objects);
 }
 

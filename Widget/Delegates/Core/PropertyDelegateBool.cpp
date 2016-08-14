@@ -28,32 +28,15 @@
 class QtnPropertyBoolComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyBoolBase, QComboBox>
 {
 public:
-    QtnPropertyBoolComboBoxHandler(QtnPropertyBoolBase& property, QComboBox& editor)
-        : QtnPropertyEditorHandlerType(property, editor)
-    {
-        updateEditor();
+	QtnPropertyBoolComboBoxHandler(QtnPropertyBoolBase &property, QComboBox &editor);
 
-        if (!property.isEditableByUser())
-            editor.setDisabled(true);
-
-        QObject::connect(  &editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
-                         , this, &QtnPropertyBoolComboBoxHandler::onCurrentIndexChanged);
-    }
+protected:
+	virtual void updateEditor() override;
 
 private:
-    void updateEditor() override
-    {
-        int index = editor().findData((bool)property());
-        Q_ASSERT(index >= 0);
-        editor().setCurrentIndex(index);
-    }
+	void onCurrentIndexChanged(int index);
 
-    void onCurrentIndexChanged(int index)
-    {
-        QVariant data = editor().itemData(index);
-        if (data.canConvert<bool>())
-            property() = data.toBool();
-    }
+	unsigned updating;
 };
 
 static bool regBoolDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -66,7 +49,10 @@ static bool regBoolDelegateCombobox = QtnPropertyDelegateFactory::staticInstance
                                 , &qtnCreateDelegate<QtnPropertyDelegateBoolCombobox, QtnPropertyBoolBase>
                                 , "ComboBox");
 
-void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter &painter,
+												 const QRect &rect,
+												 const QStyle::State &state,
+												 bool *needTooltip) const
 {
     QStyleOptionButton opt;
     opt.rect = rect;
@@ -79,12 +65,14 @@ void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter& painter, const Q
     painter.drawControl(QStyle::CE_CheckBox, opt);
 }
 
-QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget *,
+															 const QRect &,
+															 QtnInplaceInfo *)
 {
     if (!owner().isEditableByUser())
         return 0;
 
-	owner().setValue(!owner().value());
+	owner().edit(!owner().value() || owner().valueIsHidden());
 	return nullptr;
 }
 
@@ -135,4 +123,47 @@ bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(QString& strValue) cons
 {
 	strValue = m_labels[bool(owner()) ? 1 : 0];
     return true;
+}
+
+QtnPropertyBoolComboBoxHandler::QtnPropertyBoolComboBoxHandler(
+		QtnPropertyBoolBase &property, QComboBox &editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+	, updating(0)
+{
+	updateEditor();
+
+	if (!property.isEditableByUser())
+		editor.setDisabled(true);
+
+	QObject::connect(  &editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
+					   , this, &QtnPropertyBoolComboBoxHandler::onCurrentIndexChanged);
+}
+
+void QtnPropertyBoolComboBoxHandler::updateEditor()
+{
+	updating++;
+
+	if (property().valueIsHidden())
+		editor().setCurrentIndex(-1);
+	else
+	{
+		int index = editor().findData((bool)property());
+		Q_ASSERT(index >= 0);
+		editor().setCurrentIndex(index);
+	}
+
+	updating--;
+}
+
+void QtnPropertyBoolComboBoxHandler::onCurrentIndexChanged(int index)
+{
+	if (updating > 0)
+		return;
+
+	if (index >= 0)
+	{
+		QVariant data = editor().itemData(index);
+		if (data.canConvert<bool>())
+			property().edit(data.toBool());
+	}
 }

@@ -13,7 +13,7 @@ QtnPropertyInt64Base::QtnPropertyInt64Base(QObject *parent)
 {
 }
 
-bool QtnPropertyInt64Base::fromStrImpl(const QString &str)
+bool QtnPropertyInt64Base::fromStrImpl(const QString &str, bool edit)
 {
 	bool ok = false;
 	ValueType value = str.toLongLong(&ok);
@@ -24,7 +24,7 @@ bool QtnPropertyInt64Base::fromStrImpl(const QString &str)
 			return false;
 	}
 
-	return setValue(value);
+	return setValue(value, edit);
 }
 
 bool QtnPropertyInt64Base::toStrImpl(QString &str) const
@@ -33,14 +33,14 @@ bool QtnPropertyInt64Base::toStrImpl(QString &str) const
 	return true;
 }
 
-bool QtnPropertyInt64Base::fromVariantImpl(const QVariant &var)
+bool QtnPropertyInt64Base::fromVariantImpl(const QVariant &var, bool edit)
 {
 	bool ok = false;
 	ValueType value = var.toLongLong(&ok);
 	if (!ok)
 		return false;
 
-	return setValue(value);
+	return setValue(value, edit);
 }
 
 
@@ -63,6 +63,8 @@ QtnPropertyDelegateInt64::QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner)
 	: QObject(nullptr)
 	, QtnPropertyDelegateTyped<QtnPropertyInt64Base>(owner)
 	, editor(nullptr)
+	, reverted(false)
+	, applied(true)
 {
 
 }
@@ -71,10 +73,23 @@ bool QtnPropertyDelegateInt64::eventFilter(QObject *obj, QEvent *event)
 {
 	if (event->type() == QEvent::KeyPress)
 	{
-		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-		// revert all changes
-		if (keyEvent->key() == Qt::Key_Escape)
-			updateEditor();
+		auto keyEvent = static_cast<QKeyEvent*>(event);
+
+		switch (keyEvent->key())
+		{
+			case Qt::Key_Escape:
+				reverted = true;
+				updateEditor();
+				break;
+
+			case Qt::Key_Enter:
+			case Qt::Key_Return:
+				applied = true;
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	return QObject::eventFilter(obj, event);
@@ -113,12 +128,22 @@ bool QtnPropertyDelegateInt64::propertyValueToStr(QString &strValue) const
 void QtnPropertyDelegateInt64::onEditingFinished()
 {
 	bool ok = false;
-	auto value = QLocale().toLongLong(editor->text(), &ok);
 
-	if (ok && value >= owner().minValue() && value <= owner().maxValue())
-		owner().setValue(value);
-	else
+	if (!reverted && (applied || !owner().valueIsHidden()))
+	{
+		auto value = QLocale().toLongLong(editor->text(), &ok);
+		ok = ok && value >= owner().minValue() && value <= owner().maxValue();
+
+		if (ok)
+			owner().edit(value);
+	}
+
+	if (!ok)
 		updateEditor();
+
+	reverted = false;
+	applied = false;
+
 }
 
 void QtnPropertyDelegateInt64::onEditorDestroyed()
@@ -128,9 +153,14 @@ void QtnPropertyDelegateInt64::onEditorDestroyed()
 
 void QtnPropertyDelegateInt64::updateEditor()
 {
-	QString str;
-	propertyValueToStr(str);
-	editor->setText(str);
+	if (owner().valueIsHidden())
+		editor->clear();
+	else
+	{
+		QString str;
+		propertyValueToStr(str);
+		editor->setText(str);
+	}
 }
 
 QtnPropertyInt64Callback::QtnPropertyInt64Callback(QObject *parent)

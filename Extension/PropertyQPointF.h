@@ -27,7 +27,7 @@ protected:
 	virtual QString getYDescriptionFormat();
 
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString& str) override;
+	virtual bool fromStrImpl(const QString& str, bool edit) override;
 	virtual bool toStrImpl(QString& str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQPointFBase)

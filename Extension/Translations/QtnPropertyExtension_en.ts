@@ -224,14 +224,22 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QObjectPropertyWidget</name>
     <message>
-        <location filename="../QObjectPropertyWidget.cpp" line="42"/>
+        <location filename="../QObjectPropertyWidget.cpp" line="112"/>
         <source>Reset to default</source>
         <translation>Reset to default</translation>
     </message>
     <message>
-        <location filename="../QObjectPropertyWidget.cpp" line="43"/>
+        <location filename="../QObjectPropertyWidget.cpp" line="113"/>
         <source>Reset value of %1 to default</source>
         <translation>Reset value of %1 to default</translation>
+    </message>
+</context>
+<context>
+    <name>QtnMultiProperty</name>
+    <message>
+        <location filename="../MultiProperty.cpp" line="93"/>
+        <source>(Multiple Values)</source>
+        <translation>(Multiple Values)</translation>
     </message>
 </context>
 <context>
@@ -346,17 +354,17 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="209"/>
+        <location filename="../PropertyQVariant.cpp" line="135"/>
         <source>(Dictionary)</source>
         <translation>(Dictionary)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="212"/>
+        <location filename="../PropertyQVariant.cpp" line="138"/>
         <source>(List)</source>
         <translation>(List)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="218"/>
+        <location filename="../PropertyQVariant.cpp" line="144"/>
         <source>(Empty)</source>
         <translation>(Empty)</translation>
     </message>

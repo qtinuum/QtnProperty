@@ -40,7 +40,7 @@ static bool getBoolValue(QString boolText, bool& success)
     return false;
 }
 
-bool QtnPropertyBoolBase::fromStrImpl(const QString& str)
+bool QtnPropertyBoolBase::fromStrImpl(const QString& str, bool edit)
 {
     bool success = false;
     bool value = getBoolValue(str.trimmed(), success);
@@ -48,7 +48,7 @@ bool QtnPropertyBoolBase::fromStrImpl(const QString& str)
     if (!success)
         return false;
 
-    return setValue(value);
+	return setValue(value, edit);
 }
 
 bool QtnPropertyBoolBase::toStrImpl(QString& str) const

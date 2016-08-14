@@ -32,11 +32,11 @@ public:
 
 protected:
     // string conversion implementation
-    bool fromStrImpl(const QString& str) override;
+	bool fromStrImpl(const QString& str, bool edit) override;
     bool toStrImpl(QString& str) const override;
 
     // variant conversion implementation
-    bool fromVariantImpl(const QVariant& var) override;
+	bool fromVariantImpl(const QVariant& var, bool edit) override;
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyUIntBase)
 };

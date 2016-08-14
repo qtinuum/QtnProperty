@@ -36,7 +36,15 @@ QtnLineEditBttn::QtnLineEditBttn(QWidget *parent)
     layout->addWidget(toolButton);
 
     setFocusProxy(lineEdit);
-    setAutoFillBackground(true);
+	setAutoFillBackground(true);
+}
+
+void QtnLineEditBttn::setTextForProperty(QtnProperty *property, const QString &text)
+{
+	if (property->valueIsHidden())
+		lineEdit->clear();
+	else
+		lineEdit->setText(text);
 }
 
 bool qtnAcceptForLineEdit(QKeyEvent *keyEvent)

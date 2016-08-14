@@ -23,58 +23,19 @@
 #include <QColorDialog>
 
 class QtnPropertyQColorLineEditBttnHandler
-		: public QtnPropertyEditorBttnHandler<QtnPropertyQColorBase, QtnLineEditBttn>
+	: public QtnPropertyEditorBttnHandler<QtnPropertyQColorBase, QtnLineEditBttn>
 {
 public:
-	QtnPropertyQColorLineEditBttnHandler(QtnPropertyQColorBase& property, QtnLineEditBttn& editor)
-		: QtnPropertyEditorHandlerType(property, editor)
-	{
-		if (!property.isEditableByUser())
-		{
-			editor.lineEdit->setReadOnly(true);
-			editor.toolButton->setEnabled(false);
-		}
-
-		updateEditor();
-		editor.lineEdit->installEventFilter(this);
-		QObject::connect(editor.toolButton, &QToolButton::clicked,
-						 this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
-		QObject::connect(editor.lineEdit, &QLineEdit::editingFinished,
-						 this, &QtnPropertyQColorLineEditBttnHandler::onEditingFinished);
-	}
+	QtnPropertyQColorLineEditBttnHandler(QtnPropertyQColorBase &property,
+										 QtnLineEditBttn &editor);
 
 protected:
-	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
-	virtual void updateEditor() override
-	{
-		editor().lineEdit->setText(property().value().name());
-	}
+	virtual void onToolButtonClick() override;
+	virtual void updateEditor() override;
 
 private:
-	void onToolButtonClicked(bool)
-	{
-		auto property = &this->property();
-		volatile bool destroyed = false;
-		auto connection = QObject::connect(property, &QObject::destroyed, [&destroyed]() mutable
-		{
-			destroyed = true;
-		});
-		QColorDialog dlg(property->value(), &editor());
-		if (dlg.exec() == QDialog::Accepted && !destroyed)
-		{
-			property->setValue(dlg.currentColor());
-		}
-
-		if (!destroyed)
-			QObject::disconnect(connection);
-	}
-
-	void onEditingFinished()
-	{
-		if (nullptr != propertyBase())
-			property() = QColor(editor().lineEdit->text());
-	}
-
+	void onToolButtonClicked(bool);
+	void onEditingFinished();
 };
 
 static bool regQColorDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -152,4 +113,58 @@ bool QtnPropertyDelegateQColor::propertyValueToStr(QString& strValue) const
 {
 	strValue = owner().value().name();
 	return true;
+}
+
+QtnPropertyQColorLineEditBttnHandler::QtnPropertyQColorLineEditBttnHandler(QtnPropertyQColorBase &property, QtnLineEditBttn &editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+{
+	if (!property.isEditableByUser())
+	{
+		editor.lineEdit->setReadOnly(true);
+		editor.toolButton->setEnabled(false);
+	}
+
+	updateEditor();
+	editor.lineEdit->installEventFilter(this);
+	QObject::connect(editor.toolButton, &QToolButton::clicked,
+					 this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
+	QObject::connect(editor.lineEdit, &QLineEdit::editingFinished,
+					 this, &QtnPropertyQColorLineEditBttnHandler::onEditingFinished);
+}
+
+void QtnPropertyQColorLineEditBttnHandler::onToolButtonClick()
+{
+	onToolButtonClicked(false);
+}
+
+void QtnPropertyQColorLineEditBttnHandler::updateEditor()
+{
+	editor().setTextForProperty(&property(), property().value().name());
+}
+
+void QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked(bool)
+{
+	auto property = &this->property();
+	volatile bool destroyed = false;
+	auto connection = QObject::connect(property, &QObject::destroyed, [&destroyed]() mutable
+	{
+		destroyed = true;
+	});
+	reverted = true;
+	QColorDialog dlg(property->value(), &editor());
+	if (dlg.exec() == QDialog::Accepted && !destroyed)
+	{
+		property->edit(dlg.currentColor());
+	}
+
+	if (!destroyed)
+		QObject::disconnect(connection);
+}
+
+void QtnPropertyQColorLineEditBttnHandler::onEditingFinished()
+{
+	if (canApply())
+		property().edit(QColor(editor().lineEdit->text()));
+
+	applyReset();
 }

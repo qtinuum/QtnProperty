@@ -24,7 +24,7 @@ QtnPropertyEnumFlagsBase::QtnPropertyEnumFlagsBase(QObject *parent)
     addState(QtnPropertyStateCollapsed);
 }
 
-bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString& str)
+bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString& str, bool edit)
 {
     static QRegExp parserEnumFlags("^\\s*([^|\\s]+)\\s*\\|(.+)$", Qt::CaseInsensitive);
 
@@ -58,7 +58,7 @@ bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString& str)
         val = val|enumValue->value();
     }
 
-    return setValue(val);
+	return setValue(val, edit);
 }
 
 bool QtnPropertyEnumFlagsBase::toStrImpl(QString& str) const

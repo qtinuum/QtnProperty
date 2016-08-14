@@ -16,13 +16,13 @@
 
 #include "PropertyQColor.h"
 
-bool QtnPropertyQColorBase::fromStrImpl(const QString& str)
+bool QtnPropertyQColorBase::fromStrImpl(const QString& str, bool edit)
 {
     QColor color(str.trimmed());
     if (!color.isValid())
         return false;
 
-    return setValue(color);
+	return setValue(color, edit);
 }
 
 bool QtnPropertyQColorBase::toStrImpl(QString& str) const
@@ -34,5 +34,5 @@ bool QtnPropertyQColorBase::toStrImpl(QString& str) const
     else
         str = v.name();
 
-    return true;
+	return true;
 }

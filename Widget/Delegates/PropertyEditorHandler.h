@@ -29,10 +29,17 @@ protected:
 
 	virtual QtnProperty *&propertyBase() = 0;
 	virtual QWidget *&editorBase()  = 0;
-    virtual void updateEditor() = 0;
+	virtual void updateEditor() = 0;
 	virtual void revertInput();
 
 	virtual bool eventFilter(QObject *obj, QEvent *event) override;
+
+	virtual bool canApply() const;
+	virtual void applyReset();
+
+protected:
+	bool reverted;
+	bool returned;
 
 private:
 	void onPropertyDestroyed();
@@ -52,8 +59,8 @@ protected:
     {		
     }
 
-	PropertyClass &property() { return *static_cast<PropertyClass *>(m_property);  }
-	PropertyEditorClass &editor() { return *static_cast<PropertyEditorClass *>(m_editor); }
+	PropertyClass &property() const { return *static_cast<PropertyClass *>(m_property);  }
+	PropertyEditorClass &editor() const { return *static_cast<PropertyEditorClass *>(m_editor); }
 
 	virtual QtnProperty *&propertyBase() override { return m_property; }
 	virtual QWidget *&editorBase() override {return m_editor; }

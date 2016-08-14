@@ -48,7 +48,7 @@ QString QtnPropertyQPointFBase::getYDescriptionFormat()
 	return QtnPropertyQPointF::tr("Y of the %1");
 }
 
-bool QtnPropertyQPointFBase::fromStrImpl(const QString &str)
+bool QtnPropertyQPointFBase::fromStrImpl(const QString &str, bool edit)
 {
 	if (!point_parser.exactMatch(str))
 		return false;
@@ -62,7 +62,7 @@ bool QtnPropertyQPointFBase::fromStrImpl(const QString &str)
 	if (!ok)
 		return false;
 
-	return setValue(QPointF(x, y));
+	return setValue(QPointF(x, y), edit);
 }
 
 bool QtnPropertyQPointFBase::toStrImpl(QString &str) const

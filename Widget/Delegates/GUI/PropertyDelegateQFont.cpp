@@ -34,58 +34,14 @@ class QtnPropertyQFontLineEditBttnHandler
 		: public QtnPropertyEditorBttnHandler<QtnPropertyQFontBase, QtnLineEditBttn>
 {
 public:
-	QtnPropertyQFontLineEditBttnHandler(QtnPropertyQFontBase& property, QtnLineEditBttn& editor)
-		: QtnPropertyEditorHandlerType(property, editor)
-	{
-		editor.lineEdit->setReadOnly(true);
-
-		if (!property.isEditableByUser())
-		{
-			editor.toolButton->setEnabled(false);
-		}
-
-		updateEditor();
-		editor.lineEdit->installEventFilter(this);
-		QObject::connect(editor.toolButton, &QToolButton::clicked,
-						 this, &QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked);
-	}
+	QtnPropertyQFontLineEditBttnHandler(QtnPropertyQFontBase& property, QtnLineEditBttn& editor);
 
 protected:
-	virtual void onToolButtonClick() override { onToolButtonClicked(false); }
-	virtual void updateEditor() override
-	{
-		editor().lineEdit->setText(QtnPropertyDelegateQFont::fontToStrWithFormat(property()));
-	}
+	virtual void onToolButtonClick() override;
+	virtual void updateEditor() override;
 
 private:
-	void onToolButtonClicked(bool)
-	{
-		auto property = &this->property();
-		volatile bool destroyed = false;
-		auto connection = QObject::connect(property, &QObject::destroyed, [&destroyed]() mutable
-		{
-			destroyed = true;
-		});
-		QFontDialog dlg(property->value(), &editor());
-		if (dlg.exec() == QDialog::Accepted && !destroyed)
-		{
-			auto font = property->value();
-			auto style_strategy = font.styleStrategy();
-			int pixel_size = font.pixelSize();
-			font = dlg.currentFont();
-
-			if (pixel_size > 0)
-				font.setPixelSize(font.pointSize());
-
-			font.setStyleStrategy(style_strategy);
-
-			property->setValue(font);
-			property->propertyDidChange(property, property, QtnPropertyChangeReasonChildren);
-		}
-
-		if (!destroyed)
-			QObject::disconnect(connection);
-	}
+	void onToolButtonClicked(bool);
 };
 
 static bool regQFontDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -473,4 +429,62 @@ bool QtnPropertyDelegateQFont::propertyValueToStr(QString& strValue) const
 {
 	strValue = fontToStrWithFormat(owner().value());
 	return true;
+}
+
+QtnPropertyQFontLineEditBttnHandler::QtnPropertyQFontLineEditBttnHandler(QtnPropertyQFontBase &property, QtnLineEditBttn &editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+{
+	editor.lineEdit->setReadOnly(true);
+
+	if (!property.isEditableByUser())
+	{
+		editor.toolButton->setEnabled(false);
+	}
+
+	updateEditor();
+	editor.lineEdit->installEventFilter(this);
+	QObject::connect(editor.toolButton, &QToolButton::clicked,
+					 this, &QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked);
+}
+
+void QtnPropertyQFontLineEditBttnHandler::onToolButtonClick()
+{
+	onToolButtonClicked(false);
+}
+
+void QtnPropertyQFontLineEditBttnHandler::updateEditor()
+{
+	editor().setTextForProperty(&property(),
+			QtnPropertyDelegateQFont::fontToStrWithFormat(property()));
+}
+
+void QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked(bool)
+{
+	auto property = &this->property();
+	volatile bool destroyed = false;
+	auto connection = QObject::connect(property, &QObject::destroyed, [&destroyed]() mutable
+	{
+		destroyed = true;
+	});
+	QFontDialog dlg(property->value(), &editor());
+	if (dlg.exec() == QDialog::Accepted && !destroyed)
+	{
+		auto font = property->value();
+		auto style_strategy = font.styleStrategy();
+		int pixel_size = font.pixelSize();
+		font = dlg.currentFont();
+
+		if (pixel_size > 0)
+			font.setPixelSize(font.pointSize());
+
+		font.setStyleStrategy(style_strategy);
+
+		if (property->edit(font))
+			property->propertyDidChange(property,
+										property,
+										QtnPropertyChangeReasonChildren);
+	}
+
+	if (!destroyed)
+		QObject::disconnect(connection);
 }

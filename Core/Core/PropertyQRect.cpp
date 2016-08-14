@@ -23,7 +23,7 @@ QtnPropertyQRectBase::QtnPropertyQRectBase(QObject *parent)
     addState(QtnPropertyStateCollapsed);
 }
 
-bool QtnPropertyQRectBase::fromStrImpl(const QString& str)
+bool QtnPropertyQRectBase::fromStrImpl(const QString& str, bool edit)
 {
     static QRegExp parserRect("^\\s*QRect\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
     static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$", Qt::CaseInsensitive);
@@ -59,7 +59,7 @@ bool QtnPropertyQRectBase::fromStrImpl(const QString& str)
     if (!ok)
         return false;
 
-    return setValue(QRect(left, top, width, height));
+	return setValue(QRect(left, top, width, height), edit);
 }
 
 bool QtnPropertyQRectBase::toStrImpl(QString& str) const

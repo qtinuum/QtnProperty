@@ -28,7 +28,7 @@ QtnProperty *QtnPropertyQSizeFBase::createHeightProperty()
 							   &QSizeF::height, &QSizeF::setHeight);
 }
 
-bool QtnPropertyQSizeFBase::fromStrImpl(const QString &str)
+bool QtnPropertyQSizeFBase::fromStrImpl(const QString &str, bool edit)
 {
 	if (!size_parser.exactMatch(str))
 		return false;
@@ -42,7 +42,7 @@ bool QtnPropertyQSizeFBase::fromStrImpl(const QString &str)
 	if (!ok)
 		return false;
 
-	return setValue(QSizeF(width, height));
+	return setValue(QSizeF(width, height), edit);
 }
 
 bool QtnPropertyQSizeFBase::toStrImpl(QString &str) const

@@ -1,6 +1,7 @@
 #include "QObjectPropertyWidget.h"
 
 #include "Extension.h"
+#include "MultiProperty.h"
 
 #include <QMenu>
 #include <QContextMenuEvent>
@@ -9,89 +10,194 @@ using namespace QtnPropertyExtension;
 
 QObjectPropertyWidget::QObjectPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
-	, selected_object(nullptr)
 {
 }
 
-void QObjectPropertyWidget::selectObject(QObject *object)
+void QObjectPropertyWidget::deselectAllObjects()
 {
-	if (object != selected_object)
+	disconnectObjects();
+
+	selectedObjects.clear();
+}
+
+void QObjectPropertyWidget::selectObject(QObject *object, bool addSelection)
+{
+	auto it = selectedObjects.find(object);
+
+	if (it == selectedObjects.end()
+	||	(!addSelection && selectedObjects.size() > 1))
 	{
-		onObjectDeselect();
+		if (addSelection)
+			disconnectObjects();
+		else
+			deselectAllObjects();
 
-		selected_object = object;
+		selectedObjects.insert(object);
 
-		onObjectSelect();
+		connectObjects();
+	}
+}
+
+void QObjectPropertyWidget::selectObjects(const Objects &objects, bool addSelection)
+{
+	if (objects != selectedObjects)
+	{
+		if (addSelection)
+		{
+			disconnectObjects();
+
+			selectedObjects.insert(objects.begin(), objects.end());
+		} else
+		{
+			deselectAllObjects();
+
+			selectedObjects = objects;
+		}
+
+		connectObjects();
+	}
+}
+
+void QObjectPropertyWidget::deselectObject(QObject *object, bool destroyed)
+{
+	if (destroyed)
+		onObjectDestroyed(object);
+	else
+	{
+		auto it = selectedObjects.find(object);
+		if (it != selectedObjects.end())
+		{
+			disconnectObjects();
+
+			selectedObjects.erase(it);
+
+			connectObjects();
+		}
 	}
 }
 
 void QObjectPropertyWidget::onResetTriggered()
 {
-	auto connector = getPropertyConnector();
-	if (nullptr != connector)
-		connector->resetPropertyValue();
+	auto multiProperty = getMultiProperty();
+	if (nullptr != multiProperty)
+		multiProperty->resetValues();
+	else
+	{
+		auto connector = getPropertyConnector();
+		if (nullptr != connector)
+			connector->resetPropertyValue();
+	}
+}
+
+void QObjectPropertyWidget::onObjectDestroyed(QObject *object)
+{
+	auto it = selectedObjects.find(object);
+	if (it != selectedObjects.end())
+	{
+		selectedObjects.erase(it);
+
+		disconnectObjects();
+		connectObjects();
+	}
 }
 
 void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 {
 	auto connector = getPropertyConnector();
-	if (nullptr != connector)
+	auto multiProperty = getMultiProperty();
+	if (nullptr != connector || nullptr != multiProperty)
 	{
 		QMenu menu(this);
 
 		auto action = menu.addAction(tr("Reset to default"));
 		action->setStatusTip(tr("Reset value of %1 to default").arg(getActiveProperty()->name()));
-		bool resettable = connector->isResettablePropertyValue();
+
+		bool resettable = (nullptr != multiProperty)
+			? multiProperty->hasResettableValues()
+			: connector->isResettablePropertyValue();
+
 		action->setEnabled(resettable);
+
 		if (resettable)
-			QObject::connect(action, &QAction::triggered, this, &QObjectPropertyWidget::onResetTriggered);
+		{
+			QObject::connect(action, &QAction::triggered,
+							 this, &QObjectPropertyWidget::onResetTriggered);
+		}
 
 		menu.exec(event->globalPos());
 	}
 }
 
-PropertyConnector *QObjectPropertyWidget::getPropertyConnector()
+QtnMultiProperty *QObjectPropertyWidget::getMultiProperty() const
+{
+	return dynamic_cast<QtnMultiProperty *>(getActiveProperty());
+}
+
+PropertyConnector *QObjectPropertyWidget::getPropertyConnector() const
 {
 	auto property = getActiveProperty();
 
 	if (nullptr != property)
-		return property->findChild<PropertyConnector *>(QString(), Qt::FindDirectChildrenOnly);
+		return property->findChild<PropertyConnector *>(QString(),
+														Qt::FindDirectChildrenOnly);
 
 	return nullptr;
 }
 
-void QObjectPropertyWidget::onObjectSelect()
+void QObjectPropertyWidget::connectObjects()
 {
-	if (nullptr != selected_object)
+	if (selectedObjects.size() == 1)
 	{
-		auto property_set = QtnPropertyExtension::CreateQObjectPropertySet(selected_object);
-		property_set->setParent(this);
-		setPropertySet(property_set);
+		auto object = *selectedObjects.begin();
+		auto set = QtnPropertyExtension::CreateQObjectPropertySet(object);
+		if (nullptr != set)
+			set->setParent(this);
+		setPropertySet(set);
 
-		connection = QObject::connect(selected_object, &QObject::destroyed, [this](QObject *object)
-		{
-			if (selected_object == object)
-				onObjectDeselect(false);
-		});
+		connectObject(object);
+	} else
+	if (selectedObjects.size() > 1)
+	{
+		auto set = QtnPropertyExtension::CreateQObjectMultiPropertySet(selectedObjects);
+		if (nullptr != set)
+			set->setParent(this);
+		setPropertySet(set);
 
-		hack();
+		for (auto object : selectedObjects)
+			connectObject(object);
+	}
+
+	hack();
+}
+
+void QObjectPropertyWidget::connectObject(QObject *object)
+{
+	Q_ASSERT(nullptr != object);
+
+	QObject::connect(object, &QObject::destroyed,
+					 this, &QObjectPropertyWidget::onObjectDestroyed);
+}
+
+void QObjectPropertyWidget::disconnectObjects()
+{
+	auto set = propertySet();
+	setPropertySet(nullptr);
+	delete set;
+
+	hack();
+
+	for (auto object : selectedObjects)
+	{
+		disconnectObject(object);
 	}
 }
 
-void QObjectPropertyWidget::onObjectDeselect(bool disconnect)
+void QObjectPropertyWidget::disconnectObject(QObject *object)
 {
-	if (nullptr != selected_object)
-	{
-		if (disconnect)
-			QObject::disconnect(connection);
+	Q_ASSERT(nullptr != object);
 
-		auto old_set = propertySet();
-		setPropertySet(nullptr);
-		delete old_set;
-		selected_object = nullptr;
-
-		hack();
-	}
+	QObject::disconnect(object, &QObject::destroyed,
+						this, &QObjectPropertyWidget::onObjectDestroyed);
 }
 
 void QObjectPropertyWidget::hack()

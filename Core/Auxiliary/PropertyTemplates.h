@@ -30,10 +30,15 @@ class QtnSinglePropertyBase: public QtnProperty
     typedef typename std::remove_const<typename std::remove_reference<ValueType>::type>::type ValueTypeStore;
 
     ValueType value() const { return valueImpl(); }
+	inline bool setValue(ValueType newValue, bool edit)
+	{
+		return edit ? this->edit(newValue) : setValue(newValue);
+	}
+
     bool setValue(ValueType newValue)
     {
         if (isValueEqualImpl(newValue))
-            return false;
+			return true;
 
         if (!isValueAcceptedImpl(newValue))
             return false;
@@ -49,6 +54,17 @@ class QtnSinglePropertyBase: public QtnProperty
 
         return true;
     }
+
+	bool edit(ValueType newValue)
+	{
+		if (setValue(newValue))
+		{
+			emit propertyEdited();
+			return true;
+		}
+
+		return false;
+	}
 
     operator ValueType() const
     {
@@ -106,10 +122,10 @@ protected:
     }
 
     // variant conversion implementation
-    bool fromVariantImpl(const QVariant& var) override
+	bool fromVariantImpl(const QVariant& var, bool edit) override
     {
 		if (var.canConvert<ValueTypeStore>())
-			return setValue(var.value<ValueTypeStore>());
+			return setValue(var.value<ValueTypeStore>(), edit);
         else
             return false;
     }

@@ -26,34 +26,15 @@
 class QtnPropertyIntSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyIntBase, QSpinBox>
 {
 public:
-    QtnPropertyIntSpinBoxHandler(QtnPropertyIntBase& property, QSpinBox& editor)
-        : QtnPropertyEditorHandlerType(property, editor)
-    {
-        if (!property.isEditableByUser())
-            editor.setReadOnly(true);
+	QtnPropertyIntSpinBoxHandler(QtnPropertyIntBase &property, QSpinBox &editor);
 
-        editor.setRange(property.minValue(), property.maxValue());
-        editor.setSingleStep(property.stepValue());
-
-        updateEditor();
-
-		editor.setKeyboardTracking(false);
-		QObject::connect(&editor,
-						 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-						 this,
-						 &QtnPropertyIntSpinBoxHandler::onValueChanged);
-    }
+protected:
+	virtual void updateEditor() override;
 
 private:
-    void updateEditor() override
-    {
-        editor().setValue(property());
-    }
+	void onValueChanged(int value);
 
-	void onValueChanged(int value)
-    {
-		property() = value;
-    }
+	unsigned updating;
 };
 
 static bool regIntDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -80,4 +61,44 @@ bool QtnPropertyDelegateInt::propertyValueToStr(QString& strValue) const
 {
 	strValue = QLocale().toString(owner().value());
 	return true;
+}
+
+QtnPropertyIntSpinBoxHandler::QtnPropertyIntSpinBoxHandler(QtnPropertyIntBase &property, QSpinBox &editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+	, updating(0)
+{
+	if (!property.isEditableByUser())
+		editor.setReadOnly(true);
+
+	editor.setRange(property.minValue(), property.maxValue());
+	editor.setSingleStep(property.stepValue());
+
+	updateEditor();
+
+	editor.setKeyboardTracking(false);
+	editor.installEventFilter(this);
+	QObject::connect(&editor,
+					 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this,
+					 &QtnPropertyIntSpinBoxHandler::onValueChanged);
+}
+
+void QtnPropertyIntSpinBoxHandler::updateEditor()
+{
+	updating++;
+
+	if (property().valueIsHidden())
+		editor().setValue(0);
+	else
+		editor().setValue(property());
+
+	updating--;
+}
+
+void QtnPropertyIntSpinBoxHandler::onValueChanged(int value)
+{
+	if (updating > 0)
+		return;
+
+	property().edit(value);
 }

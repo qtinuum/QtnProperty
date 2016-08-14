@@ -202,47 +202,81 @@ namespace QtnPropertyExtension
 			QCoreApplication::installTranslator(&extension_translator);
 	}
 
-}
-
-QtnMultiObject::QtnMultiObject(QObject *parent)
-	: QObject(parent)
-{
-
-}
-
-QtnPropertySet *QtnMultiObject::createPropertySet() const
-{
-	typedef std::unique_ptr<QtnPropertySet> SetPtr;
-	std::vector<SetPtr> subSets;
-
-	for (auto object : *this)
+	QtnPropertySet *CreateQObjectMultiPropertySet(const std::set<QObject *> &objects)
 	{
-		auto propertySet = qtnCreateQObjectPropertySet(object);
+		if (objects.empty())
+			return nullptr;
 
-		for (auto property : propertySet->childProperties())
+		auto result = new QtnPropertySet(nullptr);
+		auto &subSets = result->childProperties();
+
+		for (auto object : objects)
 		{
-			auto subSet = dynamic_cast<QtnPropertySet *>(property);
-			Q_ASSERT(nullptr != subSet);
+			auto propertySet = CreateQObjectPropertySet(object);
+			if (nullptr == propertySet)
+				continue;
 
-			auto it = std::find_if(subSets.begin(), subSets.end(), [subSet](const SetPtr &ptr) -> bool
+			for (int i = propertySet->childProperties().count() - 1;
+				 i >= 0; i--)
 			{
-				return (subSet->name() == ptr->name());
-			});
+				auto property = propertySet->childProperties().at(i);
 
-			QtnPropertySet *newSubSet;
-			if (it == subSets.end())
-			{
-				newSubSet = new QtnPropertySet(nullptr);
-				newSubSet->setName(subSet->name());
-				newSubSet->setDescription(subSet->description());
-				newSubSet->setId(subSet->id());
-				newSubSet->setState(subSet->state());
+				auto subSet = dynamic_cast<QtnPropertySet *>(property);
+				Q_ASSERT(nullptr != subSet);
 
-				subSets.push_back(newSubSet);
-			} else
-			{
-				newSubSet = it->get();
+				auto it = std::find_if(subSets.begin(), subSets.end(),
+				[subSet](const QtnPropertyBase *set) -> bool
+				{
+					return (subSet->name() == set->name());
+				});
+
+				QtnPropertySet *multiSet;
+				if (it == subSets.end())
+				{
+					multiSet = new QtnPropertySet(nullptr);
+					multiSet->setName(subSet->name());
+					multiSet->setDescription(subSet->description());
+					multiSet->setId(subSet->id());
+					multiSet->setState(subSet->stateLocal());
+
+					result->addChildProperty(multiSet, true, 0);
+				} else
+				{
+					multiSet = dynamic_cast<QtnPropertySet *>(*it);
+				}
+
+				auto &ncp = multiSet->childProperties();
+				for (auto subProp : subSet->childProperties())
+				{
+					auto propIt = std::find_if(ncp.begin(), ncp.end(),
+					[subProp](QtnPropertyBase *p) -> bool
+					{
+						return p->name() == subProp->name();
+					});
+
+					QtnMultiProperty *multiProperty;
+					if (propIt == ncp.end())
+					{
+						multiProperty = new QtnMultiProperty(subProp->metaObject());
+						multiProperty->setName(subProp->name());
+						multiProperty->setDescription(subProp->description());
+						multiProperty->setId(subProp->id());
+						multiProperty->setState(subProp->stateLocal());
+
+						multiSet->addChildProperty(multiProperty);
+					} else
+					{
+						multiProperty = dynamic_cast<QtnMultiProperty *>(*propIt);
+					}
+
+					multiProperty->addProperty(dynamic_cast<QtnProperty *>(subProp));
+				}
 			}
+
+			delete propertySet;
 		}
+
+		return result;
 	}
+
 }

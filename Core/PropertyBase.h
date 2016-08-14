@@ -66,6 +66,7 @@ public:
 
 	bool isEditableByUser() const;
 	bool isVisible() const;
+	bool valueIsHidden() const;
 	bool isSimple() const { return !m_stateLocal.testFlag(QtnPropertyStateNonSimple); }
 
 	// serialization
@@ -74,11 +75,11 @@ public:
 	static bool skipLoad(QDataStream& stream);
 
 	// string conversion
-	bool fromStr(const QString& str);
+	bool fromStr(const QString& str, bool edit);
 	bool toStr(QString& str) const;
 
 	// variant conversion
-	bool fromVariant(const QVariant& var);
+	bool fromVariant(const QVariant& var, bool edit);
 	bool toVariant(QVariant& var) const;
 
 	// casts
@@ -100,9 +101,13 @@ public: // properties for scripting
 	Q_PROPERTY(quint32 state READ state)
 	Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
+	// getter/setter for "value" property
+	QVariant valueAsVariant() const;
+	void setValueAsVariant(const QVariant& value);
+
 Q_SIGNALS:
 	void propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
-	void propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+	void propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);	
 
 protected:
 	QtnPropertyBase(QObject* parent);
@@ -114,11 +119,11 @@ protected:
 	virtual bool saveImpl(QDataStream& stream) const;
 
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString& str) { return false; }
+	virtual bool fromStrImpl(const QString &, bool) { return false; }
 	virtual bool toStrImpl(QString& str) const { return false; }
 
 	// variant conversion implementation
-	virtual bool fromVariantImpl(const QVariant& var);
+	virtual bool fromVariantImpl(const QVariant& var, bool edit);
 	virtual bool toVariantImpl(QVariant& var) const;
 
 	// inherited states support
@@ -126,11 +131,9 @@ protected:
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
 private:
-	void masterPropertyStateDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
-
-	// getter/setter for "value" property
-	QVariant valueAsVariant() const;
-	void setValueAsVariant(const QVariant& value);
+	void masterPropertyStateDidChange(const QtnPropertyBase* changedProperty,
+									  const QtnPropertyBase* firedProperty,
+									  QtnPropertyChangeReason reason);
 
 	QString m_description;
 	QtnPropertyID m_id;

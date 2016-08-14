@@ -62,7 +62,7 @@ public:
 	virtual bool propertyValueToStr(QString& strValue) const { return false; }
 
 protected:
-	QtnPropertyDelegate() {}
+	QtnPropertyDelegate(QtnProperty *ownerProperty);
 
 	virtual int subPropertyCountImpl() const { return 0; }
 	virtual QtnPropertyBase* subPropertyImpl(int index) { return nullptr; }
@@ -75,6 +75,8 @@ protected:
 	// helper functions
 	static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr);
 	QWidget* createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo = nullptr);
+
+	QtnProperty *ownerProperty;
 };
 
 template <typename PropertyClass>
@@ -88,11 +90,8 @@ public:
 
 protected:
 	QtnPropertyDelegateTyped(PropertyClass& owner)
-		: m_owner(owner)
-	{
-	}
-
-	~QtnPropertyDelegateTyped()
+		: QtnPropertyDelegate(reinterpret_cast<QtnProperty *>(&owner))
+		, m_owner(owner)
 	{
 	}
 
@@ -101,17 +100,14 @@ private:
 };
 
 template <typename PropertyClass>
-class QtnPropertyDelegateTypedEx: public QtnPropertyDelegateTyped<PropertyClass>
+class QtnPropertyDelegateTypedEx
+	: public QtnPropertyDelegateTyped<PropertyClass>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateTypedEx)
 
 protected:
 	QtnPropertyDelegateTypedEx(PropertyClass& owner)
 		: QtnPropertyDelegateTyped<PropertyClass>(owner)
-	{
-	}
-
-	~QtnPropertyDelegateTypedEx()
 	{
 	}
 
@@ -127,7 +123,6 @@ protected:
 		m_subProperties.append(QSharedPointer<QtnPropertyBase>(subProperty));
 	}
 
-private:
 	QList<QSharedPointer<QtnPropertyBase>> m_subProperties;
 };
 

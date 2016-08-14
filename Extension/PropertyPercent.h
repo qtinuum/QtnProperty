@@ -12,7 +12,7 @@ public:
 	explicit QtnPropertyPercentBase(QObject *parent);
 
 protected:
-	virtual bool fromStrImpl(const QString& str) override;
+	virtual bool fromStrImpl(const QString& str, bool edit) override;
 	virtual bool toStrImpl(QString& str) const override;
 };
 

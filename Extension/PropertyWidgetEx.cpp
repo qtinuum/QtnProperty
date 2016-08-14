@@ -171,14 +171,14 @@ bool QtnPropertyWidgetEx::applyPropertyData(const QMimeData *data,
 					list.push_back(url.toString());
 			}
 
-			return destination->fromStr(list.join('\n'));
+			return destination->fromStr(list.join('\n'), true);
 		}
 
 		if (data->hasColor())
-			return destination->fromStr(data->colorData().value<QColor>().name());
+			return destination->fromStr(data->colorData().value<QColor>().name(), true);
 
 		if (data->hasText())
-			return destination->fromStr(data->text());
+			return destination->fromStr(data->text(), true);
 	}
 
 	return false;

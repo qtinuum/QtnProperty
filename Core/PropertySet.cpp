@@ -227,7 +227,7 @@ void QtnPropertySet::updateStateInherited(bool force)
     m_ignoreChildPropertyChanges = false;
 }
 
-bool QtnPropertySet::fromStrImpl(const QString& str)
+bool QtnPropertySet::fromStrImpl(const QString& str, bool edit)
 {
     static QRegExp parserLine("^\\s*([^=]+)=(.*)$");
 
@@ -253,7 +253,7 @@ bool QtnPropertySet::fromStrImpl(const QString& str)
         if (subProperties.size() != 1)
             continue;
 
-        if (subProperties[0]->fromStr(propertyStrValue))
+		if (subProperties[0]->fromStr(propertyStrValue, edit))
             anySuccess = true;
     }
 
