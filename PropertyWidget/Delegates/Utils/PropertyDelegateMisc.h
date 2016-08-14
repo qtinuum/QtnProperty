@@ -160,4 +160,36 @@ public:
     QString textFromValue(double val) const override;
 };
 
+class QTN_PW_EXPORT QtnSpinBoxUnsigned: public QSpinBox
+{
+    Q_OBJECT
+
+public:
+    explicit QtnSpinBoxUnsigned(QWidget* parent);
+
+    void setUintRange(quint32 minValue, quint32 maxValue);
+    void setUintSingleStep(quint32 stepValue);
+    void setUintValue(quint32 value);
+
+Q_SIGNALS:
+    void uintValueChanged(quint32 value);
+
+protected:
+    using QSpinBox::setRange;
+    using QSpinBox::setSingleStep;
+    using QSpinBox::setValue;
+
+    int valueFromText(const QString& text) const override;
+    QString textFromValue(int val) const override;
+    QValidator::State validate(QString &text, int &) const override;
+
+
+private:
+    void onValueChanged(int value);
+
+    quint32 m_min;
+    quint32 m_max;
+};
+
+
 #endif // QTN_PROPERTY_DELEGATE_MISC_H

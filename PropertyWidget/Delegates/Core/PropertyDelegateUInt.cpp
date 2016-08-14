@@ -36,69 +36,40 @@ void regUIntDelegates()
             , "SliderBox");
 }
 
-const quint32 qtn_u_2 = std::numeric_limits<quint32>::max() / 2 + 1;
-static qint32 qtn_u2i(quint32 val)
-{
-    return qint32(val - qtn_u_2);
-}
-static quint32 qtn_i2u(qint32 val)
-{
-    return (quint32)val + qtn_u_2;
-}
 
-class QtnPropertyUIntSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyUIntBase, QSpinBox>
+class QtnPropertyUIntSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyUIntBase, QtnSpinBoxUnsigned>
 {
 public:
-    QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase& property, QSpinBox& editor)
+    QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase& property, QtnSpinBoxUnsigned& editor)
         : QtnPropertyEditorHandlerType(property, editor)
     {
         if (!property.isEditableByUser())
             editor.setReadOnly(true);
 
-        editor.setRange(qtn_u2i(property.minValue()), qtn_u2i(property.maxValue()));
-        editor.setSingleStep(qtn_u2i(property.stepValue()));
+        editor.setUintRange(property.minValue(), property.maxValue());
+        editor.setUintSingleStep(property.stepValue());
 
         updateEditor();
 
-        QObject::connect(  &editor, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged)
-                         , this, &QtnPropertyUIntSpinBoxHandler::onValueChanged);
+        QObject::connect(  &editor, &QtnSpinBoxUnsigned::uintValueChanged
+                         , this, &QtnPropertyUIntSpinBoxHandler::onUintValueChanged);
     }
 
 private:
     void updateEditor() override
     {
-        editor().setValue(qtn_u2i(property().value()));
+        editor().setUintValue(property().value());
     }
 
-    void onValueChanged(int value)
+    void onUintValueChanged(quint32 value)
     {
-        property() = qtn_i2u(value);
-    }
-};
-
-class SpinBoxUnsigned: public QSpinBox
-{
-public:
-    SpinBoxUnsigned(QWidget* parent)
-        : QSpinBox(parent)
-    {
-    }
-
-protected:
-    int valueFromText(const QString& text) const override
-    {
-        return qtn_u2i(locale().toUInt(text));
-    }
-
-    QString textFromValue(int val) const override
-    {
-        return locale().toString(qtn_i2u(val));
+        property() = value;
     }
 };
 
 QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QSpinBox* spinBox = new SpinBoxUnsigned(parent);
+    auto spinBox = new QtnSpinBoxUnsigned(parent);
     spinBox->setGeometry(rect);
 
     new QtnPropertyUIntSpinBoxHandler(owner(), *spinBox);

@@ -21,6 +21,16 @@
 #include <QLineEdit>
 #include <QKeyEvent>
 
+static const quint32 qtn_u_2 = std::numeric_limits<quint32>::max() / 2 + 1;
+static qint32 qtn_u2i(quint32 val)
+{
+    return qint32(val - qtn_u_2);
+}
+static quint32 qtn_i2u(qint32 val)
+{
+    return (quint32)val + qtn_u_2;
+}
+
 QIcon qtnResetIcon;
 
 static QIcon resetIcon()
@@ -427,3 +437,59 @@ QString QtnDoubleSpinBox::textFromValue(double val) const
 
     return text;
 }
+
+QtnSpinBoxUnsigned::QtnSpinBoxUnsigned(QWidget* parent)
+    : QSpinBox(parent),
+      m_min(0),
+      m_max(0)
+{
+    QObject::connect(  this, static_cast<void (QSpinBox::*)(int)>(&QtnSpinBoxUnsigned::valueChanged)
+                     , this, &QtnSpinBoxUnsigned::onValueChanged);
+}
+
+void QtnSpinBoxUnsigned::setUintRange(quint32 minValue, quint32 maxValue)
+{
+    m_min = minValue;
+    m_max = maxValue;
+    setRange(qtn_u2i(minValue), qtn_u2i(maxValue));
+}
+
+void QtnSpinBoxUnsigned::setUintSingleStep(quint32 stepValue)
+{
+    setSingleStep(qtn_u2i(stepValue));
+}
+
+void QtnSpinBoxUnsigned::setUintValue(quint32 value)
+{
+    setValue(qtn_u2i(value));
+}
+
+int QtnSpinBoxUnsigned::valueFromText(const QString& text) const
+{
+    return qtn_u2i(locale().toUInt(text));
+}
+
+QString QtnSpinBoxUnsigned::textFromValue(int val) const
+{
+    return locale().toString(qtn_i2u(val));
+}
+
+QValidator::State QtnSpinBoxUnsigned::validate(QString &text, int &) const
+{
+    bool ok = false;
+    auto value = locale().toUInt(text, &ok);
+    if (!ok)
+        return QValidator::Invalid;
+    if (value < m_min)
+        return QValidator::Intermediate;
+    if (value > m_max)
+        return QValidator::Intermediate;
+
+    return QValidator::Acceptable;
+}
+
+void QtnSpinBoxUnsigned::onValueChanged(int value)
+{
+    Q_EMIT uintValueChanged(qtn_i2u(value));
+}
+
