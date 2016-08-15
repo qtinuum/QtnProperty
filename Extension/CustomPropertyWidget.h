@@ -32,12 +32,13 @@ public:
 	static VarProperty *getVarProperty(QtnPropertyBase *source);
 
 signals:
-	void dataChanged();
+	void dataEdited();
 
 private slots:
 	void onPropertyValueAccept(const QtnProperty *property, void *valueToAccept, bool *accept);
 
 protected:
+	virtual void editData();
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void deleteProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,

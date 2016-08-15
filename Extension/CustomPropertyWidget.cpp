@@ -297,6 +297,11 @@ void CustomPropertyWidget::onPropertyValueAccept(const QtnProperty *property, vo
 	}
 }
 
+void CustomPropertyWidget::editData()
+{
+	emit dataEdited();
+}
+
 bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
 {
 	if (nullptr != data)
@@ -638,7 +643,7 @@ void CustomPropertyWidget::updateData()
 	{
 		auto var_property = getVarProperty(property_set->childProperties().at(0));
 		*data_ptr = var_property->CreateVariant();
-		emit dataChanged();
+		editData();
 	}
 }
 
