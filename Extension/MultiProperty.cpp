@@ -123,7 +123,7 @@ void QtnMultiProperty::onPropertyValueChanged(const QtnPropertyBase *changedProp
 											  const QtnPropertyBase *firedProperty,
 											  QtnPropertyChangeReason reason)
 {
-	if (0 != (reason & (QtnPropertyChangeReasonValue)))
+	if (0 != (reason & QtnPropertyChangeReasonValue))
 		refreshValues();
 
 	emit propertyDidChange(changedProperty, firedProperty, reason);
