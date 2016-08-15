@@ -239,7 +239,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     <message>
         <location filename="../MultiProperty.cpp" line="93"/>
         <source>(Multiple Values)</source>
-        <translation>Несколько значений</translation>
+        <translation>(Несколько значений)</translation>
     </message>
 </context>
 <context>
