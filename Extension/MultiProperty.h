@@ -66,10 +66,8 @@ private:
 };
 
 class QtnMultiPropertyDelegate
-		: public QObject
-		, public QtnPropertyDelegateTypedEx<QtnMultiProperty>
+		: public QtnPropertyDelegateTypedEx<QtnMultiProperty>
 {
-	Q_OBJECT
 	Q_DISABLE_COPY(QtnMultiPropertyDelegate)
 
 	typedef QtnPropertyDelegateTypedEx<QtnMultiProperty> Inherited;
@@ -78,10 +76,17 @@ public:
 	QtnMultiPropertyDelegate(QtnMultiProperty& owner);
 	virtual ~QtnMultiPropertyDelegate();
 
-private slots:
-	void onPropertyEdited();
-	void onEditedPropertyDestroyed();
-	void onEditorDestroyed();
+private:
+	struct PropertyToEdit
+	{
+		QtnMultiProperty *owner;
+		QtnProperty *property;
+		std::vector<QMetaObject::Connection> connections;
+	};
+
+	static void onPropertyEdited(PropertyToEdit *data);
+	static void onEditedPropertyDestroyed(PropertyToEdit *data);
+	static void onEditorDestroyed(PropertyToEdit *data);
 
 protected:
 	virtual bool propertyValueToStr(QString &strValue) const override;
@@ -94,9 +99,7 @@ protected:
 	virtual QWidget* createValueEditorImpl(QWidget *parent, const QRect &rect,
 										   QtnInplaceInfo *inplaceInfo = nullptr) override;
 
-private:	
+private:
 	typedef std::unique_ptr<QtnPropertyDelegate> DelegatePtr;
 	std::vector<DelegatePtr> superDelegates;
-
-	QtnProperty *propertyToEdit;
 };

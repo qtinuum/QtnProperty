@@ -259,7 +259,6 @@ PropertyConnector *QtnMultiProperty::getPropertyConnector(QtnProperty *property)
 
 QtnMultiPropertyDelegate::QtnMultiPropertyDelegate(QtnMultiProperty &owner)
 	: Inherited(owner)
-	, propertyToEdit(nullptr)
 {
 	int subPropertyCount = 0;
 	for (auto property : owner.properties)
@@ -296,11 +295,16 @@ QtnMultiPropertyDelegate::~QtnMultiPropertyDelegate()
 	m_subProperties.clear();
 }
 
-void QtnMultiPropertyDelegate::onPropertyEdited()
+void QtnMultiPropertyDelegate::onPropertyEdited(PropertyToEdit *data)
 {
-	auto editedProperty = dynamic_cast<QtnProperty *>(sender());
+	Q_ASSERT(nullptr != data);
+	auto owner = data->owner;
+	Q_ASSERT(nullptr != owner);
+	auto editedProperty = data->property;
+	Q_ASSERT(nullptr != editedProperty);
+
 	auto value = editedProperty->valueAsVariant();
-	for (auto property : owner().properties)
+	for (auto property : owner->properties)
 	{
 		if (property != editedProperty)
 		{
@@ -310,29 +314,29 @@ void QtnMultiPropertyDelegate::onPropertyEdited()
 		}
 	}
 
-	owner().refreshValues();
+	owner->refreshValues();
 
-	emit owner().propertyDidChange(&owner(),
-								   &owner(),
-								   QtnPropertyChangeReasonNewValue);
+	emit owner->propertyDidChange(owner, owner, QtnPropertyChangeReasonNewValue);
 }
 
-void QtnMultiPropertyDelegate::onEditedPropertyDestroyed()
+void QtnMultiPropertyDelegate::onEditedPropertyDestroyed(PropertyToEdit *data)
 {
-	propertyToEdit = nullptr;
+	Q_ASSERT(nullptr != data);
+	data->property = nullptr;
+	data->connections.clear();
 }
 
-void QtnMultiPropertyDelegate::onEditorDestroyed()
+void QtnMultiPropertyDelegate::onEditorDestroyed(PropertyToEdit *data)
 {
+	Q_ASSERT(nullptr != data);
+	auto propertyToEdit = data->property;
 	if (nullptr != propertyToEdit)
 	{
-		QObject::disconnect(propertyToEdit, &QtnProperty::propertyDidChange,
-							this, &QtnMultiPropertyDelegate::onPropertyEdited);
-		QObject::disconnect(propertyToEdit, &QObject::destroyed,
-							this, &QtnMultiPropertyDelegate::onEditedPropertyDestroyed);
-
-		propertyToEdit = nullptr;
+		for (auto &connection : data->connections)
+			QObject::disconnect(connection);
 	}
+
+	delete data;
 }
 
 
@@ -419,7 +423,8 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(QWidget *parent,
 	{
 		auto superDelegate = superDelegates.at(0).get();
 
-		propertyToEdit = owner().properties.at(0);
+		PropertyToEdit *data = nullptr;
+		auto propertyToEdit = owner().properties.at(0);
 		if (owner().hasMultipleValues())
 			propertyToEdit->addState(QtnPropertyStateHiddenValue);
 
@@ -427,18 +432,28 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(QWidget *parent,
 
 		if (isEditable)
 		{
-			QObject::connect(propertyToEdit, &QtnProperty::propertyEdited,
-							 this, &QtnMultiPropertyDelegate::onPropertyEdited);
-			QObject::connect(propertyToEdit, &QObject::destroyed,
-							 this, &QtnMultiPropertyDelegate::onEditedPropertyDestroyed);
+			data = new PropertyToEdit;
+			data->owner = &owner();
+			data->property = propertyToEdit;
+
+			data->connections.push_back(QObject::connect(propertyToEdit, &QtnProperty::propertyEdited,
+							 std::bind(&QtnMultiPropertyDelegate::onPropertyEdited, data)));
+			data->connections.push_back(QObject::connect(propertyToEdit, &QObject::destroyed,
+							 std::bind(&QtnMultiPropertyDelegate::onEditedPropertyDestroyed, data)));
 		}
 
 		auto editor = superDelegate->createValueEditor(parent, rect, inplaceInfo);
 
 		if (isEditable)
 		{
-			QObject::connect(editor, &QObject::destroyed,
-							 this, &QtnMultiPropertyDelegate::onEditorDestroyed);
+			if (nullptr == editor)
+			{
+				onEditorDestroyed(data);
+			} else
+			{
+				data->connections.push_back(QObject::connect(editor, &QObject::destroyed,
+								 std::bind(&QtnMultiPropertyDelegate::onEditorDestroyed, data)));
+			}
 		}
 
 		return editor;

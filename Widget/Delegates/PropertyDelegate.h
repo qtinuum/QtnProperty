@@ -61,6 +61,8 @@ public:
 	// override this if property value can be displayed as string
 	virtual bool propertyValueToStr(QString& strValue) const { return false; }
 
+	inline QtnProperty *getOwnerProperty() const;
+
 protected:
 	QtnPropertyDelegate(QtnProperty *ownerProperty);
 
@@ -78,6 +80,11 @@ protected:
 
 	QtnProperty *ownerProperty;
 };
+
+QtnProperty *QtnPropertyDelegate::getOwnerProperty() const
+{
+	return ownerProperty;
+}
 
 template <typename PropertyClass>
 class QtnPropertyDelegateTyped: public QtnPropertyDelegate
