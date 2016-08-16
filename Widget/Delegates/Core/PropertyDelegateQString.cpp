@@ -368,7 +368,11 @@ void QtnPropertyQStringFileLineEditBttnHandler::updateEditor()
 {
 	auto path = property().value();
 	editor().setTextForProperty(&property(), path);
-	editor().lineEdit->setPlaceholderText(
+
+	if (property().valueIsHidden())
+		editor().lineEdit->setPlaceholderText(QString());
+	else
+		editor().lineEdit->setPlaceholderText(
 				QtnPropertyQString::getPlaceholderStr(editor().lineEdit->text(), false));
 }
 
@@ -424,9 +428,12 @@ void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
 	auto edit = editor().lineEdit;
 	edit->setReadOnly(!property().isEditableByUser());
 
+	QString placeholder;
+
 	if (property().valueIsHidden())
+	{
 		edit->clear();
-	else
+	} else
 	{
 		auto text = property().value();
 		if (QtnPropertyQString::isMultilineText(text))
@@ -438,9 +445,10 @@ void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
 			multiline = false;
 			edit->setText(text);
 		}
+
+		placeholder = QtnPropertyQString::getPlaceholderStr(text, true);
 	}
-	edit->setPlaceholderText(
-				QtnPropertyQString::getPlaceholderStr(edit->text(), true));
+	edit->setPlaceholderText(placeholder);
 }
 
 void QtnPropertyQStringMultilineEditBttnHandler::revertInput()

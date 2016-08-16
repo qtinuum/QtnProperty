@@ -222,13 +222,16 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClick()
 
 void QtnPropertyQVariantEditBttnHandler::updateEditor()
 {
-	QVariant value;
 	auto edit = editor().lineEdit;
+	edit->setReadOnly(!property().isEditableByUser());
+
 	if (property().valueIsHidden())
-		edit->clear();
-	else
 	{
-		edit->setReadOnly(!property().isEditableByUser());
+		edit->clear();
+		edit->setPlaceholderText(QString());
+	} else
+	{
+		QVariant value;
 		value = property().value();
 		if (QtnPropertyQVariant::variantIsObject(value.type()))
 		{
@@ -240,10 +243,10 @@ void QtnPropertyQVariantEditBttnHandler::updateEditor()
 			is_object = false;
 			edit->setText(value.toString());
 		}
-	}
 
-	edit->setPlaceholderText(
-				QtnPropertyQVariant::getPlaceholderStr(value.type()));
+		edit->setPlaceholderText(
+					QtnPropertyQVariant::getPlaceholderStr(value.type()));
+	}
 }
 
 void QtnPropertyQVariantEditBttnHandler::onEditingFinished()
