@@ -29,6 +29,7 @@ QTN_PE_CORE_EXPORT QtnProperty* qtnCreateQObjectProperty(QObject* object, const 
 QTN_PE_CORE_EXPORT QtnProperty* qtnCreateQObjectProperty(QObject* object, const char* propertyName);
 
 QTN_PE_CORE_EXPORT QtnPropertySet* qtnCreateQObjectPropertySet(QObject* object);
+QTN_PE_CORE_EXPORT void qtnUpdatePropertyState(QtnPropertyBase *property, const QMetaProperty &metaProperty);
 
 template <typename PropertyCallbackType, typename ValueType = typename PropertyCallbackType::ValueTypeStore>
 QtnMetaPropertyFactory_t qtnCreateFactory()

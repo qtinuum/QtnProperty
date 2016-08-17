@@ -44,12 +44,6 @@ namespace QtnPropertyExtension
 
 		if (nullptr != property)
 		{
-			if (!metaProperty.isDesignable(object))
-			{
-				delete property;
-				return nullptr;
-			}
-
 			auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
 			if (nullptr != stateProvider)
 			{
@@ -57,11 +51,7 @@ namespace QtnPropertyExtension
 				property->setState(state);
 			}
 
-			if (metaProperty.isConstant()
-			||	(!metaProperty.isWritable() && !metaProperty.isResettable()))
-			{
-				property->addState(QtnPropertyStateImmutable);
-			}
+			qtnUpdatePropertyState(property, metaProperty);
 
 			property->setName(QCoreApplication::translate(className,
 														  metaProperty.name()));
@@ -186,6 +176,8 @@ namespace QtnPropertyExtension
 				else
 					state &= ~QtnPropertyStateCollapsed;
 				property->setState(state);
+
+				qtnUpdatePropertyState(property, metaProperty);
 			}
 			property->postUpdateEvent(QtnPropertyChangeReasonNewValue);
 		}
