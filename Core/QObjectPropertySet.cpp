@@ -51,6 +51,22 @@ bool qtnRegisterMetaPropertyFactory(int metaPropertyType, const QtnMetaPropertyF
 	return true;
 }
 
+void qtnUpdatePropertyState(QtnPropertyBase *property, const QMetaProperty &metaProperty)
+{
+	QtnPropertyState toAdd;
+
+	if (!metaProperty.isDesignable())
+		toAdd |= QtnPropertyStateInvisible;
+
+	if (metaProperty.isConstant()
+	||	(!metaProperty.isWritable() && !metaProperty.isResettable()))
+	{
+		toAdd |= QtnPropertyStateImmutable;
+	}
+
+	property->addState(toAdd);
+}
+
 QtnProperty* qtnCreateQObjectProperty(QObject* object, const QMetaProperty& metaProperty)
 {
 	if (!object)
@@ -62,13 +78,16 @@ QtnProperty* qtnCreateQObjectProperty(QObject* object, const QMetaProperty& meta
 	if (it == qtnFactoryMap.end())
 		return nullptr;
 
+	if (!metaProperty.isDesignable(object))
+		return nullptr;
+
 	QtnProperty* property = it.value()(object, metaProperty);
 	if (!property)
 		return property;
 
 	property->setName(metaProperty.name());
-	if (!metaProperty.isDesignable(object))
-		property->addState(QtnPropertyStateImmutable);
+
+	qtnUpdatePropertyState(property, metaProperty);
 
 	return property;
 }
