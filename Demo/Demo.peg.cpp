@@ -217,6 +217,7 @@ void QtnPropertySetSubPropertySetType::connectDelegates()
 QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
+    , PenStyleProperty(*new QtnPropertyQPenStyle(this))
     , ButtonProperty(*new QtnPropertyButton(this))
     , ButtonLinkProperty(*new QtnPropertyButton(this))
     , RGBColor(*new QtnPropertyABColor(this))
@@ -253,6 +254,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     Q_UNUSED(other);
 
     BoolProperty = other.BoolProperty;
+    PenStyleProperty = other.PenStyleProperty;
     ButtonProperty = other.ButtonProperty;
     ButtonLinkProperty = other.ButtonLinkProperty;
     RGBColor = other.RGBColor;
@@ -300,6 +302,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->BoolProperty.state() & ignoreMask))
     {
         BoolProperty = theCopyFrom->BoolProperty;
+    }
+
+    if (!(theCopyFrom->PenStyleProperty.state() & ignoreMask))
+    {
+        PenStyleProperty = theCopyFrom->PenStyleProperty;
     }
 
     if (!(theCopyFrom->ButtonProperty.state() & ignoreMask))
@@ -410,6 +417,11 @@ void QtnPropertySetSamplePS::init()
     static QString BoolProperty_description = "Property to hold boolean values.";
     BoolProperty.setDescription(BoolProperty_description);
     BoolProperty.setValue(false);
+    static QString PenStyleProperty_name = tr("PenStyleProperty");
+    PenStyleProperty.setName(PenStyleProperty_name);
+    static QString PenStyleProperty_description = "Property to hold pen style values.";
+    PenStyleProperty.setDescription(PenStyleProperty_description);
+    PenStyleProperty.setValue(Qt::DashLine);
     static QString ButtonProperty_name = tr("ButtonProperty");
     ButtonProperty.setName(ButtonProperty_name);
     ButtonProperty.setClickHandler([](const QtnPropertyButton* bttn) {

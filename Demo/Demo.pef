@@ -26,6 +26,12 @@ property_set SamplePS
         description = "Property to hold boolean values.";
         value = false;
     }
+    
+    QPenStyle PenStyleProperty
+    {
+        description = "Property to hold pen style values.";
+        value = Qt::DashLine;
+    }
 
     Button ButtonProperty
     {
