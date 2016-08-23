@@ -86,7 +86,7 @@ void TestGeneratedProperty::testLoadSave()
                 QVERIFY(allProperties.save(s));
             }
 
-            QCOMPARE(data.size(), 931);
+            QCOMPARE(data.size(), 933);
 
             {
                 QDataStream s(&data, QIODevice::ReadOnly);
