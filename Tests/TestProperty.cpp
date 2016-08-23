@@ -459,6 +459,16 @@ void TestProperty::propertyEnumFlags()
     QVERIFY(!(p & MASK::ONE));
 }
 
+void TestProperty::propertyPen()
+{
+    QtnPropertyQPenStyle p(this);
+    p = Qt::SolidLine;
+    QCOMPARE(p.value(), Qt::SolidLine);
+
+    p = Qt::DashDotDotLine;
+    QCOMPARE(p.value(), Qt::DashDotDotLine);
+}
+
 void TestProperty::propertySet()
 {
     QtnPropertySet p(this);

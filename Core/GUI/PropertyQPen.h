@@ -20,6 +20,8 @@
 #include "../Auxiliary/PropertyTemplates.h"
 #include <QtGui/QPen>
 
+Q_DECLARE_METATYPE(Qt::PenStyle)
+
 class QTN_PE_CORE_EXPORT QtnPropertyQPenStyleBase: public QtnSinglePropertyBase<Qt::PenStyle>
 {
     Q_OBJECT
@@ -32,10 +34,6 @@ protected:
     // string conversion implementation
     bool fromStrImpl(const QString& str) override;
     bool toStrImpl(QString& str) const override;
-
-    // variant conversion implementation
-    bool fromVariantImpl(const QVariant& var) override;
-    bool toVariantImpl(QVariant& var) const override;
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQPenStyleBase)
 };

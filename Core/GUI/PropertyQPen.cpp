@@ -71,26 +71,6 @@ bool QtnPropertyQPenStyleBase::toStrImpl(QString& str) const
     return false;
 }
 
-bool QtnPropertyQPenStyleBase::fromVariantImpl(const QVariant& var)
-{
-    if (QtnSinglePropertyBase<Qt::PenStyle>::fromVariantImpl(var))
-        return true;
-
-    if (var.canConvert<int>())
-    {
-        setValue((Qt::PenStyle)var.value<int>());
-        return true;
-    }
-
-    return false;
-}
-
-bool QtnPropertyQPenStyleBase::toVariantImpl(QVariant& var) const
-{
-    var = (int)value();
-    return true;
-}
-
 QDataStream& operator<< (QDataStream& stream, Qt::PenStyle penStyle)
 {
     stream << (qint32)penStyle;
