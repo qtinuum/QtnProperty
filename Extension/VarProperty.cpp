@@ -395,23 +395,23 @@ bool VarProperty::PropertyValueAccept(const QtnProperty *property, void *valueTo
 				switch (property->id())
 				{
 					case PID_EXTRA_STRING:
-						value = QVariant(*(QtnPropertyQString::ValueType *) valueToAccept);
+						value = QVariant(*(QtnPropertyQString::ValueTypeStore *) valueToAccept);
 						break;
 
 					case PID_EXTRA_INT:
-						value = QVariant(*(QtnPropertyInt::ValueType *) valueToAccept);
+						value = QVariant(*(QtnPropertyInt::ValueTypeStore *) valueToAccept);
 						break;
 
 					case PID_EXTRA_UINT:
-						value = QVariant(*(QtnPropertyUInt::ValueType *) valueToAccept);
+						value = QVariant(*(QtnPropertyUInt::ValueTypeStore *) valueToAccept);
 						break;
 
 					case PID_EXTRA_FLOAT:
-						value = QVariant(*(QtnPropertyDouble::ValueType *) valueToAccept);
+						value = QVariant(*(QtnPropertyDouble::ValueTypeStore *) valueToAccept);
 						break;
 
 					case PID_EXTRA_BOOL:
-						value = QVariant(*(QtnPropertyBool::ValueType *) valueToAccept);
+						value = QVariant(*(QtnPropertyBool::ValueTypeStore *) valueToAccept);
 						break;
 
 					default:
