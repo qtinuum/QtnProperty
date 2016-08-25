@@ -136,7 +136,8 @@ void regUIntDelegates();
 void regQColorDelegates();
 void regQFontDelegates();
 void regButtonDelegates();
-void regPenStyleDelegates();
+void regQPenStyleDelegates();
+void regQPenDelegates();
 
 bool initQtnPropertyWidgetLibrary(QIcon *resetIcon)
 {
@@ -163,7 +164,8 @@ bool initQtnPropertyWidgetLibrary(QIcon *resetIcon)
     regQColorDelegates();
     regQFontDelegates();
     regButtonDelegates();
-    regPenStyleDelegates();
+    regQPenStyleDelegates();
+    regQPenDelegates();
 
     initialized = true;
     return true;

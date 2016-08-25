@@ -34,4 +34,20 @@ protected:
     bool propertyValueToStrImpl(QString& strValue) const override;
 };
 
+class QtnPropertyQPenBase;
+
+class QTN_PW_EXPORT QtnPropertyDelegateQPen: public QtnPropertyDelegateTypedEx<QtnPropertyQPenBase>
+{
+    Q_DISABLE_COPY(QtnPropertyDelegateQPen)
+
+public:
+    QtnPropertyDelegateQPen(QtnPropertyQPenBase& owner);
+
+protected:
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
+    bool propertyValueToStrImpl(QString& strValue) const override;
+};
+
 #endif // PROPERTY_DELEGATE_QPEN_H

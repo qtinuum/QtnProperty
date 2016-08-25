@@ -110,7 +110,8 @@ bool QtnPropertyQPenBase::toStrImpl(QString& str) const
     str = v.toString();
     return true;
     */
-    return false;
+    str = "[QPen]";
+    return true;
 }
 
 bool QtnPropertyQPenBase::fromVariantImpl(const QVariant& var)

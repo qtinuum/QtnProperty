@@ -218,6 +218,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
     , PenStyleProperty(*new QtnPropertyQPenStyle(this))
+    , PenProperty(*new QtnPropertyQPen(this))
     , ButtonProperty(*new QtnPropertyButton(this))
     , ButtonLinkProperty(*new QtnPropertyButton(this))
     , RGBColor(*new QtnPropertyABColor(this))
@@ -255,6 +256,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
 
     BoolProperty = other.BoolProperty;
     PenStyleProperty = other.PenStyleProperty;
+    PenProperty = other.PenProperty;
     ButtonProperty = other.ButtonProperty;
     ButtonLinkProperty = other.ButtonLinkProperty;
     RGBColor = other.RGBColor;
@@ -307,6 +309,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->PenStyleProperty.state() & ignoreMask))
     {
         PenStyleProperty = theCopyFrom->PenStyleProperty;
+    }
+
+    if (!(theCopyFrom->PenProperty.state() & ignoreMask))
+    {
+        PenProperty = theCopyFrom->PenProperty;
     }
 
     if (!(theCopyFrom->ButtonProperty.state() & ignoreMask))
@@ -422,6 +429,10 @@ void QtnPropertySetSamplePS::init()
     static QString PenStyleProperty_description = "Property to hold pen style values.";
     PenStyleProperty.setDescription(PenStyleProperty_description);
     PenStyleProperty.setValue(Qt::DashLine);
+    static QString PenProperty_name = tr("PenProperty");
+    PenProperty.setName(PenProperty_name);
+    static QString PenProperty_description = "Property to hold QPen values.";
+    PenProperty.setDescription(PenProperty_description);
     static QString ButtonProperty_name = tr("ButtonProperty");
     ButtonProperty.setName(ButtonProperty_name);
     ButtonProperty.setClickHandler([](const QtnPropertyButton* bttn) {
@@ -578,6 +589,13 @@ void QtnPropertySetSamplePS::on_QColorProperty_propertyDidChange(const QtnProper
 
 void QtnPropertySetSamplePS::connectDelegates()
 {
+    PenProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->attributes["editColor"] = true;
+        info->attributes["editStyle"] = true;
+        info->attributes["editWidth"] = true;
+        return info.take();
+    });
     ButtonProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["title"] = "Click me";

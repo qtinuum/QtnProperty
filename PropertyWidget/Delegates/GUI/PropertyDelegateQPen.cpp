@@ -24,7 +24,11 @@
 #include <QStyledItemDelegate>
 #include <QPaintEvent>
 
-void regPenStyleDelegates()
+#include <Core/PropertyInt.h>
+
+#include <GUI/PropertyQColor.h>
+
+void regQPenStyleDelegates()
 {
   QtnPropertyDelegateFactory::staticInstance()
     .registerDelegateDefault(&QtnPropertyQPenStyleBase::staticMetaObject
@@ -147,4 +151,133 @@ bool QtnPropertyDelegateQPenStyle::propertyValueToStrImpl(QString& strValue) con
 {
     return owner().toStr(strValue);
 }
+
+void regQPenDelegates()
+{
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegateDefault(&QtnPropertyQPenBase::staticMetaObject
+                 , &qtnCreateDelegate<QtnPropertyDelegateQPen, QtnPropertyQPenBase>
+                 , "LineEditBttn");
+}
+
+class QtnPropertyQPenLineEditHandler: public QtnPropertyEditorHandler<QtnPropertyQPenBase, QLineEdit>
+{
+public:
+    QtnPropertyQPenLineEditHandler(QtnPropertyQPenBase& property, QLineEdit& editor)
+        : QtnPropertyEditorHandlerType(property, editor)
+    {
+        editor.setReadOnly(true);
+
+        updateEditor();
+    }
+
+private:
+    void updateEditor() override
+    {
+        QString text;
+        if (property().toStr(text))
+            editor().setText(text);
+    }
+};
+
+QtnPropertyDelegateQPen::QtnPropertyDelegateQPen(QtnPropertyQPenBase& owner)
+    : QtnPropertyDelegateTypedEx<QtnPropertyQPenBase>(owner)
+{
+}
+
+void QtnPropertyDelegateQPen::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
+{
+    auto& owner = QtnPropertyDelegateQPen::owner();
+
+    {
+        bool editColor = true;
+        qtnGetAttribute(attributes, "editColor", editColor);
+
+        if (editColor)
+        {
+            auto propertyColor = new QtnPropertyQColorCallback(nullptr);
+            addSubProperty(propertyColor);
+            propertyColor->setName(owner.tr("Color"));
+            propertyColor->setDescription(owner.tr("Pen color for %1.").arg(owner.name()));
+            propertyColor->setCallbackValueGet([&owner]()->QColor {
+                                                   return owner.value().color();
+                                               });
+            propertyColor->setCallbackValueSet([&owner](QColor value) {
+                auto pen = owner.value();
+                pen.setColor(value);
+                owner.setValue(pen);
+            });
+        }
+    }
+
+    {
+        bool editStyle = true;
+        qtnGetAttribute(attributes, "editStyle", editStyle);
+
+        if (editStyle)
+        {
+            auto propertyStyle = new QtnPropertyQPenStyleCallback(nullptr);
+            addSubProperty(propertyStyle);
+            propertyStyle->setName(owner.tr("PenStyle"));
+            propertyStyle->setDescription(owner.tr("Pen style for %1.").arg(owner.name()));
+            propertyStyle->setCallbackValueGet([&owner]()->Qt::PenStyle {
+                return owner.value().style();
+            });
+            propertyStyle->setCallbackValueSet([&owner](Qt::PenStyle value) {
+                auto pen = owner.value();
+                pen.setStyle(value);
+                owner.setValue(pen);
+            });
+        }
+    }
+
+    {
+        bool editWidth = true;
+        qtnGetAttribute(attributes, "editWidth", editWidth);
+
+        if (editWidth)
+        {
+            auto propertyWidth = new QtnPropertyIntCallback(nullptr);
+            addSubProperty(propertyWidth);
+            propertyWidth->setName(owner.tr("Width"));
+            propertyWidth->setDescription(owner.tr("Pen width for %1").arg(owner.name()));
+            propertyWidth->setCallbackValueGet([&owner]()->qint32 {
+                return owner.value().width();
+            });
+            propertyWidth->setCallbackValueSet([&owner](qint32 value) {
+                auto pen = owner.value();
+                pen.setWidth(value);
+                owner.setValue(pen);
+            });
+            propertyWidth->setMinValue(1);
+            propertyWidth->setMaxValue(20);
+        }
+    }
+}
+
+void QtnPropertyDelegateQPen::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+{
+    QtnPropertyDelegateTypedEx<QtnPropertyQPenBase>::drawValueImpl(painter, rect, state, needTooltip);
+}
+
+QWidget* QtnPropertyDelegateQPen::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+{
+    auto editor = new QLineEdit(parent);
+    editor->setGeometry(rect);
+
+    new QtnPropertyQPenLineEditHandler(owner(), *editor);
+
+    if (inplaceInfo)
+    {
+        editor->selectAll();
+    }
+
+    return editor;
+}
+
+bool QtnPropertyDelegateQPen::propertyValueToStrImpl(QString& strValue) const
+{
+    return owner().toStr(strValue);
+}
+
 
