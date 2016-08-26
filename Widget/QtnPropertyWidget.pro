@@ -30,7 +30,8 @@ SOURCES += PropertyWidget.cpp \
     Delegates/GUI/PropertyDelegateQFont.cpp \
     Utils/AccessibilityProxy.cpp \
     Utils/DoubleSpinBox.cpp \
-    Utils/MultilineTextDialog.cpp
+    Utils/MultilineTextDialog.cpp \
+    Utils/UnsignedSpinBox.cpp
 
 HEADERS += PropertyWidgetAPI.h \
     PropertyWidget.h \
@@ -55,7 +56,8 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/GUI/PropertyDelegateQFont.h \
     Utils/AccessibilityProxy.h \
     Utils/DoubleSpinBox.h \
-    Utils/MultilineTextDialog.h
+    Utils/MultilineTextDialog.h \
+    Utils/UnsignedSpinBox.h
 
 LIBS += -L$$BIN_DIR
 LIBS += -lQtnPropertyCoreAC
