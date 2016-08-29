@@ -15,6 +15,7 @@ public:
 	static quint32 qtn_i2u(qint32 val);
 
 protected:
+	virtual QValidator::State validate(QString &input, int &pos) const override;
 	virtual int valueFromText(const QString& text) const override;
 	virtual QString textFromValue(int val) const override;
 };
