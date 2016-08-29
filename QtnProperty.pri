@@ -28,6 +28,7 @@ SOURCES_CORE += PropertyBase.cpp \
     Core/PropertyQPoint.cpp \
     GUI/PropertyQColor.cpp \
     GUI/PropertyButton.cpp \
+    GUI/PropertyQPen.cpp \
     GUI/PropertyQFont.cpp
 
 SOURCES_WIDGET += PropertyWidget.cpp \
@@ -55,6 +56,7 @@ SOURCES_WIDGET += PropertyWidget.cpp \
     Delegates/GUI/PropertyDelegateQFont.cpp \
     Delegates/GUI/PropertyDelegateQColor.cpp \
     Delegates/GUI/PropertyDelegateButton.cpp \
+    Delegates/GUI/PropertyDelegateQPen.cpp \
     Utils/AccessibilityProxy.cpp
 
 unity_build: SOURCES += $$PWD/QtnPropertyUnity.cpp
@@ -85,6 +87,7 @@ HEADERS += CoreAPI.h\
     Core/PropertyQPoint.h \
     GUI/PropertyQColor.h \
     GUI/PropertyButton.h \
+    GUI/PropertyQPen.h \
     GUI/PropertyQFont.h
 
 HEADERS += PropertyWidgetAPI.h \
@@ -113,4 +116,5 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/GUI/PropertyDelegateQFont.h \
     Delegates/GUI/PropertyDelegateQColor.h \
     Delegates/GUI/PropertyDelegateButton.h \
+    Delegates/GUI/PropertyDelegateQPen.h \
     Utils/AccessibilityProxy.h
