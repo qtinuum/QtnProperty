@@ -2,28 +2,28 @@
 
 QtnDoubleSpinBox::QtnDoubleSpinBox(QWidget *parent)
 	: QDoubleSpinBox(parent)
-	, percent_suffix(false)
+	, percentSuffix(false)
 {
 
 }
 
 bool QtnDoubleSpinBox::getHavePercentSuffix() const
 {
-	return percent_suffix;
+	return percentSuffix;
 }
 
 void QtnDoubleSpinBox::setHavePercentSuffix(bool value)
 {
-	if (percent_suffix != value)
+	if (percentSuffix != value)
 	{
-		percent_suffix = value;
+		percentSuffix = value;
 		update();
 	}
 }
 
 QValidator::State QtnDoubleSpinBox::validate(QString &input, int &pos) const
 {
-	if (percent_suffix)
+	if (percentSuffix)
 	{
 		auto value = getNumberText(input);
 
@@ -48,29 +48,40 @@ double QtnDoubleSpinBox::valueFromText(const QString &text) const
 
 QString QtnDoubleSpinBox::textFromValue(double val) const
 {
-	auto result = QDoubleSpinBox::textFromValue(val);
+	auto result = valueToText(val, locale(), decimals(), isGroupSeparatorShown());
 
-	QLocale locale;
-	auto decimal_point = locale.decimalPoint();
-	auto group_separator = locale.groupSeparator();
-	auto zero_digit = locale.zeroDigit();
-	int i = result.indexOf(decimal_point);
+	if (percentSuffix)
+		result.append(locale().percent());
+
+	return result;
+}
+
+QString QtnDoubleSpinBox::valueToText(double value, const QLocale &locale, int decimals, bool groupSeparatorShown)
+{
+	auto result = locale.toString(value, 'f', decimals);
+
+	auto groupSeparator = locale.groupSeparator();
+	if (!groupSeparatorShown)
+		result.remove(groupSeparator);
+
+	auto decimalPoint = locale.decimalPoint();
+	auto zeroDigit = locale.zeroDigit();
+	int i = result.indexOf(decimalPoint);
 	if (i >= 0)
 	{
 		auto begin = result.constData();
 		auto data = &begin[result.length() - 1];
-		auto dec_begin = &begin[i];
+		auto decBegin = &begin[i];
 
-		while (data >= dec_begin && (	*data == zero_digit
-									||	*data == decimal_point
-									||	*data == group_separator))
+		while (data >= decBegin && (	*data == zeroDigit
+									||	*data == decimalPoint
+									||	*data == groupSeparator))
+		{
 			data--;
+		}
 
 		result.resize(data + 1 - begin);
 	}
-
-	if (percent_suffix)
-		result.append(locale.percent());
 
 	return result;
 }
@@ -78,7 +89,7 @@ QString QtnDoubleSpinBox::textFromValue(double val) const
 QString QtnDoubleSpinBox::getNumberText(const QString &source) const
 {
 	auto result = source;
-	if (percent_suffix)
+	if (percentSuffix)
 	{
 		int new_len = result.length() - 1;
 		if (new_len > 0)
