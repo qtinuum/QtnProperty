@@ -1,13 +1,10 @@
-#include(Common.pri)
-
-CONFIG += unity_build
+CONFIG += qtn_unity_build
 QT += script widgets
 
 QTNPROPVERSION = 1.0.0
 
 INCLUDEPATH += $$PWD $$PWD/Core $$PWD/PropertyWidget
 
-DEFINES += STATICLIB QTN_PE_CORE_LIBRARY QTN_PE_PROPERTYWIDGET_LIBRARY
 VPATH += $$PWD/Core $$PWD/PropertyWidget
 
 SOURCES_CORE += PropertyBase.cpp \
@@ -59,7 +56,7 @@ SOURCES_WIDGET += PropertyWidget.cpp \
     Delegates/GUI/PropertyDelegateQPen.cpp \
     Utils/AccessibilityProxy.cpp
 
-unity_build: SOURCES += $$PWD/QtnPropertyUnity.cpp
+qtn_unity_build: SOURCES += $$PWD/QtnPropertyUnity.cpp
 else: SOURCES += SOURCES_CORE $$SOURCES_WIDGET
 
 HEADERS += CoreAPI.h\

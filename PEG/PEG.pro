@@ -27,4 +27,4 @@ HEADERS += \
     PropertyEnumGeneratorCommon.h \
     PropertyEnumGenerator.h
 
-win32:QMAKE_CXXFLAGS += /wd4065
+win32:QMAKE_CXXFLAGS += /wd4065 /wd4267 /wd4005
