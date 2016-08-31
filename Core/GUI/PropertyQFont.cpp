@@ -15,7 +15,6 @@
 */
 
 #include "PropertyQFont.h"
-#include <QFontDatabase>
 
 QtnPropertyQFontBase::QtnPropertyQFontBase(QObject *parent)
     : QtnSinglePropertyBase<QFont>(parent)

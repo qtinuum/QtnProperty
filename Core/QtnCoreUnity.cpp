@@ -15,5 +15,6 @@
 #include "Core/PropertyQSize.cpp"
 #include "Core/PropertyQPoint.cpp"
 #include "GUI/PropertyQColor.cpp"
+#include "GUI/PropertyQPen.cpp"
 #include "GUI/PropertyQFont.cpp"
 #include "GUI/PropertyButton.cpp"

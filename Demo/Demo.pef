@@ -26,6 +26,23 @@ property_set SamplePS
         description = "Property to hold boolean values.";
         value = false;
     }
+    
+    QPenStyle PenStyleProperty
+    {
+        description = "Property to hold pen style values.";
+        value = Qt::DashLine;
+    }
+
+     QPen PenProperty
+    {
+        description = "Property to hold QPen values.";
+        delegate
+        {
+            editColor = true;
+            editStyle = true;
+            editWidth = true;
+        }
+    }
 
     Button ButtonProperty
     {

@@ -68,6 +68,7 @@ bool qtnRegisterDefaultMetaPropertyFactory()
     qtnRegisterMetaPropertyFactory(QVariant::Size, qtnCreateFactory<QtnPropertyQSizeCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::Color, qtnCreateFactory<QtnPropertyQColorCallback>());
     qtnRegisterMetaPropertyFactory(QVariant::Font, qtnCreateFactory<QtnPropertyQFontCallback>());
+    qtnRegisterMetaPropertyFactory(QVariant::Pen, qtnCreateFactory<QtnPropertyQPenCallback>());
     return true;
 }
 
