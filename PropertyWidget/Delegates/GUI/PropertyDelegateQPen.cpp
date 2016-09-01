@@ -36,6 +36,37 @@ void regQPenStyleDelegates()
                  , "ComboBox");
 }
 
+static QtnEnumInfo* penCapStyleEnum()
+{
+    static QtnEnumInfo* enumInfo = nullptr;
+    if (!enumInfo)
+    {
+        QVector<QtnEnumValueInfo> items;
+        items.append(QtnEnumValueInfo(Qt::FlatCap, "FlatCap"));
+        items.append(QtnEnumValueInfo(Qt::SquareCap, "SquareCap"));
+        items.append(QtnEnumValueInfo(Qt::RoundCap, "RoundCap"));
+        enumInfo = new QtnEnumInfo("PenCapStyle", items);
+    }
+
+    return enumInfo;
+}
+
+static QtnEnumInfo* penJoinStyleEnum()
+{
+    static QtnEnumInfo* enumInfo = nullptr;
+    if (!enumInfo)
+    {
+        QVector<QtnEnumValueInfo> items;
+        items.append(QtnEnumValueInfo(Qt::MiterJoin, "MiterJoin"));
+        items.append(QtnEnumValueInfo(Qt::BevelJoin, "BevelJoin"));
+        items.append(QtnEnumValueInfo(Qt::RoundJoin, "RoundJoin"));
+        items.append(QtnEnumValueInfo(Qt::SvgMiterJoin, "SvgMiterJoin"));
+        enumInfo = new QtnEnumInfo("PenJoinStyle", items);
+    }
+
+    return enumInfo;
+}
+
 static void DrawPenStyle(QPainter& painter, QRect rect, Qt::PenStyle penStyle)
 {
     rect.adjust(2, 2, -2, -2);
@@ -251,6 +282,50 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(const QtnPropertyDelegateAttri
             });
             propertyWidth->setMinValue(1);
             propertyWidth->setMaxValue(20);
+        }
+    }
+
+    {
+        bool editCapStyle = true;
+        qtnGetAttribute(attributes, "editCapStyle", editCapStyle);
+
+        if (editCapStyle)
+        {
+            auto propertyCapStyle = new QtnPropertyEnumCallback(nullptr);
+            addSubProperty(propertyCapStyle);
+            propertyCapStyle->setName(owner.tr("CapStyle"));
+            propertyCapStyle->setDescription(owner.tr("Pen Cap Style for %1.").arg(owner.name()));
+            propertyCapStyle->setEnumInfo(penCapStyleEnum());
+            propertyCapStyle->setCallbackValueGet([&owner]()->QtnEnumValueType {
+                return owner.value().capStyle();
+            });
+            propertyCapStyle->setCallbackValueSet([&owner](QtnEnumValueType value) {
+                QPen pen = owner.value();
+                pen.setCapStyle((Qt::PenCapStyle)value);
+                owner.setValue(pen);
+            });
+        }
+    }
+
+    {
+        bool editJoinStyle = true;
+        qtnGetAttribute(attributes, "editJoinStyle", editJoinStyle);
+
+        if (editJoinStyle)
+        {
+            auto propertyJoinStyle = new QtnPropertyEnumCallback(nullptr);
+            addSubProperty(propertyJoinStyle);
+            propertyJoinStyle->setName(owner.tr("JoinStyle"));
+            propertyJoinStyle->setDescription(owner.tr("Pen Join Style for %1.").arg(owner.name()));
+            propertyJoinStyle->setEnumInfo(penJoinStyleEnum());
+            propertyJoinStyle->setCallbackValueGet([&owner]()->QtnEnumValueType {
+                return owner.value().joinStyle();
+            });
+            propertyJoinStyle->setCallbackValueSet([&owner](QtnEnumValueType value) {
+                QPen pen = owner.value();
+                pen.setJoinStyle((Qt::PenJoinStyle)value);
+                owner.setValue(pen);
+            });
         }
     }
 }
