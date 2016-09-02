@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,44 +40,44 @@ private:
 };
 
 static bool regBoolDelegate = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegateDefault(&QtnPropertyBoolBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateBoolCheck, QtnPropertyBoolBase>
-                                , "CheckBox");
+								.registerDelegateDefault(&QtnPropertyBoolBase::staticMetaObject
+								, &qtnCreateDelegate<QtnPropertyDelegateBoolCheck, QtnPropertyBoolBase>
+								, "CheckBox");
 
 static bool regBoolDelegateCombobox = QtnPropertyDelegateFactory::staticInstance()
-                                .registerDelegate(&QtnPropertyBoolBase::staticMetaObject
-                                , &qtnCreateDelegate<QtnPropertyDelegateBoolCombobox, QtnPropertyBoolBase>
-                                , "ComboBox");
+								.registerDelegate(&QtnPropertyBoolBase::staticMetaObject
+								, &qtnCreateDelegate<QtnPropertyDelegateBoolCombobox, QtnPropertyBoolBase>
+								, "ComboBox");
 
 void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter &painter,
 												 const QRect &rect,
 												 const QStyle::State &state,
 												 bool *needTooltip) const
 {
-    QStyleOptionButton opt;
-    opt.rect = rect;
-    opt.state = state;
+	QStyleOptionButton opt;
+	opt.rect = rect;
+	opt.state = state;
 
-    bool value = owner().value();
-    if (value)
-        opt.state |= QStyle::State_On;
+	bool value = owner().value();
+	if (value)
+		opt.state |= QStyle::State_On;
 
-    painter.drawControl(QStyle::CE_CheckBox, opt);
+	painter.drawControl(QStyle::CE_CheckBox, opt);
 }
 
 QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget *,
 															 const QRect &,
 															 QtnInplaceInfo *)
 {
-    if (!owner().isEditableByUser())
-        return 0;
+	if (!owner().isEditableByUser())
+		return 0;
 
 	owner().edit(!owner().value() || owner().valueIsHidden());
 	return nullptr;
 }
 
 QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner)
-    : QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
+	: QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
 {
 	m_labels[0] = QtnPropertyBool::getBoolText(false, false);
 	m_labels[1] = QtnPropertyBool::getBoolText(true, false);
@@ -85,44 +85,44 @@ QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(QtnPropertyBool
 
 void QtnPropertyDelegateBoolCombobox::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
 {
-    qtnGetAttribute(attributes, "labelFalse", m_labels[0]);
-    qtnGetAttribute(attributes, "labelTrue", m_labels[1]);
+	qtnGetAttribute(attributes, "labelFalse", m_labels[0]);
+	qtnGetAttribute(attributes, "labelTrue", m_labels[1]);
 }
 
 QWidget* QtnPropertyDelegateBoolCombobox::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    if (owner().isEditableByUser())
-    {
-        QComboBox *comboBox = new QComboBox(parent);
+	if (owner().isEditableByUser())
+	{
+		QComboBox *comboBox = new QComboBox(parent);
 		comboBox->addItem(m_labels[1], true);
 		comboBox->addItem(m_labels[0], false);
 
-        comboBox->setGeometry(rect);
+		comboBox->setGeometry(rect);
 
-        // connect widget and property
-        new QtnPropertyBoolComboBoxHandler(owner(), *comboBox);
+		// connect widget and property
+		new QtnPropertyBoolComboBoxHandler(owner(), *comboBox);
 
-        if (inplaceInfo)
-            comboBox->showPopup();
+		if (inplaceInfo)
+			comboBox->showPopup();
 
-        return comboBox;
-    }
-    else
-    {
-        QLineEdit *lineEdit = new QLineEdit(parent);
-        lineEdit->setReadOnly(true);
+		return comboBox;
+	}
+	else
+	{
+		QLineEdit *lineEdit = new QLineEdit(parent);
+		lineEdit->setReadOnly(true);
 		lineEdit->setText(m_labels[bool(owner()) ? 1 : 0]);
 
-        lineEdit->setGeometry(rect);
+		lineEdit->setGeometry(rect);
 
-        return lineEdit;
-    }
+		return lineEdit;
+	}
 }
 
 bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(QString& strValue) const
 {
 	strValue = m_labels[bool(owner()) ? 1 : 0];
-    return true;
+	return true;
 }
 
 QtnPropertyBoolComboBoxHandler::QtnPropertyBoolComboBoxHandler(
@@ -148,8 +148,8 @@ void QtnPropertyBoolComboBoxHandler::updateEditor()
 	else
 	{
 		int index = editor().findData((bool)property());
-		Q_ASSERT(index >= 0);
-		editor().setCurrentIndex(index);
+		if (index >= 0)
+			editor().setCurrentIndex(index);
 	}
 
 	updating--;

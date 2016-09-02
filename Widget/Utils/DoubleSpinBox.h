@@ -14,9 +14,11 @@ public:
 	virtual double valueFromText(const QString &text) const override;
 	virtual QString textFromValue(double val) const override;
 
+	static QString valueToText(double value, const QLocale &locale = QLocale(), int decimals = 10, bool groupSeparatorShown = false);
+
 private:
 	QString getNumberText(const QString &source) const;
 
-	bool percent_suffix;
+	bool percentSuffix;
 };
 
