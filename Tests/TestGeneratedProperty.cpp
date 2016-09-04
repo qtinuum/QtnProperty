@@ -84,6 +84,7 @@ void TestGeneratedProperty::testLoadSave()
             {
                 QDataStream s(&data, QIODevice::WriteOnly);
                 QVERIFY(allProperties.save(s));
+                printf("QDataStream: %d, %d\n", s.byteOrder(), s.floatingPointPrecision());
             }
 
             printf(data.toBase64().data());
