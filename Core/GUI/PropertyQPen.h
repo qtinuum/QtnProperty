@@ -18,6 +18,7 @@
 #define PROPERTYPEN_H
 
 #include "../Auxiliary/PropertyTemplates.h"
+#include "../Enum.h"
 #include <QtGui/QPen>
 
 Q_DECLARE_METATYPE(Qt::PenStyle)
@@ -78,6 +79,12 @@ class QTN_PE_CORE_EXPORT QtnPropertyQPenBase: public QtnSinglePropertyBase<QPen>
 
 public:
     explicit QtnPropertyQPenBase(QObject *parent);
+
+    static QtnEnumInfo* penStyleEnum();
+    static QtnEnumInfo* penCapStyleEnum();
+    static QtnEnumInfo* penJoinStyleEnum();
+    static bool penFromStr(const QString& str, QPen& pen);
+    static bool strFromPen(const QPen& pen, QString& str);
 
 protected:
     // string conversion implementation

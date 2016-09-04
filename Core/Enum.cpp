@@ -106,6 +106,11 @@ bool QtnEnumInfo::toStr(QString& str, const QtnEnumValueInfo* value) const
     return true;
 }
 
+bool QtnEnumInfo::toStr(QString& str, QtnEnumValueType value) const
+{
+    return toStr(str, findByValue(value));
+}
+
 void QtnEnumInfo::setDynamicValues(const QVector<QtnEnumValueInfo>& dynamicValues)
 {
     m_dynamicValues = dynamicValues;

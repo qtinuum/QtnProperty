@@ -90,28 +90,125 @@ QtnPropertyQPenBase::QtnPropertyQPenBase(QObject *parent)
 {
 }
 
+QtnEnumInfo* QtnPropertyQPenBase::penStyleEnum()
+{
+    static QtnEnumInfo* enumInfo = nullptr;
+    if (!enumInfo)
+    {
+        QVector<QtnEnumValueInfo> items;
+        items.append(QtnEnumValueInfo(Qt::NoPen, "NoPen"));
+        items.append(QtnEnumValueInfo(Qt::SolidLine, "SolidLine"));
+        items.append(QtnEnumValueInfo(Qt::DashLine, "DashLine"));
+        items.append(QtnEnumValueInfo(Qt::DotLine, "DotLine"));
+        items.append(QtnEnumValueInfo(Qt::DashDotLine, "DashDotLine"));
+        items.append(QtnEnumValueInfo(Qt::DashDotDotLine, "DashDotDotLine"));
+        enumInfo = new QtnEnumInfo("Qt", items);
+    }
+
+    return enumInfo;
+}
+
+QtnEnumInfo* QtnPropertyQPenBase::penCapStyleEnum()
+{
+    static QtnEnumInfo* enumInfo = nullptr;
+    if (!enumInfo)
+    {
+        QVector<QtnEnumValueInfo> items;
+        items.append(QtnEnumValueInfo(Qt::FlatCap, "FlatCap"));
+        items.append(QtnEnumValueInfo(Qt::SquareCap, "SquareCap"));
+        items.append(QtnEnumValueInfo(Qt::RoundCap, "RoundCap"));
+        enumInfo = new QtnEnumInfo("Qt", items);
+    }
+
+    return enumInfo;
+}
+
+QtnEnumInfo* QtnPropertyQPenBase::penJoinStyleEnum()
+{
+    static QtnEnumInfo* enumInfo = nullptr;
+    if (!enumInfo)
+    {
+        QVector<QtnEnumValueInfo> items;
+        items.append(QtnEnumValueInfo(Qt::MiterJoin, "MiterJoin"));
+        items.append(QtnEnumValueInfo(Qt::BevelJoin, "BevelJoin"));
+        items.append(QtnEnumValueInfo(Qt::RoundJoin, "RoundJoin"));
+        items.append(QtnEnumValueInfo(Qt::SvgMiterJoin, "SvgMiterJoin"));
+        enumInfo = new QtnEnumInfo("Qt", items);
+    }
+
+    return enumInfo;
+}
+
+bool QtnPropertyQPenBase::penFromStr(const QString& str, QPen& pen)
+{
+    QStringList penParts = str.split(',');
+    if (penParts.size() != 5)
+        return false;
+
+    QColor color;
+    if (!QtnPropertyQColorBase::colorFromStr(penParts[0], color))
+        return false;
+
+    Qt::PenStyle style = Qt::NoPen;
+    auto styleEnum = penStyleEnum()->fromStr(penParts[1]);
+    if (!styleEnum)
+        return false;
+    style = (Qt::PenStyle)styleEnum->value();
+
+    bool ok = false;
+    int width = penParts[2].trimmed().toInt(&ok);
+    if (!ok)
+        return false;
+
+    Qt::PenCapStyle capStyle = Qt::FlatCap;
+    auto capStyleEnum = penCapStyleEnum()->fromStr(penParts[3]);
+    if (!capStyleEnum)
+        return false;
+    capStyle = (Qt::PenCapStyle)capStyleEnum->value();
+
+    Qt::PenJoinStyle joinStyle = Qt::MiterJoin;
+    auto joinStyleEnum = penJoinStyleEnum()->fromStr(penParts[4]);
+    if (!joinStyleEnum)
+        return false;
+    joinStyle = (Qt::PenJoinStyle)joinStyleEnum->value();
+
+    pen.setColor(color);
+    pen.setStyle(style);
+    pen.setWidth(width);
+    pen.setCapStyle(capStyle);
+    pen.setJoinStyle(joinStyle);
+
+    return true;
+}
+
+bool QtnPropertyQPenBase::strFromPen(const QPen& pen, QString& str)
+{
+    QString color;
+    QtnPropertyQColorBase::strFromColor(pen.color(), color);
+    QString style;
+    penStyleEnum()->toStr(style, pen.style());
+    QString width = QString("%1").arg(pen.width());
+    QString capStyle;
+    penCapStyleEnum()->toStr(capStyle, pen.capStyle());
+    QString joinStyle;
+    penJoinStyleEnum()->toStr(joinStyle, pen.joinStyle());
+    str = QString("%1, %2, %3, %4, %5").arg(color, style, width, capStyle, joinStyle);
+    return true;
+}
+
 bool QtnPropertyQPenBase::fromStrImpl(const QString& str)
 {
-/*
     QPen pen;
-    if (!pen.fromString(str.trimmed()))
+    if (!penFromStr(str, pen))
         return false;
 
     setValue(pen);
     return true;
-    */
-    return false;
 }
 
 bool QtnPropertyQPenBase::toStrImpl(QString& str) const
 {
-    /*
-    QPen v = value();
-    str = v.toString();
-    return true;
-    */
-    str = "[QPen]";
-    return true;
+    return strFromPen(value(), str);
 }
 
 bool QtnPropertyQPenBase::fromVariantImpl(const QVariant& var)

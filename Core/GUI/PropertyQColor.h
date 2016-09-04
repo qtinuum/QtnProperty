@@ -38,6 +38,9 @@ public:
     {
     }
 
+    static bool colorFromStr(const QString& str, QColor& color);
+    static bool strFromColor(const QColor& color, QString& str);
+
 protected:
     // string conversion implementation
     bool fromStrImpl(const QString& str) override;

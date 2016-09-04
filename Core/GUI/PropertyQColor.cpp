@@ -17,10 +17,30 @@
 #include "PropertyQColor.h"
 #include "../Core/PropertyInt.h"
 
+bool QtnPropertyQColorBase::colorFromStr(const QString& str, QColor& color)
+{
+    QColor newColor(str.trimmed());
+    if (!newColor.isValid())
+        return false;
+
+    color = newColor;
+    return true;
+}
+
+bool QtnPropertyQColorBase::strFromColor(const QColor& color, QString& str)
+{
+    if (color.alpha() < 255)
+        str = color.name(QColor::HexArgb);
+    else
+        str = color.name();
+
+    return true;
+}
+
 bool QtnPropertyQColorBase::fromStrImpl(const QString& str)
 {
-    QColor color(str.trimmed());
-    if (!color.isValid())
+    QColor color;
+    if (!colorFromStr(str, color))
         return false;
 
     setValue(color);
@@ -29,14 +49,7 @@ bool QtnPropertyQColorBase::fromStrImpl(const QString& str)
 
 bool QtnPropertyQColorBase::toStrImpl(QString& str) const
 {
-    QColor v = value();
-
-    if (v.alpha() < 255)
-        str = v.name(QColor::HexArgb);
-    else
-        str = v.name();
-
-    return true;
+    return strFromColor(value(), str);
 }
 
 QtnProperty* qtnCreateRedProperty(QObject *parent, QtnPropertyQColorBase *propertyColor)

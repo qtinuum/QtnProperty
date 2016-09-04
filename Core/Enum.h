@@ -96,6 +96,7 @@ public:
 
     const QtnEnumValueInfo* fromStr(const QString& str) const;
     bool toStr(QString& str, const QtnEnumValueInfo* value) const;
+    bool toStr(QString& str, QtnEnumValueType value) const;
 
     void setDynamicValues(const QVector<QtnEnumValueInfo>& dynamicValues);
 

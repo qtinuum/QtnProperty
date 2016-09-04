@@ -36,37 +36,6 @@ void regQPenStyleDelegates()
                  , "ComboBox");
 }
 
-static QtnEnumInfo* penCapStyleEnum()
-{
-    static QtnEnumInfo* enumInfo = nullptr;
-    if (!enumInfo)
-    {
-        QVector<QtnEnumValueInfo> items;
-        items.append(QtnEnumValueInfo(Qt::FlatCap, "FlatCap"));
-        items.append(QtnEnumValueInfo(Qt::SquareCap, "SquareCap"));
-        items.append(QtnEnumValueInfo(Qt::RoundCap, "RoundCap"));
-        enumInfo = new QtnEnumInfo("PenCapStyle", items);
-    }
-
-    return enumInfo;
-}
-
-static QtnEnumInfo* penJoinStyleEnum()
-{
-    static QtnEnumInfo* enumInfo = nullptr;
-    if (!enumInfo)
-    {
-        QVector<QtnEnumValueInfo> items;
-        items.append(QtnEnumValueInfo(Qt::MiterJoin, "MiterJoin"));
-        items.append(QtnEnumValueInfo(Qt::BevelJoin, "BevelJoin"));
-        items.append(QtnEnumValueInfo(Qt::RoundJoin, "RoundJoin"));
-        items.append(QtnEnumValueInfo(Qt::SvgMiterJoin, "SvgMiterJoin"));
-        enumInfo = new QtnEnumInfo("PenJoinStyle", items);
-    }
-
-    return enumInfo;
-}
-
 static void DrawPenStyle(QPainter& painter, QRect rect, Qt::PenStyle penStyle)
 {
     rect.adjust(2, 2, -2, -2);
@@ -302,7 +271,7 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(const QtnPropertyDelegateAttri
             addSubProperty(propertyCapStyle);
             propertyCapStyle->setName(owner.tr("CapStyle"));
             propertyCapStyle->setDescription(owner.tr("Pen Cap Style for %1.").arg(owner.name()));
-            propertyCapStyle->setEnumInfo(penCapStyleEnum());
+            propertyCapStyle->setEnumInfo(QtnPropertyQPenBase::penCapStyleEnum());
             propertyCapStyle->setCallbackValueGet([&owner]()->QtnEnumValueType {
                 return owner.value().capStyle();
             });
@@ -324,7 +293,7 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(const QtnPropertyDelegateAttri
             addSubProperty(propertyJoinStyle);
             propertyJoinStyle->setName(owner.tr("JoinStyle"));
             propertyJoinStyle->setDescription(owner.tr("Pen Join Style for %1.").arg(owner.name()));
-            propertyJoinStyle->setEnumInfo(penJoinStyleEnum());
+            propertyJoinStyle->setEnumInfo(QtnPropertyQPenBase::penJoinStyleEnum());
             propertyJoinStyle->setCallbackValueGet([&owner]()->QtnEnumValueType {
                 return owner.value().joinStyle();
             });
