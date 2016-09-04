@@ -142,8 +142,14 @@ private:
 };
 
 QtnPropertyDelegateQPenStyle::QtnPropertyDelegateQPenStyle(QtnPropertyQPenStyleBase &owner)
-    : QtnPropertyDelegateTyped<QtnPropertyQPenStyleBase>(owner)
+    : QtnPropertyDelegateTyped<QtnPropertyQPenStyleBase>(owner),
+      m_showNoPen(false)
 {
+}
+
+void QtnPropertyDelegateQPenStyle::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
+{
+    qtnGetAttribute(attributes, "showNoPen", m_showNoPen);
 }
 
 void QtnPropertyDelegateQPenStyle::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& /*state*/, bool* needTooltip) const
@@ -162,7 +168,8 @@ QWidget* QtnPropertyDelegateQPenStyle::createValueEditorImpl(QWidget* parent, co
         QComboBox* combo = new QtnPropertyPenStyleComboBox(parent);
         combo->setLineEdit(nullptr);
         combo->setItemDelegate(new QtnPropertyPenStyleItemDelegate());
-        for (auto ps = (int)Qt::NoPen; ps < Qt::CustomDashLine; ++ps)
+        auto startStyle = m_showNoPen ? Qt::NoPen : Qt::SolidLine;
+        for (auto ps = (int)startStyle; ps < Qt::CustomDashLine; ++ps)
             combo->addItem("", ps);
 
         combo->setGeometry(rect);

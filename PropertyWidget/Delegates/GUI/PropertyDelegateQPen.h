@@ -29,9 +29,13 @@ public:
     QtnPropertyDelegateQPenStyle(QtnPropertyQPenStyleBase& owner);
 
 protected:
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
     void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
     bool propertyValueToStrImpl(QString& strValue) const override;
+
+private:
+    bool m_showNoPen;
 };
 
 class QtnPropertyQPenBase;
