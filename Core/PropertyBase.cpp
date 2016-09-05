@@ -350,6 +350,10 @@ bool QtnPropertyBase::save(QDataStream &stream) const
 
     QByteArray data;
     QDataStream contentStream(&data, QIODevice::WriteOnly);
+    contentStream.setVersion(stream.version());
+    contentStream.setByteOrder(stream.byteOrder());
+    contentStream.setFloatingPointPrecision(stream.floatingPointPrecision());
+
     if (!saveImpl(contentStream))
         return false;
 

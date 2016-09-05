@@ -19,7 +19,7 @@
 
 static QMap<QString, Qt::PenStyle> CreateStr2PenStyle()
 {
-    QMap<QString, Qt::PenStyle> str2PenStyle = {
+    auto str2PenStyle = QMap<QString, Qt::PenStyle>({
         {"NoPen", Qt::NoPen},
         {"SolidLine", Qt::SolidLine},
         {"DashLine", Qt::DashLine},
@@ -27,7 +27,7 @@ static QMap<QString, Qt::PenStyle> CreateStr2PenStyle()
         {"DashDotLine", Qt::DashDotLine},
         {"DashDotDotLine", Qt::DashDotDotLine},
         {"CustomDashLine", Qt::CustomDashLine}
-    };
+    });
     return str2PenStyle;
 }
 
