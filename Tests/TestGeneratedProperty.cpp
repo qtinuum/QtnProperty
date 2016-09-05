@@ -99,7 +99,11 @@ void TestGeneratedProperty::testLoadSave()
             QString result;
             QVERIFY(allProperties.toStr(result));
 
+#ifdef Q_OS_WIN
             QCOMPARE(result.size(), 925);
+#else
+            QCOMPARE(result.size(), 897);
+#endif
         }
     }
 }
