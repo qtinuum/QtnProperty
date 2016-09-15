@@ -217,6 +217,7 @@ void QtnPropertySetSubPropertySetType::connectDelegates()
 QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
+    , LayerProperty(*new QtnPropertyLayer(this))
     , PenStyleProperty(*new QtnPropertyQPenStyle(this))
     , PenProperty(*new QtnPropertyQPen(this))
     , ButtonProperty(*new QtnPropertyButton(this))
@@ -255,6 +256,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     Q_UNUSED(other);
 
     BoolProperty = other.BoolProperty;
+    LayerProperty = other.LayerProperty;
     PenStyleProperty = other.PenStyleProperty;
     PenProperty = other.PenProperty;
     ButtonProperty = other.ButtonProperty;
@@ -304,6 +306,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->BoolProperty.state() & ignoreMask))
     {
         BoolProperty = theCopyFrom->BoolProperty;
+    }
+
+    if (!(theCopyFrom->LayerProperty.state() & ignoreMask))
+    {
+        LayerProperty = theCopyFrom->LayerProperty;
     }
 
     if (!(theCopyFrom->PenStyleProperty.state() & ignoreMask))
@@ -424,6 +431,11 @@ void QtnPropertySetSamplePS::init()
     static QString BoolProperty_description = "Property to hold boolean values.";
     BoolProperty.setDescription(BoolProperty_description);
     BoolProperty.setValue(false);
+    static QString LayerProperty_name = tr("LayerProperty");
+    LayerProperty.setName(LayerProperty_name);
+    static QString LayerProperty_description = "Property to hold layer.";
+    LayerProperty.setDescription(LayerProperty_description);
+    LayerProperty.setValue({"Top", Qt::red, 0});
     static QString PenStyleProperty_name = tr("PenStyleProperty");
     PenStyleProperty.setName(PenStyleProperty_name);
     static QString PenStyleProperty_description = "Property to hold pen style values.";

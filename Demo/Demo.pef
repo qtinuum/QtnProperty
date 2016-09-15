@@ -1,6 +1,7 @@
 #include "../Core/PropertyCore.h"
 #include "../Core/PropertyGUI.h"
 #include "AB/PropertyABColor.h"
+#include "Layer/PropertyLayer.h"
 
 #include_cpp <QFileDialog>
 #include_cpp <QDebug>
@@ -25,6 +26,12 @@ property_set SamplePS
     {
         description = "Property to hold boolean values.";
         value = false;
+    }
+    
+    Layer LayerProperty
+    {
+        description = "Property to hold layer.";
+        value = {"Top", Qt::red, 0};
     }
     
     QPenStyle PenStyleProperty

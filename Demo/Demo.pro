@@ -12,13 +12,17 @@ SOURCES +=  main.cpp\
             mydialog.cpp \
             AB/PropertyABColor.cpp \
             AB/PropertyDelegateABColor.cpp \
-            Int/PropertyDelegateIntList.cpp
+            Int/PropertyDelegateIntList.cpp \
+            Layer/PropertyLayer.cpp \
+            Layer/PropertyDelegateLayer.cpp
 
 HEADERS  += MainWindow.h \
             mydialog.h \
             AB/PropertyABColor.h \
             AB/PropertyDelegateABColor.h \
-            Int/PropertyDelegateIntList.h
+            Int/PropertyDelegateIntList.h \
+            Layer/PropertyLayer.h \
+            Layer/PropertyDelegateLayer.h
 
 FORMS    += MainWindow.ui \
             mydialog.ui
