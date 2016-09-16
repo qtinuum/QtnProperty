@@ -32,6 +32,7 @@ struct LayerInfo
     {}
 };
 
+/*
 inline bool operator== (const LayerInfo& left, const LayerInfo& right) { return left.name == right.name; }
 inline bool operator != (const LayerInfo& left, const LayerInfo& right) { return !(left == right); }
 
@@ -39,21 +40,24 @@ QDataStream& operator<< (QDataStream& stream, const LayerInfo& layer);
 QDataStream& operator>> (QDataStream& stream, LayerInfo& layer);
 
 Q_DECLARE_METATYPE(LayerInfo)
+*/
 
-class QtnPropertyLayerBase: public QtnSinglePropertyBase<LayerInfo>
+class QtnPropertyLayerBase: public QtnSinglePropertyBase<int>
 {
     Q_OBJECT
     QtnPropertyLayerBase(const QtnPropertyLayerBase& other) Q_DECL_EQ_DELETE;
 
 public:
     explicit QtnPropertyLayerBase(QObject *parent)
-        : QtnSinglePropertyBase<LayerInfo>(parent)
+        : QtnSinglePropertyBase<int>(parent)
     {
     }
 
-    QList<LayerInfo> layers() const;
+    const LayerInfo* valueLayer() const;
+    LayerInfo* valueLayer();
+
+    const QList<LayerInfo>& layers() const;
     void setLayers(QList<LayerInfo> layers);
-    void setLayersCallback(std::function<QList<LayerInfo>()> layersCallback);
 
 protected:
     // string conversion implementation
@@ -61,7 +65,7 @@ protected:
     bool toStrImpl(QString& str) const override;
 
 private:
-    std::function<QList<LayerInfo>()> m_layersCallback;
+    QList<LayerInfo> m_layers;
 
     P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyLayerBase)
 };

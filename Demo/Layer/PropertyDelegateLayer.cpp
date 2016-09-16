@@ -18,8 +18,11 @@
 #include "Delegates/PropertyDelegateFactory.h"
 #include "PropertyLayer.h"
 #include "Delegates/Utils/PropertyEditorHandler.h"
+
 #include <QComboBox>
 #include <QLineEdit>
+#include <QStyledItemDelegate>
+#include <QPaintEvent>
 
 void regLayerDelegates()
 {
@@ -27,65 +30,9 @@ void regLayerDelegates()
     .registerDelegateDefault(&QtnPropertyLayerBase::staticMetaObject
                             , &qtnCreateDelegate<QtnPropertyDelegateLayer, QtnPropertyLayerBase>);
 }
-/*
-class QtnPropertyLayerComboBox : public QComboBox
+
+static void drawLayer(const LayerInfo& layer, QPainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip)
 {
-public:
-    explicit QtnPropertyLayerComboBox(QtnPropertyLayerBase& property, QWidget *parent = Q_NULLPTR)
-        : QComboBox(parent)
-    {
-
-    }
-
-protected:
-    void paintEvent(QPaintEvent *event) override
-    {
-        QComboBox::paintEvent(event);
-
-        QPainter painter(this);
-        auto index = currentData().to Int();
-        DrawPenStyle(painter, event->rect().adjusted(0, 0, -event->rect().height(), 0), penStyle);
-    }
-
-private:
-    QtnPropertyLayerBase& m_property;
-};
-
-class QtnPropertyPenStyleComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyQPenStyleBase, QComboBox>
-{
-public:
-    QtnPropertyPenStyleComboBoxHandler(QtnPropertyQPenStyleBase& property, QComboBox& editor)
-        : QtnPropertyEditorHandlerType(property, editor)
-    {
-        updateEditor();
-
-        if (!property.isEditableByUser())
-            editor.setDisabled(true);
-
-        QObject::connect(  &editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
-                         , this, &QtnPropertyPenStyleComboBoxHandler::onCurrentIndexChanged);
-    }
-
-private:
-    void updateEditor() override
-    {
-        int index = editor().findData((int)property());
-        Q_ASSERT(index >= 0);
-        editor().setCurrentIndex(index);
-    }
-
-    void onCurrentIndexChanged(int index)
-    {
-        QVariant data = editor().itemData(index);
-        if (data.canConvert<int>())
-            property() = (Qt::PenStyle)data.toInt();
-    }
-};
-*/
-void QtnPropertyDelegateLayer::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
-{
-    auto layer = owner().value();
-
     QRect textRect = rect;
 
     QRect colorRect = rect;
@@ -100,32 +47,114 @@ void QtnPropertyDelegateLayer::drawValueImpl(QStylePainter& painter, const QRect
 
     if (textRect.isValid())
     {
-        QtnPropertyDelegateTyped<QtnPropertyLayerBase>::drawValueImpl(painter, textRect, state, needTooltip);
+        qtnDrawValueText(layer.name, painter, textRect, state, needTooltip);
     }
 }
 
-bool QtnPropertyDelegateLayer::propertyValueToStrImpl(QString& strValue) const
+class QtnPropertyLayerComboBox : public QComboBox
 {
-    strValue = owner().value().name;
-    return true;
+public:
+    explicit QtnPropertyLayerComboBox(QtnPropertyLayerBase& property, QWidget *parent = Q_NULLPTR)
+        : QComboBox(parent),
+          m_property(property),
+          m_layers(property.layers())
+    {
+        setLineEdit(nullptr);
+        setItemDelegate(new ItemDelegate(m_layers));
+        for (const auto& layer : m_layers)
+        {
+            Q_UNUSED(layer);
+            addItem("");
+        }
+
+        updateEditor();
+
+        if (!property.isEditableByUser())
+            setDisabled(true);
+
+        QObject::connect(  &m_property, &QtnPropertyBase::propertyDidChange,
+                           this, &QtnPropertyLayerComboBox::onPropertyDidChange, Qt::QueuedConnection);
+        QObject::connect(  this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
+                         , this, &QtnPropertyLayerComboBox::onCurrentIndexChanged);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        QComboBox::paintEvent(event);
+
+        QPainter painter(this);
+
+        auto index = currentIndex();
+        if (index != -1)
+        {
+            Q_ASSERT(index < m_layers.size());
+            drawLayer(m_layers[index], painter, event->rect(), QStyle::State_Active|QStyle::State_Enabled, nullptr);
+        }
+    }
+
+    void updateEditor()
+    {
+        setCurrentIndex(m_property.value());
+    }
+
+    void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+    {
+        Q_UNUSED(changedProperty);
+
+        if ((reason & QtnPropertyChangeReasonValue) && (&m_property == firedProperty))
+            updateEditor();
+    }
+
+    void onCurrentIndexChanged(int index)
+    {
+        if (index >= 0)
+        {
+            Q_ASSERT(index < m_layers.size());
+            m_property.setValue(index);
+        }
+    }
+
+private:
+    QtnPropertyLayerBase& m_property;
+    QList<LayerInfo> m_layers;
+
+    class ItemDelegate : public QStyledItemDelegate
+    {
+    public:
+        ItemDelegate(const QList<LayerInfo>& layers)
+            : m_layers(layers)
+        {
+        }
+
+        void paint(QPainter *painter,
+                    const QStyleOptionViewItem &option,
+                    const QModelIndex &index) const override
+        {
+            QStyledItemDelegate::paint(painter, option, index);
+
+            Q_ASSERT(index.row() < m_layers.size());
+            drawLayer(m_layers[index.row()], *painter, option.rect, option.state, nullptr);
+        }
+
+    private:
+        const QList<LayerInfo>& m_layers;
+    };
+};
+
+void QtnPropertyDelegateLayer::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+{
+    auto layer = owner().valueLayer();
+    if (layer)
+        drawLayer(*layer, painter, rect, state, needTooltip);
 }
 
 QWidget* QtnPropertyDelegateLayer::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    /*
     if (owner().isEditableByUser())
     {
-        QComboBox* combo = new QtnPropertyPenStyleComboBox(parent);
-        combo->setLineEdit(nullptr);
-        combo->setItemDelegate(new QtnPropertyPenStyleItemDelegate());
-        auto startStyle = m_showNoPen ? Qt::NoPen : Qt::SolidLine;
-        for (auto ps = (int)startStyle; ps < Qt::CustomDashLine; ++ps)
-            combo->addItem("", ps);
-
+        auto combo = new QtnPropertyLayerComboBox(owner(), parent);
         combo->setGeometry(rect);
-
-        new QtnPropertyPenStyleComboBoxHandler(owner(), *combo);
-
         if (inplaceInfo)
             combo->showPopup();
 
@@ -133,6 +162,4 @@ QWidget* QtnPropertyDelegateLayer::createValueEditorImpl(QWidget* parent, const 
     }
 
     return nullptr;
-    */
-    return createValueEditorLineEdit(parent, rect, !owner().isEditableByUser(), inplaceInfo);
 }

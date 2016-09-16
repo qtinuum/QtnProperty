@@ -16,6 +16,7 @@
 
 #include "PropertyLayer.h"
 
+/*
 QDataStream& operator<< (QDataStream& stream, const LayerInfo& layer)
 {
     // version
@@ -41,35 +42,47 @@ QDataStream& operator>> (QDataStream& stream, LayerInfo& layer)
 
     return stream;
 }
+*/
 
-QList<LayerInfo> QtnPropertyLayerBase::layers() const
+const LayerInfo* QtnPropertyLayerBase::valueLayer() const
 {
-    if (!m_layersCallback)
-        return QList<LayerInfo>();
+    const auto& layerValues = layers();
+    auto layerIndex = value();
+    if (layerIndex < 0 || layerIndex >= layerValues.size())
+        return nullptr;
 
-    return m_layersCallback();
+    return &layerValues[layerIndex];
+}
+
+LayerInfo* QtnPropertyLayerBase::valueLayer()
+{
+    return const_cast<LayerInfo*>(((const QtnPropertyLayerBase*)this)->valueLayer());
+}
+
+const QList<LayerInfo>& QtnPropertyLayerBase::layers() const
+{
+    return m_layers;
 }
 
 void QtnPropertyLayerBase::setLayers(QList<LayerInfo> layers)
 {
-    m_layersCallback = [layers]() {
-        return layers;
-    };
-}
+    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonValue, nullptr);
 
-void QtnPropertyLayerBase::setLayersCallback(std::function<QList<LayerInfo>()> layersCallback)
-{
-    m_layersCallback = layersCallback;
+    m_layers = layers;
+
+    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonValue);
 }
 
 bool QtnPropertyLayerBase::fromStrImpl(const QString& str)
 {
+    int index = 0;
     for (const auto& layer : layers())
     {
         if (layer.name == str)
         {
-            return setValue(layer);
+            return setValue(index);
         }
+        ++index;
     }
 
     return false;
@@ -77,6 +90,8 @@ bool QtnPropertyLayerBase::fromStrImpl(const QString& str)
 
 bool QtnPropertyLayerBase::toStrImpl(QString& str) const
 {
-    str = value().name;
+    auto layer = valueLayer();
+    if (layer)
+        str = layer->name;
     return true;
 }

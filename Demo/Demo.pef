@@ -31,7 +31,7 @@ property_set SamplePS
     Layer LayerProperty
     {
         description = "Property to hold layer.";
-        value = {"Top", Qt::red, 0};
+        value = 0;
     }
     
     QPenStyle PenStyleProperty

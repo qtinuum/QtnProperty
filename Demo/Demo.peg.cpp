@@ -435,7 +435,7 @@ void QtnPropertySetSamplePS::init()
     LayerProperty.setName(LayerProperty_name);
     static QString LayerProperty_description = "Property to hold layer.";
     LayerProperty.setDescription(LayerProperty_description);
-    LayerProperty.setValue({"Top", Qt::red, 0});
+    LayerProperty.setValue(0);
     static QString PenStyleProperty_name = tr("PenStyleProperty");
     PenStyleProperty.setName(PenStyleProperty_name);
     static QString PenStyleProperty_description = "Property to hold pen style values.";

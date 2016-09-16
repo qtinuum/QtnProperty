@@ -15,8 +15,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->pw->setParts(QtnPropertyWidgetPartsDescriptionPanel);
 
-    QtnPropertySet* ps = new QtnPropertySetSamplePS(this);
+    auto ps = new QtnPropertySetSamplePS(this);
     ui->pw->setPropertySet(ps);
+
+    ps->LayerProperty.setLayers({{"Top", Qt::red, 0}, {"Left", Qt::blue, 1}, {"Right", Qt::green, 2}, {"Bottom", Qt::gray, 3}});
 
     qtnScriptRegisterPropertyTypes(&jsEngine);
     jsEngine.globalObject().setProperty("samplePS", jsEngine.newQObject(ps));
