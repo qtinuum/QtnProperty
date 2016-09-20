@@ -261,6 +261,7 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			if (property == draggedProperty
 			||	nullptr == property)
 			{
+				draggedProperty = nullptr;
 				break;
 			}
 
