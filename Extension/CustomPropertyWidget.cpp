@@ -384,10 +384,10 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 											 QtnPropertyBase *destination,
 											 QtnApplyPosition position)
 {
-	auto var_property = getVarProperty(destination);
-	if (nullptr != var_property)
+	auto varProperty = getVarProperty(destination);
+	if (nullptr != varProperty)
 	{
-		CustomPropertyData custom_data;
+		CustomPropertyData customData;
 		if (data->hasFormat(kCustomPropertyData))
 		{
 			auto doc = QJsonDocument::fromBinaryData(data->data(kCustomPropertyData));
@@ -397,47 +397,47 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 				auto obj = doc.object();
 
 				if (QtnApplyPosition::Over == position
-				&&	var_property->GetType() == VarProperty::Value)
+				&&	varProperty->GetType() == VarProperty::Value)
 				{
 					position = QtnApplyPosition::After;
 				}
 
 				bool ok = false;
 
-				int insert_index = var_property->GetIndex();
+				int insertIndex = varProperty->GetIndex();
 
 				for (auto it = obj.begin(); it != obj.end(); ++it)
 				{
-					custom_data.value = it.value().toVariant();
+					customData.value = it.value().toVariant();
 
 					switch (position)
 					{
 						case QtnApplyPosition::Before:
 						case QtnApplyPosition::After:
 						{
-							if (var_property != var_property->TopParent())
+							if (varProperty != varProperty->TopParent())
 							{
 								auto parent_prop = dynamic_cast<QtnPropertyBase *>(destination->parent());
 								switch (getVarProperty(parent_prop)->GetType())
 								{
 									case VarProperty::Map:
 									{
-										custom_data.index = -1;
-										custom_data.name = it.key();
-										addProperty(parent_prop, custom_data);
+										customData.index = -1;
+										customData.name = it.key();
+										addProperty(parent_prop, customData);
 										ok = true;
 									}	break;
 
 									case VarProperty::List:
 									{
-										custom_data.name.clear();
+										customData.name.clear();
 
-										custom_data.index = insert_index;
+										customData.index = insertIndex;
 
 										if (QtnApplyPosition::After == position)
-											custom_data.index++;
+											customData.index++;
 
-										addProperty(parent_prop, custom_data);
+										addProperty(parent_prop, customData);
 										ok = true;
 									}	break;
 
@@ -449,21 +449,21 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 
 						case QtnApplyPosition::Over:
 						{
-							switch (var_property->GetType())
+							switch (varProperty->GetType())
 							{
 								case VarProperty::Map:
 								{
-									custom_data.index = -1;
-									custom_data.name = it.key();
-									addProperty(destination, custom_data);
+									customData.index = -1;
+									customData.name = it.key();
+									addProperty(destination, customData);
 									ok = true;
 								}	break;
 
 								case VarProperty::List:
 								{
-									custom_data.name.clear();
-									custom_data.index = var_property->GetChildrenCount();
-									addProperty(destination, custom_data);
+									customData.name.clear();
+									customData.index = varProperty->GetChildrenCount();
+									addProperty(destination, customData);
 									ok = true;
 								}	break;
 
@@ -474,7 +474,7 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 						}	break;
 					}
 
-					insert_index++;
+					insertIndex++;
 				}
 
 				if (ok)
@@ -485,11 +485,11 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 		{
 			if (data->hasColor())
 			{
-				CustomPropertyData custom_data;
-				custom_data.index = var_property->GetIndex();
-				custom_data.name = var_property->GetName();
-				custom_data.value = data->colorData();
-				updatePropertyOptions(destination, custom_data);
+				CustomPropertyData customData;
+				customData.index = varProperty->GetIndex();
+				customData.name = varProperty->GetName();
+				customData.value = data->colorData();
+				updatePropertyOptions(destination, customData);
 
 				return true;
 			}
@@ -506,19 +506,19 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 						list.push_back(url.toString());
 				}
 
-				CustomPropertyData custom_data;
-				custom_data.index = var_property->GetIndex();
-				custom_data.name = var_property->GetName();
+				CustomPropertyData customData;
+				customData.index = varProperty->GetIndex();
+				customData.name = varProperty->GetName();
 
 				if (list.size() > 1)
 				{
-					custom_data.value = list;
+					customData.value = list;
 				} else
 				{
-					custom_data.value = list.at(0);
+					customData.value = list.at(0);
 				}
 
-				updatePropertyOptions(destination, custom_data);
+				updatePropertyOptions(destination, customData);
 
 				return true;
 			}
@@ -528,29 +528,29 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 				auto text = data->text().toUtf8();
 				text.prepend('{');
 				text.append('}');
-				QJsonParseError parse_result;
-				auto doc = QJsonDocument::fromJson(text, &parse_result);
+				QJsonParseError parseResult;
+				auto doc = QJsonDocument::fromJson(text, &parseResult);
 
-				if (QJsonParseError::NoError == parse_result.error)
+				if (QJsonParseError::NoError == parseResult.error)
 				{
 					auto object = doc.object();
 					for (auto it = object.begin(); it != object.end(); ++it)
 					{
-						custom_data.index = var_property->GetIndex();
-						custom_data.name = it.key();
-						custom_data.value = it.value().toVariant();
+						customData.index = varProperty->GetIndex();
+						customData.name = it.key();
+						customData.value = it.value().toVariant();
 
 						QMessageBox::StandardButton choice = QMessageBox::No;
 
-						auto insert_destination = dynamic_cast<QtnPropertySet *>(destination);
+						auto insertDestination = dynamic_cast<QtnPropertySet *>(destination);
 
-						if (nullptr == insert_destination)
+						if (nullptr == insertDestination)
 						{
-							if (var_property != var_property->TopParent())
-								insert_destination = dynamic_cast<QtnPropertySet *>(destination->parent());
+							if (varProperty != varProperty->TopParent())
+								insertDestination = dynamic_cast<QtnPropertySet *>(destination->parent());
 						}
 
-						if (nullptr != insert_destination)
+						if (nullptr != insertDestination)
 						{
 							choice = QMessageBox::question(this, QCoreApplication::applicationName(),
 														   tr("Do you want to insert new property from clipboard?\n"
@@ -562,28 +562,28 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 						{
 							case QMessageBox::Yes:
 							{
-								if (insert_destination == destination)
+								if (insertDestination == destination)
 								{
-									switch (var_property->GetType())
+									switch (varProperty->GetType())
 									{
 										case VarProperty::List:
-											custom_data.index = var_property->GetChildrenCount();
+											customData.index = varProperty->GetChildrenCount();
 											break;
 
 										case VarProperty::Map:
-											custom_data.index = -1;
+											customData.index = -1;
 											break;
 
 										default:
 											break;
 									}
 								}
-								addProperty(insert_destination, custom_data);
+								addProperty(insertDestination, customData);
 							}	break;
 
 							case QMessageBox::No:
 							{
-								updatePropertyOptions(destination, custom_data);
+								updatePropertyOptions(destination, customData);
 							}	break;
 
 							default:
@@ -598,36 +598,36 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 					text.prepend('[');
 					text.append(']');
 
-					doc = QJsonDocument::fromJson(text, &parse_result);
+					doc = QJsonDocument::fromJson(text, &parseResult);
 
-					if (QJsonParseError::NoError == parse_result.error)
+					if (QJsonParseError::NoError == parseResult.error)
 					{
 						auto array = doc.array();
 
-						custom_data.index = var_property->GetIndex();
-						custom_data.name = var_property->GetName();
+						customData.index = varProperty->GetIndex();
+						customData.name = varProperty->GetName();
 
 						if (array.size() == 1)
 						{
-							custom_data.value = array.at(0).toVariant();
-							updatePropertyOptions(destination, custom_data);
+							customData.value = array.at(0).toVariant();
+							updatePropertyOptions(destination, customData);
 
 							return true;
 						}
 
 						if (array.size() > 1)
 						{
-							custom_data.value = array.toVariantList();
-							updatePropertyOptions(destination, custom_data);
+							customData.value = array.toVariantList();
+							updatePropertyOptions(destination, customData);
 							return true;
 						}
 					}
 				}
 
-				custom_data.index = var_property->GetIndex();
-				custom_data.name = var_property->GetName();
-				custom_data.value = data->text();
-				updatePropertyOptions(destination, custom_data);
+				customData.index = varProperty->GetIndex();
+				customData.name = varProperty->GetName();
+				customData.value = data->text();
+				updatePropertyOptions(destination, customData);
 				return true;
 			}
 		}

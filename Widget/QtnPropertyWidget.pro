@@ -2,7 +2,7 @@ include($$_PRO_FILE_PWD_/../Common.pri)
 
 TARGET = QtnPropertyWidgetAC
 TEMPLATE = lib
-VERSION = 1.1.3
+VERSION = 1.1.4
 
 QT += core gui widgets
 
