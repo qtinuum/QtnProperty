@@ -223,6 +223,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , ButtonProperty(*new QtnPropertyButton(this))
     , ButtonLinkProperty(*new QtnPropertyButton(this))
     , RGBColor(*new QtnPropertyABColor(this))
+    , ColorSolidDelegate(*new QtnPropertyQColor(this))
     , FloatPropertySliderBox(*new QtnPropertyFloat(this))
     , DoubleProperty(*new QtnPropertyDouble(this))
     , FloatProperty(*new QtnPropertyFloat(this))
@@ -262,6 +263,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     ButtonProperty = other.ButtonProperty;
     ButtonLinkProperty = other.ButtonLinkProperty;
     RGBColor = other.RGBColor;
+    ColorSolidDelegate = other.ColorSolidDelegate;
     FloatPropertySliderBox = other.FloatPropertySliderBox;
     DoubleProperty = other.DoubleProperty;
     FloatProperty = other.FloatProperty;
@@ -336,6 +338,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->RGBColor.state() & ignoreMask))
     {
         RGBColor = theCopyFrom->RGBColor;
+    }
+
+    if (!(theCopyFrom->ColorSolidDelegate.state() & ignoreMask))
+    {
+        ColorSolidDelegate = theCopyFrom->ColorSolidDelegate;
     }
 
     if (!(theCopyFrom->FloatPropertySliderBox.state() & ignoreMask))
@@ -469,6 +476,11 @@ void QtnPropertySetSamplePS::init()
             RGBColor = Qt::green;
         });
     RGBColor.setValue(QColor(123, 150, 10));
+    static QString ColorSolidDelegate_name = tr("ColorSolidDelegate");
+    ColorSolidDelegate.setName(ColorSolidDelegate_name);
+    static QString ColorSolidDelegate_description = "QColor property with Solid delegate";
+    ColorSolidDelegate.setDescription(ColorSolidDelegate_description);
+    ColorSolidDelegate.setValue(QColor(13, 150, 10));
     static QString FloatPropertySliderBox_name = tr("FloatPropertySliderBox");
     FloatPropertySliderBox.setName(FloatPropertySliderBox_name);
     static QString FloatPropertySliderBox_description = "Property to hold float values in range [0, 10].";
@@ -622,6 +634,11 @@ void QtnPropertySetSamplePS::connectDelegates()
     RGBColor.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["rgbSubItems"] = true;
+        return info.take();
+    });
+    ColorSolidDelegate.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->name = "Solid";
         return info.take();
     });
     FloatPropertySliderBox.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {

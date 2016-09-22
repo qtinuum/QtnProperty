@@ -38,4 +38,17 @@ private:
     quint32 m_shape;
 };
 
+class QTN_PW_EXPORT QtnPropertyDelegateQColorSolid: public QtnPropertyDelegateTyped<QtnPropertyQColorBase>
+{
+    Q_DISABLE_COPY(QtnPropertyDelegateQColorSolid)
+
+public:
+    QtnPropertyDelegateQColorSolid(QtnPropertyQColorBase& owner);
+
+protected:
+    bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
+    QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
+};
+
 #endif // PROPERTY_DELEGATE_QCOLOR_H

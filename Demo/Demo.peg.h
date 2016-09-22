@@ -91,6 +91,7 @@ public:
     QtnPropertyButton& ButtonProperty;
     QtnPropertyButton& ButtonLinkProperty;
     QtnPropertyABColor& RGBColor;
+    QtnPropertyQColor& ColorSolidDelegate;
     QtnPropertyFloat& FloatPropertySliderBox;
     QtnPropertyDouble& DoubleProperty;
     QtnPropertyFloat& FloatProperty;

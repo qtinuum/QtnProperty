@@ -88,6 +88,14 @@ property_set SamplePS
         delegate { rgbSubItems = true; }
     }
 
+    QColor ColorSolidDelegate
+    {
+        description = "QColor property with Solid delegate";
+        value = QColor(13, 150, 10);
+
+        delegate Solid;
+    }
+
     Float FloatPropertySliderBox
     {
         displayName = "Float Property Slider Box";

@@ -28,6 +28,11 @@ void regQColorDelegates()
     .registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>
                  , "LineEditBttn");
+
+  QtnPropertyDelegateFactory::staticInstance()
+    .registerDelegate(&QtnPropertyQColorBase::staticMetaObject
+                 , &qtnCreateDelegate<QtnPropertyDelegateQColorSolid, QtnPropertyQColorBase>
+                 , "Solid");
 }
 
 class QtnPropertyQColorLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQColorBase, QtnLineEditBttn>
@@ -85,6 +90,7 @@ void QtnPropertyDelegateQColor::applyAttributesImpl(const QtnPropertyDelegateAtt
         QtnPropertyDelegateInfo delegateInfo;
         delegateInfo.name = "SliderBox";
         delegateInfo.attributes["liveUpdate"] = true;
+        delegateInfo.attributes["animate"] = true;
 
         {
             auto subProperty = qtnCreateRedProperty(0, &owner());
@@ -168,4 +174,41 @@ bool QtnPropertyDelegateQColor::propertyValueToStrImpl(QString& strValue) const
 {
     strValue = owner().value().name();
     return true;
+}
+
+QtnPropertyDelegateQColorSolid::QtnPropertyDelegateQColorSolid(QtnPropertyQColorBase& owner)
+    : QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner)
+{
+}
+
+
+bool QtnPropertyDelegateQColorSolid::createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue)
+{
+    if (!QtnPropertyDelegateTyped<QtnPropertyQColorBase>::createSubItemValueImpl(context, subItemValue))
+        return false;
+
+    // correct left value rect
+    subItemValue.rect.setLeft(context.splitPos);
+    return true;
+}
+
+void QtnPropertyDelegateQColorSolid::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+{
+    Q_UNUSED(state);
+    Q_UNUSED(needTooltip);
+    painter.fillRect(rect, owner());
+}
+
+QWidget* QtnPropertyDelegateQColorSolid::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+{
+    Q_UNUSED(rect);
+    Q_UNUSED(inplaceInfo);
+
+    QColorDialog dlg(owner(), parent);
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        owner() = dlg.currentColor();
+    }
+
+    return nullptr;
 }
