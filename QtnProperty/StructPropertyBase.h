@@ -38,7 +38,6 @@ protected:
 			(rect.*set)(new_value);
 			Inherited::setValue(rect);
 		});
-		QtnPropertyBase::connectMasterState(*this, *result);
 
 		return result;
 	}

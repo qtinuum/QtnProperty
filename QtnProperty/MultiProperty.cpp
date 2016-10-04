@@ -80,6 +80,8 @@ bool QtnMultiProperty::hasResettableValues() const
 
 void QtnMultiProperty::Register()
 {
+	qRegisterMetaType<QtnMultiVariant>();
+
 	QtnPropertyDelegateFactory::staticInstance()
 		.registerDelegateDefault(&QtnMultiProperty::staticMetaObject
 		, &qtnCreateDelegate<QtnMultiPropertyDelegate, QtnMultiProperty>
@@ -100,6 +102,11 @@ bool QtnMultiProperty::hasMultipleValues() const
 	}
 
 	return multipleValues;
+}
+
+QtnMultiProperty *QtnMultiProperty::clone() const
+{
+
 }
 
 void QtnMultiProperty::onPropertyValueAccept(const QtnProperty *property,
@@ -203,46 +210,49 @@ bool QtnMultiProperty::toStrImpl(QString &str) const
 
 bool QtnMultiProperty::fromVariantImpl(const QVariant &var, bool edit)
 {
-	for (auto property : properties)
+	bool ok = true;
+	if (var.type() == QVariant::UserType && var.userType() == qMetaTypeId<QtnMultiVariant>())
 	{
-		if (!property->fromVariant(var, edit))
-			return false;
+		auto values = var.value<QtnMultiVariant>().values;
+		auto count = properties.size();
+		auto varCount = static_cast<size_t>(values.count());
+		if (count != varCount)
+			ok = false;
+
+		if (count > varCount)
+			count = varCount;
+
+		for (size_t i = 0; i < count; i++)
+		{
+			QtnProperty *property = properties.at(i);
+			if (!property->fromVariant(values.at(i), edit))
+				ok = false;
+		}
+	} else
+	{
+		for (auto property : properties)
+		{
+			if (!property->fromVariant(var, edit))
+				ok = false;
+		}
 	}
 
-	return true;
+	return ok;
 }
 
 bool QtnMultiProperty::toVariantImpl(QVariant &var) const
 {
-	if (calculateMultipleValues)
+	QtnMultiVariant multiVariant;
+
+	for (auto property : properties)
 	{
-		auto thiz = const_cast<QtnMultiProperty *>(this);
-		thiz->calculateMultipleValues = false;
-
-		size_t sameCount = 0;
-		QVariant temp;
-		for (auto property : properties)
-		{
-			if (!property->toVariant(var))
-				var.clear();
-
-			if (sameCount == 0)
-				temp = var;
-
-			if (sameCount == 0 || var == temp)
-				sameCount++;
-		}
-
-		thiz->multipleValues = (sameCount != properties.size());
-
-	} else if (!multipleValues)
-	{
-		if (properties.empty() || !properties.at(0)->toVariant(var))
+		if (!property->toVariant(var))
 			var.clear();
+
+		multiVariant.values.push_back(var);
 	}
 
-	if (multipleValues)
-		var.clear();
+	var.setValue(multiVariant);
 
 	return true;
 }

@@ -100,3 +100,11 @@ private:
 	typedef std::unique_ptr<QtnPropertyDelegate> DelegatePtr;
 	std::vector<DelegatePtr> superDelegates;
 };
+
+struct QtnMultiVariant
+{
+	QVariantList values;
+};
+
+Q_DECLARE_METATYPE(QtnMultiVariant)
+

@@ -47,7 +47,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQPointCallback: public QtnSinglePropertyCallb
 	QtnPropertyQPointCallback(const QtnPropertyQPointCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQPointCallback(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQPointCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQPointCallback, QtnPropertyQPointBase)
 };
@@ -58,7 +58,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQPoint: public QtnSinglePropertyValue<QtnProp
 	QtnPropertyQPoint(const QtnPropertyQPoint& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQPoint(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQPoint(QObject *parent = nullptr);
 
 	static QString getToStringFormat();
 

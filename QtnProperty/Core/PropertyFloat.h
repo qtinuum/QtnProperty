@@ -25,10 +25,7 @@ class QTN_IMPORT_EXPORT QtnPropertyFloatBase: public QtnNumericPropertyBase<QtnS
 	QtnPropertyFloatBase(const QtnPropertyFloatBase& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyFloatBase(QObject *parent)
-		: QtnNumericPropertyBase<QtnSinglePropertyBase<float> >(parent)
-	{
-	}
+	explicit QtnPropertyFloatBase(QObject *parent);
 
 protected:
 	// string conversion implementation
@@ -49,10 +46,7 @@ class QTN_IMPORT_EXPORT QtnPropertyFloatCallback: public QtnSinglePropertyCallba
 	QtnPropertyFloatCallback(const QtnPropertyFloatCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyFloatCallback(QObject *parent)
-		: QtnSinglePropertyCallback<QtnPropertyFloatBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyFloatCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyFloatCallback, QtnPropertyFloatBase)
 };
@@ -63,10 +57,7 @@ class QTN_IMPORT_EXPORT QtnPropertyFloat: public QtnSinglePropertyValue<QtnPrope
 	QtnPropertyFloat(const QtnPropertyFloat& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyFloat(QObject *parent)
-		: QtnSinglePropertyValue<QtnPropertyFloatBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyFloat(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyFloat, QtnPropertyFloatBase)
 };

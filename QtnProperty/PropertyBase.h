@@ -26,6 +26,7 @@
 class QScriptEngine;
 class QtnPropertySet;
 class QtnProperty;
+class QtnPropertyConnector;
 
 class QTN_IMPORT_EXPORT QtnPropertyBase: public QObject
 {
@@ -52,6 +53,9 @@ public:
 
 	inline void expand();
 	inline void collapse();
+
+	QtnPropertyConnector *getConnector() const;
+	inline bool isQObjectProperty() const;
 
 	// states
 	QtnPropertyState state() const { return m_stateLocal|m_stateInherited; }
@@ -88,8 +92,10 @@ public:
 	virtual QtnPropertySet* asPropertySet() { return nullptr; }
 	virtual const QtnPropertySet* asPropertySet() const { return nullptr; }
 
-	static QMetaObject::Connection connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
-	static bool disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty);
+	inline const QtnPropertyBase *getMasterProperty() const;
+	const QtnPropertyBase *getRootProperty() const;
+	virtual void connectMasterState(const QtnPropertyBase *masterProperty);
+	virtual void disconnectMasterState();
 
 	void postUpdateEvent(QtnPropertyChangeReason reason);
 
@@ -107,10 +113,17 @@ public: // properties for scripting
 
 Q_SIGNALS:
 	void propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
-	void propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);	
+	void propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+
+private slots:
+	void onMasterPropertyDestroyed(QObject *object);
 
 protected:
 	QtnPropertyBase(QObject* parent);
+
+	virtual void masterPropertyStateDidChange(const QtnPropertyBase *changedProperty,
+											  const QtnPropertyBase *firedProperty,
+											  QtnPropertyChangeReason reason);
 
 	virtual bool event(QEvent *e) override;
 
@@ -131,9 +144,7 @@ protected:
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
 private:
-	void masterPropertyStateDidChange(const QtnPropertyBase* changedProperty,
-									  const QtnPropertyBase* firedProperty,
-									  QtnPropertyChangeReason reason);
+	const QtnPropertyBase *m_masterProperty;
 
 	QString m_description;
 	QtnPropertyID m_id;
@@ -165,6 +176,16 @@ void QtnPropertyBase::expand()
 void QtnPropertyBase::collapse()
 {
 	addState(QtnPropertyStateCollapsed);
+}
+
+bool QtnPropertyBase::isQObjectProperty() const
+{
+	return (nullptr != getConnector());
+}
+
+const QtnPropertyBase *QtnPropertyBase::getMasterProperty() const
+{
+	return m_masterProperty;
 }
 
 QTN_IMPORT_EXPORT QDataStream& operator<< (QDataStream& stream, const QtnPropertyBase& property);

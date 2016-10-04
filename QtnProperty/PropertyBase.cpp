@@ -15,8 +15,10 @@
 */
 
 #include "PropertyBase.h"
-#include <QScriptEngine>
 
+#include "PropertyConnector.h"
+
+#include <QScriptEngine>
 #include <QCoreApplication>
 
 static int qtnPropertyChangeReasonMetaId = qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
@@ -405,6 +407,21 @@ bool QtnPropertyBase::toVariant(QVariant& var) const
 	return toVariantImpl(var);
 }
 
+const QtnPropertyBase *QtnPropertyBase::getRootProperty() const
+{
+	auto result = this;
+	do
+	{
+		auto mp = result->getMasterProperty();
+		if (nullptr == mp)
+			break;
+
+		result = mp;
+	} while (true);
+
+	return result;
+}
+
 bool QtnPropertyBase::fromVariantImpl(const QVariant& var, bool edit)
 {
 	if (var.canConvert<QString>())
@@ -423,15 +440,33 @@ bool QtnPropertyBase::toVariantImpl(QVariant& var) const
 	return true;
 }
 
-QMetaObject::Connection QtnPropertyBase::connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
+void QtnPropertyBase::connectMasterState(const QtnPropertyBase *masterProperty)
 {
-	slaveProperty.setStateInherited(masterProperty.state());
-	return QObject::connect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyStateDidChange);
+	Q_ASSERT(nullptr != masterProperty);
+
+	disconnectMasterState();
+
+	m_masterProperty = masterProperty;
+
+	setStateInherited(masterProperty->state());
+
+	QObject::connect(masterProperty, &QObject::destroyed,
+					 this, &QtnPropertyBase::onMasterPropertyDestroyed);
+	QObject::connect(masterProperty, &QtnPropertyBase::propertyDidChange,
+					 this, &QtnPropertyBase::masterPropertyStateDidChange);
 }
 
-bool QtnPropertyBase::disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
+void QtnPropertyBase::disconnectMasterState()
 {
-	return QObject::disconnect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyStateDidChange);
+	if (nullptr != m_masterProperty)
+	{
+		QObject::disconnect(m_masterProperty, &QObject::destroyed,
+							this, &QtnPropertyBase::onMasterPropertyDestroyed);
+		QObject::disconnect(m_masterProperty, &QtnPropertyBase::propertyDidChange,
+							this, &QtnPropertyBase::masterPropertyStateDidChange);
+
+		m_masterProperty = nullptr;
+	}
 }
 
 void QtnPropertyBase::postUpdateEvent(QtnPropertyChangeReason reason)
@@ -455,7 +490,9 @@ void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)
 	updateStateInherited(force);
 }
 
-void QtnPropertyBase::masterPropertyStateDidChange(const QtnPropertyBase *changedProperty, const QtnPropertyBase *firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertyBase::masterPropertyStateDidChange(const QtnPropertyBase *changedProperty,
+												   const QtnPropertyBase *firedProperty,
+												   QtnPropertyChangeReason reason)
 {
 	// state has changed and not from child property
 	if ((reason & QtnPropertyChangeReasonState) && (changedProperty == firedProperty))
@@ -474,6 +511,12 @@ QVariant QtnPropertyBase::valueAsVariant() const
 void QtnPropertyBase::setValueAsVariant(const QVariant& value)
 {
 	fromVariant(value, false);
+}
+
+void QtnPropertyBase::onMasterPropertyDestroyed(QObject *object)
+{
+	Q_ASSERT(object == m_masterProperty);
+	m_masterProperty = nullptr;
 }
 
 QDataStream& operator<< (QDataStream& stream, const QtnPropertyBase& property)
@@ -503,3 +546,9 @@ void QtnPropertyBase::setCollapsed(bool collapsed)
 	else
 		expand();
 }
+
+QtnPropertyConnector *QtnPropertyBase::getConnector() const
+{
+	return findChild<QtnPropertyConnector *>(QString(), Qt::FindDirectChildrenOnly);
+}
+

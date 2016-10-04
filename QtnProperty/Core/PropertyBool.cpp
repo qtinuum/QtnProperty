@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,12 @@
 
 static bool getBoolValue(QString boolText, bool& success)
 {
-    success = true;
+	success = true;
 	if (0 == boolText.compare(QtnPropertyBool::getBoolText(false, true), Qt::CaseInsensitive))
-        return false;
+		return false;
 
 	if (0 == boolText.compare(QtnPropertyBool::getBoolText(true, true), Qt::CaseInsensitive))
-        return true;
+		return true;
 
 	if (0 == boolText.compare(QtnPropertyBool::getBoolText(false, false), Qt::CaseInsensitive))
 		return false;
@@ -36,35 +36,50 @@ static bool getBoolValue(QString boolText, bool& success)
 	if (boolText.toULongLong(&success) != 0)
 		return true;
 
-    success = false;
-    return false;
+	success = false;
+	return false;
+}
+
+QtnPropertyBoolBase::QtnPropertyBoolBase(QObject *parent)
+	: QtnSinglePropertyBase<bool>(parent)
+{
 }
 
 bool QtnPropertyBoolBase::fromStrImpl(const QString& str, bool edit)
 {
-    bool success = false;
-    bool value = getBoolValue(str.trimmed(), success);
+	bool success = false;
+	bool value = getBoolValue(str.trimmed(), success);
 
-    if (!success)
-        return false;
+	if (!success)
+		return false;
 
 	return setValue(value, edit);
 }
 
 bool QtnPropertyBoolBase::toStrImpl(QString& str) const
 {
-    bool boolValue = value();
+	bool boolValue = value();
 	str = QtnPropertyBool::getBoolText(boolValue, true);
-    return true;
+	return true;
+}
+
+QtnPropertyBool::QtnPropertyBool(QObject *parent)
+	: QtnSinglePropertyValue<QtnPropertyBoolBase>(parent)
+{
 }
 
 QString QtnPropertyBool::getBoolText(bool value, bool internal)
 {
-	static const char *pFalse = QT_TRANSLATE_NOOP("QtnPropertyBool", "False");
-	static const char *pTrue = QT_TRANSLATE_NOOP("QtnPropertyBool", "True");
+	static const char pFalse[] = QT_TRANSLATE_NOOP("QtnPropertyBool", "False");
+	static const char pTrue[] = QT_TRANSLATE_NOOP("QtnPropertyBool", "True");
 
 	if (internal)
 		return QString(value ? pTrue : pFalse);
 
 	return QCoreApplication::translate("QtnPropertyBool", value ? pTrue : pFalse);
+}
+
+QtnPropertyBoolCallback::QtnPropertyBoolCallback(QObject *parent)
+	: QtnSinglePropertyCallback<QtnPropertyBoolBase>(parent)
+{
 }

@@ -128,6 +128,8 @@ protected:
 			return;
 
 		m_subProperties.append(QSharedPointer<QtnPropertyBase>(subProperty));
+
+		subProperty->connectMasterState(getOwnerProperty());
 	}
 
 	QList<QSharedPointer<QtnPropertyBase>> m_subProperties;

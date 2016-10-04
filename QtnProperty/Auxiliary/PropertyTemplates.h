@@ -296,7 +296,7 @@ private:
 template <typename QtnSinglePropertyType>
 class QtnNumericPropertyValue: public QtnNumericPropertyBase<QtnSinglePropertyType>
 {
-  public:
+public:
 	typedef typename QtnNumericPropertyBase<QtnSinglePropertyType>::ValueType ValueType;
 
 protected:

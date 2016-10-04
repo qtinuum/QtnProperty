@@ -69,18 +69,18 @@ static void updateVisibleProperties(const QtnPropertyBase* property, unsigned in
 }
 
 QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
-	: QAbstractScrollArea(parent),
-	  m_propertySet(propertySet),
-	  m_activeProperty(nullptr),
-	  m_delegateFactory(&QtnPropertyDelegateFactory::staticInstance()),
-	  m_visibleItemsValid(false),
-	  m_style(QtnPropertyViewStyleLiveSplit),
-	  m_itemHeight(0),
-	  m_itemHeightSpacing(6),
-	  m_leadMargin(0),
-	  m_splitRatio(0.5f),
-	  m_rubberBand(nullptr),
-	  m_accessibilityProxy(nullptr)
+	: QAbstractScrollArea(parent)
+	, m_propertySet(propertySet)
+	, m_activeProperty(nullptr)
+	, m_delegateFactory(&QtnPropertyDelegateFactory::staticInstance())
+	, m_visibleItemsValid(false)
+	, m_style(QtnPropertyViewStyleLiveSplit)
+	, m_itemHeight(0)
+	, m_itemHeightSpacing(6)
+	, m_leadMargin(0)
+	, m_splitRatio(0.5f)
+	, m_rubberBand(nullptr)
+	, m_accessibilityProxy(nullptr)
 {
 	setFocusPolicy(Qt::StrongFocus);
 	viewport()->setMouseTracking(true);
@@ -398,7 +398,7 @@ void QtnPropertyView::drawPropertyItem(QStylePainter& painter, const QRect& rect
 			Action edit;
 			edit.rect = editRect;
 
-			QtnPropertyDelegate* propertyDelegate = vItem.item->delegate.data();
+			auto propertyDelegate = vItem.item->delegate.data();
 			edit.action = [propertyDelegate, this](QEvent *e, QRect rect)->bool {
 				bool doEdit = false;
 
@@ -413,18 +413,7 @@ void QtnPropertyView::drawPropertyItem(QStylePainter& painter, const QRect& rect
 
 				if (doEdit)
 				{
-					QtnInplaceInfo inplaceInfo;
-					inplaceInfo.activationEvent = e;
-					QWidget* editor = propertyDelegate->createValueEditor(viewport(), rect, &inplaceInfo);
-					if (!editor)
-						return false;
-
-					if (!editor->isVisible())
-						editor->show();
-
-					qtnStartInplaceEdit(editor);
-
-					return true;
+					return startPropertyEdit(propertyDelegate, e, rect);
 				}
 
 				return false;
@@ -774,26 +763,15 @@ void QtnPropertyView::keyPressEvent(QKeyEvent* e)
 				const QScopedPointer<QtnPropertyDelegate>& delegate = m_visibleItems[index].item->delegate;
 				if (!delegate.isNull() && delegate->acceptKeyPressedForInplaceEdit(e))
 				{
-					QtnInplaceInfo inplaceInfo;
-					inplaceInfo.activationEvent = e;
-
 					QRect valueRect = visibleItemRect(index);
 					valueRect.setLeft(splitPosition());
 
-					QWidget* editor = delegate->createValueEditor(viewport(), valueRect, &inplaceInfo);
-					if (!editor)
-						break;
-
-					if (!editor->isVisible())
-						editor->show();
-
-					qtnStartInplaceEdit(editor);
+					if (!startPropertyEdit(delegate.data(), e, valueRect))
+						return;
 
 					// eat event
 					e->accept();
 					return;
-
-					//break;
 				}
 			}
 
@@ -933,6 +911,63 @@ void QtnPropertyView::setActivePropertyInternal(QtnPropertyBase *property)
 	viewport()->update();
 
 	connectActiveProperty();
+}
+
+bool QtnPropertyView::startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e, const QRect &rect)
+{
+	Q_ASSERT(nullptr != delegate);
+
+	QtnInplaceInfo inplaceInfo;
+	inplaceInfo.activationEvent = e;
+
+	auto editor = delegate->createValueEditor(viewport(), rect, &inplaceInfo);
+	if (nullptr == editor)
+		return false;
+
+	auto property = delegate->getOwnerProperty();
+	Q_ASSERT(nullptr != property);
+
+	typedef std::vector<QMetaObject::Connection> Connections;
+
+	std::shared_ptr<Connections> connections(new Connections);
+	std::shared_ptr<QVariant> oldValue(new QVariant);
+
+	connections->push_back(QObject::connect(property, &QObject::destroyed, [connections]()
+	{
+		connections->clear();
+	}));
+
+	connections->push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
+	[property, oldValue](const QtnPropertyBase *, const QtnPropertyBase*, QtnPropertyChangeReason reason, QtnPropertyValuePtr)
+	{
+		if (0 != (reason & QtnPropertyChangeReasonValue))
+		{
+			auto rootProperty = property->getRootProperty();
+			Q_ASSERT(nullptr != rootProperty);
+			*oldValue.get() = rootProperty->valueAsVariant();
+		}
+	}));
+
+	connections->push_back(QObject::connect(property, &QtnProperty::propertyEdited,
+	[oldValue, property, this]()
+	{
+		emit propertyEdited(property, *oldValue.get());
+	}));
+
+	QObject::connect(editor, &QObject::destroyed, [connections]()
+	{
+		for (auto &connection : *connections.get())
+			QObject::disconnect(connection);
+
+		connections->clear();
+	});
+
+	if (!editor->isVisible())
+		editor->show();
+
+	qtnStartInplaceEdit(editor);
+
+	return true;
 }
 
 void QtnPropertyView::invalidateVisibleItems()

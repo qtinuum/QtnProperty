@@ -91,6 +91,7 @@ Q_SIGNALS:
 	// emits when active property has changed
 	void activePropertyChanged(QtnPropertyBase* activeProperty);
 	void mouseReleased(QMouseEvent *e);
+	void propertyEdited(QtnProperty *property, const QVariant &oldValue);
 
 private slots:
 	void onActivePropertyDestroyed();
@@ -147,6 +148,7 @@ private:
 	static Item* createItemsTree(QtnPropertyBase* rootProperty, const QtnPropertyDelegateFactory& factory);
 
 	void setActivePropertyInternal(QtnPropertyBase *property);
+	bool startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e, const QRect &rect);
 
 	void invalidateVisibleItems();
 	void validateVisibleItems() const;
@@ -238,6 +240,11 @@ quint32 QtnPropertyView::itemHeightSpacing() const
 QtnPropertyViewStyle QtnPropertyView::propertyViewStyle() const
 {
 	return m_style;
+}
+
+QUndoStack *QtnPropertyView::undoStack() const
+{
+	return m_undoStack;
 }
 
 bool QtnPropertyView::Item::collapsed() const

@@ -26,11 +26,7 @@ class QTN_IMPORT_EXPORT QtnPropertyEnumBase: public QtnSinglePropertyBase<QtnEnu
 	QtnPropertyEnumBase(const QtnPropertyEnumBase& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyEnumBase(QObject* parent)
-		: QtnSinglePropertyBase<QtnEnumValueType>(parent),
-		  m_enumInfo(nullptr)
-	{
-	}
+	explicit QtnPropertyEnumBase(QObject* parent);
 
 	const QtnEnumInfo* enumInfo() const { return m_enumInfo; }
 	void setEnumInfo(const QtnEnumInfo* enumInfo) { m_enumInfo = enumInfo; }
@@ -56,10 +52,7 @@ class QTN_IMPORT_EXPORT QtnPropertyEnumCallback: public QtnSinglePropertyCallbac
 	QtnPropertyEnumCallback(const QtnPropertyEnumCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyEnumCallback(QObject* parent)
-		: QtnSinglePropertyCallback<QtnPropertyEnumBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyEnumCallback(QObject* parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnumCallback, QtnPropertyEnumBase)
 };
@@ -70,10 +63,7 @@ class QTN_IMPORT_EXPORT QtnPropertyEnum: public QtnSinglePropertyValue<QtnProper
 	QtnPropertyEnum(const QtnPropertyEnum& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyEnum(QObject* parent)
-		: QtnSinglePropertyValue<QtnPropertyEnumBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyEnum(QObject* parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnum, QtnPropertyEnumBase)
 };

@@ -111,10 +111,12 @@ static void applyFontStyle(QFont &font)
 QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>(owner)
 {
-	QtnPropertyQStringCallback* propertyStyle = new QtnPropertyQStringCallback(0);
+	auto propertyStyle = new QtnPropertyQStringCallback(0);
+
 
 	QtnPropertyQStringCallback* propertyFamily = new QtnPropertyQStringCallback(0);
 	addSubProperty(propertyFamily);
+
 	propertyFamily->setName(QtnPropertyQFont::getFamilyLabel());
 	propertyFamily->setDescription(QtnPropertyQFont::getFamilyDescription(owner.name()));
 	propertyFamily->setCallbackValueGet([&owner]()->QString {

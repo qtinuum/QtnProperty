@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,35 +16,51 @@
 
 #include "PropertyEnum.h"
 
+QtnPropertyEnumBase::QtnPropertyEnumBase(QObject *parent)
+	: QtnSinglePropertyBase<QtnEnumValueType>(parent),
+	  m_enumInfo(nullptr)
+{
+}
+
 bool QtnPropertyEnumBase::fromStrImpl(const QString& str, bool edit)
 {
-    if (!m_enumInfo)
-        return false;
+	if (!m_enumInfo)
+		return false;
 
-    const QtnEnumValueInfo* enumValue = m_enumInfo->fromStr(str);
-    if (!enumValue)
-        return false;
+	const QtnEnumValueInfo* enumValue = m_enumInfo->fromStr(str);
+	if (!enumValue)
+		return false;
 
 	return setValue(enumValue->value(), edit);
 }
 
 bool QtnPropertyEnumBase::toStrImpl(QString& str) const
 {
-    if (!m_enumInfo)
-        return false;
+	if (!m_enumInfo)
+		return false;
 
-    QtnEnumValueType v = value();
-    const QtnEnumValueInfo* enumValue = m_enumInfo->findByValue(v);
-    return m_enumInfo->toStr(str, enumValue);
+	QtnEnumValueType v = value();
+	const QtnEnumValueInfo* enumValue = m_enumInfo->findByValue(v);
+	return m_enumInfo->toStr(str, enumValue);
 }
 
 bool QtnPropertyEnumBase::isValueAcceptedImpl(ValueType valueToAccept)
 {
-    if (!m_enumInfo)
-        return false;
+	if (!m_enumInfo)
+		return false;
 
-    if (!m_enumInfo->findByValue(valueToAccept))
-        return false;
+	if (!m_enumInfo->findByValue(valueToAccept))
+		return false;
 
-    return true;
+	return true;
+}
+
+QtnPropertyEnumCallback::QtnPropertyEnumCallback(QObject *parent)
+	: QtnSinglePropertyCallback<QtnPropertyEnumBase>(parent)
+{
+}
+
+QtnPropertyEnum::QtnPropertyEnum(QObject *parent)
+	: QtnSinglePropertyValue<QtnPropertyEnumBase>(parent)
+{
 }
