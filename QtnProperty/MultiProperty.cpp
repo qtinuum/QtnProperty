@@ -104,11 +104,6 @@ bool QtnMultiProperty::hasMultipleValues() const
 	return multipleValues;
 }
 
-QtnMultiProperty *QtnMultiProperty::clone() const
-{
-
-}
-
 void QtnMultiProperty::onPropertyValueAccept(const QtnProperty *property,
 											 QtnPropertyValuePtr valueToAccept,
 											 bool *accept)

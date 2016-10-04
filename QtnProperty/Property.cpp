@@ -94,7 +94,4 @@ void QtnProperty::setDelegateCallback(const std::function<const QtnPropertyDeleg
 	m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterCallback(callback));
 }
 
-bool QtnProperty::isQObjectProperty() const
-{
-	return (nullptr != getConnector());
-}
+

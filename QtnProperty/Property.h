@@ -22,7 +22,6 @@
 #include <functional>
 
 class QtnPropertyDelegateInfoGetter;
-class QtnPropertyConnector;
 
 class QTN_IMPORT_EXPORT QtnProperty: public QtnPropertyBase
 {
@@ -34,10 +33,6 @@ public:
 	const QtnPropertyDelegateInfo* delegate() const;
 	void setDelegate(const QtnPropertyDelegateInfo& delegate);
 	void setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback);
-
-	QtnPropertyConnector *getConnector() const;
-
-	bool isQObjectProperty() const;
 
 	// casts
 	QtnProperty* asProperty() override { return this; }
