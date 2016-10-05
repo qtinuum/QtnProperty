@@ -110,7 +110,9 @@ void QtnPropertyView::onActivePropertyDestroyed()
 	viewport()->update();
 }
 
-void QtnPropertyView::onEditedPropertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
+void QtnPropertyView::onEditedPropertyWillChange(QtnPropertyChangeReason reason,
+												 QtnPropertyValuePtr newValue,
+												 int typeId)
 {
 	if (0 != (reason & QtnPropertyChangeReasonEditValue))
 	{
@@ -120,7 +122,7 @@ void QtnPropertyView::onEditedPropertyWillChange(QtnPropertyChangeReason reason,
 		auto rootProperty = dynamic_cast<QtnProperty *>(property->getRootProperty());
 		Q_ASSERT(nullptr != rootProperty);
 
-		emit beforePropertyEdited(rootProperty, QVariant(typeId, newValue));
+		emit beforePropertyEdited(rootProperty, newValue, typeId);
 	}
 }
 

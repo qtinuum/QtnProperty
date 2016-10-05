@@ -91,7 +91,7 @@ Q_SIGNALS:
 	// emits when active property has changed
 	void activePropertyChanged(QtnPropertyBase* activeProperty);
 	void mouseReleased(QMouseEvent *e);
-	void beforePropertyEdited(QtnProperty *property, const QVariant &newValue);
+	void beforePropertyEdited(QtnProperty *property, QtnPropertyValuePtr newValue, int typeId);
 	void propertyEdited(QtnProperty *property);
 
 private slots:
