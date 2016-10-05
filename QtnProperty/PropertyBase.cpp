@@ -141,7 +141,9 @@ QtnPropertyBase::~QtnPropertyBase()
 
 void QtnPropertyBase::setName(const QString& name)
 {
-	emit propertyWillChange(QtnPropertyChangeReasonName, QtnPropertyValuePtr(&name));
+	emit propertyWillChange(QtnPropertyChangeReasonName,
+							QtnPropertyValuePtr(&name),
+							qMetaTypeId<QString>());
 
 	setObjectName(name);
 
@@ -150,7 +152,9 @@ void QtnPropertyBase::setName(const QString& name)
 
 void QtnPropertyBase::setDescription(const QString& description)
 {
-	emit propertyWillChange(QtnPropertyChangeReasonDescription, QtnPropertyValuePtr(&description));
+	emit propertyWillChange(QtnPropertyChangeReasonDescription,
+							QtnPropertyValuePtr(&description),
+							qMetaTypeId<QString>());
 
 	m_description = description;
 
@@ -159,7 +163,9 @@ void QtnPropertyBase::setDescription(const QString& description)
 
 void QtnPropertyBase::setId(QtnPropertyID id)
 {
-	emit propertyWillChange(QtnPropertyChangeReasonId, QtnPropertyValuePtr(&id));
+	emit propertyWillChange(QtnPropertyChangeReasonId,
+							QtnPropertyValuePtr(&id),
+							qMetaTypeId<QtnPropertyID>());
 
 	m_id = id;
 
@@ -171,7 +177,9 @@ void QtnPropertyBase::setState(QtnPropertyState stateToSet, bool force)
 	if (!force && (m_stateLocal == stateToSet))
 		return;
 
-	emit propertyWillChange(QtnPropertyChangeReasonStateLocal, QtnPropertyValuePtr(&stateToSet));
+	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
+							QtnPropertyValuePtr(&stateToSet),
+							qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
@@ -187,7 +195,9 @@ void QtnPropertyBase::addState(QtnPropertyState stateToAdd, bool force)
 	if (!force && (m_stateLocal == stateToSet))
 		return;
 
-	emit propertyWillChange(QtnPropertyChangeReasonStateLocal, QtnPropertyValuePtr(&stateToSet));
+	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
+							QtnPropertyValuePtr(&stateToSet),
+							qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
@@ -203,7 +213,9 @@ void QtnPropertyBase::removeState(QtnPropertyState stateToRemove, bool force)
 	if (!force && (m_stateLocal == stateToSet))
 		return;
 
-	emit propertyWillChange(QtnPropertyChangeReasonStateLocal, QtnPropertyValuePtr(&stateToSet));
+	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
+							QtnPropertyValuePtr(&stateToSet),
+							qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
@@ -407,7 +419,7 @@ bool QtnPropertyBase::toVariant(QVariant& var) const
 	return toVariantImpl(var);
 }
 
-const QtnPropertyBase *QtnPropertyBase::getRootProperty() const
+QtnPropertyBase *QtnPropertyBase::getRootProperty()
 {
 	auto result = this;
 	do
@@ -440,7 +452,7 @@ bool QtnPropertyBase::toVariantImpl(QVariant& var) const
 	return true;
 }
 
-void QtnPropertyBase::connectMasterState(const QtnPropertyBase *masterProperty)
+void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
 {
 	Q_ASSERT(nullptr != masterProperty);
 
@@ -481,7 +493,9 @@ void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)
 	if (!force && (m_stateInherited == stateToSet))
 		return;
 
-	emit propertyWillChange(QtnPropertyChangeReasonStateInherited, QtnPropertyValuePtr(&stateToSet));
+	emit propertyWillChange(QtnPropertyChangeReasonStateInherited,
+							QtnPropertyValuePtr(&stateToSet),
+							qMetaTypeId<QtnPropertyState>());
 
 	m_stateInherited = stateToSet;
 

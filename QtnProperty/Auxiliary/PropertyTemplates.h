@@ -53,7 +53,9 @@ class QtnSinglePropertyBase: public QtnProperty
 		if (edit)
 			reason |= QtnPropertyChangeReasonEditValue;
 
-		emit propertyWillChange(reason, QtnPropertyValuePtr(&newValue));
+		emit propertyWillChange(reason,
+								QtnPropertyValuePtr(&newValue),
+								qMetaTypeId<ValueTypeStore>());
 		setValueImpl(newValue);
 		emit propertyDidChange(reason);
 
@@ -98,7 +100,9 @@ protected:
 		if (stream.status() != QDataStream::Ok)
 			return false;
 
-		emit propertyWillChange(QtnPropertyChangeReasonLoadedValue, QtnPropertyValuePtr(&newValue));
+		emit propertyWillChange(QtnPropertyChangeReasonLoadedValue,
+								QtnPropertyValuePtr(&newValue),
+								qMetaTypeId<ValueTypeStore>());
 		setValueImpl(newValue);
 		emit propertyDidChange(QtnPropertyChangeReasonLoadedValue);
 

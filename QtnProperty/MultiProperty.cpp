@@ -55,21 +55,21 @@ void QtnMultiProperty::resetValues()
 {
 	for (auto property : properties)
 	{
-		auto connector = getPropertyConnector(property);
+		auto connector = property->getConnector();
 
 		if (nullptr != connector)
 			connector->resetPropertyValue();
 	}
 
 	refreshValues();
-	emit propertyDidChange(this, this, QtnPropertyChangeReasonNewValue);
+	emit propertyDidChange(QtnPropertyChangeReasonNewValue);
 }
 
 bool QtnMultiProperty::hasResettableValues() const
 {
 	for (auto property : properties)
 	{
-		auto connector = getPropertyConnector(property);
+		auto connector = property->getConnector();
 
 		if (nullptr != connector && connector->isResettablePropertyValue())
 			return true;
@@ -93,6 +93,17 @@ QString QtnMultiProperty::getMultiValuePlaceholder()
 	return tr("(Multiple Values)");
 }
 
+QMetaProperty QtnMultiProperty::getMetaProperty() const
+{
+	Q_ASSERT(!properties.empty());
+
+	auto connector = properties.at(0)->getConnector();
+	Q_ASSERT(nullptr != connector);
+
+	return connector->getMetaProperty();
+
+}
+
 bool QtnMultiProperty::hasMultipleValues() const
 {
 	if (calculateMultipleValues)
@@ -110,9 +121,10 @@ void QtnMultiProperty::onPropertyValueAccept(QtnPropertyValuePtr valueToAccept, 
 }
 
 void QtnMultiProperty::onPropertyWillChange(QtnPropertyChangeReason reason,
-											QtnPropertyValuePtr newValue)
+											QtnPropertyValuePtr newValue,
+											int typeId)
 {
-	emit propertyWillChange(reason, newValue);
+	emit propertyWillChange(reason, newValue, typeId);
 }
 
 void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
@@ -246,14 +258,6 @@ bool QtnMultiProperty::toVariantImpl(QVariant &var) const
 	return true;
 }
 
-QtnPropertyConnector *QtnMultiProperty::getPropertyConnector(QtnProperty *property)
-{
-	Q_ASSERT(nullptr != property);
-
-	return property->findChild<QtnPropertyConnector *>(
-								 QString(), Qt::FindDirectChildrenOnly);
-}
-
 QtnMultiPropertyDelegate::QtnMultiPropertyDelegate(QtnMultiProperty &owner)
 	: Inherited(owner)
 {
@@ -292,28 +296,44 @@ QtnMultiPropertyDelegate::~QtnMultiPropertyDelegate()
 	m_subProperties.clear();
 }
 
-void QtnMultiPropertyDelegate::onPropertyEdited(PropertyToEdit *data)
+void QtnMultiPropertyDelegate::onEditedPropertyWillChange(PropertyToEdit *data,
+														  QtnPropertyChangeReason reason,
+														  QtnPropertyValuePtr newValue,
+														  int typeId)
 {
 	Q_ASSERT(nullptr != data);
 	auto owner = data->owner;
 	Q_ASSERT(nullptr != owner);
-	auto editedProperty = data->property;
-	Q_ASSERT(nullptr != editedProperty);
 
-	auto value = editedProperty->valueAsVariant();
-	for (auto property : owner->properties)
+	emit owner->propertyWillChange(reason, newValue, typeId);
+}
+
+void QtnMultiPropertyDelegate::onEditedPropertyDidChange(PropertyToEdit *data, QtnPropertyChangeReason reason)
+{
+	Q_ASSERT(nullptr != data);
+	auto owner = data->owner;
+	Q_ASSERT(nullptr != owner);
+
+	if (0 != (reason & QtnPropertyChangeReasonEditValue))
 	{
-		if (property != editedProperty)
+		auto editedProperty = data->property;
+		Q_ASSERT(nullptr != editedProperty);
+
+		auto value = editedProperty->valueAsVariant();
+		for (auto property : owner->properties)
 		{
-			property->blockSignals(true);
-			property->setValueAsVariant(value);
-			property->blockSignals(false);
+			if (property != editedProperty)
+			{
+				property->blockSignals(true);
+				property->setValueAsVariant(value);
+				property->blockSignals(false);
+			}
 		}
 	}
 
 	owner->refreshValues();
 
-	emit owner->propertyDidChange(owner, owner, QtnPropertyChangeReasonNewValue);
+	emit owner->propertyDidChange(reason);
 }
 
 void QtnMultiPropertyDelegate::onEditedPropertyDestroyed(PropertyToEdit *data)
@@ -433,8 +453,12 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(QWidget *parent,
 			data->owner = &owner();
 			data->property = propertyToEdit;
 
-			data->connections.push_back(QObject::connect(propertyToEdit, &QtnProperty::propertyEdited,
-							 std::bind(&QtnMultiPropertyDelegate::onPropertyEdited, data)));
+			using namespace std::placeholders;
+
+			data->connections.push_back(QObject::connect(propertyToEdit, &QtnProperty::propertyWillChange,
+							 std::bind(&QtnMultiPropertyDelegate::onEditedPropertyWillChange, data, _1, _2, _3)));
+			data->connections.push_back(QObject::connect(propertyToEdit, &QtnProperty::propertyDidChange,
+							 std::bind(&QtnMultiPropertyDelegate::onEditedPropertyDidChange, data, _1)));
 			data->connections.push_back(QObject::connect(propertyToEdit, &QObject::destroyed,
 							 std::bind(&QtnMultiPropertyDelegate::onEditedPropertyDestroyed, data)));
 		}

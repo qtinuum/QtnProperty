@@ -43,7 +43,7 @@ protected:
 
 private:
 	void onPropertyDestroyed();
-	void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+	void onPropertyDidChange(QtnPropertyChangeReason reason);
 };
 
 template <typename PropertyClass, typename PropertyEditorClass>

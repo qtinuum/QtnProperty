@@ -91,11 +91,13 @@ Q_SIGNALS:
 	// emits when active property has changed
 	void activePropertyChanged(QtnPropertyBase* activeProperty);
 	void mouseReleased(QMouseEvent *e);
-	void beforePropertyEdited(QtnProperty *property);
-	void propertyEdited(QtnProperty *property, const QVariant &oldValue);
+	void beforePropertyEdited(QtnProperty *property, const QVariant &newValue);
+	void propertyEdited(QtnProperty *property);
 
 private slots:
 	void onActivePropertyDestroyed();
+	void onEditedPropertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId);
+	void onEditedPropertyDidChange(QtnPropertyChangeReason reason);
 
 protected:
 	void paintEvent(QPaintEvent* e) override;
@@ -241,11 +243,6 @@ quint32 QtnPropertyView::itemHeightSpacing() const
 QtnPropertyViewStyle QtnPropertyView::propertyViewStyle() const
 {
 	return m_style;
-}
-
-QUndoStack *QtnPropertyView::undoStack() const
-{
-	return m_undoStack;
 }
 
 bool QtnPropertyView::Item::collapsed() const

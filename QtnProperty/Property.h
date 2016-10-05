@@ -29,6 +29,7 @@ class QTN_IMPORT_EXPORT QtnProperty: public QtnPropertyBase
 	Q_DISABLE_COPY(QtnProperty)
 
 public:
+	virtual ~QtnProperty();
 	// delegates
 	const QtnPropertyDelegateInfo* delegate() const;
 	void setDelegate(const QtnPropertyDelegateInfo& delegate);
@@ -39,8 +40,7 @@ public:
 	const QtnProperty* asProperty() const override { return this; }
 
 Q_SIGNALS:
-	void propertyValueAccept(const QtnProperty* property, QtnPropertyValuePtr valueToAccept, bool* accept);
-	void propertyEdited();
+	void propertyValueAccept(QtnPropertyValuePtr valueToAccept, bool* accept);
 
 protected:
 	explicit QtnProperty(QObject* parent);

@@ -35,7 +35,7 @@ signals:
 	void dataEdited(const QVariant &oldValue);
 
 private slots:
-	void onPropertyValueAccept(const QtnProperty *property, void *valueToAccept, bool *accept);
+	void onPropertyValueAccept(void *valueToAccept, bool *accept);
 
 protected:
 	virtual void editData(const QVariant &oldValue);

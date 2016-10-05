@@ -76,6 +76,11 @@ QtnProperty::QtnProperty(QObject* parent)
 {
 }
 
+QtnProperty::~QtnProperty()
+{
+	// Do not remove! Will be compile errors.
+}
+
 const QtnPropertyDelegateInfo* QtnProperty::delegate() const
 {
 	if (m_delegateInfoGetter.isNull())

@@ -72,10 +72,18 @@ private:
 	void findChildPropertiesRecursive(const QString& name, QList<QtnPropertyBase*>& result);
 	void findChildPropertiesRecursive(const QRegularExpression& re, QList<QtnPropertyBase*>& result);
 
+	void childPropertyWillChange(QtnPropertyChangeReason reason);
+	void childPropertyDidChange(QtnPropertyChangeReason reason);
+
 	bool toStrWithPrefix(QString& str, const QString& prefix) const;
 
 private:
 	QList<QtnPropertyBase*> m_childProperties;
+
+	bool m_ignoreChildPropertyChanges;
+
+	friend void qtnConnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty);
+	friend void qtnDisconnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty);
 };
 
 Q_DECLARE_METATYPE(QtnPropertySet*)

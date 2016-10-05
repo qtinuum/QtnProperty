@@ -36,14 +36,18 @@ void qtnRemovePropertyAsChild(QObject* parent, QtnPropertyBase* child)
 
 void qtnConnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty)
 {
-	QObject::connect(childProperty, &QtnPropertyBase::propertyWillChange, masterProperty, &QtnPropertySet::childPropertyWillChange);
-	QObject::connect(childProperty, &QtnPropertyBase::propertyDidChange, masterProperty, &QtnPropertySet::childPropertyDidChange);
+	QObject::connect(childProperty, &QtnPropertyBase::propertyWillChange,
+					 masterProperty, &QtnPropertySet::childPropertyWillChange);
+	QObject::connect(childProperty, &QtnPropertyBase::propertyDidChange,
+					 masterProperty, &QtnPropertySet::childPropertyDidChange);
 }
 
 void qtnDisconnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty)
 {
-	QObject::disconnect(childProperty, &QtnPropertyBase::propertyWillChange, masterProperty, &QtnPropertySet::childPropertyWillChange);
-	QObject::disconnect(childProperty, &QtnPropertyBase::propertyDidChange, masterProperty, &QtnPropertySet::childPropertyDidChange);
+	QObject::disconnect(childProperty, &QtnPropertyBase::propertyWillChange,
+						masterProperty, &QtnPropertySet::childPropertyWillChange);
+	QObject::disconnect(childProperty, &QtnPropertyBase::propertyDidChange,
+						masterProperty, &QtnPropertySet::childPropertyDidChange);
 }
 
 QtnPropertySet::QtnPropertySet(QObject* parent)
@@ -150,18 +154,20 @@ void QtnPropertySet::clearChildProperties()
 		qtnDisconnectChildProperty(this, childProperty);
 	}
 
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonChildPropertyRemove, QtnPropertyValuePtr(0));
+	emit propertyWillChange(QtnPropertyChangeReasonChildPropertyRemove, nullptr, 0);
 
 	m_childProperties.clear();
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonChildPropertyRemove);
+	emit propertyDidChange(QtnPropertyChangeReasonChildPropertyRemove);
 }
 
 bool QtnPropertySet::addChildProperty(QtnPropertyBase* childProperty, bool moveOwnership, int index)
 {
 	Q_CHECK_PTR(childProperty);
 
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonChildPropertyAdd, QtnPropertyValuePtr(childProperty));
+	emit propertyWillChange(QtnPropertyChangeReasonChildPropertyAdd,
+							QtnPropertyValuePtr(childProperty),
+							qMetaTypeId<QtnPropertyBase *>());
 
 	if (index < 0)
 		m_childProperties.append(childProperty);
@@ -171,7 +177,7 @@ bool QtnPropertySet::addChildProperty(QtnPropertyBase* childProperty, bool moveO
 	if (moveOwnership)
 		childProperty->setParent(this);
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonChildPropertyAdd);
+	emit propertyDidChange(QtnPropertyChangeReasonChildPropertyAdd);
 
 	m_ignoreChildPropertyChanges = true;
 	childProperty->setStateInherited(state());
@@ -190,14 +196,16 @@ bool QtnPropertySet::removeChildProperty(QtnPropertyBase* childProperty)
 
 	Q_ASSERT(childPropertyIndex < m_childProperties.size());
 
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonChildPropertyRemove, QtnPropertyValuePtr(childProperty));
+	emit propertyWillChange(QtnPropertyChangeReasonChildPropertyRemove,
+							QtnPropertyValuePtr(childProperty),
+							qMetaTypeId<QtnPropertyBase *>());
 
 	qtnDisconnectChildProperty(this, childProperty);
 	m_childProperties.erase(m_childProperties.begin()+childPropertyIndex);
 	if (childProperty->parent() == this)
 		childProperty->setParent(nullptr);
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonChildPropertyRemove);
+	emit propertyDidChange(QtnPropertyChangeReasonChildPropertyRemove);
 
 	return true;
 }
@@ -380,7 +388,7 @@ void QtnPropertySet::childPropertyWillChange(QtnPropertyChangeReason reason)
 	if (m_ignoreChildPropertyChanges)
 		return;
 
-	emit propertyWillChange(reason, nullptr);
+	emit propertyWillChange(reason, nullptr, 0);
 }
 
 void QtnPropertySet::childPropertyDidChange(QtnPropertyChangeReason reason)

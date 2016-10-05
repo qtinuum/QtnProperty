@@ -129,7 +129,7 @@ protected:
 
 		m_subProperties.append(QSharedPointer<QtnPropertyBase>(subProperty));
 
-		subProperty->connectMasterState(getOwnerProperty());
+		subProperty->connectMasterState(QtnPropertyDelegateTyped<PropertyClass>::getOwnerProperty());
 	}
 
 	QList<QSharedPointer<QtnPropertyBase>> m_subProperties;

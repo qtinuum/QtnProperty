@@ -44,21 +44,21 @@ void CustomPropertyWidget::setReadOnly(bool value)
 	}
 }
 
-void CustomPropertyWidget::setData(QVariant *data_ptr, const QString &title, bool force)
+void CustomPropertyWidget::setData(QVariant *dataPtr, const QString &title, bool force)
 {
-	if (force || this->dataPtr != data_ptr)
+	if (force || this->dataPtr != dataPtr)
 	{
-		this->dataPtr = data_ptr;
+		this->dataPtr = dataPtr;
 		setPropertySet(nullptr);
 		delete rootSet;
 
-		if (nullptr != data_ptr)
+		if (nullptr != dataPtr)
 		{
 			rootSet = new QtnPropertySet(this);
 			if (readOnly)
 				rootSet->setState(QtnPropertyStateImmutable, true);
 
-			newProperty(rootSet, *data_ptr, title, -1, nullptr);
+			newProperty(rootSet, *dataPtr, title, -1, nullptr);
 
 			setPropertySet(rootSet);
 		} else
@@ -283,11 +283,11 @@ void CustomPropertyWidget::setAutoUpdate(bool yes)
 	}
 }
 
-void CustomPropertyWidget::onPropertyValueAccept(const QtnProperty *property, void *valueToAccept, bool *accept)
+void CustomPropertyWidget::onPropertyValueAccept(void *valueToAccept, bool *accept)
 {
 	if (nullptr != accept)
 	{
-		bool ok = VarProperty::PropertyValueAccept(property, valueToAccept);
+		bool ok = VarProperty::PropertyValueAccept(dynamic_cast<QtnProperty *>(sender()), valueToAccept);
 		Q_ASSERT(ok);
 
 		*accept = ok;
@@ -297,9 +297,9 @@ void CustomPropertyWidget::onPropertyValueAccept(const QtnProperty *property, vo
 	}
 }
 
-void CustomPropertyWidget::editData()
+void CustomPropertyWidget::editData(const QVariant &oldValue)
 {
-	emit dataEdited();
+	emit dataEdited(oldValue);
 }
 
 bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
@@ -638,12 +638,13 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 
 void CustomPropertyWidget::updateData()
 {
-	auto propertySet = propertySet();
+	auto propertySet = this->propertySet();
 	if (!readOnly && nullptr != dataPtr && nullptr != propertySet)
 	{
 		auto varProperty = getVarProperty(propertySet->childProperties().at(0));
+		auto oldValue = *dataPtr;
 		*dataPtr = varProperty->CreateVariant();
-		editData();
+		editData(oldValue);
 	}
 }
 
@@ -701,11 +702,11 @@ bool CustomPropertyWidget::getActiveVarProperty(QtnPropertyBase *&property, VarP
 
 VarProperty *CustomPropertyWidget::getVarProperty(QtnPropertyBase *source)
 {
-	VarProperty *var_property = nullptr;
+	VarProperty *varProperty = nullptr;
 	if (nullptr != source)
-		var_property = source->findChild<VarProperty *>(QString(), Qt::FindDirectChildrenOnly);
+		varProperty = source->findChild<VarProperty *>(QString(), Qt::FindDirectChildrenOnly);
 
-	return var_property;
+	return varProperty;
 }
 
 QtnPropertyBase *CustomPropertyWidget::newProperty(QtnPropertySet *parent,
@@ -724,13 +725,13 @@ QtnPropertyBase *CustomPropertyWidget::newProperty(QtnPropertySet *parent,
 
 void CustomPropertyWidget::addProperty(QtnPropertyBase *source, const CustomPropertyData &data)
 {
-	auto var_property = getVarProperty(source);
-	Q_ASSERT(nullptr != var_property);
+	auto varProperty = getVarProperty(source);
+	Q_ASSERT(nullptr != varProperty);
 	auto set = dynamic_cast<QtnPropertySet *>(source);
 	Q_ASSERT(nullptr != set);
 	if (data.index >= 0)
-		Q_ASSERT(data.index <= var_property->GetChildrenCount());
-	auto new_property = newProperty(nullptr, data.value, data.name, data.index, var_property);
+		Q_ASSERT(data.index <= varProperty->GetChildrenCount());
+	auto new_property = newProperty(nullptr, data.value, data.name, data.index, varProperty);
 
 	std::vector<QtnPropertyBase *> children;
 	for (auto child : set->childProperties())
@@ -743,9 +744,9 @@ void CustomPropertyWidget::addProperty(QtnPropertyBase *source, const CustomProp
 	else
 		children.push_back(new_property);
 
-	auto is_list = (VarProperty::List == var_property->GetType());
+	auto isList = (VarProperty::List == varProperty->GetType());
 
-	if (is_list)
+	if (isList)
 	{
 		int count = static_cast<int>(children.size());
 		for (int i = 0; i < count; i++)
@@ -775,43 +776,43 @@ void CustomPropertyWidget::addProperty(QtnPropertyBase *source, const CustomProp
 
 void CustomPropertyWidget::duplicateProperty(QtnPropertyBase *source, const CustomPropertyData &data)
 {
-	auto var_property = getVarProperty(source);
-	Q_ASSERT(nullptr != var_property);
+	auto varProperty = getVarProperty(source);
+	Q_ASSERT(nullptr != varProperty);
 
 	auto set = dynamic_cast<QtnPropertySet *>(source->parent());
 	Q_ASSERT(nullptr != set);
 
-	addProperty(set, { data.index, data.name, var_property->CreateVariant() });
+	addProperty(set, { data.index, data.name, varProperty->CreateVariant() });
 }
 
 void CustomPropertyWidget::updatePropertyOptions(QtnPropertyBase *source, const CustomPropertyData &data)
 {
-	auto var_property = getVarProperty(source);
-	Q_ASSERT(nullptr != var_property);
+	auto varProperty = getVarProperty(source);
+	Q_ASSERT(nullptr != varProperty);
 
 	auto set = dynamic_cast<QtnPropertySet *>(source->parent());
 	Q_ASSERT(nullptr != set);
 
 	bool refresh_siblings = false;
 
-	int old_index = var_property->GetIndex();
+	int old_index = varProperty->GetIndex();
 
-	bool top_property = (var_property == var_property->TopParent());
+	bool top_property = (varProperty == varProperty->TopParent());
 
 	if (!top_property)
 	{
-		refresh_siblings = var_property->SetIndex(data.index);
-		refresh_siblings = var_property->SetName(data.name) || refresh_siblings;
+		refresh_siblings = varProperty->SetIndex(data.index);
+		refresh_siblings = varProperty->SetName(data.name) || refresh_siblings;
 	}
 
-	auto var_parent = var_property->VarParent();
+	auto var_parent = varProperty->VarParent();
 	if (!refresh_siblings)
 	{
 		int index = set->childProperties().indexOf(source);
 
-		QString prop_name(top_property ? var_property->GetName() : data.name);
+		QString prop_name(top_property ? varProperty->GetName() : data.name);
 
-		var_property->RemoveFromParent();
+		varProperty->RemoveFromParent();
 		set->removeChildProperty(source);
 
 		delete source;
@@ -825,7 +826,7 @@ void CustomPropertyWidget::updatePropertyOptions(QtnPropertyBase *source, const 
 			updateData();
 	} else
 	{
-		var_property->SetValue(data.value);
+		varProperty->SetValue(data.value);
 
 		int index = data.index;
 
@@ -838,7 +839,7 @@ void CustomPropertyWidget::updatePropertyOptions(QtnPropertyBase *source, const 
 				return QString::localeAwareCompare(a->GetName(), b->GetName()) < 0;
 			});
 
-			auto it = std::find(children.begin(), children.end(), var_property);
+			auto it = std::find(children.begin(), children.end(), varProperty);
 
 			index = it - children.begin();
 		} else

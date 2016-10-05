@@ -92,9 +92,9 @@ public:
 	virtual QtnPropertySet* asPropertySet() { return nullptr; }
 	virtual const QtnPropertySet* asPropertySet() const { return nullptr; }
 
-	inline const QtnPropertyBase *getMasterProperty() const;
-	const QtnPropertyBase *getRootProperty() const;
-	virtual void connectMasterState(const QtnPropertyBase *masterProperty);
+	inline QtnPropertyBase *getMasterProperty() const;
+	QtnPropertyBase *getRootProperty();
+	virtual void connectMasterState(QtnPropertyBase *masterProperty);
 	virtual void disconnectMasterState();
 
 	void postUpdateEvent(QtnPropertyChangeReason reason);
@@ -112,8 +112,8 @@ public: // properties for scripting
 	void setValueAsVariant(const QVariant& value);
 
 Q_SIGNALS:
-	void propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
-	void propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+	void propertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId);
+	void propertyDidChange(QtnPropertyChangeReason reason);
 
 private slots:
 	void onMasterPropertyDestroyed(QObject *object);
@@ -121,9 +121,7 @@ private slots:
 protected:
 	QtnPropertyBase(QObject* parent);
 
-	virtual void masterPropertyStateDidChange(const QtnPropertyBase *changedProperty,
-											  const QtnPropertyBase *firedProperty,
-											  QtnPropertyChangeReason reason);
+	virtual void masterPropertyStateDidChange(QtnPropertyChangeReason reason);
 
 	virtual bool event(QEvent *e) override;
 
@@ -144,7 +142,7 @@ protected:
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
 private:
-	const QtnPropertyBase *m_masterProperty;
+	QtnPropertyBase *m_masterProperty;
 
 	QString m_description;
 	QtnPropertyID m_id;
@@ -183,7 +181,7 @@ bool QtnPropertyBase::isQObjectProperty() const
 	return (nullptr != getConnector());
 }
 
-const QtnPropertyBase *QtnPropertyBase::getMasterProperty() const
+QtnPropertyBase *QtnPropertyBase::getMasterProperty() const
 {
 	return m_masterProperty;
 }
