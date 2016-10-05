@@ -27,11 +27,9 @@ public:
 	static QString getMultiValuePlaceholder();
 
 private slots:
-	void onPropertyValueAccept(const QtnProperty* property, QtnPropertyValuePtr valueToAccept, bool* accept);
+	void onPropertyValueAccept(QtnPropertyValuePtr valueToAccept, bool* accept);
 
-	void onPropertyWillChange(const QtnPropertyBase* changedProperty,
-							  const QtnPropertyBase* firedProperty,
-							  QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
+	void onPropertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
 
 	void onPropertyValueChanged(const QtnPropertyBase *changedProperty,
 								const QtnPropertyBase *firedProperty,

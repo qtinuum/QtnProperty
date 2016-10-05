@@ -26,7 +26,7 @@ QtnMultiProperty::~QtnMultiProperty()
 		QObject::disconnect(property, &QtnPropertyBase::propertyWillChange,
 							this, &QtnMultiProperty::onPropertyWillChange);
 		QObject::disconnect(property, &QtnPropertyBase::propertyDidChange,
-							this, &QtnMultiProperty::onPropertyValueChanged);
+							this, &QtnMultiProperty::onPropertyDidChange);
 	}
 }
 
@@ -48,7 +48,7 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 	QObject::connect(property, &QtnPropertyBase::propertyWillChange,
 					 this, &QtnMultiProperty::onPropertyWillChange);
 	QObject::connect(property, &QtnPropertyBase::propertyDidChange,
-					 this, &QtnMultiProperty::onPropertyValueChanged);
+					 this, &QtnMultiProperty::onPropertyDidChange);
 }
 
 void QtnMultiProperty::resetValues()
@@ -104,29 +104,23 @@ bool QtnMultiProperty::hasMultipleValues() const
 	return multipleValues;
 }
 
-void QtnMultiProperty::onPropertyValueAccept(const QtnProperty *property,
-											 QtnPropertyValuePtr valueToAccept,
-											 bool *accept)
+void QtnMultiProperty::onPropertyValueAccept(QtnPropertyValuePtr valueToAccept, bool *accept)
 {
-	emit propertyValueAccept(property, valueToAccept, accept);
+	emit propertyValueAccept(valueToAccept, accept);
 }
 
-void QtnMultiProperty::onPropertyWillChange(const QtnPropertyBase *changedProperty,
-											const QtnPropertyBase *firedProperty,
-											QtnPropertyChangeReason reason,
+void QtnMultiProperty::onPropertyWillChange(QtnPropertyChangeReason reason,
 											QtnPropertyValuePtr newValue)
 {
-	emit propertyWillChange(changedProperty, firedProperty, reason, newValue);
+	emit propertyWillChange(reason, newValue);
 }
 
-void QtnMultiProperty::onPropertyValueChanged(const QtnPropertyBase *changedProperty,
-											  const QtnPropertyBase *firedProperty,
-											  QtnPropertyChangeReason reason)
+void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 {
 	if (0 != (reason & QtnPropertyChangeReasonValue))
 		refreshValues();
 
-	emit propertyDidChange(changedProperty, firedProperty, reason);
+	emit propertyDidChange(reason);
 }
 
 bool QtnMultiProperty::loadImpl(QDataStream &stream)

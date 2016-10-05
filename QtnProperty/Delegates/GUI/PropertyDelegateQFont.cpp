@@ -142,7 +142,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 			QObject::disconnect(*c.get());
 			c = nullptr;
 
-			owner.propertyDidChange(&owner, &owner, QtnPropertyChangeReasonChildren);
+			emit owner.propertyDidChange(QtnPropertyChangeReasonChildren);
 		});
 #endif
 	});
@@ -482,9 +482,7 @@ void QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked(bool)
 		font.setStyleStrategy(style_strategy);
 
 		if (property->edit(font))
-			property->propertyDidChange(property,
-										property,
-										QtnPropertyChangeReasonChildren);
+			emit property->propertyDidChange(QtnPropertyChangeReasonChildren);
 	}
 
 	if (!destroyed)

@@ -113,12 +113,18 @@ void QtnPropertyView::onActivePropertyDestroyed()
 void QtnPropertyView::setPropertySet(QtnPropertySet* newPropertySet)
 {
 	if (m_propertySet)
-		QObject::disconnect(m_propertySet, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyView::OnPropertyDidChange);
+	{
+		QObject::disconnect(m_propertySet, &QtnPropertyBase::propertyDidChange,
+							this, &QtnPropertyView::onPropertySetDidChange);
+	}
 
 	m_propertySet = newPropertySet;
 
 	if (m_propertySet)
-		QObject::connect(m_propertySet, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyView::OnPropertyDidChange);
+	{
+		QObject::connect(m_propertySet, &QtnPropertyBase::propertyDidChange,
+						 this, &QtnPropertyView::onPropertySetDidChange);
+	}
 
 	updateItemsTree();
 }
@@ -938,23 +944,26 @@ bool QtnPropertyView::startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e
 	}));
 
 	connections->push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
-	[property, oldValue](const QtnPropertyBase *, const QtnPropertyBase*, QtnPropertyChangeReason reason, QtnPropertyValuePtr)
+	[property, oldValue](QtnPropertyChangeReason reason)
 	{
-		if (0 != (reason & QtnPropertyChangeReasonValue))
+		if (0 != (reason & QtnPropertyChangeReasonEditValue))
 		{
 			auto rootProperty = property->getRootProperty();
 			Q_ASSERT(nullptr != rootProperty);
 			*oldValue.get() = rootProperty->valueAsVariant();
+
+			emit beforePropertyEdited(property);
 		}
 	}));
 
-	connections->push_back(QObject::connect(property, &QtnProperty::propertyEdited,
-	[oldValue, property, this]()
+	connections->push_back(QObject::connect(property, &QtnProperty::propertyDidChange,
+	[oldValue, property, this](QtnPropertyChangeReason reason)
 	{
-		emit propertyEdited(property, *oldValue.get());
+		if (0 != (reason & QtnPropertyChangeReasonEditValue))
+			emit propertyEdited(property, *oldValue.get());
 	}));
 
-	QObject::connect(editor, &QObject::destroyed, [connections]()
+	QObject::connect(editor, &QObject::destroyed, [property, connections]()
 	{
 		for (auto &connection : *connections.get())
 			QObject::disconnect(connection);
@@ -1132,7 +1141,7 @@ void QtnPropertyView::disconnectActiveProperty()
 	}
 }
 
-void QtnPropertyView::OnPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertyView::onPropertySetDidChange(QtnPropertyChangeReason reason)
 {
 	if (reason & QtnPropertyChangeReasonChildren)
 	{

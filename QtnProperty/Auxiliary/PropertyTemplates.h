@@ -45,15 +45,17 @@ class QtnSinglePropertyBase: public QtnProperty
 			return false;
 
 		bool accept = true;
-		Q_EMIT propertyValueAccept(this, QtnPropertyValuePtr(&newValue), &accept);
+		emit propertyValueAccept(QtnPropertyValuePtr(&newValue), &accept);
 		if (!accept)
 			return false;
 
-		Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonNewValue, QtnPropertyValuePtr(&newValue));
-		setValueImpl(newValue);
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonNewValue;
 		if (edit)
-			Q_EMIT propertyEdited();
-		Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonNewValue);
+			reason |= QtnPropertyChangeReasonEditValue;
+
+		emit propertyWillChange(reason, QtnPropertyValuePtr(&newValue));
+		setValueImpl(newValue);
+		emit propertyDidChange(reason);
 
 		return true;
 	}
@@ -96,9 +98,9 @@ protected:
 		if (stream.status() != QDataStream::Ok)
 			return false;
 
-		Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonLoadedValue, QtnPropertyValuePtr(&newValue));
+		emit propertyWillChange(QtnPropertyChangeReasonLoadedValue, QtnPropertyValuePtr(&newValue));
 		setValueImpl(newValue);
-		Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonLoadedValue);
+		emit propertyDidChange(QtnPropertyChangeReasonLoadedValue);
 
 		return stream.status() == QDataStream::Ok;
 	}
