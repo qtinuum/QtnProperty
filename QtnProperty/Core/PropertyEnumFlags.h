@@ -53,10 +53,7 @@ class QTN_IMPORT_EXPORT QtnPropertyEnumFlagsCallback: public QtnSinglePropertyCa
 	QtnPropertyEnumFlagsCallback(const QtnPropertyEnumFlagsCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyEnumFlagsCallback(QObject* parent)
-		: QtnSinglePropertyCallback<QtnPropertyEnumFlagsBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyEnumFlagsCallback(QObject* parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnumFlagsCallback, QtnPropertyEnumFlagsBase)
 };
@@ -67,10 +64,7 @@ class QTN_IMPORT_EXPORT QtnPropertyEnumFlags: public QtnSinglePropertyValue<QtnP
 	QtnPropertyEnumFlags(const QtnPropertyEnumFlags& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyEnumFlags(QObject* parent)
-		: QtnSinglePropertyValue<QtnPropertyEnumFlagsBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyEnumFlags(QObject* parent = nullptr);
 
 	static QString getFlagLabelDescription(const QString &flag_name, const QString &owner_name);
 

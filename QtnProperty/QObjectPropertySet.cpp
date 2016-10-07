@@ -92,6 +92,13 @@ QtnProperty* qtnCreateQObjectProperty(QObject* object, const QMetaProperty& meta
 
 	property->setName(metaProperty.name());
 
+	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
+	if (nullptr != stateProvider)
+	{
+		auto state = stateProvider->getPropertyState(metaProperty);
+		property->setState(state);
+	}
+
 	qtnUpdatePropertyState(property, metaProperty);
 
 	return property;
@@ -131,15 +138,6 @@ QtnProperty* CreateQObjectProperty(QObject* object, const char *className, const
 
 	if (nullptr != property)
 	{
-		auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
-		if (nullptr != stateProvider)
-		{
-			auto state = stateProvider->getPropertyState(metaProperty);
-			property->setState(state);
-		}
-
-		qtnUpdatePropertyState(property, metaProperty);
-
 		property->setName(QCoreApplication::translate(className,
 													  metaProperty.name()));
 

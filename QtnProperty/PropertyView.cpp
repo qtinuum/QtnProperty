@@ -69,18 +69,18 @@ static void updateVisibleProperties(const QtnPropertyBase* property, unsigned in
 }
 
 QtnPropertyView::QtnPropertyView(QWidget* parent, QtnPropertySet* propertySet)
-	: QAbstractScrollArea(parent),
-	  m_propertySet(propertySet),
-	  m_activeProperty(nullptr),
-	  m_delegateFactory(&QtnPropertyDelegateFactory::staticInstance()),
-	  m_visibleItemsValid(false),
-	  m_style(QtnPropertyViewStyleLiveSplit),
-	  m_itemHeight(0),
-	  m_itemHeightSpacing(6),
-	  m_leadMargin(0),
-	  m_splitRatio(0.5f),
-	  m_rubberBand(nullptr),
-	  m_accessibilityProxy(nullptr)
+	: QAbstractScrollArea(parent)
+	, m_propertySet(propertySet)
+	, m_activeProperty(nullptr)
+	, m_delegateFactory(&QtnPropertyDelegateFactory::staticInstance())
+	, m_visibleItemsValid(false)
+	, m_style(QtnPropertyViewStyleLiveSplit)
+	, m_itemHeight(0)
+	, m_itemHeightSpacing(6)
+	, m_leadMargin(0)
+	, m_splitRatio(0.5f)
+	, m_rubberBand(nullptr)
+	, m_accessibilityProxy(nullptr)
 {
 	setFocusPolicy(Qt::StrongFocus);
 	viewport()->setMouseTracking(true);
@@ -110,15 +110,51 @@ void QtnPropertyView::onActivePropertyDestroyed()
 	viewport()->update();
 }
 
+void QtnPropertyView::onEditedPropertyWillChange(QtnPropertyChangeReason reason,
+												 QtnPropertyValuePtr newValue,
+												 int typeId)
+{
+	if (0 != (reason & QtnPropertyChangeReasonEditValue))
+	{
+		auto property = dynamic_cast<QtnPropertyBase *>(sender());
+		Q_ASSERT(nullptr != property);
+
+		auto rootProperty = dynamic_cast<QtnProperty *>(property->getRootProperty());
+		Q_ASSERT(nullptr != rootProperty);
+
+		emit beforePropertyEdited(rootProperty, newValue, typeId);
+	}
+}
+
+void QtnPropertyView::onEditedPropertyDidChange(QtnPropertyChangeReason reason)
+{
+	if (0 != (reason & QtnPropertyChangeReasonEditValue))
+	{
+		auto property = dynamic_cast<QtnPropertyBase *>(sender());
+		Q_ASSERT(nullptr != property);
+
+		auto rootProperty = dynamic_cast<QtnProperty *>(property->getRootProperty());
+		Q_ASSERT(nullptr != rootProperty);
+
+		emit propertyEdited(rootProperty);
+	}
+}
+
 void QtnPropertyView::setPropertySet(QtnPropertySet* newPropertySet)
 {
 	if (m_propertySet)
-		QObject::disconnect(m_propertySet, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyView::OnPropertyDidChange);
+	{
+		QObject::disconnect(m_propertySet, &QtnPropertyBase::propertyDidChange,
+							this, &QtnPropertyView::onPropertySetDidChange);
+	}
 
 	m_propertySet = newPropertySet;
 
 	if (m_propertySet)
-		QObject::connect(m_propertySet, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyView::OnPropertyDidChange);
+	{
+		QObject::connect(m_propertySet, &QtnPropertyBase::propertyDidChange,
+						 this, &QtnPropertyView::onPropertySetDidChange);
+	}
 
 	updateItemsTree();
 }
@@ -398,7 +434,7 @@ void QtnPropertyView::drawPropertyItem(QStylePainter& painter, const QRect& rect
 			Action edit;
 			edit.rect = editRect;
 
-			QtnPropertyDelegate* propertyDelegate = vItem.item->delegate.data();
+			auto propertyDelegate = vItem.item->delegate.data();
 			edit.action = [propertyDelegate, this](QEvent *e, QRect rect)->bool {
 				bool doEdit = false;
 
@@ -413,18 +449,7 @@ void QtnPropertyView::drawPropertyItem(QStylePainter& painter, const QRect& rect
 
 				if (doEdit)
 				{
-					QtnInplaceInfo inplaceInfo;
-					inplaceInfo.activationEvent = e;
-					QWidget* editor = propertyDelegate->createValueEditor(viewport(), rect, &inplaceInfo);
-					if (!editor)
-						return false;
-
-					if (!editor->isVisible())
-						editor->show();
-
-					qtnStartInplaceEdit(editor);
-
-					return true;
+					return startPropertyEdit(propertyDelegate, e, rect);
 				}
 
 				return false;
@@ -774,26 +799,15 @@ void QtnPropertyView::keyPressEvent(QKeyEvent* e)
 				const QScopedPointer<QtnPropertyDelegate>& delegate = m_visibleItems[index].item->delegate;
 				if (!delegate.isNull() && delegate->acceptKeyPressedForInplaceEdit(e))
 				{
-					QtnInplaceInfo inplaceInfo;
-					inplaceInfo.activationEvent = e;
-
 					QRect valueRect = visibleItemRect(index);
 					valueRect.setLeft(splitPosition());
 
-					QWidget* editor = delegate->createValueEditor(viewport(), valueRect, &inplaceInfo);
-					if (!editor)
-						break;
-
-					if (!editor->isVisible())
-						editor->show();
-
-					qtnStartInplaceEdit(editor);
+					if (!startPropertyEdit(delegate.data(), e, valueRect))
+						return;
 
 					// eat event
 					e->accept();
 					return;
-
-					//break;
 				}
 			}
 
@@ -933,6 +947,64 @@ void QtnPropertyView::setActivePropertyInternal(QtnPropertyBase *property)
 	viewport()->update();
 
 	connectActiveProperty();
+}
+
+bool QtnPropertyView::startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e, const QRect &rect)
+{
+	Q_ASSERT(nullptr != delegate);
+
+	QtnInplaceInfo inplaceInfo;
+	inplaceInfo.activationEvent = e;
+
+	auto property = delegate->getOwnerProperty();
+	Q_ASSERT(nullptr != property);
+
+	typedef std::vector<QMetaObject::Connection> Connections;
+
+	std::shared_ptr<Connections> connections(new Connections);
+
+	bool editable = property->isEditableByUser();
+
+	if (editable)
+	{
+		connections->push_back(QObject::connect(property, &QObject::destroyed, [connections]()
+		{
+			connections->clear();
+		}));
+
+		connections->push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
+												this, &QtnPropertyView::onEditedPropertyWillChange));
+
+		connections->push_back(QObject::connect(property, &QtnProperty::propertyDidChange,
+												this, &QtnPropertyView::onEditedPropertyDidChange));
+	}
+
+	auto editor = delegate->createValueEditor(viewport(), rect, &inplaceInfo);
+
+	auto editFinished = [connections]()
+	{
+		for (auto &connection : *connections.get())
+			QObject::disconnect(connection);
+
+		connections->clear();
+	};
+
+	if (nullptr == editor)
+	{
+		if (editable)
+			editFinished();
+		return false;
+	} else
+	{
+		QObject::connect(editor, &QObject::destroyed, editFinished);
+
+		if (!editor->isVisible())
+			editor->show();
+
+		qtnStartInplaceEdit(editor);
+	}
+
+	return true;
 }
 
 void QtnPropertyView::invalidateVisibleItems()
@@ -1097,7 +1169,7 @@ void QtnPropertyView::disconnectActiveProperty()
 	}
 }
 
-void QtnPropertyView::OnPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertyView::onPropertySetDidChange(QtnPropertyChangeReason reason)
 {
 	if (reason & QtnPropertyChangeReasonChildren)
 	{

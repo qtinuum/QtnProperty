@@ -25,10 +25,7 @@ class QTN_IMPORT_EXPORT QtnPropertyIntBase: public QtnNumericPropertyBase<QtnSin
 	QtnPropertyIntBase(const QtnPropertyIntBase& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyIntBase(QObject *parent)
-		: QtnNumericPropertyBase<QtnSinglePropertyBase<qint32>>(parent)
-	{
-	}
+	explicit QtnPropertyIntBase(QObject *parent);
 
 protected:
 	// string conversion implementation
@@ -49,10 +46,7 @@ class QTN_IMPORT_EXPORT QtnPropertyIntCallback: public QtnSinglePropertyCallback
 	QtnPropertyIntCallback(const QtnPropertyIntCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyIntCallback(QObject *parent)
-		: QtnSinglePropertyCallback<QtnPropertyIntBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyIntCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyIntCallback, QtnPropertyIntBase)
 };
@@ -63,10 +57,7 @@ class QTN_IMPORT_EXPORT QtnPropertyInt: public QtnSinglePropertyValue<QtnPropert
 	QtnPropertyInt(const QtnPropertyInt& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyInt(QObject *parent)
-		: QtnSinglePropertyValue<QtnPropertyIntBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyInt(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyInt, QtnPropertyIntBase)
 };

@@ -16,7 +16,7 @@ public:
 	inline bool isReadOnly() const;
 	void setReadOnly(bool value);
 	inline QVariant *getData() const;
-	void setData(QVariant *data_ptr, const QString &title = QString(), bool force = false);
+	void setData(QVariant *dataPtr, const QString &title = QString(), bool force = false);
 
 	virtual bool canDeleteProperty(QtnPropertyBase *property) override;
 	virtual bool canCutToClipboard() override;
@@ -32,13 +32,13 @@ public:
 	static VarProperty *getVarProperty(QtnPropertyBase *source);
 
 signals:
-	void dataEdited();
+	void dataEdited(const QVariant &oldValue);
 
 private slots:
-	void onPropertyValueAccept(const QtnProperty *property, void *valueToAccept, bool *accept);
+	void onPropertyValueAccept(void *valueToAccept, bool *accept);
 
 protected:
-	virtual void editData();
+	virtual void editData(const QVariant &oldValue);
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void deleteProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
@@ -48,39 +48,39 @@ protected:
 								   QtnApplyPosition position) override;
 
 private:
-	void updateSet(QtnPropertyBase *set_property, int child_index);
+	void updateSet(QtnPropertyBase *setProperty, int childIndex);
 
-	bool getActiveVarProperty(QtnPropertyBase *&property, VarProperty *&var_property);
+	bool getActiveVarProperty(QtnPropertyBase *&property, VarProperty *&varProperty);
 	QtnPropertyBase *newProperty(QtnPropertySet *parent,
 								 const QVariant &value,
 								 const QString &key,
 								 int index,
-								 VarProperty *map_parent);
+								 VarProperty *mapParent);
 
 
 	void addProperty(QtnPropertyBase *source, const CustomPropertyData &data);
 	void duplicateProperty(QtnPropertyBase *source, const CustomPropertyData &data);
 	void updatePropertyOptions(QtnPropertyBase *source, const CustomPropertyData &data);
 
-	QVariant::Type last_add_type;
-	QVariant *data_ptr;
-	QtnPropertySet *root_set;
+	QVariant::Type lastAddType;
+	QVariant *dataPtr;
+	QtnPropertySet *rootSet;
 
-	bool read_only;
-	bool auto_update;
+	bool readOnly;
+	bool autoUpdate;
 };
 
 bool CustomPropertyWidget::isReadOnly() const
 {
-	return read_only;
+	return readOnly;
 }
 
 QVariant *CustomPropertyWidget::getData() const
 {
-	return data_ptr;
+	return dataPtr;
 }
 
 bool CustomPropertyWidget::isAutoUpdate() const
 {
-	return auto_update;
+	return autoUpdate;
 }

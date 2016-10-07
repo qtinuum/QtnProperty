@@ -16,6 +16,8 @@
 
 #include "Property.h"
 
+#include "PropertyConnector.h"
+
 class QtnPropertyDelegateInfoGetter
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateInfoGetter)
@@ -76,6 +78,7 @@ QtnProperty::QtnProperty(QObject* parent)
 
 QtnProperty::~QtnProperty()
 {
+	// Do not remove! Will be compile errors.
 }
 
 const QtnPropertyDelegateInfo* QtnProperty::delegate() const
@@ -95,3 +98,5 @@ void QtnProperty::setDelegateCallback(const std::function<const QtnPropertyDeleg
 {
 	m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterCallback(callback));
 }
+
+

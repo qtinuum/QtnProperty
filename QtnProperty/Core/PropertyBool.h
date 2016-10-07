@@ -25,10 +25,7 @@ class QTN_IMPORT_EXPORT QtnPropertyBoolBase: public QtnSinglePropertyBase<bool>
 	QtnPropertyBoolBase(const QtnPropertyBoolBase& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyBoolBase(QObject *parent)
-		: QtnSinglePropertyBase<bool>(parent)
-	{
-	}
+	explicit QtnPropertyBoolBase(QObject *parent = nullptr);
 
 protected:
 	// string conversion implementation
@@ -46,10 +43,7 @@ class QTN_IMPORT_EXPORT QtnPropertyBoolCallback: public QtnSinglePropertyCallbac
 	QtnPropertyBoolCallback(const QtnPropertyBoolCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyBoolCallback(QObject *parent)
-		: QtnSinglePropertyCallback<QtnPropertyBoolBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyBoolCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyBoolCallback, QtnPropertyBoolBase)
 };
@@ -60,10 +54,7 @@ class QTN_IMPORT_EXPORT QtnPropertyBool: public QtnSinglePropertyValue<QtnProper
 	QtnPropertyBool(const QtnPropertyBool& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyBool(QObject *parent)
-		: QtnSinglePropertyValue<QtnPropertyBoolBase>(parent)
-	{
-	}
+	Q_INVOKABLE explicit QtnPropertyBool(QObject *parent = nullptr);
 
 	static QString getBoolText(bool value, bool internal);
 

@@ -5,7 +5,7 @@
 #include "QObjectPropertySet.h"
 #include "IQtnPropertyStateProvider.h"
 
-QtnPropertyConnector::QtnPropertyConnector(QtnProperty *parent)
+QtnPropertyConnector::QtnPropertyConnector(QtnPropertyBase *parent)
 	: QObject(parent)
 	, object(nullptr)
 {

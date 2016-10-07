@@ -51,6 +51,7 @@ enum QtnPropertyChangeReasonFlag
 	QtnPropertyChangeReasonState = QtnPropertyChangeReasonStateLocal|QtnPropertyChangeReasonStateInherited,
 	QtnPropertyChangeReasonChildPropertyAdd = 0x0080,
 	QtnPropertyChangeReasonChildPropertyRemove = 0x0100,
+	QtnPropertyChangeReasonEditValue = 0x0200,
 	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd|QtnPropertyChangeReasonChildPropertyRemove
 };
 Q_DECLARE_FLAGS(QtnPropertyChangeReason, QtnPropertyChangeReasonFlag)

@@ -3,10 +3,10 @@
 #include "Property.h"
 #include "Delegates/PropertyDelegate.h"
 
+#include <QMetaProperty>
+
 #include <set>
 #include <memory>
-
-class QtnPropertyConnector;
 
 class QtnMultiPropertyDelegate;
 class QTN_IMPORT_EXPORT QtnMultiProperty : public QtnProperty
@@ -26,16 +26,16 @@ public:
 	static void Register();
 	static QString getMultiValuePlaceholder();
 
+	inline std::vector<QtnProperty *> getProperties() const;
+
+	QMetaProperty getMetaProperty() const;
+
 private slots:
-	void onPropertyValueAccept(const QtnProperty* property, QtnPropertyValuePtr valueToAccept, bool* accept);
+	void onPropertyValueAccept(QtnPropertyValuePtr valueToAccept, bool* accept);
 
-	void onPropertyWillChange(const QtnPropertyBase* changedProperty,
-							  const QtnPropertyBase* firedProperty,
-							  QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
+	void onPropertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId);
 
-	void onPropertyValueChanged(const QtnPropertyBase *changedProperty,
-								const QtnPropertyBase *firedProperty,
-								QtnPropertyChangeReason reason);
+	void onPropertyDidChange(QtnPropertyChangeReason reason);
 
 protected:
 	virtual bool loadImpl(QDataStream &stream) override;
@@ -50,9 +50,6 @@ protected:
 private:
 	void refreshValues();
 
-	static QtnPropertyConnector
-		*getPropertyConnector(QtnProperty *property);
-
 	std::vector<QtnProperty *> properties;
 	const QMetaObject *propertyMetaObject;
 
@@ -61,6 +58,11 @@ private:
 
 	friend class QtnMultiPropertyDelegate;
 };
+
+std::vector<QtnProperty *> QtnMultiProperty::getProperties() const
+{
+	return properties;
+}
 
 class QtnMultiPropertyDelegate
 		: public QtnPropertyDelegateTypedEx<QtnMultiProperty>
@@ -81,7 +83,11 @@ private:
 		std::vector<QMetaObject::Connection> connections;
 	};
 
-	static void onPropertyEdited(PropertyToEdit *data);
+	static void onEditedPropertyWillChange(PropertyToEdit *data,
+										   QtnPropertyChangeReason reason,
+										   QtnPropertyValuePtr newValue,
+										   int typeId);
+	static void onEditedPropertyDidChange(PropertyToEdit *data, QtnPropertyChangeReason reason);
 	static void onEditedPropertyDestroyed(PropertyToEdit *data);
 	static void onEditorDestroyed(PropertyToEdit *data);
 
@@ -100,3 +106,11 @@ private:
 	typedef std::unique_ptr<QtnPropertyDelegate> DelegatePtr;
 	std::vector<DelegatePtr> superDelegates;
 };
+
+struct QtnMultiVariant
+{
+	QVariantList values;
+};
+
+Q_DECLARE_METATYPE(QtnMultiVariant)
+

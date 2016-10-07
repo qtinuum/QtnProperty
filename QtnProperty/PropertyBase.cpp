@@ -15,8 +15,10 @@
 */
 
 #include "PropertyBase.h"
-#include <QScriptEngine>
 
+#include "PropertyConnector.h"
+
+#include <QScriptEngine>
 #include <QCoreApplication>
 
 static int qtnPropertyChangeReasonMetaId = qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
@@ -98,6 +100,7 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
 
 QtnPropertyBase::QtnPropertyBase(QObject *parent)
 	: QObject(parent)
+	, m_masterProperty(nullptr)
 	, m_id(QtnPropertyIDInvalid)
 	, m_stateLocal(QtnPropertyStateNone)
 	, m_stateInherited(QtnPropertyStateNone)
@@ -116,7 +119,7 @@ bool QtnPropertyBase::event(QEvent *e)
 			int reasons = changeReasons;
 			if (reasons != 0)
 			{
-				emit propertyDidChange(this, this, (QtnPropertyChangeReasonFlag) reasons);
+				emit propertyDidChange(QtnPropertyChangeReason(reasons));
 				changeReasons = 0;
 			} else
 			{
@@ -139,29 +142,35 @@ QtnPropertyBase::~QtnPropertyBase()
 
 void QtnPropertyBase::setName(const QString& name)
 {
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonName, QtnPropertyValuePtr(&name));
+	emit propertyWillChange(QtnPropertyChangeReasonName,
+							QtnPropertyValuePtr(&name),
+							qMetaTypeId<QString>());
 
 	setObjectName(name);
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonName);
+	emit propertyDidChange(QtnPropertyChangeReasonName);
 }
 
 void QtnPropertyBase::setDescription(const QString& description)
 {
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonDescription, QtnPropertyValuePtr(&description));
+	emit propertyWillChange(QtnPropertyChangeReasonDescription,
+							QtnPropertyValuePtr(&description),
+							qMetaTypeId<QString>());
 
 	m_description = description;
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonDescription);
+	emit propertyDidChange(QtnPropertyChangeReasonDescription);
 }
 
 void QtnPropertyBase::setId(QtnPropertyID id)
 {
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonId, QtnPropertyValuePtr(&id));
+	emit propertyWillChange(QtnPropertyChangeReasonId,
+							QtnPropertyValuePtr(&id),
+							qMetaTypeId<QtnPropertyID>());
 
 	m_id = id;
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonId);
+	emit propertyDidChange(QtnPropertyChangeReasonId);
 }
 
 void QtnPropertyBase::setState(QtnPropertyState stateToSet, bool force)
@@ -169,11 +178,13 @@ void QtnPropertyBase::setState(QtnPropertyState stateToSet, bool force)
 	if (!force && (m_stateLocal == stateToSet))
 		return;
 
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonStateLocal, QtnPropertyValuePtr(&stateToSet));
+	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
+							QtnPropertyValuePtr(&stateToSet),
+							qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonStateLocal);
+	emit propertyDidChange(QtnPropertyChangeReasonStateLocal);
 
 	updateStateInherited(force);
 }
@@ -185,11 +196,13 @@ void QtnPropertyBase::addState(QtnPropertyState stateToAdd, bool force)
 	if (!force && (m_stateLocal == stateToSet))
 		return;
 
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonStateLocal, QtnPropertyValuePtr(&stateToSet));
+	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
+							QtnPropertyValuePtr(&stateToSet),
+							qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonStateLocal);
+	emit propertyDidChange(QtnPropertyChangeReasonStateLocal);
 
 	updateStateInherited(force);
 }
@@ -201,11 +214,13 @@ void QtnPropertyBase::removeState(QtnPropertyState stateToRemove, bool force)
 	if (!force && (m_stateLocal == stateToSet))
 		return;
 
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonStateLocal, QtnPropertyValuePtr(&stateToSet));
+	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
+							QtnPropertyValuePtr(&stateToSet),
+							qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonStateLocal);
+	emit propertyDidChange(QtnPropertyChangeReasonStateLocal);
 
 	updateStateInherited(force);
 }
@@ -405,6 +420,21 @@ bool QtnPropertyBase::toVariant(QVariant& var) const
 	return toVariantImpl(var);
 }
 
+QtnPropertyBase *QtnPropertyBase::getRootProperty()
+{
+	auto result = this;
+	do
+	{
+		auto mp = result->getMasterProperty();
+		if (nullptr == mp)
+			break;
+
+		result = mp;
+	} while (true);
+
+	return result;
+}
+
 bool QtnPropertyBase::fromVariantImpl(const QVariant& var, bool edit)
 {
 	if (var.canConvert<QString>())
@@ -423,15 +453,33 @@ bool QtnPropertyBase::toVariantImpl(QVariant& var) const
 	return true;
 }
 
-QMetaObject::Connection QtnPropertyBase::connectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
+void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
 {
-	slaveProperty.setStateInherited(masterProperty.state());
-	return QObject::connect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyStateDidChange);
+	Q_ASSERT(nullptr != masterProperty);
+
+	disconnectMasterState();
+
+	m_masterProperty = masterProperty;
+
+	setStateInherited(masterProperty->state());
+
+	QObject::connect(masterProperty, &QObject::destroyed,
+					 this, &QtnPropertyBase::onMasterPropertyDestroyed);
+	QObject::connect(masterProperty, &QtnPropertyBase::propertyDidChange,
+					 this, &QtnPropertyBase::masterPropertyStateDidChange);
 }
 
-bool QtnPropertyBase::disconnectMasterState(const QtnPropertyBase& masterProperty, QtnPropertyBase& slaveProperty)
+void QtnPropertyBase::disconnectMasterState()
 {
-	return QObject::disconnect(&masterProperty, &QtnPropertyBase::propertyDidChange, &slaveProperty, &QtnPropertyBase::masterPropertyStateDidChange);
+	if (nullptr != m_masterProperty)
+	{
+		QObject::disconnect(m_masterProperty, &QObject::destroyed,
+							this, &QtnPropertyBase::onMasterPropertyDestroyed);
+		QObject::disconnect(m_masterProperty, &QtnPropertyBase::propertyDidChange,
+							this, &QtnPropertyBase::masterPropertyStateDidChange);
+
+		m_masterProperty = nullptr;
+	}
 }
 
 void QtnPropertyBase::postUpdateEvent(QtnPropertyChangeReason reason)
@@ -446,20 +494,23 @@ void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)
 	if (!force && (m_stateInherited == stateToSet))
 		return;
 
-	Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonStateInherited, QtnPropertyValuePtr(&stateToSet));
+	emit propertyWillChange(QtnPropertyChangeReasonStateInherited,
+							QtnPropertyValuePtr(&stateToSet),
+							qMetaTypeId<QtnPropertyState>());
 
 	m_stateInherited = stateToSet;
 
-	Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonStateInherited);
+	emit propertyDidChange(QtnPropertyChangeReasonStateInherited);
 
 	updateStateInherited(force);
 }
 
-void QtnPropertyBase::masterPropertyStateDidChange(const QtnPropertyBase *changedProperty, const QtnPropertyBase *firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertyBase::masterPropertyStateDidChange(QtnPropertyChangeReason reason)
 {
-	// state has changed and not from child property
-	if ((reason & QtnPropertyChangeReasonState) && (changedProperty == firedProperty))
+	if (reason & QtnPropertyChangeReasonState)
 	{
+		auto changedProperty = dynamic_cast<QtnPropertyBase *>(sender());
+		Q_ASSERT(nullptr != changedProperty);
 		setStateInherited(changedProperty->state());
 	}
 }
@@ -474,6 +525,12 @@ QVariant QtnPropertyBase::valueAsVariant() const
 void QtnPropertyBase::setValueAsVariant(const QVariant& value)
 {
 	fromVariant(value, false);
+}
+
+void QtnPropertyBase::onMasterPropertyDestroyed(QObject *object)
+{
+	Q_ASSERT(object == m_masterProperty);
+	m_masterProperty = nullptr;
 }
 
 QDataStream& operator<< (QDataStream& stream, const QtnPropertyBase& property)
@@ -503,3 +560,9 @@ void QtnPropertyBase::setCollapsed(bool collapsed)
 	else
 		expand();
 }
+
+QtnPropertyConnector *QtnPropertyBase::getConnector() const
+{
+	return findChild<QtnPropertyConnector *>(QString(), Qt::FindDirectChildrenOnly);
+}
+

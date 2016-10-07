@@ -53,7 +53,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQStringCallback: public QtnSinglePropertyCall
 	QtnPropertyQStringCallback(const QtnPropertyQStringCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQStringCallback(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQStringCallback(QObject *parent = nullptr);
 
 	QtnPropertyQStringCallback& operator=(const char* newValue);
 
@@ -66,7 +66,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQString: public QtnSinglePropertyValue<QtnPro
 	QtnPropertyQString(const QtnPropertyQString& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQString(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQString(QObject *parent = nullptr);
 
 	QtnPropertyQString& operator=(const char* newValue);
 

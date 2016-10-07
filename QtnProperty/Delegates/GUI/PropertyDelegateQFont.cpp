@@ -111,10 +111,12 @@ static void applyFontStyle(QFont &font)
 QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>(owner)
 {
-	QtnPropertyQStringCallback* propertyStyle = new QtnPropertyQStringCallback(0);
+	auto propertyStyle = new QtnPropertyQStringCallback(0);
+
 
 	QtnPropertyQStringCallback* propertyFamily = new QtnPropertyQStringCallback(0);
 	addSubProperty(propertyFamily);
+
 	propertyFamily->setName(QtnPropertyQFont::getFamilyLabel());
 	propertyFamily->setDescription(QtnPropertyQFont::getFamilyDescription(owner.name()));
 	propertyFamily->setCallbackValueGet([&owner]()->QString {
@@ -140,7 +142,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase& owner)
 			QObject::disconnect(*c.get());
 			c = nullptr;
 
-			owner.propertyDidChange(&owner, &owner, QtnPropertyChangeReasonChildren);
+			emit owner.propertyDidChange(QtnPropertyChangeReasonChildren);
 		});
 #endif
 	});
@@ -480,9 +482,7 @@ void QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked(bool)
 		font.setStyleStrategy(style_strategy);
 
 		if (property->edit(font))
-			property->propertyDidChange(property,
-										property,
-										QtnPropertyChangeReasonChildren);
+			emit property->propertyDidChange(QtnPropertyChangeReasonChildren);
 	}
 
 	if (!destroyed)

@@ -51,7 +51,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQRectCallback: public QtnSinglePropertyCallba
 	QtnPropertyQRectCallback(const QtnPropertyQRectCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQRectCallback(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQRectCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRectCallback, QtnPropertyQRectBase)
 };
@@ -62,7 +62,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQRect: public QtnSinglePropertyValue<QtnPrope
 	QtnPropertyQRect(const QtnPropertyQRect& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQRect(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQRect(QObject *parent = nullptr);
 
 	static QString getToStringFormat(bool coordinates = false);
 

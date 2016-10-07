@@ -89,7 +89,6 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(QtnPropertyEnumFlagsB
 				});
 
 				this->addSubProperty(flagProperty);
-				QtnPropertyBase::connectMasterState(owner, *flagProperty);
 			}
 
 			return true;

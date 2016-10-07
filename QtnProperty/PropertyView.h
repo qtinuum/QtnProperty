@@ -91,9 +91,13 @@ Q_SIGNALS:
 	// emits when active property has changed
 	void activePropertyChanged(QtnPropertyBase* activeProperty);
 	void mouseReleased(QMouseEvent *e);
+	void beforePropertyEdited(QtnProperty *property, QtnPropertyValuePtr newValue, int typeId);
+	void propertyEdited(QtnProperty *property);
 
 private slots:
 	void onActivePropertyDestroyed();
+	void onEditedPropertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId);
+	void onEditedPropertyDidChange(QtnPropertyChangeReason reason);
 
 protected:
 	void paintEvent(QPaintEvent* e) override;
@@ -147,6 +151,7 @@ private:
 	static Item* createItemsTree(QtnPropertyBase* rootProperty, const QtnPropertyDelegateFactory& factory);
 
 	void setActivePropertyInternal(QtnPropertyBase *property);
+	bool startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e, const QRect &rect);
 
 	void invalidateVisibleItems();
 	void validateVisibleItems() const;
@@ -176,7 +181,7 @@ private:
 	void connectActiveProperty();
 	void disconnectActiveProperty();
 
-	void OnPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+	void onPropertySetDidChange(QtnPropertyChangeReason reason);
 
 private:
 	Item *findItem(Item *currentItem, const QtnPropertyBase *property) const;

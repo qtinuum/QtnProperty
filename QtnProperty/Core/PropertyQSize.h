@@ -47,7 +47,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQSizeCallback: public QtnSinglePropertyCallba
 	QtnPropertyQSizeCallback(const QtnPropertyQSizeCallback& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQSizeCallback(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQSizeCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSizeCallback, QtnPropertyQSizeBase)
 };
@@ -58,7 +58,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQSize: public QtnSinglePropertyValue<QtnPrope
 	QtnPropertyQSize(const QtnPropertyQSize& other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQSize(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQSize(QObject *parent = nullptr);
 
 	static QString getToStringFormat();
 
