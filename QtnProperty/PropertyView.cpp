@@ -956,10 +956,6 @@ bool QtnPropertyView::startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e
 	QtnInplaceInfo inplaceInfo;
 	inplaceInfo.activationEvent = e;
 
-	auto editor = delegate->createValueEditor(viewport(), rect, &inplaceInfo);
-	if (nullptr == editor)
-		return false;
-
 	auto property = delegate->getOwnerProperty();
 	Q_ASSERT(nullptr != property);
 
@@ -967,29 +963,46 @@ bool QtnPropertyView::startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e
 
 	std::shared_ptr<Connections> connections(new Connections);
 
-	connections->push_back(QObject::connect(property, &QObject::destroyed, [connections]()
+	bool editable = property->isEditableByUser();
+
+	if (editable)
 	{
-		connections->clear();
-	}));
+		connections->push_back(QObject::connect(property, &QObject::destroyed, [connections]()
+		{
+			connections->clear();
+		}));
 
-	connections->push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
-											this, &QtnPropertyView::onEditedPropertyWillChange));
+		connections->push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
+												this, &QtnPropertyView::onEditedPropertyWillChange));
 
-	connections->push_back(QObject::connect(property, &QtnProperty::propertyDidChange,
-											this, &QtnPropertyView::onEditedPropertyDidChange));
+		connections->push_back(QObject::connect(property, &QtnProperty::propertyDidChange,
+												this, &QtnPropertyView::onEditedPropertyDidChange));
+	}
 
-	QObject::connect(editor, &QObject::destroyed, [connections]()
+	auto editor = delegate->createValueEditor(viewport(), rect, &inplaceInfo);
+
+	auto editFinished = [connections]()
 	{
 		for (auto &connection : *connections.get())
 			QObject::disconnect(connection);
 
 		connections->clear();
-	});
+	};
 
-	if (!editor->isVisible())
-		editor->show();
+	if (nullptr == editor)
+	{
+		if (editable)
+			editFinished();
+		return false;
+	} else
+	{
+		QObject::connect(editor, &QObject::destroyed, editFinished);
 
-	qtnStartInplaceEdit(editor);
+		if (!editor->isVisible())
+			editor->show();
+
+		qtnStartInplaceEdit(editor);
+	}
 
 	return true;
 }
