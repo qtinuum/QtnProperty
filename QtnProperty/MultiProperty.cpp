@@ -61,7 +61,7 @@ void QtnMultiProperty::resetValues()
 			connector->resetPropertyValue();
 	}
 
-	refreshValues();
+	updateMultipleState(true);
 	emit propertyDidChange(QtnPropertyChangeReasonNewValue);
 }
 
@@ -129,8 +129,11 @@ void QtnMultiProperty::onPropertyWillChange(QtnPropertyChangeReason reason,
 
 void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 {
-	if (0 != (reason & QtnPropertyChangeReasonValue))
-		refreshValues();
+	if (0 != (reason & QtnPropertyChangeReasonStateInherited)
+	||	0 != (reason & QtnPropertyChangeReasonValue))
+	{
+		updateMultipleState(true);
+	}
 
 	emit propertyDidChange(reason);
 }
@@ -258,9 +261,21 @@ bool QtnMultiProperty::toVariantImpl(QVariant &var) const
 	return true;
 }
 
+void QtnMultiProperty::updateMultipleState(bool force)
+{
+	if (force)
+		calculateMultipleValues = true;
+
+	bool multipleValues = hasMultipleValues();
+	switchState(QtnPropertyStateHiddenValue, multipleValues);
+	properties.at(0)->switchState(QtnPropertyStateHiddenValue, multipleValues);
+}
+
 QtnMultiPropertyDelegate::QtnMultiPropertyDelegate(QtnMultiProperty &owner)
 	: Inherited(owner)
 {
+	owner.updateMultipleState(true);
+
 	int subPropertyCount = 0;
 	for (auto property : owner.properties)
 	{
@@ -331,7 +346,7 @@ void QtnMultiPropertyDelegate::onEditedPropertyDidChange(PropertyToEdit *data, Q
 		}
 	}
 
-	owner->refreshValues();
+	owner->updateMultipleState(true);
 
 	emit owner->propertyDidChange(reason);
 }
@@ -359,7 +374,7 @@ void QtnMultiPropertyDelegate::onEditorDestroyed(PropertyToEdit *data)
 
 bool QtnMultiPropertyDelegate::propertyValueToStr(QString &strValue) const
 {
-	if (owner().hasMultipleValues())
+	if (owner().valueIsHidden())
 	{
 		strValue = QtnMultiProperty::getMultiValuePlaceholder();
 		return true;
@@ -383,7 +398,7 @@ void QtnMultiPropertyDelegate::applyAttributesImpl(const QtnPropertyDelegateAttr
 void QtnMultiPropertyDelegate::drawValueImpl(QStylePainter &painter, const QRect &rect,
 											 const QStyle::State &state, bool *needTooltip) const
 {
-	if (owner().hasMultipleValues())
+	if (owner().valueIsHidden())
 	{
 		Q_ASSERT(!superDelegates.empty());
 
@@ -415,7 +430,7 @@ void QtnMultiPropertyDelegate::drawValueImpl(QStylePainter &painter, const QRect
 
 QString QtnMultiPropertyDelegate::toolTipImpl() const
 {
-	if (owner().hasMultipleValues())
+	if (owner().valueIsHidden())
 		return Inherited::toolTipImpl();
 
 	if (!superDelegates.empty())
@@ -438,17 +453,13 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(QWidget *parent,
 {
 	if (!superDelegates.empty())
 	{
-		auto superDelegate = superDelegates.at(0).get();
-
 		PropertyToEdit *data = nullptr;
-		auto propertyToEdit = owner().properties.at(0);
-		if (owner().hasMultipleValues())
-			propertyToEdit->addState(QtnPropertyStateHiddenValue);
 
-		bool isEditable = owner().isEditableByUser();
+		bool editable = owner().isEditableByUser();
 
-		if (isEditable)
+		if (editable)
 		{
+			auto propertyToEdit = owner().properties.at(0);
 			data = new PropertyToEdit;
 			data->owner = &owner();
 			data->property = propertyToEdit;
@@ -463,9 +474,10 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(QWidget *parent,
 							 std::bind(&QtnMultiPropertyDelegate::onEditedPropertyDestroyed, data)));
 		}
 
+		auto superDelegate = superDelegates.at(0).get();
 		auto editor = superDelegate->createValueEditor(parent, rect, inplaceInfo);
 
-		if (isEditable)
+		if (editable)
 		{
 			if (nullptr == editor)
 			{
@@ -481,11 +493,4 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(QWidget *parent,
 	}
 
 	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
-}
-
-void QtnMultiProperty::refreshValues()
-{
-	calculateMultipleValues = true;
-
-	properties.at(0)->switchState(QtnPropertyStateHiddenValue, hasMultipleValues());
 }

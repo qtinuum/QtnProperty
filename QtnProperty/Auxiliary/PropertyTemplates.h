@@ -38,7 +38,7 @@ class QtnSinglePropertyBase: public QtnProperty
 
 	bool setValue(ValueType newValue, bool edit = false)
 	{
-		if (isValueEqualImpl(newValue))
+		if (!valueIsHidden() && isValueEqualImpl(newValue))
 			return true;
 
 		if (!isValueAcceptedImpl(newValue))

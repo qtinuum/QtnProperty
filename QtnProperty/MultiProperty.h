@@ -48,7 +48,7 @@ protected:
 	virtual bool toVariantImpl(QVariant& var) const override;
 
 private:
-	void refreshValues();
+	void updateMultipleState(bool force);
 
 	std::vector<QtnProperty *> properties;
 	const QMetaObject *propertyMetaObject;
