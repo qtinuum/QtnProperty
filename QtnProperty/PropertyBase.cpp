@@ -100,6 +100,7 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
 
 QtnPropertyBase::QtnPropertyBase(QObject *parent)
 	: QObject(parent)
+	, m_masterProperty(nullptr)
 	, m_id(QtnPropertyIDInvalid)
 	, m_stateLocal(QtnPropertyStateNone)
 	, m_stateInherited(QtnPropertyStateNone)
