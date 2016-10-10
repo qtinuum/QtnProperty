@@ -129,8 +129,7 @@ void QtnMultiProperty::onPropertyWillChange(QtnPropertyChangeReason reason,
 
 void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 {
-	if (0 != (reason & QtnPropertyChangeReasonStateInherited)
-	||	0 != (reason & QtnPropertyChangeReasonValue))
+	if (0 != (reason & (QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue)))
 	{
 		updateMultipleState(true);
 	}
