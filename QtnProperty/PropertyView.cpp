@@ -25,6 +25,8 @@
 #include <QHelpEvent>
 #include <QToolTip>
 
+#include <memory>
+
 class QtnPainterState
 {
 public:
