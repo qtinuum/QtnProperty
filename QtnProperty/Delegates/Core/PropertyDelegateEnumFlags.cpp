@@ -19,6 +19,7 @@
 #include "Core/PropertyBool.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
+#include "MultiProperty.h"
 
 #include <QLineEdit>
 
@@ -128,7 +129,12 @@ QtnPropertyEnumFlagsLineEditHandler::QtnPropertyEnumFlagsLineEditHandler(QtnProp
 void QtnPropertyEnumFlagsLineEditHandler::updateEditor()
 {
 	if (property().valueIsHidden())
+	{
 		editor().clear();
-	else
+		editor().setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
+	} else
+	{
 		editor().setText(enumFlagsProperty2Str(property()));
+		editor().setPlaceholderText(QString());
+	}
 }

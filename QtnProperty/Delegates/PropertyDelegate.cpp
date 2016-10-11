@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,58 +15,60 @@
 */
 
 #include "PropertyDelegate.h"
+#include "MultiProperty.h"
+#include "PropertyEditorAux.h"
 
 #include <QLineEdit>
 #include <QKeyEvent>
 
 QString qtnElidedText(const QPainter& painter, const QString& text, const QRect& rect, bool* elided)
 {
-    QString newText = painter.fontMetrics().elidedText(text, Qt::ElideRight, rect.width());
+	QString newText = painter.fontMetrics().elidedText(text, Qt::ElideRight, rect.width());
 
-    if (elided)
-        *elided = (newText != text);
+	if (elided)
+		*elided = (newText != text);
 
-    return newText;
+	return newText;
 }
 
 int QtnPropertyDelegate::subPropertyCount() const
 {
-    return subPropertyCountImpl();
+	return subPropertyCountImpl();
 }
 
 QtnPropertyBase* QtnPropertyDelegate::subProperty(int index)
 {
-    return subPropertyImpl(index);
+	return subPropertyImpl(index);
 }
 
 void QtnPropertyDelegate::applyAttributes(const QtnPropertyDelegateAttributes& attributes)
 {
-    applyAttributesImpl(attributes);
+	applyAttributesImpl(attributes);
 }
 
 void QtnPropertyDelegate::drawValue(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
-    drawValueImpl(painter, rect, state, needTooltip);
+	drawValueImpl(painter, rect, state, needTooltip);
 }
 
 QString QtnPropertyDelegate::toolTip() const
 {
-    return toolTipImpl();
+	return toolTipImpl();
 }
 
 bool QtnPropertyDelegate::acceptKeyPressedForInplaceEdit(QKeyEvent* keyEvent) const
 {
-    return acceptKeyPressedForInplaceEditImpl(keyEvent);
+	return acceptKeyPressedForInplaceEditImpl(keyEvent);
 }
 
 QWidget* QtnPropertyDelegate::createValueEditor(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QWidget* valueEditor = createValueEditorImpl(parent, rect, inplaceInfo);
-    if (!valueEditor)
-        return valueEditor;
+	QWidget* valueEditor = createValueEditorImpl(parent, rect, inplaceInfo);
+	if (!valueEditor)
+		return valueEditor;
 
-    valueEditor->setObjectName("QtnPropertyValueEditor");
-    return valueEditor;
+	valueEditor->setObjectName("QtnPropertyValueEditor");
+	return valueEditor;
 }
 
 QtnPropertyDelegate::QtnPropertyDelegate(QtnProperty *ownerProperty)
@@ -77,51 +79,53 @@ QtnPropertyDelegate::QtnPropertyDelegate(QtnProperty *ownerProperty)
 
 void QtnPropertyDelegate::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
 {
-    QString strValue;
-    if (propertyValueToStr(strValue))
-    {
-        drawValueText(strValue, painter, rect, state, needTooltip);
-    }
+	QString strValue;
+	if (propertyValueToStr(strValue))
+	{
+		drawValueText(strValue, painter, rect, state, needTooltip);
+	}
 }
 
 QString QtnPropertyDelegate::toolTipImpl() const
 {
-    QString strValue;
-    propertyValueToStr(strValue);
-    return strValue;
+	QString strValue;
+	propertyValueToStr(strValue);
+	return strValue;
 }
 
 bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const
 {
-    int key = keyEvent->key();
+	int key = keyEvent->key();
 	return (key == Qt::Key_Space || key == Qt::Key_Return);
 }
 
 void QtnPropertyDelegate::drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State &state, bool* needTooltip)
 {
-    if (text.isEmpty())
-        return;
+	if (text.isEmpty())
+		return;
 
-    painter.drawText(rect, Qt::AlignLeading | Qt::AlignVCenter
-                     , qtnElidedText(painter, text, rect, needTooltip));
+	painter.drawText(rect, Qt::AlignLeading | Qt::AlignVCenter
+					 , qtnElidedText(painter, text, rect, needTooltip));
 }
 
 QWidget* QtnPropertyDelegate::createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo)
 {
-    QLineEdit* lineEdit = new QLineEdit(parent);
-    lineEdit->setGeometry(rect);
-    lineEdit->setReadOnly(readOnly);
+	QLineEdit* lineEdit = new QLineEdit(parent);
+	lineEdit->setGeometry(rect);
+	lineEdit->setReadOnly(readOnly);
 
-    QString strValue;
-	if (!ownerProperty->valueIsHidden())
+	QString strValue;
+	if (ownerProperty->valueIsHidden())
+	{
+		lineEdit->setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
+	} else
+	{
 		propertyValueToStr(strValue);
-    lineEdit->setText(strValue);
+	}
+	lineEdit->setText(strValue);
 
-    if (inplaceInfo)
-    {
-        lineEdit->selectAll();
-    }
+	qtnInitLineEdit(lineEdit, inplaceInfo);
 
-    return lineEdit;
+	return lineEdit;
 }
 

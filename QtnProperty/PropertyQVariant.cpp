@@ -4,6 +4,7 @@
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyEditorHandler.h"
+#include "MultiProperty.h"
 
 #include "CustomPropertyEditorDialog.h"
 
@@ -228,7 +229,7 @@ void QtnPropertyQVariantEditBttnHandler::updateEditor()
 	if (property().valueIsHidden())
 	{
 		edit->clear();
-		edit->setPlaceholderText(QString());
+		edit->setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
 		QVariant value;

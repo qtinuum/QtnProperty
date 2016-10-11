@@ -20,6 +20,7 @@
 #include "Delegates/PropertyEditorHandler.h"
 #include "Delegates/PropertyEditorAux.h"
 #include "Utils/MultilineTextDialog.h"
+#include "MultiProperty.h"
 
 #include <QLineEdit>
 #include <QKeyEvent>
@@ -242,13 +243,7 @@ QWidget* QtnPropertyDelegateQStringList::createValueEditorImpl(QWidget* parent, 
 {
 	if (!owner().isEditableByUser())
 	{
-		QLineEdit *lineEdit = new QLineEdit(parent);
-		lineEdit->setReadOnly(true);
-		lineEdit->setText(owner().value());
-
-		lineEdit->setGeometry(rect);
-
-		return lineEdit;
+		return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 	}
 
 	QComboBox* editor = new QComboBox(parent);
@@ -369,11 +364,11 @@ void QtnPropertyQStringFileLineEditBttnHandler::updateEditor()
 	auto path = property().value();
 	editor().setTextForProperty(&property(), path);
 
-	if (property().valueIsHidden())
-		editor().lineEdit->setPlaceholderText(QString());
-	else
+	if (!property().valueIsHidden())
+	{
 		editor().lineEdit->setPlaceholderText(
 				QtnPropertyQString::getPlaceholderStr(editor().lineEdit->text(), false));
+	}
 }
 
 void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked(bool)
@@ -428,11 +423,10 @@ void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
 	auto edit = editor().lineEdit;
 	edit->setReadOnly(!property().isEditableByUser());
 
-	QString placeholder;
-
 	if (property().valueIsHidden())
 	{
 		edit->clear();
+		edit->setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
 		auto text = property().value();
@@ -446,9 +440,8 @@ void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
 			edit->setText(text);
 		}
 
-		placeholder = QtnPropertyQString::getPlaceholderStr(text, true);
+		edit->setPlaceholderText(QtnPropertyQString::getPlaceholderStr(text, true));
 	}
-	edit->setPlaceholderText(placeholder);
 }
 
 void QtnPropertyQStringMultilineEditBttnHandler::revertInput()
@@ -530,12 +523,15 @@ QtnPropertyQStringLineEditHandler::QtnPropertyQStringLineEditHandler(QtnProperty
 void QtnPropertyQStringLineEditHandler::updateEditor()
 {
 	if (property().valueIsHidden())
+	{
 		editor().clear();
-	else
+		editor().setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
+	}else
+	{
 		editor().setText(property().value());
-
-	editor().setPlaceholderText(
-				QtnPropertyQString::getPlaceholderStr(editor().text(), false));
+		editor().setPlaceholderText(
+					QtnPropertyQString::getPlaceholderStr(editor().text(), false));
+	}
 }
 
 void QtnPropertyQStringLineEditHandler::onEditingFinished()

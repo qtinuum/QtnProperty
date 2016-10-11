@@ -71,15 +71,9 @@ QWidget* QtnPropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const Q
 	{
 		const QtnEnumValueInfo* valueInfo = info->findByValue(owner());
 		if (!valueInfo)
-			return 0;
+			return nullptr;
 
-		QLineEdit* lineEdit = new QLineEdit(parent);
-		lineEdit->setReadOnly(true);
-		lineEdit->setText(valueInfo->name());
-
-		lineEdit->setGeometry(rect);
-
-		return lineEdit;
+		return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 	}
 
 }

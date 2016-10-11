@@ -105,16 +105,8 @@ QWidget* QtnPropertyDelegateBoolCombobox::createValueEditorImpl(QWidget* parent,
 
 		return comboBox;
 	}
-	else
-	{
-		QLineEdit *lineEdit = new QLineEdit(parent);
-		lineEdit->setReadOnly(true);
-		lineEdit->setText(m_labels[bool(owner()) ? 1 : 0]);
 
-		lineEdit->setGeometry(rect);
-
-		return lineEdit;
-	}
+	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
 bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(QString& strValue) const

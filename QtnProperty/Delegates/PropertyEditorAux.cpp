@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,63 +16,69 @@
 
 #include "PropertyEditorAux.h"
 #include "PropertyDelegate.h"
+#include "MultiProperty.h"
 
 #include <QHBoxLayout>
 #include <QKeyEvent>
 
 QtnLineEditBttn::QtnLineEditBttn(QWidget *parent)
-    : QWidget(parent)
+	: QWidget(parent)
 {
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setMargin(0);
-    layout->setSpacing(0);
+	QHBoxLayout *layout = new QHBoxLayout(this);
+	layout->setMargin(0);
+	layout->setSpacing(0);
 
-    lineEdit = new QLineEdit(this);
-    layout->addWidget(lineEdit);
+	lineEdit = new QLineEdit(this);
+	layout->addWidget(lineEdit);
 
-    toolButton = new QToolButton(this);
-    toolButton->setText("...");
-    toolButton->setFocusPolicy(Qt::StrongFocus);
-    layout->addWidget(toolButton);
+	toolButton = new QToolButton(this);
+	toolButton->setText("...");
+	toolButton->setFocusPolicy(Qt::StrongFocus);
+	layout->addWidget(toolButton);
 
-    setFocusProxy(lineEdit);
+	setFocusProxy(lineEdit);
 	setAutoFillBackground(true);
 }
 
 void QtnLineEditBttn::setTextForProperty(QtnProperty *property, const QString &text)
 {
 	if (property->valueIsHidden())
+	{
 		lineEdit->clear();
-	else
+		lineEdit->setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
+	} else
+	{
 		lineEdit->setText(text);
+		lineEdit->setPlaceholderText(QString());
+	}
 }
 
 bool qtnAcceptForLineEdit(QKeyEvent *keyEvent)
 {
-    if (keyEvent->type() != QEvent::KeyPress)
-        return false;
+	if (keyEvent->type() != QEvent::KeyPress)
+		return false;
 
-    // any printable key press is acceptable
-    QString text = keyEvent->text();
-    return (text.size() == 1 && text[0].isPrint());
+	// any printable key press is acceptable
+	QString text = keyEvent->text();
+	return (text.size() == 1 && text[0].isPrint());
 }
 
 void qtnInitLineEdit(QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo)
 {
-    if (!lineEdit || !inplaceInfo)
-        return;
+	if (!lineEdit || !inplaceInfo)
+		return;
 
-    if (!lineEdit->isReadOnly() && (inplaceInfo->activationEvent->type() == QEvent::KeyPress))
-    {
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(inplaceInfo->activationEvent);
-        if (qtnAcceptForLineEdit(keyEvent))
-        {
-            lineEdit->setText(keyEvent->text());
-            return;
-        }
-    }
-    else
-    {
-        lineEdit->selectAll();
-    }
+	if (!lineEdit->isReadOnly() && (inplaceInfo->activationEvent->type() == QEvent::KeyPress))
+	{
+		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(inplaceInfo->activationEvent);
+		if (qtnAcceptForLineEdit(keyEvent))
+		{
+			lineEdit->setText(keyEvent->text());
+			return;
+		}
+	}
+	else
+	{
+		lineEdit->selectAll();
+	}
 }
