@@ -56,7 +56,7 @@ bool qtnRegisterMetaPropertyFactory(int metaPropertyType, const QtnMetaPropertyF
 	return true;
 }
 
-void qtnUpdatePropertyState(QtnPropertyBase *property, const QMetaProperty &metaProperty)
+QtnPropertyState qtnPropertyStateToAdd(const QMetaProperty &metaProperty)
 {
 	QtnPropertyState toAdd;
 
@@ -69,7 +69,12 @@ void qtnUpdatePropertyState(QtnPropertyBase *property, const QMetaProperty &meta
 		toAdd |= QtnPropertyStateImmutable;
 	}
 
-	property->addState(toAdd);
+	return toAdd;
+}
+
+void qtnUpdatePropertyState(QtnPropertyBase *property, const QMetaProperty &metaProperty)
+{
+	property->addState(qtnPropertyStateToAdd(metaProperty));
 }
 
 QtnProperty* qtnCreateQObjectProperty(QObject* object, const QMetaProperty& metaProperty)

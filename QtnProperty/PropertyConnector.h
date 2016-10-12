@@ -18,13 +18,14 @@ public:
 	void connectProperty(QObject *object, const QMetaProperty &metaProperty);
 
 	bool isResettablePropertyValue() const;
-	void resetPropertyValue();
+	void resetPropertyValue(bool edit);
 
 	inline QObject *getObject() const;
 	inline const QMetaProperty &getMetaProperty() const;
 
 private slots:
 	void onValueChanged();
+	void onModifiedSetChanged();
 
 private:
 	QObject *object;

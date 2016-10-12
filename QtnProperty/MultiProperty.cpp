@@ -51,18 +51,17 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 					 this, &QtnMultiProperty::onPropertyDidChange);
 }
 
-void QtnMultiProperty::resetValues()
+void QtnMultiProperty::resetValues(bool edit)
 {
 	for (auto property : properties)
 	{
 		auto connector = property->getConnector();
 
 		if (nullptr != connector)
-			connector->resetPropertyValue();
+			connector->resetPropertyValue(edit);
 	}
 
 	updateMultipleState(true);
-	emit propertyDidChange(QtnPropertyChangeReasonNewValue);
 }
 
 bool QtnMultiProperty::hasResettableValues() const

@@ -256,6 +256,11 @@ bool QtnPropertyBase::valueIsHidden() const
 	return 0 != (m_stateLocal & QtnPropertyStateHiddenValue);
 }
 
+bool QtnPropertyBase::valueIsDefault() const
+{
+	return 0 == (m_stateLocal & QtnPropertyStateModifiedValue);
+}
+
 bool QtnPropertyBase::load(QDataStream &stream)
 {
 	if (stream.status() != QDataStream::Ok)

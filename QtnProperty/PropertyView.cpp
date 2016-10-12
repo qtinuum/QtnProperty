@@ -419,8 +419,16 @@ void QtnPropertyView::drawPropertyItem(QStylePainter& painter, const QRect& rect
 	// draw name
 	painter.setPen(palette().color(cg, selected ? QPalette::HighlightedText : QPalette::Text));
 
-	painter.drawText(  nameRect, Qt::AlignLeading|Qt::AlignVCenter|Qt::TextSingleLine
-					 , qtnElidedText(painter, vItem.item->property->name(), nameRect));
+	auto font = painter.font();
+	auto property = vItem.item->property;
+	font.setBold(!property->valueIsDefault());
+	painter.setFont(font);
+
+	painter.drawText(  nameRect, Qt::AlignLeading | Qt::AlignVCenter | Qt::TextSingleLine
+					 , qtnElidedText(painter, property->name(), nameRect));
+
+	font.setBold(false);
+	painter.setFont(font);
 
 	// draw property value
 	if (valueRect.isValid())
@@ -437,7 +445,8 @@ void QtnPropertyView::drawPropertyItem(QStylePainter& painter, const QRect& rect
 			edit.rect = editRect;
 
 			auto propertyDelegate = vItem.item->delegate.data();
-			edit.action = [propertyDelegate, this](QEvent *e, QRect rect)->bool {
+			edit.action = [propertyDelegate, this](QEvent *e, QRect rect) -> bool
+			{
 				bool doEdit = false;
 
 				if (this->propertyViewStyle() & QtnPropertyViewStyleDblClickActivation)
@@ -974,11 +983,14 @@ bool QtnPropertyView::startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e
 			connections->clear();
 		}));
 
-		connections->push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
-												this, &QtnPropertyView::onEditedPropertyWillChange));
+		if (m_activeProperty != property)
+		{
+			connections->push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
+													this, &QtnPropertyView::onEditedPropertyWillChange));
 
-		connections->push_back(QObject::connect(property, &QtnProperty::propertyDidChange,
-												this, &QtnPropertyView::onEditedPropertyDidChange));
+			connections->push_back(QObject::connect(property, &QtnProperty::propertyDidChange,
+													this, &QtnPropertyView::onEditedPropertyDidChange));
+		}
 	}
 
 	auto editor = delegate->createValueEditor(viewport(), rect, &inplaceInfo);
@@ -1159,6 +1171,10 @@ void QtnPropertyView::connectActiveProperty()
 	{
 		QObject::connect(m_activeProperty, &QObject::destroyed,
 						 this, &QtnPropertyView::onActivePropertyDestroyed);
+		QObject::connect(m_activeProperty, &QtnPropertyBase::propertyWillChange,
+						 this, &QtnPropertyView::onEditedPropertyWillChange);
+		QObject::connect(m_activeProperty, &QtnPropertyBase::propertyDidChange,
+						 this, &QtnPropertyView::onEditedPropertyDidChange);
 	}
 }
 
@@ -1168,6 +1184,10 @@ void QtnPropertyView::disconnectActiveProperty()
 	{
 		QObject::disconnect(m_activeProperty, &QObject::destroyed,
 							this, &QtnPropertyView::onActivePropertyDestroyed);
+		QObject::disconnect(m_activeProperty, &QtnPropertyBase::propertyWillChange,
+						 this, &QtnPropertyView::onEditedPropertyWillChange);
+		QObject::disconnect(m_activeProperty, &QtnPropertyBase::propertyDidChange,
+						 this, &QtnPropertyView::onEditedPropertyDidChange);
 	}
 }
 

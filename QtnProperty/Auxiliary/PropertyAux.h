@@ -33,7 +33,8 @@ enum QtnPropertyStateFlag
 	QtnPropertyStateImmutable = 0x0004,
 	QtnPropertyStateCollapsed = 0x0008,
 	QtnPropertyStateNonSerialized = 0x0010,
-	QtnPropertyStateHiddenValue = 0x0020
+	QtnPropertyStateHiddenValue = 0x0020,
+	QtnPropertyStateModifiedValue = 0x0040
 };
 Q_DECLARE_FLAGS(QtnPropertyState, QtnPropertyStateFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyState)
@@ -42,7 +43,6 @@ enum QtnPropertyChangeReasonFlag
 {
 	QtnPropertyChangeReasonNewValue = 0x0001,
 	QtnPropertyChangeReasonLoadedValue = 0x0002,
-	QtnPropertyChangeReasonValue = QtnPropertyChangeReasonNewValue|QtnPropertyChangeReasonLoadedValue,
 	QtnPropertyChangeReasonName = 0x0004,
 	QtnPropertyChangeReasonDescription = 0x0008,
 	QtnPropertyChangeReasonId = 0x0010,
@@ -52,7 +52,9 @@ enum QtnPropertyChangeReasonFlag
 	QtnPropertyChangeReasonChildPropertyAdd = 0x0080,
 	QtnPropertyChangeReasonChildPropertyRemove = 0x0100,
 	QtnPropertyChangeReasonEditValue = 0x0200,
-	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd|QtnPropertyChangeReasonChildPropertyRemove
+	QtnPropertyChangeReasonResetValue = 0x0400,
+	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd|QtnPropertyChangeReasonChildPropertyRemove,
+	QtnPropertyChangeReasonValue = QtnPropertyChangeReasonNewValue|QtnPropertyChangeReasonLoadedValue|QtnPropertyChangeReasonResetValue
 };
 Q_DECLARE_FLAGS(QtnPropertyChangeReason, QtnPropertyChangeReasonFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyChangeReason)

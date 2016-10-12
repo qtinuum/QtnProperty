@@ -79,12 +79,12 @@ void QObjectPropertyWidget::onResetTriggered()
 {
 	auto multiProperty = getMultiProperty();
 	if (nullptr != multiProperty)
-		multiProperty->resetValues();
+		multiProperty->resetValues(true);
 	else
 	{
 		auto connector = getPropertyConnector();
 		if (nullptr != connector)
-			connector->resetPropertyValue();
+			connector->resetPropertyValue(true);
 	}
 }
 

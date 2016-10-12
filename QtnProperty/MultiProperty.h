@@ -18,7 +18,7 @@ public:
 	virtual ~QtnMultiProperty();
 
 	void addProperty(QtnProperty *property, bool own = true);
-	void resetValues();
+	void resetValues(bool edit);
 
 	bool hasResettableValues() const;
 	bool hasMultipleValues() const;

@@ -71,6 +71,7 @@ public:
 	bool isEditableByUser() const;
 	bool isVisible() const;
 	bool valueIsHidden() const;
+	bool valueIsDefault() const;
 	bool isSimple() const { return !m_stateLocal.testFlag(QtnPropertyStateNonSimple); }
 
 	// serialization

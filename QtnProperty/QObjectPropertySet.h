@@ -18,6 +18,7 @@
 #define QTN_QOBJECT_PROPERTY_SET_H
 
 #include "CoreAPI.h"
+#include "Auxiliary/PropertyAux.h"
 
 #include <QMetaProperty>
 #include <QVariant>
@@ -37,6 +38,7 @@ QTN_IMPORT_EXPORT QtnProperty* qtnCreateQObjectProperty(QObject* object, const c
 QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object);
 QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectMultiPropertySet(const std::set<QObject *> &objects);
 
+QTN_IMPORT_EXPORT QtnPropertyState qtnPropertyStateToAdd(const QMetaProperty &metaProperty);
 QTN_IMPORT_EXPORT void qtnUpdatePropertyState(QtnPropertyBase *property, const QMetaProperty &metaProperty);
 
 template <typename PropertyCallbackType, typename ValueType = typename PropertyCallbackType::ValueTypeStore>
