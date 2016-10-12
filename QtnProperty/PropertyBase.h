@@ -159,12 +159,12 @@ private:
 
 bool QtnPropertyBase::isExpanded() const
 {
-	return (0 == (state() & QtnPropertyStateCollapsed));
+	return (0 == (m_stateLocal & QtnPropertyStateCollapsed));
 }
 
 bool QtnPropertyBase::isCollapsed() const
 {
-	return (0 != (state() & QtnPropertyStateCollapsed));
+	return (0 != (m_stateLocal & QtnPropertyStateCollapsed));
 }
 
 void QtnPropertyBase::expand()

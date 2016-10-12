@@ -247,7 +247,7 @@ QtnPropertyViewStyle QtnPropertyView::propertyViewStyle() const
 
 bool QtnPropertyView::Item::collapsed() const
 {
-	return property->stateLocal() & QtnPropertyStateCollapsed;
+	return property->isCollapsed();
 }
 
 #endif // QTN_PROPERTYVIEW_H

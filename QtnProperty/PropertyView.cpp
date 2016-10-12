@@ -61,7 +61,7 @@ static void updateVisibleProperties(const QtnPropertyBase* property, unsigned in
 	if (!propertySet)
 		return;
 
-	if (!propertySet->childProperties().isEmpty() && !(propertySet->state()&QtnPropertyStateCollapsed))
+	if (!propertySet->childProperties().isEmpty() && propertySet->isExpanded())
 	{
 		foreach(QtnPropertyBase* childProperty, propertySet->childProperties())
 		{
