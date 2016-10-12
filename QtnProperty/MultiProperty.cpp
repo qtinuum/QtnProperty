@@ -53,15 +53,26 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 
 void QtnMultiProperty::resetValues(bool edit)
 {
-	for (auto property : properties)
+	if (!valueIsDefault())
 	{
-		auto connector = property->getConnector();
+		QtnPropertyChangeReason reasons = QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
+		if (edit)
+			reasons |= QtnPropertyChangeReasonEditValue;
 
-		if (nullptr != connector)
-			connector->resetPropertyValue(edit);
+		emit propertyWillChange(reasons, nullptr, 0);
+
+		for (auto property : properties)
+		{
+			auto connector = property->getConnector();
+
+			if (nullptr != connector)
+				connector->resetPropertyValue(false);
+		}
+
+		emit propertyDidChange(reasons);
+
+		updateMultipleState(true);
 	}
-
-	updateMultipleState(true);
 }
 
 bool QtnMultiProperty::hasResettableValues() const
@@ -265,7 +276,21 @@ void QtnMultiProperty::updateMultipleState(bool force)
 		calculateMultipleValues = true;
 
 	bool multipleValues = hasMultipleValues();
-	switchState(QtnPropertyStateHiddenValue, multipleValues);
+	auto state = stateLocal() & ~QtnPropertyStateModifiedValue;
+	if (multipleValues)
+		state |= QtnPropertyStateHiddenValue;
+	else
+		state &= ~QtnPropertyStateHiddenValue;
+
+	for (auto property : properties)
+	{
+		if (!property->valueIsDefault())
+		{
+			state |= QtnPropertyStateModifiedValue;
+			break;
+		}
+	}
+	setState(state);
 	properties.at(0)->switchState(QtnPropertyStateHiddenValue, multipleValues);
 }
 
