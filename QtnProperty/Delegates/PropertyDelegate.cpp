@@ -108,7 +108,10 @@ void QtnPropertyDelegate::drawValueText(const QString& text, QStylePainter& pain
 					 , qtnElidedText(painter, text, rect, needTooltip));
 }
 
-QWidget* QtnPropertyDelegate::createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo)
+QLineEdit *QtnPropertyDelegate::createValueEditorLineEdit(QWidget *parent,
+														  const QRect &rect,
+														  bool readOnly,
+														  QtnInplaceInfo *inplaceInfo)
 {
 	QLineEdit* lineEdit = new QLineEdit(parent);
 	lineEdit->setGeometry(rect);

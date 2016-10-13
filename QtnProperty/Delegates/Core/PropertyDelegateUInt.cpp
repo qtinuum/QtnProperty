@@ -16,6 +16,7 @@
 
 #include "PropertyDelegateUInt.h"
 #include "Core/PropertyUInt.h"
+#include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
 #include "Utils/UnsignedSpinBox.h"
@@ -45,19 +46,27 @@ static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
 								, &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
 								, "SpinBox");
 
-QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget *parent, const QRect& rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnUnsignedSpinBox(parent);
 	spinBox->setGeometry(rect);
 
 	new QtnPropertyUIntSpinBoxHandler(owner(), *spinBox);
 
-	if (inplaceInfo)
-	{
-		spinBox->selectAll();
-	}
+	spinBox->selectAll();
+
+	if (owner().isEditableByUser())
+		qtnInitNumEdit(spinBox, inplaceInfo, NUM_UNSIGNED_INT);
 
 	return spinBox;
+}
+
+bool QtnPropertyDelegateUInt::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
+{
+	if (QtnPropertyDelegateTyped<QtnPropertyUIntBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
+		return true;
+
+	return qtnAcceptForNumEdit(keyEvent, NUM_UNSIGNED_INT);
 }
 
 bool QtnPropertyDelegateUInt::propertyValueToStr(QString& strValue) const

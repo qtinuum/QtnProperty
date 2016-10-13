@@ -33,6 +33,7 @@ public:
 
 protected:
 	QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
+	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent* keyEvent) const override;
 	bool propertyValueToStr(QString& strValue) const override;
 };
 

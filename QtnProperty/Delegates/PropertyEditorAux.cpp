@@ -20,6 +20,8 @@
 
 #include <QHBoxLayout>
 #include <QKeyEvent>
+#include <QLocale>
+#include <QCoreApplication>
 
 QtnLineEditBttn::QtnLineEditBttn(QWidget *parent)
 	: QWidget(parent)
@@ -80,5 +82,47 @@ void qtnInitLineEdit(QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo)
 	else
 	{
 		lineEdit->selectAll();
+	}
+}
+
+bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type)
+{
+	if (keyEvent->type() != QEvent::KeyPress)
+		return false;
+
+	// any numeric key press is acceptable
+	QString text = keyEvent->text();
+	if (text.size() == 1)
+	{
+		auto c = text.at(0);
+
+		QLocale locale;
+
+		switch (type)
+		{
+			case NUM_FLOAT:
+				if (c == '.' || c == locale.decimalPoint())
+					return true;
+			case NUM_SIGNED_INT:
+				if (c == '-' || c == '+' || c == locale.negativeSign() || c == locale.positiveSign())
+					return true;
+			case NUM_UNSIGNED_INT:
+				if (c.isNumber())
+					return true;
+		}
+	}
+
+	return false;
+}
+
+void qtnInitNumEdit(QWidget *numEdit, QtnInplaceInfo *inplaceInfo, QtnNumType type)
+{
+	if (nullptr != inplaceInfo && inplaceInfo->activationEvent->type() == QEvent::KeyPress)
+	{
+		auto keyEvent = static_cast<QKeyEvent*>(inplaceInfo->activationEvent);
+		if (qtnAcceptForNumEdit(keyEvent, type))
+		{
+			QCoreApplication::sendEvent(numEdit, keyEvent);
+		}
 	}
 }

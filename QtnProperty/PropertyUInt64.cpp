@@ -105,13 +105,12 @@ bool QtnPropertyDelegateUInt64::acceptKeyPressedForInplaceEditImpl(QKeyEvent *ke
 	if (QtnPropertyDelegateTyped<QtnPropertyUInt64Base>::acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
-	// accept any printable key
-	return qtnAcceptForLineEdit(keyEvent);
+	return qtnAcceptForNumEdit(keyEvent, NUM_UNSIGNED_INT);
 }
 
 QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	editor = static_cast<QLineEdit *>(createValueEditorLineEdit(parent, rect, !owner().isEditableByUser(), inplaceInfo));
+	editor = createValueEditorLineEdit(parent, rect, !owner().isEditableByUser(), inplaceInfo);
 
 	editor->installEventFilter(this);
 	QObject::connect(editor, &QLineEdit::editingFinished,

@@ -5,6 +5,7 @@
 #include "QObjectPropertySet.h"
 
 #include <QLocale>
+#include <QLineEdit>
 
 QtnPropertyQRectFBase::QtnPropertyQRectFBase(QObject *parent)
 	: ParentClass(parent)

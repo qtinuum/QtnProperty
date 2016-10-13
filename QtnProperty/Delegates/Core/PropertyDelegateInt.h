@@ -26,14 +26,14 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateInt: public QtnPropertyDelegateTyped<
 	Q_DISABLE_COPY(QtnPropertyDelegateInt)
 
 public:
-	QtnPropertyDelegateInt(QtnPropertyIntBase& owner)
-		: QtnPropertyDelegateTyped<QtnPropertyIntBase>(owner)
-	{
-	}
+	QtnPropertyDelegateInt(QtnPropertyIntBase& owner);
 
 protected:
-	QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-	bool propertyValueToStr(QString& strValue) const override;
+	virtual QWidget *createValueEditorImpl(QWidget *parent,
+										   const QRect &rect,
+										   QtnInplaceInfo *inplaceInfo = nullptr) override;
+	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const override;
+	virtual bool propertyValueToStr(QString& strValue) const override;
 };
 
 #endif // PROPERTY_DELEGATE_INT_H

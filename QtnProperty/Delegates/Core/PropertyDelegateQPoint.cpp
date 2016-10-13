@@ -19,6 +19,7 @@
 #include "Delegates/PropertyDelegateFactory.h"
 
 #include <QLocale>
+#include <QLineEdit>
 
 static bool regQPointDelegate = QtnPropertyDelegateFactory::staticInstance()
 								.registerDelegateDefault(&QtnPropertyQPointBase::staticMetaObject

@@ -5,6 +5,7 @@
 #include "QObjectPropertySet.h"
 
 #include <QLocale>
+#include <QLineEdit>
 
 QtnPropertyQSizeFBase::QtnPropertyQSizeFBase(QObject *parent)
 	: ParentClass(parent)

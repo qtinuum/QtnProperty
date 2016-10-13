@@ -38,7 +38,17 @@ public:
 	QToolButton *toolButton;
 };
 
+enum QtnNumType
+{
+	NUM_SIGNED_INT,
+	NUM_UNSIGNED_INT,
+	NUM_FLOAT
+};
+
 QTN_IMPORT_EXPORT bool qtnAcceptForLineEdit(QKeyEvent *keyEvent);
+QTN_IMPORT_EXPORT bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type);
+
 QTN_IMPORT_EXPORT void qtnInitLineEdit(QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo);
+QTN_IMPORT_EXPORT void qtnInitNumEdit(QWidget *numEdit, QtnInplaceInfo *inplaceInfo, QtnNumType type);
 
 #endif // PROPERTY_EDITOR_AUX_H

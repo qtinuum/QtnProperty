@@ -237,7 +237,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnMultiProperty</name>
     <message>
-        <location filename="../MultiProperty.cpp" line="93"/>
+        <location filename="../MultiProperty.cpp" line="104"/>
         <source>(Multiple Values)</source>
         <translation>(Multiple Values)</translation>
     </message>
@@ -454,22 +454,22 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQPointF</name>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="33"/>
+        <location filename="../PropertyQPointF.cpp" line="34"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="38"/>
+        <location filename="../PropertyQPointF.cpp" line="39"/>
         <source>X of the %1</source>
         <translation>X of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="43"/>
+        <location filename="../PropertyQPointF.cpp" line="44"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="48"/>
+        <location filename="../PropertyQPointF.cpp" line="49"/>
         <source>Y of the %1</source>
         <translation>Y of the %1</translation>
     </message>
@@ -554,62 +554,62 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQRectF</name>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="39"/>
+        <location filename="../PropertyQRectF.cpp" line="40"/>
         <source>Left</source>
         <translation>Left</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="40"/>
+        <location filename="../PropertyQRectF.cpp" line="41"/>
         <source>Left position of the %1</source>
         <translation>Left position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="46"/>
+        <location filename="../PropertyQRectF.cpp" line="47"/>
         <source>Top</source>
         <translation>Top</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="47"/>
+        <location filename="../PropertyQRectF.cpp" line="48"/>
         <source>Top position of the %1</source>
         <translation>Top position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="53"/>
+        <location filename="../PropertyQRectF.cpp" line="54"/>
         <source>Right</source>
         <translation>Right</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="54"/>
+        <location filename="../PropertyQRectF.cpp" line="55"/>
         <source>Right position of the %1</source>
         <translation>Right position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="60"/>
+        <location filename="../PropertyQRectF.cpp" line="61"/>
         <source>Bottom</source>
         <translation>Bottom</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="61"/>
+        <location filename="../PropertyQRectF.cpp" line="62"/>
         <source>Bottom position of the %1</source>
         <translation>Bottom position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="67"/>
+        <location filename="../PropertyQRectF.cpp" line="68"/>
         <source>Width</source>
         <translation>Width</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="68"/>
+        <location filename="../PropertyQRectF.cpp" line="69"/>
         <source>Width of the %1</source>
         <translation>Width of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="74"/>
+        <location filename="../PropertyQRectF.cpp" line="75"/>
         <source>Height</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="75"/>
+        <location filename="../PropertyQRectF.cpp" line="76"/>
         <source>Height of the %1</source>
         <translation>Height of the %1</translation>
     </message>
@@ -645,22 +645,22 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQSizeF</name>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="19"/>
+        <location filename="../PropertyQSizeF.cpp" line="20"/>
         <source>Width</source>
         <translation>Width</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="20"/>
+        <location filename="../PropertyQSizeF.cpp" line="21"/>
         <source>Width of the %1</source>
         <translation>Width of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="26"/>
+        <location filename="../PropertyQSizeF.cpp" line="27"/>
         <source>Height</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="27"/>
+        <location filename="../PropertyQSizeF.cpp" line="28"/>
         <source>Height of the %1</source>
         <translation>Height of the %1</translation>
     </message>
@@ -686,17 +686,17 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="135"/>
+        <location filename="../PropertyQVariant.cpp" line="136"/>
         <source>(Dictionary)</source>
         <translation>(Dictionary)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="138"/>
+        <location filename="../PropertyQVariant.cpp" line="139"/>
         <source>(List)</source>
         <translation>(List)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="144"/>
+        <location filename="../PropertyQVariant.cpp" line="145"/>
         <source>(Empty)</source>
         <translation>(Empty)</translation>
     </message>

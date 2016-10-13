@@ -7,6 +7,7 @@
 
 #include <QStyleOption>
 #include <QKeyEvent>
+#include <QLineEdit>
 
 QtnMultiProperty::QtnMultiProperty(const QMetaObject *propertyMetaObject, QObject *parent)
 	: QtnProperty(parent)

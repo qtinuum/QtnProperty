@@ -16,6 +16,7 @@
 
 #include "PropertyDelegateInt.h"
 #include "Core/PropertyInt.h"
+#include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
 
@@ -42,19 +43,32 @@ static bool regIntDelegate = QtnPropertyDelegateFactory::staticInstance()
 								, &qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>
 								, "SpinBox");
 
+QtnPropertyDelegateInt::QtnPropertyDelegateInt(QtnPropertyIntBase &owner)
+	: QtnPropertyDelegateTyped<QtnPropertyIntBase>(owner)
+{
+}
+
 QWidget* QtnPropertyDelegateInt::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-	QSpinBox* spinBox = new QSpinBox(parent);
+	auto spinBox = new QSpinBox(parent);
 	spinBox->setGeometry(rect);
 
 	new QtnPropertyIntSpinBoxHandler(owner(), *spinBox);
 
-	if (inplaceInfo)
-	{
-		spinBox->selectAll();
-	}
+	spinBox->selectAll();
+
+	if (owner().isEditableByUser())
+		qtnInitNumEdit(spinBox, inplaceInfo, NUM_SIGNED_INT);
 
 	return spinBox;
+}
+
+bool QtnPropertyDelegateInt::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
+{
+	if (QtnPropertyDelegateTyped<QtnPropertyIntBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
+		return true;
+
+	return qtnAcceptForNumEdit(keyEvent, NUM_SIGNED_INT);
 }
 
 bool QtnPropertyDelegateInt::propertyValueToStr(QString& strValue) const

@@ -29,8 +29,11 @@ public:
 	QtnPropertyDelegateFloat(QtnPropertyFloatBase& owner);
 
 protected:
-	QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-	bool propertyValueToStr(QString& strValue) const override;
+	virtual QWidget *createValueEditorImpl(QWidget *parent,
+										   const QRect &rect,
+										   QtnInplaceInfo *inplaceInfo = nullptr) override;
+	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const override;
+	virtual bool propertyValueToStr(QString& strValue) const override;
 
 	bool percent_suffix;
 };

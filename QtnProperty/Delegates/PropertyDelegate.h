@@ -25,6 +25,7 @@
 
 class QKeyEvent;
 class QtnPropertyDelegateFactory;
+class QLineEdit;
 
 class QTN_IMPORT_EXPORT QtnInplaceInfo
 {
@@ -76,7 +77,10 @@ protected:
 
 	// helper functions
 	static void drawValueText(const QString& text, QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr);
-	QWidget* createValueEditorLineEdit(QWidget* parent, const QRect& rect, bool readOnly, QtnInplaceInfo* inplaceInfo = nullptr);
+	QLineEdit *createValueEditorLineEdit(QWidget *parent,
+										 const QRect &rect,
+										 bool readOnly,
+										 QtnInplaceInfo *inplaceInfo = nullptr);
 
 	QtnProperty *ownerProperty;
 };

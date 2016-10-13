@@ -16,6 +16,7 @@
 
 #include "PropertyDelegateDouble.h"
 #include "Core/PropertyDouble.h"
+#include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
 
@@ -58,12 +59,20 @@ QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget* parent, const
 
 	new QtnPropertyDoubleSpinBoxHandler(owner(), *spinBox);
 
-	if (inplaceInfo)
-	{
-		spinBox->selectAll();
-	}
+	spinBox->selectAll();
+
+	if (owner().isEditableByUser())
+		qtnInitNumEdit(spinBox, inplaceInfo, NUM_FLOAT);
 
 	return spinBox;
+}
+
+bool QtnPropertyDelegateDouble::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
+{
+	if (QtnPropertyDelegateTyped<QtnPropertyDoubleBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
+		return true;
+
+	return qtnAcceptForNumEdit(keyEvent, NUM_FLOAT);
 }
 
 bool QtnPropertyDelegateDouble::propertyValueToStr(QString& strValue) const

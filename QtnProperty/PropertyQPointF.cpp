@@ -5,6 +5,7 @@
 #include "QObjectPropertySet.h"
 
 #include <QLocale>
+#include <QLineEdit>
 
 QtnPropertyQPointFBase::QtnPropertyQPointFBase(QObject *parent)
 	: ParentClass(parent)
