@@ -15,6 +15,7 @@
 #include <QJsonArray>
 #include <QMessageBox>
 #include <QCoreApplication>
+#include <QPushButton>
 
 static const QString kDragDropMimeType = "CustomPropertyDragDrop";
 static const QString kCustomPropertyData = "QtnCustomPropertyData";
@@ -336,8 +337,8 @@ void CustomPropertyWidget::deleteProperty(QtnPropertyBase *property)
 QMimeData *CustomPropertyWidget::getPropertyDataForAction(QtnPropertyBase *property,
 														  Qt::DropAction action)
 {
-	auto var_property = getVarProperty(property);
-	if (nullptr != var_property)
+	auto varProperty = getVarProperty(property);
+	if (nullptr != varProperty)
 	{
 		switch (action)
 		{
@@ -347,11 +348,10 @@ QMimeData *CustomPropertyWidget::getPropertyDataForAction(QtnPropertyBase *prope
 			{
 				auto mime = new QMimeData;
 
-				auto variant = var_property->CreateVariant();
+				auto variant = varProperty->CreateVariant();
 
 				QJsonObject jobj;
-
-				jobj.insert(var_property->GetName(), QJsonValue::fromVariant(variant));
+				jobj.insert(varProperty->GetName(), QJsonValue::fromVariant(variant));
 
 				QJsonDocument doc;
 				doc.setObject(jobj);
@@ -378,6 +378,88 @@ QMimeData *CustomPropertyWidget::getPropertyDataForAction(QtnPropertyBase *prope
 	}
 
 	return nullptr;
+}
+
+bool CustomPropertyWidget::insertReplaceOrCancel(QtnPropertyBase *destination, CustomPropertyData &customData)
+{
+	auto varProperty = getVarProperty(destination);
+	Q_ASSERT(nullptr != varProperty);
+
+	enum
+	{
+		CANCEL,
+		INSERT,
+		REPLACE
+	};
+
+	int choice = REPLACE;
+
+	auto insertDestination = dynamic_cast<QtnPropertySet *>(destination);
+
+	if (nullptr == insertDestination)
+	{
+		if (varProperty != varProperty->TopParent())
+			insertDestination = dynamic_cast<QtnPropertySet *>(destination->parent());
+	}
+
+	if (nullptr != insertDestination)
+	{
+		QMessageBox mb(QMessageBox::Question, QCoreApplication::applicationName(),
+					   tr("Do you want to insert new property "
+						  "from clipboard or to replace the selected one?"),
+					   QMessageBox::Cancel, this);
+
+		auto insertButton = mb.addButton(tr("Insert", "Paste"), QMessageBox::AcceptRole);
+		auto replaceButton = mb.addButton(tr("Replace", "Paste"), QMessageBox::AcceptRole);
+		mb.setDefaultButton(QMessageBox::Cancel);
+
+		mb.show();
+		mb.raise();
+		mb.exec();
+
+		if (mb.clickedButton() == insertButton)
+			choice = INSERT;
+		else
+		if (mb.clickedButton() == replaceButton)
+			choice = REPLACE;
+		else
+			choice = CANCEL;
+	}
+
+	switch (choice)
+	{
+		case INSERT:
+		{
+			if (insertDestination == destination)
+			{
+				switch (varProperty->GetType())
+				{
+					case VarProperty::List:
+						customData.index = varProperty->GetChildrenCount();
+						break;
+
+					case VarProperty::Map:
+						customData.index = -1;
+						break;
+
+					default:
+						break;
+				}
+			}
+			addProperty(insertDestination, customData);
+		}	break;
+
+		case REPLACE:
+		{
+			customData.name = varProperty->GetName();
+			updatePropertyOptions(destination, customData);
+		}	break;
+
+		default:
+			return false;
+	}
+
+	return true;
 }
 
 bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
@@ -483,15 +565,14 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 
 		} else
 		{
+			customData.index = varProperty->GetIndex();
+			customData.name = "";
+
 			if (data->hasColor())
 			{
-				CustomPropertyData customData;
-				customData.index = varProperty->GetIndex();
-				customData.name = varProperty->GetName();
 				customData.value = data->colorData();
-				updatePropertyOptions(destination, customData);
 
-				return true;
+				return insertReplaceOrCancel(destination, customData);
 			}
 
 			if (data->hasUrls())
@@ -506,10 +587,6 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 						list.push_back(url.toString());
 				}
 
-				CustomPropertyData customData;
-				customData.index = varProperty->GetIndex();
-				customData.name = varProperty->GetName();
-
 				if (list.size() > 1)
 				{
 					customData.value = list;
@@ -518,9 +595,7 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 					customData.value = list.at(0);
 				}
 
-				updatePropertyOptions(destination, customData);
-
-				return true;
+				return insertReplaceOrCancel(destination, customData);
 			}
 
 			if (data->hasText())
@@ -534,63 +609,21 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 				if (QJsonParseError::NoError == parseResult.error)
 				{
 					auto object = doc.object();
-					for (auto it = object.begin(); it != object.end(); ++it)
+
+					if (object.size() == 1)
 					{
-						customData.index = varProperty->GetIndex();
+						auto it = object.begin();
 						customData.name = it.key();
 						customData.value = it.value().toVariant();
 
-						QMessageBox::StandardButton choice = QMessageBox::No;
+						return insertReplaceOrCancel(destination, customData);
+					}
 
-						auto insertDestination = dynamic_cast<QtnPropertySet *>(destination);
+					if (object.size() > 1)
+					{
+						customData.value = object.toVariantMap();
 
-						if (nullptr == insertDestination)
-						{
-							if (varProperty != varProperty->TopParent())
-								insertDestination = dynamic_cast<QtnPropertySet *>(destination->parent());
-						}
-
-						if (nullptr != insertDestination)
-						{
-							choice = QMessageBox::question(this, QCoreApplication::applicationName(),
-														   tr("Do you want to insert new property from clipboard?\n"
-															  "If you press 'No', selected property will be replaced."),
-														   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-						}
-
-						switch (choice)
-						{
-							case QMessageBox::Yes:
-							{
-								if (insertDestination == destination)
-								{
-									switch (varProperty->GetType())
-									{
-										case VarProperty::List:
-											customData.index = varProperty->GetChildrenCount();
-											break;
-
-										case VarProperty::Map:
-											customData.index = -1;
-											break;
-
-										default:
-											break;
-									}
-								}
-								addProperty(insertDestination, customData);
-							}	break;
-
-							case QMessageBox::No:
-							{
-								updatePropertyOptions(destination, customData);
-							}	break;
-
-							default:
-								return false;
-						}
-
-						return true;
+						return insertReplaceOrCancel(destination, customData);
 					}
 				} else
 				{
@@ -604,31 +637,32 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 					{
 						auto array = doc.array();
 
-						customData.index = varProperty->GetIndex();
-						customData.name = varProperty->GetName();
-
 						if (array.size() == 1)
 						{
 							customData.value = array.at(0).toVariant();
-							updatePropertyOptions(destination, customData);
 
-							return true;
+							return insertReplaceOrCancel(destination, customData);
 						}
 
 						if (array.size() > 1)
 						{
 							customData.value = array.toVariantList();
-							updatePropertyOptions(destination, customData);
-							return true;
+
+							return insertReplaceOrCancel(destination, customData);
 						}
 					}
 				}
 
-				customData.index = varProperty->GetIndex();
-				customData.name = varProperty->GetName();
-				customData.value = data->text();
-				updatePropertyOptions(destination, customData);
-				return true;
+				doc = QJsonDocument::fromJson(data->text().toUtf8(), &parseResult);
+				if (QJsonParseError::NoError == parseResult.error)
+				{
+					customData.value = doc.toVariant();
+				} else
+				{
+					customData.value = data->text();
+				}
+
+				return insertReplaceOrCancel(destination, customData);
 			}
 		}
 	}

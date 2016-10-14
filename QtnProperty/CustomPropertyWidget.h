@@ -68,6 +68,7 @@ private:
 
 	bool readOnly;
 	bool autoUpdate;
+	bool insertReplaceOrCancel(QtnPropertyBase *destination, CustomPropertyData &customData);
 };
 
 bool CustomPropertyWidget::isReadOnly() const

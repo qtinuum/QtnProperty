@@ -184,40 +184,56 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation type="vanished">Добавить свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="97"/>
+        <location filename="../CustomPropertyWidget.cpp" line="98"/>
         <source>New Element</source>
         <translation>Новый элемент</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="103"/>
+        <location filename="../CustomPropertyWidget.cpp" line="104"/>
         <source>New Property</source>
         <translation>Новое свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="139"/>
+        <location filename="../CustomPropertyWidget.cpp" line="140"/>
         <source>Duplicate Element</source>
         <translation>Дублировать элемент</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="146"/>
+        <location filename="../CustomPropertyWidget.cpp" line="147"/>
         <source>Duplicate Property</source>
         <translation>Дублировать свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="178"/>
+        <location filename="../CustomPropertyWidget.cpp" line="179"/>
         <source>Property Options</source>
         <translation>Настройки свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="189"/>
+        <location filename="../CustomPropertyWidget.cpp" line="190"/>
         <source>Element Options</source>
         <translation>Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="556"/>
+        <location filename="../CustomPropertyWidget.cpp" line="409"/>
+        <source>Do you want to insert new property from clipboard or to replace the selected one?</source>
+        <translation>Хотите вставить новое свойство или заменить выбранное?</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="413"/>
+        <source>Insert</source>
+        <comment>Paste</comment>
+        <translation>Вставить</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="414"/>
+        <source>Replace</source>
+        <comment>Paste</comment>
+        <translation>Заменить</translation>
+    </message>
+    <message>
         <source>Do you want to insert new property from clipboard?
 If you press &apos;No&apos;, selected property will be replaced.</source>
-        <translation>Хотите вставить новое свойство из буфера обмена?
+        <translation type="vanished">Хотите вставить новое свойство из буфера обмена?
 Если вы нажмёте &quot;Нет&quot;, то выбранное свойство будет заменено.</translation>
     </message>
 </context>

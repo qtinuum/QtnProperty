@@ -184,40 +184,56 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Add Property</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="97"/>
+        <location filename="../CustomPropertyWidget.cpp" line="98"/>
         <source>New Element</source>
         <translation>New Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="103"/>
+        <location filename="../CustomPropertyWidget.cpp" line="104"/>
         <source>New Property</source>
         <translation>New Property</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="139"/>
+        <location filename="../CustomPropertyWidget.cpp" line="140"/>
         <source>Duplicate Element</source>
         <translation>Duplicate Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="146"/>
+        <location filename="../CustomPropertyWidget.cpp" line="147"/>
         <source>Duplicate Property</source>
         <translation>Duplicate Property</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="178"/>
+        <location filename="../CustomPropertyWidget.cpp" line="179"/>
         <source>Property Options</source>
         <translation>Property Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="189"/>
+        <location filename="../CustomPropertyWidget.cpp" line="190"/>
         <source>Element Options</source>
         <translation>Element Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="556"/>
+        <location filename="../CustomPropertyWidget.cpp" line="409"/>
+        <source>Do you want to insert new property from clipboard or to replace the selected one?</source>
+        <translation>Do you want to insert new property from clipboard or to replace the selected one?</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="413"/>
+        <source>Insert</source>
+        <comment>Paste</comment>
+        <translation>Insert</translation>
+    </message>
+    <message>
+        <location filename="../CustomPropertyWidget.cpp" line="414"/>
+        <source>Replace</source>
+        <comment>Paste</comment>
+        <translation>Replace</translation>
+    </message>
+    <message>
         <source>Do you want to insert new property from clipboard?
 If you press &apos;No&apos;, selected property will be replaced.</source>
-        <translation>Do you want to insert new property from clipboard?
+        <translation type="vanished">Do you want to insert new property from clipboard?
 If you press &apos;No&apos;, selected property will be replaced.</translation>
     </message>
 </context>
