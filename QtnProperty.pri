@@ -9,9 +9,9 @@ isEmpty(QTNPROPERTY_LIB) {
 }
 
 macx:DYNAMIC_LIBS.files += \
-    $$QTNPROPERTY_LIB/libQtnProperty.1.dylib \
+    $$QTNPROPERTY_LIB/libQtnPropertyAC.1.dylib \
 
-LIBS += -lQtnProperty
+LIBS += -lQtnPropertyAC
 
 INCLUDEPATH += $$QTNPROPERTY_PATH/.
 
