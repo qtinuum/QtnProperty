@@ -1,11 +1,12 @@
 /*
-   Copyright (c) 2012-1015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,66 +34,66 @@ QtnEnumInfo::QtnEnumInfo(const QString &name, QVector<QtnEnumValueInfo>& staticV
 
 const QtnEnumValueInfo* QtnEnumInfo::findByValue(QtnEnumValueType value) const
 {
-    const QtnEnumValueInfo* result = nullptr;
+	const QtnEnumValueInfo* result = nullptr;
 
-    forEachEnumValue([&result, value](const QtnEnumValueInfo& enumValue)->bool {
-        if (enumValue.value() == value)
-        {
-            result = &enumValue;
-            return false;
-        }
+	forEachEnumValue([&result, value](const QtnEnumValueInfo& enumValue)->bool {
+		if (enumValue.value() == value)
+		{
+			result = &enumValue;
+			return false;
+		}
 
-        return true;
-    });
+		return true;
+	});
 
-    return result;
+	return result;
 }
 
 const QtnEnumValueInfo* QtnEnumInfo::findByName(const QString& name) const
 {
-    const QtnEnumValueInfo* result = nullptr;
+	const QtnEnumValueInfo* result = nullptr;
 
 	forEachEnumValue([&result, &name, this](const QtnEnumValueInfo& enumValue)->bool {
 		if (QString::compare(enumValue.name(), name, m_case_sensitivity) == 0)
-        {
-            result = &enumValue;
-            return false;
-        }
+		{
+			result = &enumValue;
+			return false;
+		}
 
-        return true;
-    });
+		return true;
+	});
 
-    return result;
+	return result;
 }
 
 const QtnEnumValueInfo* QtnEnumInfo::fromStr(const QString& str) const
 {
 	static QRegExp parserEnum("^\\s*([^:\\s]+)::([^:\\s]+)\\s*$", m_case_sensitivity);
 
-    QString enumStr = str.trimmed();
+	QString enumStr = str.trimmed();
 
-    if (parserEnum.exactMatch(str))
-    {
-        QStringList params = parserEnum.capturedTexts();
-        if (params.size() != 3)
-            return nullptr;
+	if (parserEnum.exactMatch(str))
+	{
+		QStringList params = parserEnum.capturedTexts();
+		if (params.size() != 3)
+			return nullptr;
 
 		if (QString::compare(params[1], name(), m_case_sensitivity) != 0)
-            return nullptr;
+			return nullptr;
 
-        enumStr = params[2];
-    }
+		enumStr = params[2];
+	}
 
 	return findByName(enumStr);
 }
 
 bool QtnEnumInfo::toStr(QString& str, const QtnEnumValueInfo* value) const
 {
-    if (!value)
-        return false;
+	if (!value)
+		return false;
 
-    str = QString("%1::%2").arg(name(), value->name());
-    return true;
+	str = QString("%1::%2").arg(name(), value->name());
+	return true;
 }
 
 QVector<QtnEnumValueInfo> &QtnEnumInfo::getVector()

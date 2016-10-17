@@ -1,11 +1,12 @@
 /*
-   Copyright (c) 2012-1015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,45 +23,45 @@
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateFactory
 {
-    Q_DISABLE_COPY(QtnPropertyDelegateFactory)
+	Q_DISABLE_COPY(QtnPropertyDelegateFactory)
 
 public:
-    typedef QtnPropertyDelegate *CreateFunction(QtnProperty&);
+	typedef QtnPropertyDelegate *CreateFunction(QtnProperty&);
 
-    explicit QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory = nullptr);
+	explicit QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory = nullptr);
 
-    QtnPropertyDelegate* createDelegate(QtnProperty& owner) const;
+	QtnPropertyDelegate* createDelegate(QtnProperty& owner) const;
 
-    bool registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName = "");
-    bool registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName);
+	bool registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName = "");
+	bool registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName);
 
-    static QtnPropertyDelegateFactory& staticInstance();
+	static QtnPropertyDelegateFactory& staticInstance();
 
 private:
-    const QtnPropertyDelegateFactory* m_superFactory;
+	const QtnPropertyDelegateFactory* m_superFactory;
 
-    struct CreateItem
-    {
-        CreateItem()
-            : defaultCreateFunction(0)
-        {
-        }
+	struct CreateItem
+	{
+		CreateItem()
+			: defaultCreateFunction(0)
+		{
+		}
 
-        CreateFunction* defaultCreateFunction;
-        QMap<QByteArray, CreateFunction*> createFunctions;
-    };
+		CreateFunction* defaultCreateFunction;
+		QMap<QByteArray, CreateFunction*> createFunctions;
+	};
 
-    QMap<QByteArray, CreateItem> m_createItems;
+	QMap<QByteArray, CreateItem> m_createItems;
 };
 
 template <typename PropertyDelegateClass, typename PropertyClass>
 QtnPropertyDelegate* qtnCreateDelegate(QtnProperty& owner)
 {
-    PropertyClass* theOwner = qobject_cast<PropertyClass*>(&owner);
-    if (!theOwner)
-        return nullptr;
+	PropertyClass* theOwner = qobject_cast<PropertyClass*>(&owner);
+	if (!theOwner)
+		return nullptr;
 
-    return new PropertyDelegateClass(*theOwner);
+	return new PropertyDelegateClass(*theOwner);
 }
 
 #endif // QTN_PROPERTY_DELEGATE_FACTORY_H
