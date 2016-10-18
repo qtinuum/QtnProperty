@@ -118,6 +118,13 @@ void QObjectPropertyWidget::onObjectDestroyed(QObject *object)
 
 void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 {
+	auto property = getActiveProperty();
+	if (nullptr == property)
+		return;
+
+	if (!property->isEditableByUser())
+		return;
+
 	auto connector = getPropertyConnector();
 	auto multiProperty = getMultiProperty();
 	if (nullptr != connector || nullptr != multiProperty)
@@ -125,7 +132,7 @@ void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 		QMenu menu(this);
 
 		auto action = menu.addAction(tr("Reset to default"));
-		action->setStatusTip(tr("Reset value of %1 to default").arg(getActiveProperty()->name()));
+		action->setStatusTip(tr("Reset value of %1 to default").arg(property->name()));
 
 		bool resettable = (nullptr != multiProperty)
 			? multiProperty->hasResettableValues()
