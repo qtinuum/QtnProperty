@@ -240,12 +240,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QObjectPropertyWidget</name>
     <message>
-        <location filename="../QObjectPropertyWidget.cpp" line="127"/>
+        <location filename="../QObjectPropertyWidget.cpp" line="134"/>
         <source>Reset to default</source>
         <translation>Reset to default</translation>
     </message>
     <message>
-        <location filename="../QObjectPropertyWidget.cpp" line="128"/>
+        <location filename="../QObjectPropertyWidget.cpp" line="135"/>
         <source>Reset value of %1 to default</source>
         <translation>Reset value of %1 to default</translation>
     </message>
