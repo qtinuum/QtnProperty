@@ -71,7 +71,7 @@ QWidget* QtnPropertyDelegateBoolCheck::createValueEditorImpl(QWidget *,
 															 QtnInplaceInfo *)
 {
 	if (owner().isEditableByUser())
-		owner().edit(!owner().value() || owner().valueIsHidden());
+		owner().edit(!owner().value());
 	return nullptr;
 }
 

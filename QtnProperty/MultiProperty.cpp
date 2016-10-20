@@ -28,6 +28,7 @@
 QtnMultiProperty::QtnMultiProperty(const QMetaObject *propertyMetaObject, QObject *parent)
 	: QtnProperty(parent)
 	, propertyMetaObject(propertyMetaObject)
+	, mutablePropertyIndex(-1)
 	, calculateMultipleValues(true)
 	, multipleValues(false)
 {
@@ -55,10 +56,15 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 	if (own)
 		property->setParent(this);
 
-	if (properties.end() != std::find(properties.begin(), properties.end(), property))
+	if (properties.end() == std::find(properties.begin(), properties.end(), property))
+	{
+		properties.push_back(property);
+		updateStateFrom(property);
+	} else
+	{
+		updateStateFrom(property);
 		return;
-
-	properties.push_back(property);
+	}
 
 	QObject::connect(property, &QtnProperty::propertyValueAccept,
 					 this, &QtnMultiProperty::onPropertyValueAccept);
@@ -70,7 +76,7 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 
 void QtnMultiProperty::resetValues(bool edit)
 {
-	if (!valueIsDefault())
+	if (!valueIsDefault() && isEditableByUser())
 	{
 		QtnPropertyChangeReason reasons = QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
 		if (edit)
@@ -124,7 +130,7 @@ QMetaProperty QtnMultiProperty::getMetaProperty() const
 {
 	Q_ASSERT(!properties.empty());
 
-	auto connector = properties.at(0)->getConnector();
+	auto connector = properties.at(mutablePropertyIndex < 0 ? 0 : mutablePropertyIndex)->getConnector();
 	Q_ASSERT(nullptr != connector);
 
 	return connector->getMetaProperty();
@@ -158,6 +164,9 @@ void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 {
 	if (0 != (reason & (QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue)))
 	{
+		auto property = dynamic_cast<QtnProperty *>(sender());
+		Q_ASSERT(nullptr != property);
+		updateStateFrom(property);
 		updateMultipleState(true);
 	}
 
@@ -287,6 +296,19 @@ bool QtnMultiProperty::toVariantImpl(QVariant &var) const
 	return true;
 }
 
+void QtnMultiProperty::updateStateFrom(QtnProperty *source)
+{
+	if (stateLocal() == QtnPropertyStateNone)
+		setState(source->stateLocal());
+	if (source->isEditableByUser())
+	{
+		removeState(QtnPropertyStateImmutable | QtnPropertyStateInvisible);
+		if (mutablePropertyIndex >= 0)
+			return;
+	}
+	updateMutablePropertyIndex();
+}
+
 void QtnMultiProperty::updateMultipleState(bool force)
 {
 	if (force)
@@ -308,7 +330,24 @@ void QtnMultiProperty::updateMultipleState(bool force)
 		}
 	}
 	setState(state);
-	properties.at(0)->switchState(QtnPropertyStateHiddenValue, multipleValues);
+	properties.at(mutablePropertyIndex < 0 ? 0 : mutablePropertyIndex)->switchState(QtnPropertyStateHiddenValue, multipleValues);
+}
+
+void QtnMultiProperty::updateMutablePropertyIndex()
+{
+	if (mutablePropertyIndex < 0
+	||	!properties.at(mutablePropertyIndex)->isEditableByUser())
+	{
+		mutablePropertyIndex = 0;
+		for (auto property : properties)
+		{
+			if (property->isEditableByUser())
+				return;
+
+			mutablePropertyIndex++;
+		}
+		mutablePropertyIndex = -1;
+	}
 }
 
 QtnMultiPropertyDelegate::QtnMultiPropertyDelegate(QtnMultiProperty &owner)
@@ -332,7 +371,6 @@ QtnMultiPropertyDelegate::QtnMultiPropertyDelegate(QtnMultiProperty &owner)
 
 		auto subMultiProperty = new QtnMultiProperty(subProperty->metaObject());
 		subMultiProperty->setName(subProperty->name());
-		subMultiProperty->setState(subProperty->stateLocal());
 		subMultiProperty->setDescription(subProperty->description());
 		subMultiProperty->setId(subProperty->id());
 
@@ -377,7 +415,7 @@ void QtnMultiPropertyDelegate::onEditedPropertyDidChange(PropertyToEdit *data, Q
 		auto value = editedProperty->valueAsVariant();
 		for (auto property : owner->properties)
 		{
-			if (property != editedProperty)
+			if (property != editedProperty && property->isEditableByUser())
 			{
 				property->blockSignals(true);
 				property->setValueAsVariant(value);
@@ -497,9 +535,12 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(QWidget *parent,
 
 		bool editable = owner().isEditableByUser();
 
+		int superIndex = 0;
+
 		if (editable)
 		{
-			auto propertyToEdit = owner().properties.at(0);
+			superIndex = owner().mutablePropertyIndex;
+			auto propertyToEdit = owner().properties.at(superIndex);
 			data = new PropertyToEdit;
 			data->owner = &owner();
 			data->property = propertyToEdit;
@@ -514,7 +555,7 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(QWidget *parent,
 							 std::bind(&QtnMultiPropertyDelegate::onEditedPropertyDestroyed, data)));
 		}
 
-		auto superDelegate = superDelegates.at(0).get();
+		auto superDelegate = superDelegates.at(superIndex).get();
 		auto editor = superDelegate->createValueEditor(parent, rect, inplaceInfo);
 
 		if (editable)

@@ -59,7 +59,7 @@ void QtnPropertyConnector::resetPropertyValue(bool edit)
 		auto property = dynamic_cast<QtnPropertyBase *>(parent());
 		Q_ASSERT(nullptr != property);
 
-		if (!property->valueIsDefault())
+		if (!property->valueIsDefault() && property->isEditableByUser())
 		{
 			QtnPropertyChangeReason reasons = QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
 			if (edit)

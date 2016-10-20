@@ -285,7 +285,6 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(const std::set<QObject *> &obje
 					multiProperty->setName(subProp->name());
 					multiProperty->setDescription(subProp->description());
 					multiProperty->setId(subProp->id());
-					multiProperty->setState(subProp->stateLocal());
 
 					multiSet->addChildProperty(multiProperty);
 				} else

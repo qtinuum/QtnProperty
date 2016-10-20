@@ -64,10 +64,13 @@ protected:
 	virtual bool toVariantImpl(QVariant& var) const override;
 
 private:
+	void updateStateFrom(QtnProperty *source);
 	void updateMultipleState(bool force);
+	void updateMutablePropertyIndex();
 
 	std::vector<QtnProperty *> properties;
 	const QMetaObject *propertyMetaObject;
+	int mutablePropertyIndex;
 
 	bool calculateMultipleValues;
 	bool multipleValues;
