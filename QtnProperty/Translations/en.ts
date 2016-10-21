@@ -253,7 +253,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnMultiProperty</name>
     <message>
-        <location filename="../MultiProperty.cpp" line="120"/>
+        <location filename="../MultiProperty.cpp" line="126"/>
         <source>(Multiple Values)</source>
         <translation>(Multiple Values)</translation>
     </message>
@@ -702,17 +702,17 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="152"/>
+        <location filename="../PropertyQVariant.cpp" line="153"/>
         <source>(Dictionary)</source>
         <translation>(Dictionary)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="155"/>
+        <location filename="../PropertyQVariant.cpp" line="156"/>
         <source>(List)</source>
         <translation>(List)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="161"/>
+        <location filename="../PropertyQVariant.cpp" line="162"/>
         <source>(Empty)</source>
         <translation>(Empty)</translation>
     </message>
