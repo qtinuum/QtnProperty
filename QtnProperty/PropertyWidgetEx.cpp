@@ -288,26 +288,40 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 				break;
 			}
 
-			int part_height = view->itemHeight() / 3;
+			int partHeight = view->itemHeight() / 3;
 
-			QtnApplyPosition apply_position;
+			QtnApplyPosition applyPosition;
 			if (QRect(rect.left(), rect.top(),
-					  rect.width(), part_height).contains(pos))
-				apply_position = QtnApplyPosition::Before;
-			else if (QRect(rect.left(), rect.bottom() - part_height,
-						   rect.width(), part_height).contains(pos))
-				apply_position = QtnApplyPosition::After;
+					  rect.width(), partHeight).contains(pos))
+				applyPosition = QtnApplyPosition::Before;
+			else if (QRect(rect.left(), rect.bottom() - partHeight,
+						   rect.width(), partHeight).contains(pos))
+				applyPosition = QtnApplyPosition::After;
 			else
-				apply_position = QtnApplyPosition::Over;
+				applyPosition = QtnApplyPosition::Over;
 
 			auto data = event->mimeData();
 			if (dataHasSupportedFormats(data)
-			&&	applyPropertyData(data, property, apply_position))
+			&&	drop(data, property, applyPosition))
 				event->accept();
 		}	break;
 
 		default:
 			break;
+	}
+}
+
+bool QtnPropertyWidgetEx::drop(const QMimeData *data, QtnPropertyBase *property, QtnApplyPosition applyPosition)
+{
+	return applyPropertyData(data, property, applyPosition);
+}
+
+void QtnPropertyWidgetEx::dropEnd()
+{
+	if (nullptr != draggedProperty)
+	{
+		if (Qt::MoveAction == dropAction)
+			deleteProperty(draggedProperty);
 	}
 }
 
@@ -324,11 +338,7 @@ bool QtnPropertyWidgetEx::dragAndDrop()
 
 		drag->exec(Qt::CopyAction | Qt::MoveAction);
 
-		if (nullptr != draggedProperty)
-		{
-			if (Qt::MoveAction == dropAction)
-				deleteProperty(draggedProperty);
-		}
+		dropEnd();
 
 		return true;
 	}

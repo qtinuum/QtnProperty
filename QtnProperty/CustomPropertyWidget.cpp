@@ -38,11 +38,12 @@ static const QString kCustomPropertyData = "QtnCustomPropertyData";
 
 CustomPropertyWidget::CustomPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
-	, lastAddType(QVariant::Invalid)
 	, dataPtr(nullptr)
 	, rootSet(nullptr)
+	, lastAddType(QVariant::Invalid)
 	, readOnly(false)
 	, autoUpdate(false)
+	, backupAutoUpdate(false)
 {
 }
 
@@ -684,6 +685,21 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 	}
 
 	return false;
+}
+
+bool CustomPropertyWidget::drop(const QMimeData *data, QtnPropertyBase *property, QtnApplyPosition applyPosition)
+{
+	backupAutoUpdate = autoUpdate;
+	autoUpdate = false;
+	return QtnPropertyWidgetEx::drop(data, property, applyPosition);
+}
+
+void CustomPropertyWidget::dropEnd()
+{
+	QtnPropertyWidgetEx::dropEnd();
+	autoUpdate = backupAutoUpdate;
+	if (autoUpdate)
+		updateData();
 }
 
 void CustomPropertyWidget::updateData()

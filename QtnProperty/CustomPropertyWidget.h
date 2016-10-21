@@ -62,6 +62,8 @@ protected:
 	virtual bool applyPropertyData(const QMimeData *data,
 								   QtnPropertyBase *destination,
 								   QtnApplyPosition position) override;
+	virtual bool drop(const QMimeData *data, QtnPropertyBase *property, QtnApplyPosition applyPosition) override;
+	virtual void dropEnd() override;
 
 private:
 	void updateSet(QtnPropertyBase *setProperty, int childIndex);
@@ -77,14 +79,14 @@ private:
 	void addProperty(QtnPropertyBase *source, const CustomPropertyData &data);
 	void duplicateProperty(QtnPropertyBase *source, const CustomPropertyData &data);
 	void updatePropertyOptions(QtnPropertyBase *source, const CustomPropertyData &data);
+	bool insertReplaceOrCancel(QtnPropertyBase *destination, CustomPropertyData &customData);
 
-	QVariant::Type lastAddType;
 	QVariant *dataPtr;
 	QtnPropertySet *rootSet;
-
-	bool readOnly;
-	bool autoUpdate;
-	bool insertReplaceOrCancel(QtnPropertyBase *destination, CustomPropertyData &customData);
+	QVariant::Type lastAddType;
+	bool readOnly:1;
+	bool autoUpdate:1;
+	bool backupAutoUpdate:1;
 };
 
 bool CustomPropertyWidget::isReadOnly() const

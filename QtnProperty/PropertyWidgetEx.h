@@ -90,6 +90,8 @@ protected:
 	virtual void dragEnterEvent(QDragEnterEvent *event) override;
 	virtual void dragMoveEvent(QDragMoveEvent *event) override;
 	virtual void dropEvent(QDropEvent *event) override;
+	virtual bool drop(const QMimeData *data, QtnPropertyBase *property, QtnApplyPosition applyPosition);
+	virtual void dropEnd();
 
 private:
 	bool dragAndDrop();
