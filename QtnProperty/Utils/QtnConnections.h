@@ -16,11 +16,13 @@
 
 #pragma once
 
+#include "QtnProperty/CoreAPI.h"
+
 #include <QMetaObject>
 
 #include <vector>
 
-class QtnConnections : public std::vector<QMetaObject::Connection>
+class QTN_IMPORT_EXPORT QtnConnections : public std::vector<QMetaObject::Connection>
 {
 public:
 	void disconnect();
