@@ -16,6 +16,8 @@
 
 #include "PropertyWidgetEx.h"
 
+#include "Utils/QtnConnections.h"
+
 #include <QMouseEvent>
 #include <QApplication>
 #include <QMimeData>
@@ -172,8 +174,13 @@ bool QtnPropertyWidgetEx::applyPropertyData(const QMimeData *data,
 											QtnPropertyBase *destination,
 											QtnApplyPosition)
 {
+	bool result = false;
 	if (nullptr != destination)
 	{
+		QtnConnections connections;
+
+		propertyView()->connectPropertyToEdit(destination, connections);
+
 		Q_ASSERT(nullptr != data);
 		if (data->hasUrls())
 		{
@@ -187,17 +194,17 @@ bool QtnPropertyWidgetEx::applyPropertyData(const QMimeData *data,
 					list.push_back(url.toString());
 			}
 
-			return destination->fromStr(list.join('\n'), true);
+			result = destination->fromStr(list.join('\n'), true);
+		} else if (data->hasColor())
+		{
+			result = destination->fromStr(data->colorData().value<QColor>().name(), true);
+		} else if (data->hasText())
+		{
+			result = destination->fromStr(data->text(), true);
 		}
-
-		if (data->hasColor())
-			return destination->fromStr(data->colorData().value<QColor>().name(), true);
-
-		if (data->hasText())
-			return destination->fromStr(data->text(), true);
 	}
 
-	return false;
+	return result;
 }
 
 bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)

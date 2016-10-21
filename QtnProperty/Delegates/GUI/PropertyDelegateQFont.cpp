@@ -459,6 +459,7 @@ void QtnPropertyQFontLineEditBttnHandler::updateEditor()
 {
 	editor().setTextForProperty(&property(),
 			QtnPropertyDelegateQFont::fontToStrWithFormat(property()));
+	editor().lineEdit->selectAll();
 }
 
 void QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked(bool)
@@ -469,18 +470,19 @@ void QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked(bool)
 	{
 		destroyed = true;
 	});
-	QFontDialog dlg(property->value(), &editor());
-	if (dlg.exec() == QDialog::Accepted && !destroyed)
+	auto dialog = new QFontDialog(property->value(), editorBase());
+	auto dialogContainer = connectDialog(dialog);
+	if (dialog->exec() == QDialog::Accepted && !destroyed)
 	{
 		auto font = property->value();
-		auto style_strategy = font.styleStrategy();
-		int pixel_size = font.pixelSize();
-		font = dlg.currentFont();
+		auto styleStrategy = font.styleStrategy();
+		int pixelSize = font.pixelSize();
+		font = dialog->currentFont();
 
-		if (pixel_size > 0)
+		if (pixelSize > 0)
 			font.setPixelSize(font.pointSize());
 
-		font.setStyleStrategy(style_strategy);
+		font.setStyleStrategy(styleStrategy);
 
 		if (property->edit(font))
 			emit property->propertyDidChange(QtnPropertyChangeReasonChildren);
@@ -488,4 +490,5 @@ void QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked(bool)
 
 	if (!destroyed)
 		QObject::disconnect(connection);
+	Q_UNUSED(dialogContainer);
 }

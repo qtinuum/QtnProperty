@@ -65,7 +65,8 @@ SOURCES += PropertyBase.cpp \
     QObjectPropertyWidget.cpp \
     MultiProperty.cpp \
     PropertyConnector.cpp \
-    Config.cpp
+    Config.cpp \
+    Utils/QtnConnections.cpp
 
 HEADERS += CoreAPI.h\
     PropertyBase.h \
@@ -133,7 +134,8 @@ HEADERS += CoreAPI.h\
     MultiProperty.h \
     StructPropertyBase.h \
     PropertyConnector.h \
-    Config.h
+    Config.h \
+    Utils/QtnConnections.h
 
 win32 {
     TARGET_EXT = .dll

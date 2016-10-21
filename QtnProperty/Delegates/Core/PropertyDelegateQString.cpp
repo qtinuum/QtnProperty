@@ -74,7 +74,8 @@ private:
 	void onEditingFinished();
 	void onToolButtonClicked(bool);
 
-	MultilineTextDialog dialog;
+	MultilineTextDialog *dialog;
+	DialogContainerPtr dialogContainer;
 	bool multiline;
 };
 
@@ -159,7 +160,8 @@ private:
 	void onToolButtonClicked(bool);
 	void onEditingFinished();
 
-	QFileDialog m_dlg;
+	QFileDialog *dialog;
+	DialogContainerPtr dialogContainer;
 };
 
 QtnPropertyDelegateQStringInvalidBase::QtnPropertyDelegateQStringInvalidBase(QtnPropertyQStringBase& owner)
@@ -294,6 +296,10 @@ void QtnPropertyQStringListComboBoxHandler::updateEditor()
 		editor().clearEditText();
 	else
 		editor().setCurrentText(property());
+
+	if (editor().isEditable())
+		editor().lineEdit()->selectAll();
+
 	updating--;
 }
 
@@ -309,9 +315,10 @@ void QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged(const QString &
 }
 
 QtnPropertyQStringFileLineEditBttnHandler::QtnPropertyQStringFileLineEditBttnHandler(QtnPropertyQStringBase &property, QtnLineEditBttn &editor)
-	: QtnPropertyEditorHandlerType(property, editor),
-	  m_dlg(&editor)
+	: QtnPropertyEditorHandlerType(property, editor)
+	, dialog(new QFileDialog(&editor))
 {
+	dialogContainer = connectDialog(dialog);
 	if (!property.isEditableByUser())
 	{
 		editor.lineEdit->setReadOnly(true);
@@ -332,27 +339,27 @@ void QtnPropertyQStringFileLineEditBttnHandler::applyAttributes(const QtnPropert
 {
 	int option = 0;
 	if (qtnGetAttribute(attributes, "acceptMode", option))
-		m_dlg.setAcceptMode(QFileDialog::AcceptMode(option));
+		dialog->setAcceptMode(QFileDialog::AcceptMode(option));
 
 	QString str;
 	if (qtnGetAttribute(attributes, "defaultSuffix", str))
-		m_dlg.setDefaultSuffix(str);
+		dialog->setDefaultSuffix(str);
 
 	if (qtnGetAttribute(attributes, "fileMode", option))
-		m_dlg.setFileMode(QFileDialog::FileMode(option));
+		dialog->setFileMode(QFileDialog::FileMode(option));
 
 	if (qtnGetAttribute(attributes, "options", option))
-		m_dlg.setOptions(QFileDialog::Options(QFlag(option)));
+		dialog->setOptions(QFileDialog::Options(QFlag(option)));
 
 	if (qtnGetAttribute(attributes, "viewMode", option))
-		m_dlg.setViewMode(QFileDialog::ViewMode(option));
+		dialog->setViewMode(QFileDialog::ViewMode(option));
 
 	if (qtnGetAttribute(attributes, "nameFilter", str))
-		m_dlg.setNameFilter(str);
+		dialog->setNameFilter(str);
 
 	QStringList list;
 	if (qtnGetAttribute(attributes, "nameFilters", list))
-		m_dlg.setNameFilters(list);
+		dialog->setNameFilters(list);
 }
 
 void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClick()
@@ -367,8 +374,11 @@ void QtnPropertyQStringFileLineEditBttnHandler::updateEditor()
 
 	if (!property().valueIsHidden())
 	{
-		editor().lineEdit->setPlaceholderText(
-				QtnPropertyQString::getPlaceholderStr(editor().lineEdit->text(), false));
+		auto edit = editor().lineEdit;
+		edit->setPlaceholderText(
+				QtnPropertyQString::getPlaceholderStr(edit->text(), false));
+
+		edit->selectAll();
 	}
 }
 
@@ -381,16 +391,19 @@ void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked(bool)
 		destroyed = true;
 	});
 	reverted = true;
-	m_dlg.selectFile(property->value());
-	if (m_dlg.exec() == QDialog::Accepted && !destroyed)
+	auto dialogContainer = this->dialogContainer;
+	dialog->selectFile(property->value());
+	if (dialog->exec() == QDialog::Accepted && !destroyed)
 	{
-		QStringList files = m_dlg.selectedFiles();
+		QStringList files = dialog->selectedFiles();
 		if (files.size() == 1)
 			property->edit(files.first());
 	}
 
 	if (!destroyed)
 		QObject::disconnect(connection);
+
+	Q_UNUSED(dialogContainer);
 }
 
 void QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished()
@@ -405,9 +418,10 @@ QtnPropertyQStringMultilineEditBttnHandler::QtnPropertyQStringMultilineEditBttnH
 		QtnPropertyQStringBase &property,
 		QtnLineEditBttn &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
-	, dialog(&editor)
+	, dialog(new MultilineTextDialog(&editor))
 	, multiline(false)
 {
+	dialogContainer = connectDialog(dialog);
 	updateEditor();
 
 	editor.lineEdit->installEventFilter(this);
@@ -442,6 +456,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
 		}
 
 		edit->setPlaceholderText(QtnPropertyQString::getPlaceholderStr(text, true));
+		edit->selectAll();
 	}
 }
 
@@ -483,29 +498,32 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 
 	reverted = true;
 	bool readonly = !property->isEditableByUser();
-	dialog.setReadOnly(readonly);
+	auto dialogContainer = this->dialogContainer;
+	dialog->setReadOnly(readonly);
 	if (readonly)
-		dialog.setWindowTitle(QtnPropertyQString::getReadOnlyPropertyTitleFormat()
+		dialog->setWindowTitle(QtnPropertyQString::getReadOnlyPropertyTitleFormat()
 							  .arg(property->name()));
 	else
-		dialog.setWindowTitle(property->name());
-	dialog.setText(text);
-	dialog.show();
-	dialog.raise();
+		dialog->setWindowTitle(property->name());
+	dialog->setText(text);
+	dialog->show();
+	dialog->raise();
 	volatile bool destroyed = false;
 	auto connection = QObject::connect(property, &QObject::destroyed,
 	[&destroyed]() mutable
 	{
 		destroyed = true;
 	});
-	if (dialog.exec() == QDialog::Accepted && !destroyed)
-		property->edit(dialog.getText());
+	if (dialog->exec() == QDialog::Accepted && !destroyed)
+		property->edit(dialog->getText());
 
 	if (!destroyed)
 	{
 		QObject::disconnect(connection);
 		updateEditor();
 	}
+
+	Q_UNUSED(dialogContainer);
 }
 
 QtnPropertyQStringLineEditHandler::QtnPropertyQStringLineEditHandler(QtnPropertyQStringBase &property, QLineEdit &editor)
@@ -532,6 +550,7 @@ void QtnPropertyQStringLineEditHandler::updateEditor()
 		editor().setText(property().value());
 		editor().setPlaceholderText(
 					QtnPropertyQString::getPlaceholderStr(editor().text(), false));
+		editor().selectAll();
 	}
 }
 

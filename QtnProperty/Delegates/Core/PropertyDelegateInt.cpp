@@ -107,6 +107,8 @@ void QtnPropertyIntSpinBoxHandler::updateEditor()
 	else
 		editor().setValue(property());
 
+	editor().selectAll();
+
 	updating--;
 }
 

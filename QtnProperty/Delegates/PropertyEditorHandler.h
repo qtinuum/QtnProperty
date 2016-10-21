@@ -20,16 +20,21 @@
 
 #include "QtnProperty/CoreAPI.h"
 #include "QtnProperty/Property.h"
+
 #include <QWidget>
 #include <QEvent>
+
+#include <memory>
+
+class QDialog;
 
 class QTN_IMPORT_EXPORT QtnPropertyEditorHandlerBase: public QObject
 {
 protected:
 	QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor);
 
-	virtual QtnProperty *&propertyBase() = 0;
-	virtual QWidget *&editorBase()  = 0;
+	inline QtnProperty *propertyBase() const;
+	inline QWidget *editorBase() const;
 	virtual void updateEditor() = 0;
 	virtual void revertInput();
 
@@ -38,14 +43,40 @@ protected:
 	virtual bool canApply() const;
 	virtual void applyReset();
 
+	struct DialogContainer
+	{
+		QDialog *dialog;
+
+		DialogContainer(QDialog *dialog);
+		~DialogContainer();
+	};
+
+	typedef std::shared_ptr<DialogContainer> DialogContainerPtr;
+
+	static DialogContainerPtr connectDialog(QDialog *dialog);
+	static void connectDialog(const DialogContainerPtr &containerPtr);
+
 protected:
-	bool reverted;
-	bool returned;
+	QtnProperty *m_property;
+	QWidget *m_editor;
+
+	bool reverted:1;
+	bool returned:1;
 
 private:
 	void onPropertyDestroyed();
 	void onPropertyDidChange(QtnPropertyChangeReason reason);
 };
+
+QtnProperty *QtnPropertyEditorHandlerBase::propertyBase() const
+{
+	return m_property;
+}
+
+QWidget *QtnPropertyEditorHandlerBase::editorBase() const
+{
+	return m_editor;
+}
 
 template <typename PropertyClass, typename PropertyEditorClass>
 class QtnPropertyEditorHandler: public QtnPropertyEditorHandlerBase
@@ -54,21 +85,12 @@ protected:
 	typedef QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass> QtnPropertyEditorHandlerType;
 
 	QtnPropertyEditorHandler(PropertyClass& property, PropertyEditorClass& editor)
-		: QtnPropertyEditorHandlerBase(property, editor),
-		  m_property(&property),
-		  m_editor(&editor)
+		: QtnPropertyEditorHandlerBase(property, editor)
 	{
 	}
 
 	PropertyClass &property() const { return *static_cast<PropertyClass *>(m_property);  }
 	PropertyEditorClass &editor() const { return *static_cast<PropertyEditorClass *>(m_editor); }
-
-	virtual QtnProperty *&propertyBase() override { return m_property; }
-	virtual QWidget *&editorBase() override {return m_editor; }
-
-private:
-	QtnProperty *m_property;
-	QWidget *m_editor;
 };
 
 template <typename PropertyClass, typename PropertyEditorClass>

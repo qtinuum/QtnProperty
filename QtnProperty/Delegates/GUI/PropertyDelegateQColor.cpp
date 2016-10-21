@@ -141,6 +141,7 @@ void QtnPropertyQColorLineEditBttnHandler::onToolButtonClick()
 void QtnPropertyQColorLineEditBttnHandler::updateEditor()
 {
 	editor().setTextForProperty(&property(), property().value().name());
+	editor().lineEdit->selectAll();
 }
 
 void QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked(bool)
@@ -152,14 +153,16 @@ void QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked(bool)
 		destroyed = true;
 	});
 	reverted = true;
-	QColorDialog dlg(property->value(), &editor());
-	if (dlg.exec() == QDialog::Accepted && !destroyed)
+	auto dialog = new QColorDialog(property->value(), editorBase());
+	auto dialogContainer = connectDialog(dialog);
+	if (dialog->exec() == QDialog::Accepted && !destroyed)
 	{
-		property->edit(dlg.currentColor());
+		property->edit(dialog->currentColor());
 	}
 
 	if (!destroyed)
 		QObject::disconnect(connection);
+	Q_UNUSED(dialogContainer);
 }
 
 void QtnPropertyQColorLineEditBttnHandler::onEditingFinished()

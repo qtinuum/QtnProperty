@@ -51,6 +51,7 @@ enum QtnPropertyViewStyleFlag
 Q_DECLARE_FLAGS(QtnPropertyViewStyle, QtnPropertyViewStyleFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyViewStyle)
 
+class QtnConnections;
 
 class QTN_IMPORT_EXPORT QtnPropertyView: public QAbstractScrollArea
 {
@@ -84,6 +85,8 @@ public:
 	void removePropertyViewStyle(QtnPropertyViewStyle style);
 
 	QtnPropertyBase *getPropertyAt(const QPoint &position, QRect *out_rect = nullptr);
+
+	void connectPropertyToEdit(QtnPropertyBase *property, QtnConnections &outConnections);
 
 public slots:
 	QtnAccessibilityProxy* accessibilityProxy();

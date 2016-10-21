@@ -44,7 +44,8 @@ private:
 	void onToolButtonClicked(bool);
 	void onApplyData(const QVariant &data);
 
-	CustomPropertyEditorDialog dialog;
+	CustomPropertyEditorDialog *dialog;
+	DialogContainerPtr dialogContainer;
 	bool is_object;
 };
 
@@ -210,9 +211,10 @@ void QtnPropertyDelegateQVariant::drawValueImpl(QStylePainter &painter, const QR
 
 QtnPropertyQVariantEditBttnHandler::QtnPropertyQVariantEditBttnHandler(QtnPropertyQVariantBase &property, QtnLineEditBttn &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
-	, dialog(&editor)
+	, dialog(new CustomPropertyEditorDialog(&editor))
 	, is_object(false)
 {
+	dialogContainer = connectDialog(dialog);
 	updateEditor();
 
 	editor.lineEdit->installEventFilter(this);
@@ -223,7 +225,7 @@ QtnPropertyQVariantEditBttnHandler::QtnPropertyQVariantEditBttnHandler(QtnProper
 	QObject::connect(editor.lineEdit, &QLineEdit::editingFinished,
 					 this, &QtnPropertyQVariantEditBttnHandler::onEditingFinished);
 
-	QObject::connect(&dialog, &CustomPropertyEditorDialog::apply,
+	QObject::connect(dialog, &CustomPropertyEditorDialog::apply,
 					 this, &QtnPropertyQVariantEditBttnHandler::onApplyData);
 }
 
@@ -263,6 +265,7 @@ void QtnPropertyQVariantEditBttnHandler::updateEditor()
 
 		edit->setPlaceholderText(
 					QtnPropertyQVariant::getPlaceholderStr(value.type()));
+		edit->selectAll();
 	}
 }
 
@@ -296,8 +299,9 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 	} else
 		data = value;
 
+	auto dialogContainer = this->dialogContainer;
 	reverted = true;
-	dialog.setReadOnly(!property->isEditableByUser());
+	dialog->setReadOnly(!property->isEditableByUser());
 
 	volatile bool destroyed = false;
 	auto connection = QObject::connect(property, &QObject::destroyed,
@@ -306,8 +310,7 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 		destroyed = true;
 	});
 
-
-	if (dialog.execute(property->name(), data) && !destroyed)
+	if (dialog->execute(property->name(), data) && !destroyed)
 		property->edit(data);
 
 	if (!destroyed)
@@ -315,6 +318,7 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 		QObject::disconnect(connection);
 		updateEditor();
 	}
+	Q_UNUSED(dialogContainer);
 }
 
 void QtnPropertyQVariantEditBttnHandler::onApplyData(const QVariant &data)

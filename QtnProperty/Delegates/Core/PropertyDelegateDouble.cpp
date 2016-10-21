@@ -116,6 +116,8 @@ void QtnPropertyDoubleSpinBoxHandler::updateEditor()
 	else
 		editor().setValue(property());
 
+	editor().selectAll();
+
 	updating--;
 }
 

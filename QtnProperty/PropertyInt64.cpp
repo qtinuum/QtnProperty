@@ -175,6 +175,7 @@ void QtnPropertyDelegateInt64::updateEditor()
 		QString str;
 		propertyValueToStr(str);
 		editor->setText(str);
+		editor->selectAll();
 	}
 }
 

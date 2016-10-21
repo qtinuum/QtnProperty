@@ -519,6 +519,8 @@ void QtnPropertyBase::masterPropertyStateDidChange(QtnPropertyChangeReason reaso
 		Q_ASSERT(nullptr != changedProperty);
 		setStateInherited(changedProperty->state());
 	}
+
+	emit propertyDidChange(reason);
 }
 
 QVariant QtnPropertyBase::valueAsVariant() const

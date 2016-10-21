@@ -114,6 +114,8 @@ void QtnPropertyUIntSpinBoxHandler::updateEditor()
 	else
 		editor().setValue(QtnUnsignedSpinBox::qtn_u2i(property().value()));
 
+	editor().selectAll();
+
 	block--;
 }
 

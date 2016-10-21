@@ -16,19 +16,24 @@
 */
 
 #include "PropertyEditorHandler.h"
+#include "Utils/InplaceEditing.h"
+#include "Utils/QtnConnections.h"
 
 #include <QDebug>
 #include <QKeyEvent>
+#include <QDialog>
 
 QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property,
 														   QWidget& editor)
-	: reverted(false)
+	: QObject(&editor)
+	, m_property(&property)
+	, m_editor(&editor)
+	, reverted(false)
 	, returned(false)
 {
-	setParent(&editor);
-	QObject::connect(&property, &QtnPropertyBase::propertyDidChange,
+	QObject::connect(m_property, &QtnPropertyBase::propertyDidChange,
 					 this, &QtnPropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
-	QObject::connect(&property, &QObject::destroyed,
+	QObject::connect(m_property, &QObject::destroyed,
 					 this, &QtnPropertyEditorHandlerBase::onPropertyDestroyed);
 }
 
@@ -72,10 +77,8 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 
 bool QtnPropertyEditorHandlerBase::canApply() const
 {
-	auto thiz = const_cast<QtnPropertyEditorHandlerBase *>(this);
-	auto property = thiz->propertyBase();
-	if (nullptr != property)
-		return (!reverted && (returned || !property->valueIsHidden()));
+	if (nullptr != m_property)
+		return (!reverted && (returned || !m_property->valueIsHidden()));
 
 	return false;
 }
@@ -86,16 +89,51 @@ void QtnPropertyEditorHandlerBase::applyReset()
 	returned = false;
 }
 
+QtnPropertyEditorHandlerBase::DialogContainerPtr QtnPropertyEditorHandlerBase::connectDialog(QDialog *dialog)
+{
+	DialogContainerPtr result(new DialogContainer(dialog));
+	connectDialog(result);
+	return result;
+}
+
+void QtnPropertyEditorHandlerBase::connectDialog(const DialogContainerPtr &containerPtr)
+{
+	Q_ASSERT(nullptr != containerPtr);
+	auto dialog = containerPtr->dialog;
+	Q_ASSERT(nullptr != dialog);
+
+	auto parent = dialog->parent();
+	Q_ASSERT(nullptr != parent);
+
+	QObject::connect(parent, &QObject::destroyed, [containerPtr]()
+	{
+		containerPtr->dialog->setParent(nullptr);
+	});
+}
+
 void QtnPropertyEditorHandlerBase::onPropertyDestroyed()
 {
-	propertyBase() = nullptr;
+	m_property = nullptr;
+	qtnStopInplaceEdit();
 }
 
 void QtnPropertyEditorHandlerBase::onPropertyDidChange(QtnPropertyChangeReason reason)
 {
-	if (0 != (reason & (QtnPropertyChangeReasonValue | QtnPropertyChangeReasonState))
-	&&	propertyBase() == sender())
+	if (reason & (QtnPropertyChangeReasonValue | QtnPropertyChangeReasonState))
 	{
-		updateEditor();
+		if (nullptr != m_property && m_property == sender())
+			updateEditor();
 	}
+}
+
+QtnPropertyEditorHandlerBase::DialogContainer::DialogContainer(QDialog *dialog)
+	: dialog(dialog)
+{
+
+}
+
+QtnPropertyEditorHandlerBase::DialogContainer::~DialogContainer()
+{
+	if (nullptr != dialog && nullptr == dialog->parent())
+		delete dialog;
 }

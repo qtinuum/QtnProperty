@@ -18,6 +18,7 @@
 #include "PropertyWidget.h"
 
 #include "Utils/InplaceEditing.h"
+#include "Utils/QtnConnections.h"
 
 #include <QtGui>
 #include <QApplication>
@@ -236,6 +237,18 @@ QtnPropertyBase *QtnPropertyView::getPropertyAt(const QPoint &position, QRect *o
 	}
 
 	return nullptr;
+}
+
+void QtnPropertyView::connectPropertyToEdit(QtnPropertyBase *property,
+											QtnConnections &outConnections)
+{
+	Q_ASSERT(nullptr != property);
+
+	outConnections.push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
+											  this, &QtnPropertyView::onEditedPropertyWillChange));
+
+	outConnections.push_back(QObject::connect(property, &QtnPropertyBase::propertyDidChange,
+											  this, &QtnPropertyView::onEditedPropertyDidChange));
 }
 
 void QtnPropertyView::paintEvent(QPaintEvent* e)
@@ -971,9 +984,7 @@ bool QtnPropertyView::startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e
 	auto property = delegate->getOwnerProperty();
 	Q_ASSERT(nullptr != property);
 
-	typedef std::vector<QMetaObject::Connection> Connections;
-
-	std::shared_ptr<Connections> connections(new Connections);
+	std::shared_ptr<QtnConnections> connections(new QtnConnections);
 
 	bool editable = property->isEditableByUser();
 
@@ -984,24 +995,14 @@ bool QtnPropertyView::startPropertyEdit(QtnPropertyDelegate *delegate, QEvent *e
 			connections->clear();
 		}));
 
-		if (m_activeProperty != property)
-		{
-			connections->push_back(QObject::connect(property, &QtnPropertyBase::propertyWillChange,
-													this, &QtnPropertyView::onEditedPropertyWillChange));
-
-			connections->push_back(QObject::connect(property, &QtnProperty::propertyDidChange,
-													this, &QtnPropertyView::onEditedPropertyDidChange));
-		}
+		connectPropertyToEdit(property, *connections);
 	}
 
 	auto editor = delegate->createValueEditor(viewport(), rect, &inplaceInfo);
 
 	auto editFinished = [connections]()
 	{
-		for (auto &connection : *connections.get())
-			QObject::disconnect(connection);
-
-		connections->clear();
+		connections->disconnect();
 	};
 
 	if (nullptr == editor)
@@ -1172,10 +1173,6 @@ void QtnPropertyView::connectActiveProperty()
 	{
 		QObject::connect(m_activeProperty, &QObject::destroyed,
 						 this, &QtnPropertyView::onActivePropertyDestroyed);
-		QObject::connect(m_activeProperty, &QtnPropertyBase::propertyWillChange,
-						 this, &QtnPropertyView::onEditedPropertyWillChange);
-		QObject::connect(m_activeProperty, &QtnPropertyBase::propertyDidChange,
-						 this, &QtnPropertyView::onEditedPropertyDidChange);
 	}
 }
 
@@ -1185,10 +1182,6 @@ void QtnPropertyView::disconnectActiveProperty()
 	{
 		QObject::disconnect(m_activeProperty, &QObject::destroyed,
 							this, &QtnPropertyView::onActivePropertyDestroyed);
-		QObject::disconnect(m_activeProperty, &QtnPropertyBase::propertyWillChange,
-						 this, &QtnPropertyView::onEditedPropertyWillChange);
-		QObject::disconnect(m_activeProperty, &QtnPropertyBase::propertyDidChange,
-						 this, &QtnPropertyView::onEditedPropertyDidChange);
 	}
 }
 
