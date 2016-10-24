@@ -304,7 +304,7 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 	dialog->setReadOnly(!property->isEditableByUser());
 
 	volatile bool destroyed = false;
-	auto connection = QObject::connect(property, &QObject::destroyed,
+	auto connection = QObject::connect(this, &QObject::destroyed,
 									   [&destroyed]() mutable
 	{
 		destroyed = true;

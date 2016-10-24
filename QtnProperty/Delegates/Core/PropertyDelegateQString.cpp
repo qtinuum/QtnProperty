@@ -509,7 +509,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 	dialog->show();
 	dialog->raise();
 	volatile bool destroyed = false;
-	auto connection = QObject::connect(property, &QObject::destroyed,
+	auto connection = QObject::connect(this, &QObject::destroyed,
 	[&destroyed]() mutable
 	{
 		destroyed = true;
