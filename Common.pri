@@ -22,7 +22,7 @@ unix|win32-g++ {
 } else {
     win32 {
         QMAKE_CXXFLAGS_WARN_OFF -= -W0
-        QMAKE_CXXFLAGS += -W3 /wd4100 /wd4065
+        QMAKE_CXXFLAGS += -W3 /wd4100 /wd4065 /wd4573
         DEFINES += _CRT_SECURE_NO_WARNINGS
     }
 }
