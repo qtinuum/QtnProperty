@@ -8,7 +8,7 @@ DESTDIR = $$BIN_DIR
 
 CONFIG += c++11 warn_off
 
-unix|win32-g++|win64-g++ {
+unix|win32-g++ {
     QMAKE_CXXFLAGS_WARN_OFF -= -w
     QMAKE_CXXFLAGS += -Wall
     QMAKE_CXXFLAGS += \
@@ -20,7 +20,7 @@ unix|win32-g++|win64-g++ {
         -Wno-unused-const-variable \
         -Wno-switch-bool
 } else {
-    win32|win64 {
+    win32 {
         QMAKE_CXXFLAGS_WARN_OFF -= -W0
         QMAKE_CXXFLAGS += -W3 /wd4100 /wd4065 /wd4573
         DEFINES += _CRT_SECURE_NO_WARNINGS
