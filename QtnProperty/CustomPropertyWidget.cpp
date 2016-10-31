@@ -687,11 +687,11 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 	return false;
 }
 
-bool CustomPropertyWidget::drop(const QMimeData *data, QtnPropertyBase *property, QtnApplyPosition applyPosition)
+void CustomPropertyWidget::dropEvent(QDropEvent *event)
 {
 	backupAutoUpdate = autoUpdate;
 	autoUpdate = false;
-	return QtnPropertyWidgetEx::drop(data, property, applyPosition);
+	QtnPropertyWidgetEx::dropEvent(event);
 }
 
 void CustomPropertyWidget::dropEnd()

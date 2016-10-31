@@ -62,7 +62,7 @@ protected:
 	virtual bool applyPropertyData(const QMimeData *data,
 								   QtnPropertyBase *destination,
 								   QtnApplyPosition position) override;
-	virtual bool drop(const QMimeData *data, QtnPropertyBase *property, QtnApplyPosition applyPosition) override;
+	virtual void dropEvent(QDropEvent *event) override;
 	virtual void dropEnd() override;
 
 private:
