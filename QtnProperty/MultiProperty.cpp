@@ -264,7 +264,7 @@ bool QtnMultiProperty::fromVariantImpl(const QVariant &var, bool edit)
 		for (size_t i = 0; i < count; i++)
 		{
 			QtnProperty *property = properties.at(i);
-			if (!property->fromVariant(values.at(i), edit))
+			if (!property->fromVariant(values.at(static_cast<int>(i)), edit))
 				ok = false;
 		}
 	} else
