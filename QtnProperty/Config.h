@@ -22,5 +22,8 @@ class QLocale;
 
 QTN_IMPORT_EXPORT void qtnInstallTranslations(const QLocale &locale);
 
+#define PERCENT_SUFFIX 1
+#define DEGREE_SUFFIX 2
+
 
 

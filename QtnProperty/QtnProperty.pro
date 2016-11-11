@@ -16,7 +16,6 @@ SOURCES += PropertyBase.cpp \
     Core/PropertyBool.cpp \
     Core/PropertyInt.cpp \
     Core/PropertyUInt.cpp \
-    Core/PropertyFloat.cpp \
     Core/PropertyDouble.cpp \
     Core/PropertyQString.cpp \
     Core/PropertyQRect.cpp \
@@ -34,7 +33,6 @@ SOURCES += PropertyBase.cpp \
     Delegates/Core/PropertyDelegateInt.cpp \
     Delegates/Core/PropertyDelegateUInt.cpp \
     Delegates/Core/PropertyDelegateQString.cpp \
-    Delegates/Core/PropertyDelegateFloat.cpp \
     Delegates/Core/PropertyDelegateDouble.cpp \
     Delegates/Core/PropertyDelegateEnum.cpp \
     Delegates/Core/PropertyDelegateQRect.cpp \
@@ -56,7 +54,6 @@ SOURCES += PropertyBase.cpp \
     PropertyQPointF.cpp \
     PropertyQSizeF.cpp \
     PropertyWidgetEx.cpp \
-    PropertyPercent.cpp \
     CustomPropertyEditorDialog.cpp \
     CustomPropertyOptionsDialog.cpp \
     VarProperty.cpp \
@@ -83,7 +80,6 @@ HEADERS += CoreAPI.h\
     Core/PropertyBool.h \
     Core/PropertyInt.h \
     Core/PropertyUInt.h \
-    Core/PropertyFloat.h \
     Core/PropertyDouble.h \
     Core/PropertyQString.h \
     Core/PropertyQRect.h \
@@ -102,7 +98,6 @@ HEADERS += CoreAPI.h\
     Delegates/Core/PropertyDelegateInt.h \
     Delegates/Core/PropertyDelegateUInt.h \
     Delegates/Core/PropertyDelegateQString.h \
-    Delegates/Core/PropertyDelegateFloat.h \
     Delegates/Core/PropertyDelegateDouble.h \
     Delegates/Core/PropertyDelegateEnum.h \
     Delegates/Core/PropertyDelegateQRect.h \
@@ -123,7 +118,6 @@ HEADERS += CoreAPI.h\
     PropertyQPointF.h \
     PropertyQSizeF.h \
     PropertyWidgetEx.h \
-    PropertyPercent.h \
     CustomPropertyEditorDialog.h \
     CustomPropertyOptionsDialog.h \
     VarProperty.h \
