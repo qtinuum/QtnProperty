@@ -25,7 +25,6 @@ public:
 
 	virtual QString textFromValue(double val) const override;
 
-private:
 	static QString valueToText(double value, const QLocale &locale = QLocale(), int decimals = 10, bool groupSeparatorShown = false);
 };
 
