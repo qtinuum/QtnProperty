@@ -50,8 +50,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context,
 {
     // background
     {
-        QtnSubItem bgItem;
-        bgItem.rect = context.rect;
+        QtnSubItem bgItem(context.rect);
 
         if (bgItem.rect.isValid())
         {
@@ -70,10 +69,10 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context,
     // branch node sign
     if (context.hasChildren)
     {
-        QtnSubItem brItem(true);
-        brItem.rect = context.rect.marginsRemoved(context.margins);
+        QtnSubItem brItem(context.rect.marginsRemoved(context.margins));
         brItem.rect.setWidth(brItem.rect.height());
         context.margins.setLeft(context.margins.left() + brItem.rect.height());
+        brItem.trackState();
 
         if (brItem.rect.isValid())
         {
@@ -137,8 +136,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(QtnDrawContext& context,
 
     // property set name
     {
-        QtnSubItem nameItem;
-        nameItem.rect = context.rect.marginsRemoved(context.margins);
+        QtnSubItem nameItem(context.rect.marginsRemoved(context.margins));
         nameItem.setPropertyDescriptionAsTooltip(m_owner);
 
         if (nameItem.rect.isValid())

@@ -63,20 +63,19 @@ static QIcon resetIcon()
     return qtnResetIcon;
 }
 
-void QtnPropertyDelegateWithValue::createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems)
+void QtnPropertyDelegateWithValues::createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
     addSubItemBackground(context, subItems);
     addSubItemSelection(context, subItems);
     addSubItemBranchNode(context, subItems);
     addSubItemName(context, subItems);
     addSubItemReset(context, subItems);
-    addSubItemValue(context, subItems);
+    addSubItemValues(context, subItems);
 }
 
-void QtnPropertyDelegateWithValue::addSubItemBackground(QtnDrawContext& context, QList<QtnSubItem>& subItems)
+void QtnPropertyDelegateWithValues::addSubItemBackground(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
-    QtnSubItem bgItem;
-    bgItem.rect = context.rect;
+    QtnSubItem bgItem(context.rect);
 
     if (!bgItem.rect.isValid())
         return;
@@ -101,10 +100,9 @@ void QtnPropertyDelegateWithValue::addSubItemBackground(QtnDrawContext& context,
     subItems.append(bgItem);
 }
 
-void QtnPropertyDelegateWithValue::addSubItemSelection(QtnDrawContext& context, QList<QtnSubItem>& subItems)
+void QtnPropertyDelegateWithValues::addSubItemSelection(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
-    QtnSubItem selItem;
-    selItem.rect = context.rect;
+    QtnSubItem selItem(context.rect);
     selItem.rect.setRight(context.splitPos);
 
     if (!selItem.rect.isValid())
@@ -119,15 +117,15 @@ void QtnPropertyDelegateWithValue::addSubItemSelection(QtnDrawContext& context, 
     subItems.append(selItem);
 }
 
-void QtnPropertyDelegateWithValue::addSubItemBranchNode(QtnDrawContext& context, QList<QtnSubItem>& subItems)
+void QtnPropertyDelegateWithValues::addSubItemBranchNode(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
     if (!context.hasChildren)
         return;
 
-    QtnSubItem brItem(true);
-    brItem.rect = context.rect.marginsRemoved(context.margins);
+    QtnSubItem brItem(context.rect.marginsRemoved(context.margins));
     brItem.rect.setWidth(brItem.rect.height());
     context.margins.setLeft(context.margins.left() + brItem.rect.height());
+    brItem.trackState();
 
     if (!brItem.rect.isValid())
         return;
@@ -195,10 +193,9 @@ void QtnPropertyDelegateWithValue::addSubItemBranchNode(QtnDrawContext& context,
     subItems.append(brItem);
 }
 
-void QtnPropertyDelegateWithValue::addSubItemName(QtnDrawContext& context, QList<QtnSubItem>& subItems)
+void QtnPropertyDelegateWithValues::addSubItemName(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
-    QtnSubItem nameItem;
-    nameItem.rect = context.rect.marginsRemoved(context.margins);
+    QtnSubItem nameItem(context.rect.marginsRemoved(context.margins));
     nameItem.rect.setRight(context.splitPos);
     nameItem.setPropertyDescriptionAsTooltip(*propertyImmutable());
 
@@ -221,15 +218,15 @@ void QtnPropertyDelegateWithValue::addSubItemName(QtnDrawContext& context, QList
 }
 
 
-void QtnPropertyDelegateWithValue::addSubItemReset(QtnDrawContext& context, QList<QtnSubItem>& subItems)
+void QtnPropertyDelegateWithValues::addSubItemReset(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
     if (!propertyImmutable()->hasResetCallback())
         return;
 
-    QtnSubItem resetItem(true);
-    resetItem.rect = context.rect.marginsRemoved(context.margins);
+    QtnSubItem resetItem(context.rect.marginsRemoved(context.margins));
     resetItem.rect.setLeft(resetItem.rect.right() - resetItem.rect.height());
     resetItem.setTextAsTooltip("Reset");
+    resetItem.trackState();
 
     if (!resetItem.rect.isValid())
         return;
@@ -289,15 +286,22 @@ void QtnPropertyDelegateWithValue::addSubItemReset(QtnDrawContext& context, QLis
     subItems.append(resetItem);
 }
 
-void QtnPropertyDelegateWithValue::addSubItemValue(QtnDrawContext& context, QList<QtnSubItem>& subItems)
+void QtnPropertyDelegateWithValues::addSubItemValues(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
-    QtnSubItem valueItem;
-    valueItem.rect = context.rect.marginsRemoved(context.margins);
-    valueItem.rect.setLeft(context.splitPos + context.widget->valueLeftMargin());
+    auto rect = context.rect.marginsRemoved(context.margins);
+    rect.setLeft(context.splitPos + context.widget->valueLeftMargin());
 
-    if (valueItem.rect.isValid() && createSubItemValueImpl(context, valueItem))
-        subItems.append(valueItem);
+    if (rect.isValid())
+        createSubItemValuesImpl(context, rect, subItems);
 }
+
+void QtnPropertyDelegateWithValue::createSubItemValuesImpl(QtnDrawContext& context, const QRect& valueRect, QList<QtnSubItem>& subItems)
+{
+    QtnSubItem subItem(valueRect);
+    if (createSubItemValueImpl(context, subItem))
+        subItems.append(subItem);
+}
+
 
 bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(QtnDrawContext&, QtnSubItem& subItemValue)
 {

@@ -18,8 +18,9 @@
 #include "PropertyView.h"
 #include <QMouseEvent>
 
-QtnSubItem::QtnSubItem(bool trackState)
-    : m_trackState(trackState),
+QtnSubItem::QtnSubItem(const QRect &rect)
+    : rect(rect),
+      m_trackState(false),
       m_activeCount(0),
       m_state(QtnSubItemStateNone)
 {

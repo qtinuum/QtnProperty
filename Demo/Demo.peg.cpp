@@ -217,6 +217,7 @@ void QtnPropertySetSubPropertySetType::connectDelegates()
 QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
+    , FreqProperty(*new QtnPropertyFreq(this))
     , LayerProperty(*new QtnPropertyLayer(this))
     , PenStyleProperty(*new QtnPropertyQPenStyle(this))
     , PenProperty(*new QtnPropertyQPen(this))
@@ -257,6 +258,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     Q_UNUSED(other);
 
     BoolProperty = other.BoolProperty;
+    FreqProperty = other.FreqProperty;
     LayerProperty = other.LayerProperty;
     PenStyleProperty = other.PenStyleProperty;
     PenProperty = other.PenProperty;
@@ -308,6 +310,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->BoolProperty.state() & ignoreMask))
     {
         BoolProperty = theCopyFrom->BoolProperty;
+    }
+
+    if (!(theCopyFrom->FreqProperty.state() & ignoreMask))
+    {
+        FreqProperty = theCopyFrom->FreqProperty;
     }
 
     if (!(theCopyFrom->LayerProperty.state() & ignoreMask))
@@ -438,6 +445,12 @@ void QtnPropertySetSamplePS::init()
     static QString BoolProperty_description = "Property to hold boolean values.";
     BoolProperty.setDescription(BoolProperty_description);
     BoolProperty.setValue(false);
+    static QString FreqProperty_name = tr("FreqProperty");
+    FreqProperty.setName(FreqProperty_name);
+    static QString FreqProperty_description = "Property to hold frequency values.";
+    FreqProperty.setDescription(FreqProperty_description);
+    FreqProperty.setUnit(FreqUnit::KHz);
+    FreqProperty.setValue(15);
     static QString LayerProperty_name = tr("LayerProperty");
     LayerProperty.setName(LayerProperty_name);
     static QString LayerProperty_description = "Property to hold layer.";

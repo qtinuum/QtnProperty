@@ -5,6 +5,7 @@
 #include "../Core/PropertyGUI.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
+#include "Freq/PropertyFreq.h"
 
 class COLOR
 {
@@ -85,6 +86,7 @@ public:
     
     // start children declarations
     QtnPropertyBool& BoolProperty;
+    QtnPropertyFreq& FreqProperty;
     QtnPropertyLayer& LayerProperty;
     QtnPropertyQPenStyle& PenStyleProperty;
     QtnPropertyQPen& PenProperty;

@@ -31,17 +31,15 @@ public:
     }
 };
 
-class QTN_PW_EXPORT QtnPropertyDelegateWithValue: public QtnPropertyDelegate
+class QTN_PW_EXPORT QtnPropertyDelegateWithValues: public QtnPropertyDelegate
 {
-    Q_DISABLE_COPY(QtnPropertyDelegateWithValue)
+    Q_DISABLE_COPY(QtnPropertyDelegateWithValues)
 
 protected:
-    QtnPropertyDelegateWithValue() {}
-
-    void createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems) override;
+    QtnPropertyDelegateWithValues() {}
 
     // override to define value part of property item
-    virtual bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) = 0;
+    virtual void createSubItemValuesImpl(QtnDrawContext& context, const QRect& valueRect, QList<QtnSubItem>& subItems) = 0;
 
     // sub-items functions
     void addSubItemBackground(QtnDrawContext& context, QList<QtnSubItem>& subItems);
@@ -49,7 +47,24 @@ protected:
     void addSubItemBranchNode(QtnDrawContext& context, QList<QtnSubItem>& subItems);
     void addSubItemName(QtnDrawContext& context, QList<QtnSubItem>& subItems);
     void addSubItemReset(QtnDrawContext& context, QList<QtnSubItem>& subItems);
-    void addSubItemValue(QtnDrawContext& context, QList<QtnSubItem>& subItems);
+    void addSubItemValues(QtnDrawContext& context, QList<QtnSubItem>& subItems);
+
+private:
+    void createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems) override;
+};
+
+class QTN_PW_EXPORT QtnPropertyDelegateWithValue: public QtnPropertyDelegateWithValues
+{
+    Q_DISABLE_COPY(QtnPropertyDelegateWithValue)
+
+protected:
+    QtnPropertyDelegateWithValue() {}
+
+    // override to define value part of property item
+    virtual bool createSubItemValueImpl(QtnDrawContext& context, QtnSubItem& subItemValue) = 0;
+
+private:
+    void createSubItemValuesImpl(QtnDrawContext& context, const QRect& valueRect, QList<QtnSubItem>& subItems) override;
 };
 
 class QTN_PW_EXPORT QtnPropertyDelegateWithValueEditor: public QtnPropertyDelegateWithValue

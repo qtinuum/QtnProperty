@@ -48,8 +48,8 @@ void QtnPropertyDelegateButton::applyAttributesImpl(const QtnPropertyDelegateAtt
 
 void QtnPropertyDelegateButton::createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
-    QtnSubItem buttonItem(true);
-    buttonItem.rect = context.rect;
+    QtnSubItem buttonItem(context.rect);
+    buttonItem.trackState();
     buttonItem.setPropertyDescriptionAsTooltip(owner());
 
     buttonItem.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
@@ -108,10 +108,10 @@ QtnPropertyDelegateButtonLink::QtnPropertyDelegateButtonLink(QtnPropertyButton& 
 
 void QtnPropertyDelegateButtonLink::createSubItemsImpl(QtnDrawContext& context, QList<QtnSubItem>& subItems)
 {
-    QtnSubItem linkItem(true);
-    linkItem.rect = context.rect.marginsRemoved(context.margins);
+    QtnSubItem linkItem(context.rect.marginsRemoved(context.margins));
     linkItem.rect.setWidth(context.painter->fontMetrics().width(m_title));
     linkItem.setPropertyDescriptionAsTooltip(owner());
+    linkItem.trackState();
 
     linkItem.drawHandler = [this](QtnDrawContext& context, const QtnSubItem& item) {
 

@@ -14,7 +14,9 @@ SOURCES +=  main.cpp\
             AB/PropertyDelegateABColor.cpp \
             Int/PropertyDelegateIntList.cpp \
             Layer/PropertyLayer.cpp \
-            Layer/PropertyDelegateLayer.cpp
+            Layer/PropertyDelegateLayer.cpp \
+            Freq/PropertyFreq.cpp \
+            Freq/PropertyDelegateFreq.cpp
 
 HEADERS  += MainWindow.h \
             mydialog.h \
@@ -22,7 +24,9 @@ HEADERS  += MainWindow.h \
             AB/PropertyDelegateABColor.h \
             Int/PropertyDelegateIntList.h \
             Layer/PropertyLayer.h \
-            Layer/PropertyDelegateLayer.h
+            Layer/PropertyDelegateLayer.h \
+            Freq/PropertyFreq.h \
+            Freq/PropertyDelegateFreq.h
 
 FORMS    += MainWindow.ui \
             mydialog.ui

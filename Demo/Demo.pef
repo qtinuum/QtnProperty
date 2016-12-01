@@ -2,6 +2,7 @@
 #include "../Core/PropertyGUI.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
+#include "Freq/PropertyFreq.h"
 
 #include_cpp <QFileDialog>
 #include_cpp <QDebug>
@@ -26,6 +27,13 @@ property_set SamplePS
     {
         description = "Property to hold boolean values.";
         value = false;
+    }
+
+    Freq FreqProperty
+    {
+        description = "Property to hold frequency values.";
+        value = 15;
+        unit = FreqUnit::KHz;
     }
     
     Layer LayerProperty

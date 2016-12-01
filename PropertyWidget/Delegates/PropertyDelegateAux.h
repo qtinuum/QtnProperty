@@ -58,7 +58,7 @@ enum QtnSubItemState
 
 struct QTN_PW_EXPORT QtnSubItem
 {
-    QtnSubItem(bool trackState = false);
+    QtnSubItem(const QRect& rect);
 
     QRect rect;
 
