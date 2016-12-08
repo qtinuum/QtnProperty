@@ -520,7 +520,7 @@ void QtnPropertyBase::masterPropertyStateDidChange(QtnPropertyChangeReason reaso
 		setStateInherited(changedProperty->state());
 	}
 
-	emit propertyDidChange(reason);
+	emit propertyDidChange(reason & ~QtnPropertyChangeReasonEditValue);
 }
 
 QVariant QtnPropertyBase::valueAsVariant() const

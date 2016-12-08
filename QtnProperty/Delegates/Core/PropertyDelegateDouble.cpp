@@ -48,14 +48,15 @@ static bool regDoubleDelegate = QtnPropertyDelegateFactory::staticInstance()
 
 QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(QtnPropertyDoubleBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyDoubleBase>(owner)
-	, percent_suffix(false)
 {
 }
 
-QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget *parent,
+														  const QRect &rect,
+														  QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnDoubleSpinBox(parent);
-	spinBox->setHavePercentSuffix(percent_suffix);
+	spinBox->setSuffix(suffix);
 	spinBox->setGeometry(rect);
 
 	new QtnPropertyDoubleSpinBoxHandler(owner(), *spinBox);
@@ -80,9 +81,13 @@ bool QtnPropertyDelegateDouble::propertyValueToStr(QString& strValue) const
 {
 	QLocale locale;
 	strValue = locale.toString(owner().value(), 'g', 10);
-	if (percent_suffix)
-		strValue.append(locale.percent());
+	strValue.append(suffix);
 	return true;
+}
+
+void QtnPropertyDelegateDouble::applyAttributesImpl(const QtnPropertyDelegateAttributes &attributes)
+{
+	qtnGetAttribute(attributes, "suffix", suffix);
 }
 
 QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
@@ -95,7 +100,6 @@ QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
 
 	editor.setRange(property.minValue(), property.maxValue());
 	editor.setSingleStep(property.stepValue());
-	editor.setDecimals(12);
 
 	updateEditor();
 

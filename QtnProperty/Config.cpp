@@ -18,7 +18,6 @@
 
 #include "PropertyInt64.h"
 #include "PropertyUInt64.h"
-#include "PropertyPercent.h"
 #include "PropertyQPointF.h"
 #include "PropertyQSizeF.h"
 #include "PropertyQRectF.h"
@@ -37,7 +36,6 @@ int Register()
 
 	QtnPropertyInt64::Register();
 	QtnPropertyUInt64::Register();
-	QtnPropertyPercent::Register();
 	QtnPropertyQPointF::Register();
 	QtnPropertyQSizeF::Register();
 	QtnPropertyQRectF::Register();

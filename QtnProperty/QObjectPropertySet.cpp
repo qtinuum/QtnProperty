@@ -21,18 +21,74 @@
 #include "PropertyConnector.h"
 #include "MultiProperty.h"
 #include "IQtnPropertyStateProvider.h"
+#include "Config.h"
 
 #include <QCoreApplication>
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QMap>
+#include <QLocale>
+
+static QtnProperty *createRealNumberProperty(QObject *object, const QMetaProperty &metaProperty)
+{
+	auto property = new QtnPropertyDoubleCallback(nullptr);
+	switch (metaProperty.revision())
+	{
+		case PERCENT_SUFFIX:
+		{
+			QtnPropertyDelegateInfo delegate;
+			qtnInitPercentSpinBoxDelegate(delegate);
+			property->setDelegate(delegate);
+
+			property->setCallbackValueGet([object, metaProperty]() -> qreal
+			{
+				return metaProperty.read(object).toDouble() * 100.0;
+			});
+
+			property->setCallbackValueSet([object, metaProperty](qreal value)
+			{
+				metaProperty.write(object, value / 100.0);
+			});
+
+			property->setCallbackValueAccepted([property](qreal) -> bool
+			{
+				return property->isEditableByUser();
+			});
+
+			return property;
+		}
+
+		case DEGREE_SUFFIX:
+		{
+			QtnPropertyDelegateInfo delegate;
+			qtnInitDegreeSpinBoxDelegate(delegate);
+			property->setDelegate(delegate);
+		}	break;
+	}
+
+	property->setCallbackValueGet([object, metaProperty]() -> qreal
+	{
+		return metaProperty.read(object).toDouble();
+	});
+
+	property->setCallbackValueSet([object, metaProperty](qreal value)
+	{
+		metaProperty.write(object, value);
+	});
+
+	property->setCallbackValueAccepted([property](qreal) -> bool
+	{
+		return property->isEditableByUser();
+	});
+
+	return property;
+}
 
 bool qtnRegisterDefaultMetaPropertyFactory()
 {
 	qtnRegisterMetaPropertyFactory(QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
 	qtnRegisterMetaPropertyFactory(QVariant::String, qtnCreateFactory<QtnPropertyQStringCallback>());
-	qtnRegisterMetaPropertyFactory(QVariant::Double, qtnCreateFactory<QtnPropertyDoubleCallback>());
-//    qtnRegisterMetaPropertyFactory(QVariant::Float, qtnCreateFactory<QtnPropertyFloatCallback>());
+	qtnRegisterMetaPropertyFactory(QVariant::Double, createRealNumberProperty);
 	qtnRegisterMetaPropertyFactory(QVariant::Int, qtnCreateFactory<QtnPropertyIntCallback>());
 	qtnRegisterMetaPropertyFactory(QVariant::UInt, qtnCreateFactory<QtnPropertyUIntCallback>());
 	qtnRegisterMetaPropertyFactory(QVariant::Point, qtnCreateFactory<QtnPropertyQPointCallback>());
@@ -300,4 +356,16 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(const std::set<QObject *> &obje
 	}
 
 	return result;
+}
+
+void qtnInitPercentSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
+{
+	delegate.name = "SpinBox";
+	delegate.attributes["suffix"] = QLocale().percent();
+}
+
+void qtnInitDegreeSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
+{
+	delegate.name = "SpinBox";
+	delegate.attributes["suffix"] = QString::fromUtf8("º");
 }

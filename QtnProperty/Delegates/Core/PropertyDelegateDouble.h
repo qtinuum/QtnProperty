@@ -35,8 +35,8 @@ protected:
 										   QtnInplaceInfo *inplaceInfo = nullptr) override;
 	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const override;
 	virtual bool propertyValueToStr(QString& strValue) const override;
-
-	bool percent_suffix;
+	virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
+	QString suffix;
 };
 
 #endif // PROPERTY_DELEGATE_DOUBLE_H

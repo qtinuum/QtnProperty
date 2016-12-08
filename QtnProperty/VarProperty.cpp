@@ -98,7 +98,7 @@ VarProperty *VarProperty::Duplicate(const QString &new_name)
 VarProperty *VarProperty::AddChild(VarProperty *child, int index)
 {
 	if (index < 0)
-		index = varChildren.size();
+		index = static_cast<int>(varChildren.size());
 
 	child->varParent = this;
 	varChildren.insert(varChildren.begin() + index, child);
