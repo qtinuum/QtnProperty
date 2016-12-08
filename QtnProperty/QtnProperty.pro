@@ -4,7 +4,7 @@ QT += core gui widgets script
 
 TARGET = QtnPropertyAC
 TEMPLATE = lib
-VERSION = 1.2.1
+VERSION = 1.2.2
 
 DEFINES += QTN_DYNAMIC_LIBRARY
 
