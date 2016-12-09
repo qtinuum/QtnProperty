@@ -218,6 +218,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
     , FreqProperty(*new QtnPropertyFreq(this))
+    , PenWidthProperty(*new QtnPropertyPenWidth(this))
     , LayerProperty(*new QtnPropertyLayer(this))
     , PenStyleProperty(*new QtnPropertyQPenStyle(this))
     , PenProperty(*new QtnPropertyQPen(this))
@@ -259,6 +260,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
 
     BoolProperty = other.BoolProperty;
     FreqProperty = other.FreqProperty;
+    PenWidthProperty = other.PenWidthProperty;
     LayerProperty = other.LayerProperty;
     PenStyleProperty = other.PenStyleProperty;
     PenProperty = other.PenProperty;
@@ -315,6 +317,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->FreqProperty.state() & ignoreMask))
     {
         FreqProperty = theCopyFrom->FreqProperty;
+    }
+
+    if (!(theCopyFrom->PenWidthProperty.state() & ignoreMask))
+    {
+        PenWidthProperty = theCopyFrom->PenWidthProperty;
     }
 
     if (!(theCopyFrom->LayerProperty.state() & ignoreMask))
@@ -451,6 +458,11 @@ void QtnPropertySetSamplePS::init()
     FreqProperty.setDescription(FreqProperty_description);
     FreqProperty.setUnit(FreqUnit::KHz);
     FreqProperty.setValue(15);
+    static QString PenWidthProperty_name = tr("PenWidthProperty");
+    PenWidthProperty.setName(PenWidthProperty_name);
+    static QString PenWidthProperty_description = "Property to hold PenWidth enum.";
+    PenWidthProperty.setDescription(PenWidthProperty_description);
+    PenWidthProperty.setValue(PenWidth::Middle);
     static QString LayerProperty_name = tr("LayerProperty");
     LayerProperty.setName(LayerProperty_name);
     static QString LayerProperty_description = "Property to hold layer.";

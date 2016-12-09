@@ -2,6 +2,7 @@
 #include "../Core/PropertyGUI.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
+#include "PenWidth/PropertyPenWidth.h"
 #include "Freq/PropertyFreq.h"
 
 #include_cpp <QFileDialog>
@@ -36,6 +37,12 @@ property_set SamplePS
         unit = FreqUnit::KHz;
     }
     
+	PenWidth PenWidthProperty
+	{
+        description = "Property to hold PenWidth enum.";
+        value = PenWidth::Middle;
+	}
+	
     Layer LayerProperty
     {
         description = "Property to hold layer.";
