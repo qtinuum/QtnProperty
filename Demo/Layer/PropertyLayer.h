@@ -70,7 +70,7 @@ private:
     P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyLayerBase)
 };
 
-class QTN_PE_CORE_EXPORT QtnPropertyLayerCallback: public QtnSinglePropertyCallback<QtnPropertyLayerBase>
+class QtnPropertyLayerCallback: public QtnSinglePropertyCallback<QtnPropertyLayerBase>
 {
     Q_OBJECT
     QtnPropertyLayerCallback(const QtnPropertyLayerCallback& other) Q_DECL_EQ_DELETE;
@@ -84,7 +84,7 @@ public:
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyLayerCallback, QtnPropertyLayerBase)
 };
 
-class QTN_PE_CORE_EXPORT QtnPropertyLayer: public QtnSinglePropertyValue<QtnPropertyLayerBase>
+class QtnPropertyLayer: public QtnSinglePropertyValue<QtnPropertyLayerBase>
 {
     Q_OBJECT
     QtnPropertyLayer(const QtnPropertyLayer& other) Q_DECL_EQ_DELETE;

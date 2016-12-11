@@ -21,7 +21,7 @@
 
 class QtnPropertyPenWidthBase;
 
-class QTN_PW_EXPORT QtnPropertyDelegatePenWidth: public QtnPropertyDelegateTyped<QtnPropertyPenWidthBase>
+class QtnPropertyDelegatePenWidth: public QtnPropertyDelegateTyped<QtnPropertyPenWidthBase>
 {
     Q_DISABLE_COPY(QtnPropertyDelegatePenWidth)
 

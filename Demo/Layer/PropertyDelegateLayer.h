@@ -21,7 +21,7 @@
 
 class QtnPropertyLayerBase;
 
-class QTN_PW_EXPORT QtnPropertyDelegateLayer: public QtnPropertyDelegateTyped<QtnPropertyLayerBase>
+class QtnPropertyDelegateLayer: public QtnPropertyDelegateTyped<QtnPropertyLayerBase>
 {
     Q_DISABLE_COPY(QtnPropertyDelegateLayer)
 

@@ -17,8 +17,8 @@
 #ifndef QTN_ACCESSIBILITY_PROXY_H
 #define QTN_ACCESSIBILITY_PROXY_H
 
-#include "PropertyWidgetAPI.h"
-#include "../Core/PropertySet.h"
+#include "../PropertyWidgetAPI.h"
+#include "../../Core/PropertySet.h"
 #include <QObject>
 #include <QRect>
 

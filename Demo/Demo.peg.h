@@ -88,8 +88,9 @@ public:
     // start children declarations
     QtnPropertyBool& BoolProperty;
     QtnPropertyFreq& FreqProperty;
-    QtnPropertyPenWidth& PenWidthProperty;
     QtnPropertyLayer& LayerProperty;
+    QtnPropertyQBrushStyle& BrushStyleProperty;
+    QtnPropertyPenWidth& PenWidthProperty;
     QtnPropertyQPenStyle& PenStyleProperty;
     QtnPropertyQPen& PenProperty;
     QtnPropertyButton& ButtonProperty;

@@ -14,8 +14,8 @@
    limitations under the License.
 */
 
-#ifndef PROPERTYCOLOR_H
-#define PROPERTYCOLOR_H
+#ifndef PROPERTY_COLOR_H
+#define PROPERTY_COLOR_H
 
 #include "../Auxiliary/PropertyTemplates.h"
 #include <QtGui/QColor>
@@ -83,4 +83,4 @@ public:
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQColor, QtnPropertyQColorBase)
 };
 
-#endif // PROPERTYCOLOR_H
+#endif // PROPERTY_COLOR_H

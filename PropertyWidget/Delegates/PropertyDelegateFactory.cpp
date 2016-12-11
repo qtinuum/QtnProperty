@@ -138,6 +138,7 @@ void regQFontDelegates();
 void regButtonDelegates();
 void regQPenStyleDelegates();
 void regQPenDelegates();
+void regQBrushStyleDelegates();
 
 bool initQtnPropertyWidgetLibrary(QIcon *resetIcon)
 {
@@ -166,6 +167,7 @@ bool initQtnPropertyWidgetLibrary(QIcon *resetIcon)
     regButtonDelegates();
     regQPenStyleDelegates();
     regQPenDelegates();
+    regQBrushStyleDelegates();
 
     initialized = true;
     return true;

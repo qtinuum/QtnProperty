@@ -21,7 +21,7 @@
 
 class QtnPropertyABColor;
 
-class QTN_PW_EXPORT QtnPropertyDelegateABColor: public QtnPropertyDelegateQColor
+class QtnPropertyDelegateABColor: public QtnPropertyDelegateQColor
 {
     Q_DISABLE_COPY(QtnPropertyDelegateABColor)
 

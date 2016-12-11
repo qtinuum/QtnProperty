@@ -53,7 +53,7 @@ private:
     P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyPenWidthBase)
 };
 
-class QTN_PE_CORE_EXPORT QtnPropertyPenWidthCallback: public QtnSinglePropertyCallback<QtnPropertyPenWidthBase>
+class QtnPropertyPenWidthCallback: public QtnSinglePropertyCallback<QtnPropertyPenWidthBase>
 {
     Q_OBJECT
     QtnPropertyPenWidthCallback(const QtnPropertyPenWidthCallback& other) Q_DECL_EQ_DELETE;
@@ -67,7 +67,7 @@ public:
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyPenWidthCallback, QtnPropertyPenWidthBase)
 };
 
-class QTN_PE_CORE_EXPORT QtnPropertyPenWidth: public QtnSinglePropertyValue<QtnPropertyPenWidthBase>
+class QtnPropertyPenWidth: public QtnSinglePropertyValue<QtnPropertyPenWidthBase>
 {
     Q_OBJECT
     QtnPropertyPenWidth(const QtnPropertyPenWidth& other) Q_DECL_EQ_DELETE;

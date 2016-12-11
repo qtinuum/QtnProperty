@@ -34,6 +34,7 @@ else: SOURCES += PropertyWidget.cpp \
     Delegates/GUI/PropertyDelegateQFont.cpp \
     Delegates/GUI/PropertyDelegateQColor.cpp \
     Delegates/GUI/PropertyDelegateQPen.cpp \
+    Delegates/GUI/PropertyDelegateQBrush.cpp \
     Delegates/GUI/PropertyDelegateButton.cpp \
     Utils/AccessibilityProxy.cpp
 
@@ -62,6 +63,7 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/Core/PropertyDelegateQPoint.h \
     Delegates/GUI/PropertyDelegateQFont.h \
     Delegates/GUI/PropertyDelegateQPen.h \
+    Delegates/GUI/PropertyDelegateQBrush.h \
     Delegates/GUI/PropertyDelegateQColor.h \
     Delegates/GUI/PropertyDelegateButton.h \
     Utils/AccessibilityProxy.h
