@@ -188,6 +188,7 @@ private:
 
 	QFileDialog *dialog;
 	DialogContainerPtr dialogContainer;
+	QString defaultDirectory;
 };
 
 QtnPropertyDelegateQStringInvalidBase::QtnPropertyDelegateQStringInvalidBase(
@@ -401,6 +402,9 @@ void QtnPropertyQStringFileLineEditBttnHandler::applyAttributes(
 	if (qtnGetAttribute(attributes, "defaultSuffix", str))
 		dialog->setDefaultSuffix(str);
 
+	if (qtnGetAttribute(attributes, "defaultDirectory", str))
+		defaultDirectory = str;
+
 	if (qtnGetAttribute(attributes, "fileMode", option))
 		dialog->setFileMode(QFileDialog::FileMode(option));
 
@@ -450,7 +454,15 @@ void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked(bool)
 	reverted = true;
 	auto dialogContainer = this->dialogContainer;
 	QString filePath = property->value();
-	dialog->setDirectory(QFileInfo(filePath).dir());
+	QString dirPath = this->defaultDirectory;
+	QFileInfo fileInfo(filePath);
+	if (!filePath.isEmpty())
+	{
+		filePath = QDir(dirPath).absoluteFilePath(filePath);
+		fileInfo.setFile(filePath);
+		dirPath = fileInfo.path();
+	}
+	dialog->setDirectory(dirPath);
 	dialog->selectFile(filePath);
 	if (dialog->exec() == QDialog::Accepted && !destroyed)
 	{
