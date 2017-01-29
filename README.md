@@ -54,12 +54,14 @@ QtnProperty project consists of five submodules:
 
 #How to use
 
-1. To have QtnProperty in your project your should include QtnProperty.pri file into your pro file. It will add QtnPropertyCore and QtnPropertyWidget static libraries to your project.
+##Step 1.
+To have QtnProperty in your project your should include QtnProperty.pri file into your pro file. It will add QtnPropertyCore and QtnPropertyWidget static libraries to your project.
 ```C++
     include(QtnProperty\QtnProperty.pri)
 ```
 
-2. Then you can manually create property sets in your C++ code, create QtnPropertyWidget or QtnPropertyView widgets and assign property set to the widget:
+##Step 2.
+Then you can manually create property sets in your C++ code, create QtnPropertyWidget or QtnPropertyView widgets and assign property set to the widget:
 
 ```C++
 class Ui_MainWindow
@@ -106,9 +108,11 @@ NOTE:
 
 If the function isn't called for some reason you will see an empty property widget and some warnings in application output. You should call it manually (for example somewhere in the main function). Pass **resetIcon**  parameter if you want to override default reset icon for resettable properties.
 
-3. If you want to use *.pef files to generate properties C++ code you need to build QtnPEG executable.
+##Step 3.
+If you want to use *.pef files to generate properties C++ code you need to build QtnPEG executable.
 
-4. To use *.pef files in your project you need to add the following things into you pro file:
+##Step 4.
+To use *.pef files in your project you need to add the following things into you pro file:
 
 * Define PEG_TOOL variable as full path to the QtnPEG executable
 * include PEG.pri file
@@ -120,7 +124,8 @@ include(../PEG.pri)
 PEG_SOURCES += TextEditor.pef
 ```
 
-5. Write *.pef file with propertyset declaration. For example TextEditor.pef:
+##Step 5.
+Write *.pef file with propertyset declaration. For example TextEditor.pef:
   
 ```C++
 #include "Core/PropertyCore.h"
@@ -153,10 +158,12 @@ property_set TextEditor
 }
 ```
     
-6. Include generated TextEditor.peg.h and TextEditor.peg.cpp files into 
+##Step 6.
+Include generated TextEditor.peg.h and TextEditor.peg.cpp files into 
 your project.
 
-7. Now you can use QtnPropertySetTextEditor class (defined in generated files) in your C++ code like this:
+##Step 7.
+Now you can use QtnPropertySetTextEditor class (defined in generated files) in your C++ code like this:
 ```C++
     QtnPropertySetTextEditor params;
     params.enableWrapping = false;
