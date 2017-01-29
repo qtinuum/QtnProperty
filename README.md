@@ -18,7 +18,7 @@ The key features are:
 * Delegates to customize look and feel properties in property widget
 * PEG (property/enum generator) - it's optional tool like Qt moc which generates properties hierarchy from QML like files into C++ code.
 
-Here are some screenshots of the Demo application:
+Some screenshots of the Demo application:
 ![Demo_screenshot_linux](Docs/img/Demo1.png)
 ![Demo_screenshot_win](Docs/img/DemoWin.png)
 
@@ -55,9 +55,9 @@ QtnProperty project consists of five submodules:
 #How to use
 
 1. To have QtnProperty in your project your should include QtnProperty.pri file into your pro file. It will add QtnPropertyCore and QtnPropertyWidget static libraries to your project.
-
+```C++
     include(QtnProperty\QtnProperty.pri)
-
+```
 
 2. Then you can manually create property sets in your C++ code, create QtnPropertyWidget or QtnPropertyView widgets and assign property set to the widget:
 
@@ -97,15 +97,18 @@ This example will show you something like this:
 
 ![Example_screenshot_windows](Docs/img/Example1.png)
 
-NOTE: **bool initQtnPropertyWidgetLibrary(QIcon *resetIcon = nullptr)** function must be called before using QtnPropertyWidget or QtnPropertyView widgets. This function is called automatically in the QtnProperty\PropertyWidget\Delegates\PropertyDelegateFactory.cpp file
+NOTE:
 
+**bool initQtnPropertyWidgetLibrary(QIcon *resetIcon = nullptr)** function must be called before using QtnPropertyWidget or QtnPropertyView widgets. This function is called automatically in the QtnProperty\PropertyWidget\Delegates\PropertyDelegateFactory.cpp file
+```C++
     bool initializeQtnPropertyWidgetLibrary = initQtnPropertyWidgetLibrary();
+```
 
 If the function isn't called for some reason you will see an empty property widget and some warnings in application output. You should call it manually (for example somewhere in the main function). Pass **resetIcon**  parameter if you want to override default reset icon for resettable properties.
 
-2. If you want to use *.pef files to generate properties C++ code you need to build QtnPEG executable.
+3. If you want to use *.pef files to generate properties C++ code you need to build QtnPEG executable.
 
-3. To use *.pef files in your project you need to add the following things into you pro file:
+4. To use *.pef files in your project you need to add the following things into you pro file:
 
 * Define PEG_TOOL variable as full path to the QtnPEG executable
 * include PEG.pri file
@@ -117,7 +120,7 @@ include(../PEG.pri)
 PEG_SOURCES += TextEditor.pef
 ```
 
-4. Write *.pef file with propertyset declaration. For example TextEditor.pef:
+5. Write *.pef file with propertyset declaration. For example TextEditor.pef:
   
 ```C++
 #include "Core/PropertyCore.h"
@@ -150,9 +153,10 @@ property_set TextEditor
 }
 ```
     
-5. Include generated TextEditor.peg.h and TextEditor.peg.cpp files into 
+6. Include generated TextEditor.peg.h and TextEditor.peg.cpp files into 
 your project.
-6. Now you can use QtnPropertySetTextEditor class (defined in generated files) in your C++ code like this:
+
+7. Now you can use QtnPropertySetTextEditor class (defined in generated files) in your C++ code like this:
 ```C++
     QtnPropertySetTextEditor params;
     params.enableWrapping = false;
