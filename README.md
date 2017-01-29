@@ -112,7 +112,7 @@ If the function isn't called for some reason you will see an empty property widg
 If you want to use *.pef files to generate properties C++ code you need to build QtnPEG executable.
 
 ##Step 4.
-To use *.pef files in your project you need to add the following things into you pro file:
+To use *.pef files in your project you should do the following in your pro file:
 
 * Define PEG_TOOL variable as full path to the QtnPEG executable
 * include PEG.pri file
