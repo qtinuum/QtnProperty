@@ -15,6 +15,8 @@ SOURCES +=  main.cpp\
             Int/PropertyDelegateIntList.cpp \
             Layer/PropertyLayer.cpp \
             Layer/PropertyDelegateLayer.cpp \
+            PenWidth/PropertyPenWidth.cpp \
+            PenWidth/PropertyDelegatePenWidth.cpp \
             Freq/PropertyFreq.cpp \
             Freq/PropertyDelegateFreq.cpp
 
@@ -25,6 +27,8 @@ HEADERS  += MainWindow.h \
             Int/PropertyDelegateIntList.h \
             Layer/PropertyLayer.h \
             Layer/PropertyDelegateLayer.h \
+            PenWidth/PropertyPenWidth.h \
+            PenWidth/PropertyDelegatePenWidth.h \
             Freq/PropertyFreq.h \
             Freq/PropertyDelegateFreq.h
 

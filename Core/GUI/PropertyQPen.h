@@ -14,8 +14,8 @@
    limitations under the License.
 */
 
-#ifndef PROPERTYPEN_H
-#define PROPERTYPEN_H
+#ifndef PROPERTY_PEN_H
+#define PROPERTY_PEN_H
 
 #include "../Auxiliary/PropertyTemplates.h"
 #include "../Enum.h"
@@ -128,4 +128,4 @@ public:
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQPen, QtnPropertyQPenBase)
 };
 
-#endif // PROPERTYPEN_H
+#endif // PROPERTY_PEN_H

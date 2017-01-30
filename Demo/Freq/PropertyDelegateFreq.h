@@ -21,7 +21,7 @@
 
 class QtnPropertyFreqBase;
 
-class QTN_PW_EXPORT QtnPropertyDelegateFreq: public QtnPropertyDelegateTyped<QtnPropertyFreqBase, QtnPropertyDelegateWithValues>
+class QtnPropertyDelegateFreq: public QtnPropertyDelegateTyped<QtnPropertyFreqBase, QtnPropertyDelegateWithValues>
 {
     Q_DISABLE_COPY(QtnPropertyDelegateFreq)
 

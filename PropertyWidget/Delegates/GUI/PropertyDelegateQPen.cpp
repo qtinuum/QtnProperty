@@ -36,14 +36,14 @@ void regQPenStyleDelegates()
                  , "ComboBox");
 }
 
-static void DrawPenStyle(QPainter& painter, QRect rect, Qt::PenStyle penStyle)
+static void drawPenStyle(QPainter& painter, QRect rect, Qt::PenStyle penStyle)
 {
     rect.adjust(2, 2, -2, -2);
     QPen pen = painter.pen();
     pen.setStyle(penStyle);
     painter.save();
     painter.setPen(pen);
-    auto midY = rect.top() + rect.height() / 2;
+    auto midY = rect.center().y();
     painter.drawLine(rect.left(), midY, rect.right(), midY);
     painter.restore();
 }
@@ -57,7 +57,7 @@ public:
     {
         QStyledItemDelegate::paint(painter, option, index);
         auto penStyle = (Qt::PenStyle)index.data(Qt::UserRole).toInt();
-        DrawPenStyle(*painter, option.rect, penStyle);
+        drawPenStyle(*painter, option.rect, penStyle);
     }
 };
 
@@ -75,7 +75,7 @@ protected:
 
         QPainter painter(this);
         auto penStyle = (Qt::PenStyle)currentData().toInt();
-        DrawPenStyle(painter, event->rect().adjusted(0, 0, -event->rect().height(), 0), penStyle);
+        drawPenStyle(painter, event->rect().adjusted(0, 0, -event->rect().height(), 0), penStyle);
     }
 };
 
@@ -124,7 +124,7 @@ void QtnPropertyDelegateQPenStyle::applyAttributesImpl(const QtnPropertyDelegate
 void QtnPropertyDelegateQPenStyle::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& /*state*/, bool* needTooltip) const
 {
     Qt::PenStyle value = owner().value();
-    DrawPenStyle(painter, rect, value);
+    drawPenStyle(painter, rect, value);
 
     if (needTooltip)
         *needTooltip = true;

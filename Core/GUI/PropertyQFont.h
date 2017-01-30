@@ -14,8 +14,8 @@
    limitations under the License.
 */
 
-#ifndef PROPERTYFONT_H
-#define PROPERTYFONT_H
+#ifndef PROPERTY_FONT_H
+#define PROPERTY_FONT_H
 
 #include "../Auxiliary/PropertyTemplates.h"
 #include <QtGui/QFont>
@@ -66,4 +66,4 @@ public:
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFont, QtnPropertyQFontBase)
 };
 
-#endif // PROPERTYFONT_H
+#endif // PROPERTY_FONT_H

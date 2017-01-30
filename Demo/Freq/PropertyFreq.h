@@ -54,7 +54,7 @@ private:
     P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyFreqBase)
 };
 
-class QTN_PE_CORE_EXPORT QtnPropertyFreqCallback: public QtnSinglePropertyCallback<QtnPropertyFreqBase>
+class QtnPropertyFreqCallback: public QtnSinglePropertyCallback<QtnPropertyFreqBase>
 {
     Q_OBJECT
     QtnPropertyFreqCallback(const QtnPropertyFreqCallback& other) Q_DECL_EQ_DELETE;
@@ -68,7 +68,7 @@ public:
     P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyFreqCallback, QtnPropertyFreqBase)
 };
 
-class QTN_PE_CORE_EXPORT QtnPropertyFreq: public QtnSinglePropertyValue<QtnPropertyFreqBase>
+class QtnPropertyFreq: public QtnSinglePropertyValue<QtnPropertyFreqBase>
 {
     Q_OBJECT
     QtnPropertyFreq(const QtnPropertyFreq& other) Q_DECL_EQ_DELETE;

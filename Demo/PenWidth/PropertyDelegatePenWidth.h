@@ -14,22 +14,27 @@
    limitations under the License.
 */
 
-#ifndef PROPERTY_DELEGATE_INT_LIST_H
-#define PROPERTY_DELEGATE_INT_LIST_H
+#ifndef PROPERTY_DELEGATE_PEN_WIDTH_H
+#define PROPERTY_DELEGATE_PEN_WIDTH_H
 
-#include "Delegates/Core/PropertyDelegateInt.h"
+#include "Delegates/Utils/PropertyDelegateMisc.h"
 
-class QtnPropertyIntBase;
+class QtnPropertyPenWidthBase;
 
-class QtnPropertyDelegateIntList: public QtnPropertyDelegateInt
+class QtnPropertyDelegatePenWidth: public QtnPropertyDelegateTyped<QtnPropertyPenWidthBase>
 {
-    Q_DISABLE_COPY(QtnPropertyDelegateIntList)
+    Q_DISABLE_COPY(QtnPropertyDelegatePenWidth)
 
 public:
-    QtnPropertyDelegateIntList(QtnPropertyIntBase& owner);
+    QtnPropertyDelegatePenWidth(QtnPropertyPenWidthBase& owner)
+        : QtnPropertyDelegateTyped<QtnPropertyPenWidthBase>(owner)
+    {
+    }
 
 protected:
+    bool propertyValueToStrImpl(QString& strValue) const override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 };
 
-#endif // PROPERTY_DELEGATE_INT_LIST_H
+#endif // PROPERTY_DELEGATE_PEN_WIDTH_H

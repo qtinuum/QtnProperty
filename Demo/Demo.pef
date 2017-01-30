@@ -2,6 +2,7 @@
 #include "../Core/PropertyGUI.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
+#include "PenWidth/PropertyPenWidth.h"
 #include "Freq/PropertyFreq.h"
 
 #include_cpp <QFileDialog>
@@ -41,6 +42,18 @@ property_set SamplePS
         description = "Property to hold layer.";
         value = 0;
     }
+
+	QBrushStyle BrushStyleProperty
+	{
+        description = "Property to hold QBrushStyle enum.";
+        value = Qt::HorPattern;
+	}
+	
+	PenWidth PenWidthProperty
+	{
+        description = "Property to hold PenWidth enum.";
+        value = PenWidth::Middle;
+	}
     
     QPenStyle PenStyleProperty
     {
@@ -48,7 +61,7 @@ property_set SamplePS
         value = Qt::DashLine;
     }
 
-     QPen PenProperty
+    QPen PenProperty
     {
         description = "Property to hold QPen values.";
         delegate

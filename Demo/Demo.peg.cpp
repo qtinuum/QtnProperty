@@ -219,6 +219,8 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , BoolProperty(*new QtnPropertyBool(this))
     , FreqProperty(*new QtnPropertyFreq(this))
     , LayerProperty(*new QtnPropertyLayer(this))
+    , BrushStyleProperty(*new QtnPropertyQBrushStyle(this))
+    , PenWidthProperty(*new QtnPropertyPenWidth(this))
     , PenStyleProperty(*new QtnPropertyQPenStyle(this))
     , PenProperty(*new QtnPropertyQPen(this))
     , ButtonProperty(*new QtnPropertyButton(this))
@@ -260,6 +262,8 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     BoolProperty = other.BoolProperty;
     FreqProperty = other.FreqProperty;
     LayerProperty = other.LayerProperty;
+    BrushStyleProperty = other.BrushStyleProperty;
+    PenWidthProperty = other.PenWidthProperty;
     PenStyleProperty = other.PenStyleProperty;
     PenProperty = other.PenProperty;
     ButtonProperty = other.ButtonProperty;
@@ -320,6 +324,16 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->LayerProperty.state() & ignoreMask))
     {
         LayerProperty = theCopyFrom->LayerProperty;
+    }
+
+    if (!(theCopyFrom->BrushStyleProperty.state() & ignoreMask))
+    {
+        BrushStyleProperty = theCopyFrom->BrushStyleProperty;
+    }
+
+    if (!(theCopyFrom->PenWidthProperty.state() & ignoreMask))
+    {
+        PenWidthProperty = theCopyFrom->PenWidthProperty;
     }
 
     if (!(theCopyFrom->PenStyleProperty.state() & ignoreMask))
@@ -456,6 +470,16 @@ void QtnPropertySetSamplePS::init()
     static QString LayerProperty_description = tr("Property to hold layer.");
     LayerProperty.setDescription(LayerProperty_description);
     LayerProperty.setValue(0);
+    static QString BrushStyleProperty_name = tr("BrushStyleProperty");
+    BrushStyleProperty.setName(BrushStyleProperty_name);
+    static QString BrushStyleProperty_description = "Property to hold QBrushStyle enum.";
+    BrushStyleProperty.setDescription(BrushStyleProperty_description);
+    BrushStyleProperty.setValue(Qt::HorPattern);
+    static QString PenWidthProperty_name = tr("PenWidthProperty");
+    PenWidthProperty.setName(PenWidthProperty_name);
+    static QString PenWidthProperty_description = "Property to hold PenWidth enum.";
+    PenWidthProperty.setDescription(PenWidthProperty_description);
+    PenWidthProperty.setValue(PenWidth::Middle);
     static QString PenStyleProperty_name = tr("PenStyleProperty");
     PenStyleProperty.setName(PenStyleProperty_name);
     static QString PenStyleProperty_description = tr("Property to hold pen style values.");

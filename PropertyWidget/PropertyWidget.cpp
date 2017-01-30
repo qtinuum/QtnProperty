@@ -81,7 +81,7 @@ void set_smaller_text_osx(QWidget *w)
 
 QtnPropertyWidget::QtnPropertyWidget(QWidget* parent)
     : QWidget(parent),
-      m_parts(QtnPropertyWidgetPartsNone),
+      m_parts(QtnPropertyWidgetPartsDescriptionPanel),
       m_layout(new QVBoxLayout(this)),
       m_toolbar(0),
       m_propertyView(new QtnPropertyView(this)),
@@ -93,11 +93,12 @@ QtnPropertyWidget::QtnPropertyWidget(QWidget* parent)
   m_layout->addWidget(m_propertyView);
 
   QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged, this, &QtnPropertyWidget::setActiveProperty);
+  updateParts();
 }
 
 QtnPropertyWidget::QtnPropertyWidget(QtnPropertyView *propertyView, QWidget* parent)
     : QWidget(parent),
-      m_parts(QtnPropertyWidgetPartsNone),
+      m_parts(QtnPropertyWidgetPartsDescriptionPanel),
       m_layout(new QVBoxLayout(this)),
       m_toolbar(0),
       m_propertyView(propertyView),
@@ -107,9 +108,12 @@ QtnPropertyWidget::QtnPropertyWidget(QtnPropertyView *propertyView, QWidget* par
     Q_ASSERT(propertyView);
     propertyView->setParent(this);
 
+    set_smaller_text_osx(this);
+
     m_layout->addWidget(m_propertyView);
 
     QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged, this, &QtnPropertyWidget::setActiveProperty);
+    updateParts();
 }
 
 QtnPropertyWidget::~QtnPropertyWidget()
@@ -152,7 +156,7 @@ void QtnPropertyWidget::updateParts()
             m_descriptionPanel->setAlignment(Qt::AlignTop);
             m_descriptionPanel->setWordWrap(true);
             m_descriptionPanel->setFrameStyle(QFrame::Box | QFrame::Sunken);
-            m_descriptionPanel->setMinimumSize(0, 0);
+            m_descriptionPanel->setMinimumSize(0,  5 * QFontMetrics(font()).height() / 2);
             QSizePolicy p = m_descriptionPanel->sizePolicy();
             p.setVerticalPolicy(QSizePolicy::Ignored);
             p.setHorizontalPolicy(QSizePolicy::Ignored);

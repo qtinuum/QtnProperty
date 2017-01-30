@@ -28,6 +28,7 @@ else: SOURCES += PropertyBase.cpp \
     Core/PropertyQPoint.cpp \
     GUI/PropertyQColor.cpp \
     GUI/PropertyQPen.cpp \
+    GUI/PropertyQBrush.cpp \
     GUI/PropertyButton.cpp \
     GUI/PropertyQFont.cpp
 
@@ -56,5 +57,6 @@ HEADERS += CoreAPI.h\
     Core/PropertyQPoint.h \
     GUI/PropertyQColor.h \
     GUI/PropertyQPen.h \
+    GUI/PropertyQBrush.h \
     GUI/PropertyButton.h \
     GUI/PropertyQFont.h

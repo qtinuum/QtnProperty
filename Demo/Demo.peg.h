@@ -5,6 +5,7 @@
 #include "../Core/PropertyGUI.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
+#include "PenWidth/PropertyPenWidth.h"
 #include "Freq/PropertyFreq.h"
 
 class COLOR
@@ -88,6 +89,8 @@ public:
     QtnPropertyBool& BoolProperty;
     QtnPropertyFreq& FreqProperty;
     QtnPropertyLayer& LayerProperty;
+    QtnPropertyQBrushStyle& BrushStyleProperty;
+    QtnPropertyPenWidth& PenWidthProperty;
     QtnPropertyQPenStyle& PenStyleProperty;
     QtnPropertyQPen& PenProperty;
     QtnPropertyButton& ButtonProperty;

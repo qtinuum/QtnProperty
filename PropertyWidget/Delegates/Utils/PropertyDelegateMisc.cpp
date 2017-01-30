@@ -38,7 +38,7 @@ static QIcon resetIcon()
     if (!qtnResetIcon.isNull())
         return qtnResetIcon;
 
-    static const char iconData[] = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ"
+    const char iconData16[] = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ"
             "bWFnZVJlYWR5ccllPAAAAsJJREFUeNp0UktIVGEUPve/j7l37h2aCSQRzEU46jg5D3QWBUnaWGKE"
             "WTmjNYobF4EERYWYD8bMVUW7XEVGtWsduIloZWoINRkR0oCLWaRCNa/76vzXuRdb+F/O/V/nfN85"
             "/3eY2tpaOGgwhAFCyKJpmNcNw/iz/y6bzVozMeHgj+d4kGU5JSvyZ5Zj22mAfWcPYq1tw8ESNiYI"
@@ -54,11 +54,46 @@ static QIcon resetIcon()
             "13YFwOvdW1SYvn7PxHA7gRZHk9AKaEtoc/igy7ZCOzs7Vtw/AQYASsoRySkHkqIAAAAASUVORK5C"
             "YII=";
 
-    auto bytes = QByteArray::fromBase64(iconData);
-    QPixmap pixmap;
-    pixmap.loadFromData(bytes);
+    const char iconData32[] = "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";
 
-    qtnResetIcon.addPixmap(pixmap);
+    {
+        auto bytes = QByteArray::fromBase64(iconData16);
+        QPixmap pixmap;
+        pixmap.loadFromData(bytes);
+        qtnResetIcon.addPixmap(pixmap);
+    }
+
+    {
+        auto bytes = QByteArray::fromBase64(iconData32);
+        QPixmap pixmap;
+        pixmap.loadFromData(bytes);
+        qtnResetIcon.addPixmap(pixmap);
+    }
 
     return qtnResetIcon;
 }
@@ -249,8 +284,8 @@ void QtnPropertyDelegateWithValues::addSubItemReset(QtnDrawContext& context, QLi
         QIcon icon = resetIcon();
         if (!icon.availableSizes().empty())
         {
-            option.icon = resetIcon();
-            option.iconSize = icon.availableSizes().first();
+            option.icon = icon;
+            option.iconSize = icon.actualSize(item.rect.size());
         }
         else
             option.text = "R";

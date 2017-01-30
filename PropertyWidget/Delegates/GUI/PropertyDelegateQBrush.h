@@ -14,22 +14,28 @@
    limitations under the License.
 */
 
-#ifndef PROPERTY_DELEGATE_INT_LIST_H
-#define PROPERTY_DELEGATE_INT_LIST_H
+#ifndef PROPERTY_DELEGATE_QBRUSH_H
+#define PROPERTY_DELEGATE_QBRUSH_H
 
-#include "Delegates/Core/PropertyDelegateInt.h"
+#include "../Utils/PropertyDelegateMisc.h"
 
-class QtnPropertyIntBase;
+class QtnPropertyQBrushStyleBase;
 
-class QtnPropertyDelegateIntList: public QtnPropertyDelegateInt
+class QTN_PW_EXPORT QtnPropertyDelegateQBrushStyle: public QtnPropertyDelegateTyped<QtnPropertyQBrushStyleBase>
 {
-    Q_DISABLE_COPY(QtnPropertyDelegateIntList)
+    Q_DISABLE_COPY(QtnPropertyDelegateQBrushStyle)
 
 public:
-    QtnPropertyDelegateIntList(QtnPropertyIntBase& owner);
+    QtnPropertyDelegateQBrushStyle(QtnPropertyQBrushStyleBase& owner);
 
 protected:
+    void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
+    void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
+    bool propertyValueToStrImpl(QString& strValue) const override;
+
+private:
+    bool m_showAll;
 };
 
-#endif // PROPERTY_DELEGATE_INT_LIST_H
+#endif // PROPERTY_DELEGATE_QBRUSH_H
