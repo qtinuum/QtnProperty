@@ -468,7 +468,7 @@ void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked(bool)
 	{
 		QStringList files = dialog->selectedFiles();
 		if (files.size() == 1)
-			property->edit(files.first());
+			property->edit(QDir::toNativeSeparators(files.first()));
 	}
 
 	if (!destroyed)
