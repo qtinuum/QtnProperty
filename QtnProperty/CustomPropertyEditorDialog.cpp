@@ -5,14 +5,14 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 
 #include "CustomPropertyEditorDialog.h"
 #include "ui_CustomPropertyEditorDialog.h"
@@ -32,23 +32,30 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	updateTitle();
 
-	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint))
-				   | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
+	setWindowFlags(
+		(windowFlags() & ~(Qt::WindowContextHelpButtonHint))
+		| Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
 
-	QObject::connect(ui->propertyWidget->propertyView(), &QtnPropertyView::activePropertyChanged,
-					 this, &CustomPropertyEditorDialog::onActivePropertyChanged);
+	QObject::connect(
+		ui->propertyWidget->propertyView(), &QtnPropertyView::activePropertyChanged,
+		this, &CustomPropertyEditorDialog::onActivePropertyChanged);
 
-	addShortcutForAction(ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions);
+	addShortcutForAction(
+		ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions);
 #ifdef Q_OS_MAC
-	addShortcutForAction(QKeySequence(Qt::Key_Backspace), ui->actionPropertyDelete);
+	addShortcutForAction(
+		QKeySequence(
+			Qt::Key_Backspace), ui->actionPropertyDelete);
 #else
-	addShortcutForAction(ui->actionPropertyDelete->shortcut(), ui->actionPropertyDelete);
+	addShortcutForAction(
+		ui->actionPropertyDelete->shortcut(), ui->actionPropertyDelete);
 #endif
 	addShortcutForAction(QKeySequence::Cut, ui->actionPropertyCut);
 	addShortcutForAction(QKeySequence::Copy, ui->actionPropertyCopy);
 	addShortcutForAction(QKeySequence::Paste, ui->actionPropertyPaste);
 
-	addShortcutForAction(ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd);
+	addShortcutForAction(
+		ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd);
 
 	ui->propertyWidget->connectDeleteAction(ui->actionPropertyDelete, true);
 	ui->propertyWidget->connectCutAction(ui->actionPropertyCut, true);
@@ -90,7 +97,8 @@ void CustomPropertyEditorDialog::setReadOnly(bool value)
 		ui->buttonBox->setStandardButtons(QDialogButtonBox::Close);
 	} else
 	{
-		ui->buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply);
+		ui->buttonBox->setStandardButtons(
+			QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 	}
 }
 
@@ -108,7 +116,8 @@ void CustomPropertyEditorDialog::reject()
 	QDialog::reject();
 }
 
-void CustomPropertyEditorDialog::onActivePropertyChanged(QtnPropertyBase *activeProperty)
+void CustomPropertyEditorDialog::onActivePropertyChanged(
+	QtnPropertyBase *activeProperty)
 {
 	updateActions(activeProperty);
 }
@@ -117,16 +126,6 @@ void CustomPropertyEditorDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
 	switch (ui->buttonBox->buttonRole(button))
 	{
-		case QDialogButtonBox::ApplyRole:
-		{
-			auto data_ptr = ui->propertyWidget->getData();
-			if (nullptr != data_ptr)
-			{
-				ui->propertyWidget->updateData();
-				emit apply(*data_ptr);
-			}
-		}	break;
-
 		case QDialogButtonBox::AcceptRole:
 			accept();
 			break;
@@ -140,7 +139,8 @@ void CustomPropertyEditorDialog::on_buttonBox_clicked(QAbstractButton *button)
 	}
 }
 
-void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(const QPoint &pos)
+void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(
+	const QPoint &pos)
 {
 	auto property = ui->propertyWidget->propertyView()->activeProperty();
 
@@ -152,6 +152,7 @@ void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(co
 
 		menu.addAction(ui->actionPropertyOptions);
 		menu.addSeparator();
+
 		menu.addAction(ui->actionPropertyAdd);
 		menu.addAction(ui->actionPropertyDuplicate);
 		menu.addSeparator();
@@ -162,21 +163,23 @@ void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(co
 		menu.addAction(ui->actionPropertyDelete);
 
 		updateActions(property);
-
 		menu.exec(ui->propertyWidget->mapToGlobal(pos));
 	}
 }
 
-void CustomPropertyEditorDialog::addShortcutForAction(const QKeySequence &key_seq, QAction *action)
+void CustomPropertyEditorDialog::addShortcutForAction(
+	const QKeySequence &key_seq, QAction *action)
 {
 	auto shortcut = new QShortcut(key_seq, this);
-	QObject::connect(shortcut, &QShortcut::activated,
-					 action, &QAction::trigger);
+	QObject::connect(
+		shortcut, &QShortcut::activated,
+		action, &QAction::trigger);
 	if (QKeySequence::ExactMatch != action->shortcut().matches(key_seq))
 	{
 		shortcut = new QShortcut(action->shortcut(), this);
-		QObject::connect(shortcut, &QShortcut::activated,
-						 action, &QAction::trigger);
+		QObject::connect(
+			shortcut, &QShortcut::activated,
+			action, &QAction::trigger);
 	}
 }
 
@@ -198,6 +201,7 @@ void CustomPropertyEditorDialog::on_actionPropertyOptions_triggered()
 void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 {
 	auto widget = ui->propertyWidget;
+	bool readOnly = widget->isReadOnly();
 
 	if (nullptr == property)
 		property = ui->propertyWidget->propertyView()->activeProperty();
@@ -207,6 +211,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 	auto var_property = CustomPropertyWidget::getVarProperty(property);
 	if (nullptr != var_property)
 	{
+
 		switch (var_property->GetType())
 		{
 			case VarProperty::Map:
@@ -222,10 +227,15 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 		}
 
 		bool not_top_parent = (var_property != var_property->TopParent());
-		ui->actionPropertyAdd->setEnabled(property->id() == VarProperty::PID_EXTRA);
-		ui->actionPropertyDuplicate->setEnabled(not_top_parent);
+		ui->actionPropertyAdd->setEnabled(
+			!readOnly &&
+			property->id() == VarProperty::PID_EXTRA);
+		ui->actionPropertyDuplicate->setEnabled(!readOnly && not_top_parent);
 		ui->actionPropertyOptions->setEnabled(true);
-		ui->actionPropertyDelete->setEnabled(not_top_parent && widget->canDeleteProperty(property));
+		ui->actionPropertyDelete->setEnabled(
+			!readOnly &&
+			not_top_parent && widget->canDeleteProperty(
+				property));
 	} else
 	{
 		ui->actionPropertyAdd->setEnabled(false);
@@ -243,5 +253,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 
 void CustomPropertyEditorDialog::updateTitle()
 {
-	setWindowTitle(ui->propertyWidget->isReadOnly() ? tr("Read-only Properties") : tr("Edit Custom Properties"));
+	setWindowTitle(
+		ui->propertyWidget->isReadOnly() ? tr(
+			"Read-only Properties") : tr("Edit Custom Properties"));
 }

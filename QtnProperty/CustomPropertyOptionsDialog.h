@@ -5,14 +5,14 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 
 #pragma once
 
@@ -38,8 +38,13 @@ class QTN_IMPORT_EXPORT BasePropertyDialog : public QDialog
 public:
 	explicit BasePropertyDialog(QWidget *parent = nullptr);
 
-	void initWithCount(int actual_index, int existing_count, bool readonly = false);
-	void initWithName(const QString &actual_name, const IsNameAvailableCB &is_name_available, bool readonly = false);
+	void initWithCount(
+		int actual_index, int existing_count,
+		bool readonly = false);
+	void initWithName(
+		const QString &actual_name,
+		const IsNameAvailableCB &is_name_available,
+		bool readonly = false);
 
 private slots:
 	void on_buttonBox_clicked(QAbstractButton *button);
@@ -63,7 +68,7 @@ protected:
 
 namespace Ui
 {
-	class CustomPropertyOptionsDialog;
+class CustomPropertyOptionsDialog;
 }
 
 struct QTN_IMPORT_EXPORT CustomPropertyData
@@ -81,11 +86,13 @@ public:
 	explicit CustomPropertyOptionsDialog(QWidget *parent = nullptr);
 	virtual ~CustomPropertyOptionsDialog();
 
+	void executeReadOnly();
 	bool execute(CustomPropertyData &result);
 
 	void setType(QVariant::Type type);
 	void setTypeBoxEnabled(bool value);
-	void setNameBoxEnabled(bool value);
+
+	void setReadOnly(bool readOnly);
 
 protected:
 	virtual bool ValidateInput() override;
