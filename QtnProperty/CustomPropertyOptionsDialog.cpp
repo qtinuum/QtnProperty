@@ -95,7 +95,7 @@ bool BasePropertyDialog::ValidateInput()
 		} else
 		{
 			QMessageBox::critical(
-				this, QCoreApplication::applicationName(),
+				this, QApplication::applicationDisplayName(),
 				tr("Property with name '%1' is already exist.").arg(name));
 			return false;
 		}

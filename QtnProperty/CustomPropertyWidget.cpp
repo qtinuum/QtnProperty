@@ -30,7 +30,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QMessageBox>
-#include <QCoreApplication>
+#include <QApplication>
 #include <QPushButton>
 
 static const QString kDragDropMimeType = "CustomPropertyDragDrop";
@@ -484,7 +484,7 @@ bool CustomPropertyWidget::insertReplaceOrCancel(
 	if (nullptr != insertDestination)
 	{
 		QMessageBox mb(QMessageBox::Question,
-					   QCoreApplication::applicationName(),
+					   QApplication::applicationDisplayName(),
 					   tr(
 						   "Do you want to insert new property "
 						   "from clipboard or to replace the selected one?"),
