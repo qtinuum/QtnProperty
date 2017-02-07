@@ -108,12 +108,12 @@ QtnPropertyBase *QtnPropertyWidgetEx::getActiveProperty() const
 QShortcut *QtnPropertyWidgetEx::addShortcutForAction(
 	const QKeySequence &seq, QAction *action, QWidget *parent)
 {
+	Q_ASSERT(nullptr != parent);
 	auto shortcut = new QShortcut(seq, parent);
 	QObject::connect(
 		shortcut, &QShortcut::activated,
 		action, &QAction::trigger);
-	if (nullptr != parent &&
-		QKeySequence::ExactMatch != action->shortcut().matches(seq))
+	if (QKeySequence::ExactMatch != action->shortcut().matches(seq))
 	{
 		auto shortcut2 = new QShortcut(action->shortcut(), parent);
 		QObject::connect(
@@ -166,10 +166,7 @@ void QtnPropertyWidgetEx::pasteFromClipboard()
 	auto data = QApplication::clipboard()->mimeData();
 	if (dataHasSupportedFormats(data))
 	{
-		applyPropertyData(
-			data,
-			getActiveProperty(),
-			QtnApplyPosition::Over);
+		applyPropertyData(data, getActiveProperty(), QtnApplyPosition::Over);
 	}
 }
 

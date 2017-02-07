@@ -71,7 +71,7 @@ public:
 	QtnPropertyBase *getActiveProperty() const;
 
 	static QShortcut *addShortcutForAction(
-		const QKeySequence &seq, QAction *action, QWidget *parent = nullptr);
+		const QKeySequence &seq, QAction *action, QWidget *parent);
 
 private slots:
 	void onMouseReleased();
