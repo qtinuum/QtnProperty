@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "PropertyWidget.h"
 
 class QMimeData;
+class QShortcut;
 
 enum class QtnApplyPosition
 {
@@ -37,11 +38,13 @@ struct QTN_IMPORT_EXPORT QtnPropertyWidgetExDelegate
 	virtual bool canPasteFromClipboard() = 0;
 	virtual bool dataHasSupportedFormats(const QMimeData *data) = 0;
 	virtual void deleteProperty(QtnPropertyBase *property) = 0;
-	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
-												Qt::DropAction action) = 0;
-	virtual bool applyPropertyData(const QMimeData *data,
-								   QtnPropertyBase *destination,
-								   QtnApplyPosition position) = 0;
+	virtual QMimeData *getPropertyDataForAction(
+		QtnPropertyBase *property,
+		Qt::DropAction action) = 0;
+	virtual bool applyPropertyData(
+		const QMimeData *data,
+		QtnPropertyBase *destination,
+		QtnApplyPosition position) = 0;
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyWidgetEx
@@ -67,6 +70,9 @@ public:
 
 	QtnPropertyBase *getActiveProperty() const;
 
+	static QShortcut *addShortcutForAction(
+		const QKeySequence &seq, QAction *action, QWidget *parent = nullptr);
+
 private slots:
 	void onMouseReleased();
 
@@ -79,18 +85,22 @@ public slots:
 protected:
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void deleteProperty(QtnPropertyBase *property) override;
-	virtual QMimeData *getPropertyDataForAction(QtnPropertyBase *property,
-												Qt::DropAction dropAction) override;
-	virtual bool applyPropertyData(const QMimeData *data,
-								   QtnPropertyBase *destination,
-								   QtnApplyPosition position) override;
+
+	virtual QMimeData *getPropertyDataForAction(
+		QtnPropertyBase *property, Qt::DropAction dropAction) override;
+
+	virtual bool applyPropertyData(
+		const QMimeData *data, QtnPropertyBase *destination,
+		QtnApplyPosition position) override;
 
 	virtual bool eventFilter(QObject *obj, QEvent *event) override;
 
 	virtual void dragEnterEvent(QDragEnterEvent *event) override;
 	virtual void dragMoveEvent(QDragMoveEvent *event) override;
 	virtual void dropEvent(QDropEvent *event) override;
-	virtual bool drop(const QMimeData *data, QtnPropertyBase *property, QtnApplyPosition applyPosition);
+	virtual bool drop(
+		const QMimeData *data, QtnPropertyBase *property,
+		QtnApplyPosition applyPosition);
 	virtual void dropEnd();
 
 private:

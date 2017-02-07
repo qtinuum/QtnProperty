@@ -70,7 +70,5 @@ private:
 	void updateActions(QtnPropertyBase *property = nullptr);
 	void updateTitle();
 
-	void addShortcutForAction(const QKeySequence &key_seq, QAction *action);
-
 	Ui::CustomPropertyEditorDialog *ui;
 };

@@ -33,29 +33,32 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 	updateTitle();
 
 	setWindowFlags(
-		(windowFlags() & ~(Qt::WindowContextHelpButtonHint))
-		| Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
+		(windowFlags() & ~(Qt::WindowContextHelpButtonHint)) |
+		Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
 
 	QObject::connect(
-		ui->propertyWidget->propertyView(), &QtnPropertyView::activePropertyChanged,
+		ui->propertyWidget->propertyView(),
+		&QtnPropertyView::activePropertyChanged,
 		this, &CustomPropertyEditorDialog::onActivePropertyChanged);
 
-	addShortcutForAction(
-		ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions, this);
 #ifdef Q_OS_MAC
-	addShortcutForAction(
-		QKeySequence(
-			Qt::Key_Backspace), ui->actionPropertyDelete);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		QKeySequence(Qt::Key_Backspace), ui->actionPropertyDelete, this);
 #else
-	addShortcutForAction(
-		ui->actionPropertyDelete->shortcut(), ui->actionPropertyDelete);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		ui->actionPropertyDelete->shortcut(), ui->actionPropertyDelete, this);
 #endif
-	addShortcutForAction(QKeySequence::Cut, ui->actionPropertyCut);
-	addShortcutForAction(QKeySequence::Copy, ui->actionPropertyCopy);
-	addShortcutForAction(QKeySequence::Paste, ui->actionPropertyPaste);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		QKeySequence::Cut, ui->actionPropertyCut, this);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		QKeySequence::Copy, ui->actionPropertyCopy, this);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		QKeySequence::Paste, ui->actionPropertyPaste, this);
 
-	addShortcutForAction(
-		ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd, this);
 
 	ui->propertyWidget->connectDeleteAction(ui->actionPropertyDelete, true);
 	ui->propertyWidget->connectCutAction(ui->actionPropertyCut, true);
@@ -167,22 +170,6 @@ void CustomPropertyEditorDialog::on_propertyWidget_customContextMenuRequested(
 	}
 }
 
-void CustomPropertyEditorDialog::addShortcutForAction(
-	const QKeySequence &key_seq, QAction *action)
-{
-	auto shortcut = new QShortcut(key_seq, this);
-	QObject::connect(
-		shortcut, &QShortcut::activated,
-		action, &QAction::trigger);
-	if (QKeySequence::ExactMatch != action->shortcut().matches(key_seq))
-	{
-		shortcut = new QShortcut(action->shortcut(), this);
-		QObject::connect(
-			shortcut, &QShortcut::activated,
-			action, &QAction::trigger);
-	}
-}
-
 void CustomPropertyEditorDialog::on_actionPropertyAdd_triggered()
 {
 	ui->propertyWidget->addProperty();
@@ -211,7 +198,6 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 	auto var_property = CustomPropertyWidget::getVarProperty(property);
 	if (nullptr != var_property)
 	{
-
 		switch (var_property->GetType())
 		{
 			case VarProperty::Map:
@@ -228,14 +214,11 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 
 		bool not_top_parent = (var_property != var_property->TopParent());
 		ui->actionPropertyAdd->setEnabled(
-			!readOnly &&
-			property->id() == VarProperty::PID_EXTRA);
+			!readOnly && property->id() == VarProperty::PID_EXTRA);
 		ui->actionPropertyDuplicate->setEnabled(!readOnly && not_top_parent);
 		ui->actionPropertyOptions->setEnabled(true);
 		ui->actionPropertyDelete->setEnabled(
-			!readOnly &&
-			not_top_parent && widget->canDeleteProperty(
-				property));
+			!readOnly && not_top_parent && widget->canDeleteProperty(property));
 	} else
 	{
 		ui->actionPropertyAdd->setEnabled(false);
@@ -254,6 +237,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 void CustomPropertyEditorDialog::updateTitle()
 {
 	setWindowTitle(
-		ui->propertyWidget->isReadOnly() ? tr(
-			"Read-only Properties") : tr("Edit Custom Properties"));
+		ui->propertyWidget->isReadOnly()
+		? tr("Read-only Properties")
+		: tr("Edit Custom Properties"));
 }
