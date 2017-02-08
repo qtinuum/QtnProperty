@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,8 +29,9 @@ class QtnPropertyDoubleSpinBoxHandler
 	: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, QDoubleSpinBox>
 {
 public:
-	QtnPropertyDoubleSpinBoxHandler(QtnPropertyDoubleBase &property,
-									QDoubleSpinBox &editor);
+	QtnPropertyDoubleSpinBoxHandler(
+		QtnPropertyDoubleBase &property,
+		QDoubleSpinBox &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -42,20 +43,23 @@ private:
 };
 
 static bool regDoubleDelegate = QtnPropertyDelegateFactory::staticInstance()
-								.registerDelegateDefault(&QtnPropertyDoubleBase::staticMetaObject
-								, &qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>
-								, "SpinBox");
+	.registerDelegateDefault(
+		&QtnPropertyDoubleBase::staticMetaObject
+		, &qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>
+		, "SpinBox");
 
-QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(QtnPropertyDoubleBase &owner)
+QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(
+	QtnPropertyDoubleBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyDoubleBase>(owner)
 {
 }
 
-QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget *parent,
-														  const QRect &rect,
-														  QtnInplaceInfo *inplaceInfo)
+QWidget *QtnPropertyDelegateDouble::createValueEditorImpl(
+	QWidget *parent, const QRect &rect,
+	QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnDoubleSpinBox(parent);
+	spinBox->setDecimals(10);
 	spinBox->setSuffix(suffix);
 	spinBox->setGeometry(rect);
 
@@ -69,15 +73,17 @@ QWidget* QtnPropertyDelegateDouble::createValueEditorImpl(QWidget *parent,
 	return spinBox;
 }
 
-bool QtnPropertyDelegateDouble::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
+bool QtnPropertyDelegateDouble::acceptKeyPressedForInplaceEditImpl(
+	QKeyEvent *keyEvent) const
 {
-	if (QtnPropertyDelegateTyped<QtnPropertyDoubleBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
+	if (QtnPropertyDelegateTyped<QtnPropertyDoubleBase>::
+		acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_FLOAT);
 }
 
-bool QtnPropertyDelegateDouble::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateDouble::propertyValueToStr(QString &strValue) const
 {
 	QLocale locale;
 	strValue = locale.toString(owner().value(), 'g', 10);
@@ -85,13 +91,15 @@ bool QtnPropertyDelegateDouble::propertyValueToStr(QString& strValue) const
 	return true;
 }
 
-void QtnPropertyDelegateDouble::applyAttributesImpl(const QtnPropertyDelegateAttributes &attributes)
+void QtnPropertyDelegateDouble::applyAttributesImpl(
+	const
+	QtnPropertyDelegateAttributes &attributes)
 {
 	qtnGetAttribute(attributes, "suffix", suffix);
 }
 
 QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
-		QtnPropertyDoubleBase &property, QDoubleSpinBox &editor)
+	QtnPropertyDoubleBase &property, QDoubleSpinBox &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
 	, updating(0)
 {
@@ -105,10 +113,12 @@ QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
 
 	editor.setKeyboardTracking(false);
 	editor.installEventFilter(this);
-	QObject::connect(&editor,
-					 static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-					 this,
-					 &QtnPropertyDoubleSpinBoxHandler::onValueChanged);
+	QObject::connect(
+		&editor,
+		static_cast<void (QDoubleSpinBox::*)(
+						double)>(&QDoubleSpinBox::valueChanged),
+		this,
+		&QtnPropertyDoubleSpinBoxHandler::onValueChanged);
 }
 
 void QtnPropertyDoubleSpinBoxHandler::updateEditor()
