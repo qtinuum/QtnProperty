@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ qint32 QtnUnsignedSpinBox::qtn_u2i(quint32 val)
 
 quint32 QtnUnsignedSpinBox::qtn_i2u(qint32 val)
 {
-	return (quint32)val + qtn_u_2;
+	return (quint32) val + qtn_u_2;
 }
 
 QValidator::State QtnUnsignedSpinBox::validate(QString &input, int &) const
@@ -63,5 +63,5 @@ int QtnUnsignedSpinBox::valueFromText(const QString &text) const
 
 QString QtnUnsignedSpinBox::textFromValue(int val) const
 {
-	return locale().toString(qtn_i2u(val)).replace(QRegExp("\\s*"), "");
+	return QString::number(qtn_i2u(val));
 }
