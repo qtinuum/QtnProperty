@@ -172,14 +172,14 @@ void QtnPropertyWidget::updateParts()
     }
     else
     {
+        m_layout->addWidget(m_propertyView);
+
         if (m_descriptionSplitter)
         {
             delete m_descriptionSplitter;
             m_descriptionSplitter = nullptr;
             m_descriptionPanel = nullptr;
         }
-
-        m_layout->addWidget(m_propertyView);
     }
 }
 
