@@ -47,6 +47,7 @@ protected:
     bool m_drawBorder;
     bool m_updateByScroll;
     bool m_animate;
+    QString m_itemToolTip;
 
 private:
     void updateDragValuePart(int x, const QRect& rect);
