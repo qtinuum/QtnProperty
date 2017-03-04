@@ -125,7 +125,7 @@ PEG_SOURCES += TextEditor.pef
 ```
 
 ##Step 5.
-Write *.pef file with propertyset declaration. For example TextEditor.pef:
+Write *.pef file with propertyset declaration. See [wiki](https://github.com/lexxmark/QtnProperty/wiki/Property-Enum-file-format-(*.pef)) for more info. For example TextEditor.pef:
   
 ```C++
 #include "Core/PropertyCore.h"
