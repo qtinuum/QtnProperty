@@ -121,7 +121,7 @@ static void assignmentSetCode(QString prefix,
     {
         QString var = name + assignment.key();
         var.replace(".", "_");
-        s.newLine() << QString("static QString %1 = tr(%2);").arg(var, assignment.value().value);
+        s.newLine() << QString("static QString %1 = %2;").arg(var, assignment.value().value);
         s.newLine() << QString("%1set%2(%3);").arg(name
                                                  , capitalize(assignment.key())
                                                  , var);
