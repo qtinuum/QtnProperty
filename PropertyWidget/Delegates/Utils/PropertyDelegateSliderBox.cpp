@@ -26,6 +26,7 @@ QtnPropertyDelegateSlideBox::QtnPropertyDelegateSlideBox()
       m_drawBorder(true),
       m_updateByScroll(true),
       m_animate(false),
+      m_itemToolTip(QObject::tr("Drag/Scroll mouse to change value")),
       m_dragValuePart(0),
       m_oldValuePart(0),
       m_animateWidget(nullptr)
