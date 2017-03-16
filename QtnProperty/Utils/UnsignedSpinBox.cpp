@@ -1,4 +1,4 @@
-/*
+﻿/*
    Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 
 #include "UnsignedSpinBox.h"
 
+#include <QLocale>
 #include <limits>
 
 static const quint32 qtn_u_2 = std::numeric_limits<quint32>::max() / 2 + 1;
@@ -63,5 +64,9 @@ int QtnUnsignedSpinBox::valueFromText(const QString &text) const
 
 QString QtnUnsignedSpinBox::textFromValue(int val) const
 {
-	return QString::number(qtn_i2u(val));
+	auto locale = this->locale();
+	auto text = locale.toString(qtn_i2u(val));
+	if (!isGroupSeparatorShown())
+		text.remove(locale.groupSeparator());
+	return text;
 }

@@ -1,11 +1,11 @@
-/*
+﻿/*
    Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+		   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 #include <QKeyEvent>
 
 QtnPropertyUInt64Base::QtnPropertyUInt64Base(QObject *parent)
-	: QtnNumericPropertyBase<QtnSinglePropertyBase<quint64>>(parent)
+	: QtnNumericPropertyBase<QtnSinglePropertyBase<quint64> >(parent)
 {
 }
 
@@ -58,12 +58,10 @@ bool QtnPropertyUInt64Base::fromVariantImpl(const QVariant &var, bool edit)
 	return setValue(value, edit);
 }
 
-
 QtnPropertyUInt64Callback::QtnPropertyUInt64Callback(QObject *parent)
 	: QtnSinglePropertyCallback<QtnPropertyUInt64Base>(parent)
 {
 }
-
 
 QtnPropertyUInt64::QtnPropertyUInt64(QObject *parent)
 	: QtnSinglePropertyValue<QtnPropertyUInt64Base>(parent)
@@ -72,15 +70,19 @@ QtnPropertyUInt64::QtnPropertyUInt64(QObject *parent)
 
 void QtnPropertyUInt64::Register()
 {
-	qtnRegisterMetaPropertyFactory(QVariant::ULongLong, qtnCreateFactory<QtnPropertyUInt64Callback>());
+	qtnRegisterMetaPropertyFactory(
+		QVariant::ULongLong,
+		qtnCreateFactory<QtnPropertyUInt64Callback>());
 
 	QtnPropertyDelegateFactory::staticInstance()
-		.registerDelegateDefault(&QtnPropertyUInt64Base::staticMetaObject
+	.registerDelegateDefault(
+		&QtnPropertyUInt64Base::staticMetaObject
 		, &qtnCreateDelegate<QtnPropertyDelegateUInt64, QtnPropertyUInt64Base>
 		, "LineEdit");
 }
 
-QtnPropertyDelegateUInt64::QtnPropertyDelegateUInt64(QtnPropertyUInt64Base &owner)
+QtnPropertyDelegateUInt64::QtnPropertyDelegateUInt64(
+	QtnPropertyUInt64Base &owner)
 	: QObject(nullptr)
 	, QtnPropertyDelegateTyped<QtnPropertyUInt64Base>(owner)
 	, editor(nullptr)
@@ -94,7 +96,7 @@ bool QtnPropertyDelegateUInt64::eventFilter(QObject *obj, QEvent *event)
 {
 	if (event->type() == QEvent::KeyPress)
 	{
-		auto keyEvent = static_cast<QKeyEvent*>(event);
+		auto keyEvent = static_cast<QKeyEvent *>(event);
 
 		switch (keyEvent->key())
 		{
@@ -116,24 +118,32 @@ bool QtnPropertyDelegateUInt64::eventFilter(QObject *obj, QEvent *event)
 	return QObject::eventFilter(obj, event);
 }
 
-bool QtnPropertyDelegateUInt64::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
+bool QtnPropertyDelegateUInt64::acceptKeyPressedForInplaceEditImpl(
+	QKeyEvent *keyEvent) const
 {
-	if (QtnPropertyDelegateTyped<QtnPropertyUInt64Base>::acceptKeyPressedForInplaceEditImpl(keyEvent))
+	if (QtnPropertyDelegateTyped<QtnPropertyUInt64Base>::
+		acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_UNSIGNED_INT);
 }
 
-QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(
+	QWidget *parent, const
+	QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	editor = createValueEditorLineEdit(parent, rect, !owner().isEditableByUser(), inplaceInfo);
+	editor = createValueEditorLineEdit(
+			parent, rect,
+			!owner().isEditableByUser(), inplaceInfo);
 
 	editor->installEventFilter(this);
-	QObject::connect(editor, &QLineEdit::editingFinished,
-					 this, &QtnPropertyDelegateUInt64::onEditingFinished);
+	QObject::connect(
+		editor, &QLineEdit::editingFinished,
+		this, &QtnPropertyDelegateUInt64::onEditingFinished);
 
-	QObject::connect(editor, &QObject::destroyed,
-					 this, &QtnPropertyDelegateUInt64::onEditorDestroyed);
+	QObject::connect(
+		editor, &QObject::destroyed,
+		this, &QtnPropertyDelegateUInt64::onEditorDestroyed);
 
 	return editor;
 }
@@ -178,6 +188,7 @@ void QtnPropertyDelegateUInt64::updateEditor()
 	{
 		QString str;
 		propertyValueToStr(str);
+		str.remove(QLocale().groupSeparator());
 		editor->setText(str);
 
 		editor->selectAll();

@@ -1,11 +1,11 @@
-/*
+﻿/*
    Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+		   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 #include <QKeyEvent>
 
 QtnPropertyInt64Base::QtnPropertyInt64Base(QObject *parent)
-	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint64>>(parent)
+	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint64> >(parent)
 {
 }
 
@@ -59,7 +59,6 @@ bool QtnPropertyInt64Base::fromVariantImpl(const QVariant &var, bool edit)
 	return setValue(value, edit);
 }
 
-
 QtnPropertyInt64::QtnPropertyInt64(QObject *parent)
 	: QtnSinglePropertyValue<QtnPropertyInt64Base>(parent)
 {
@@ -67,10 +66,13 @@ QtnPropertyInt64::QtnPropertyInt64(QObject *parent)
 
 void QtnPropertyInt64::Register()
 {
-	qtnRegisterMetaPropertyFactory(QVariant::LongLong, qtnCreateFactory<QtnPropertyInt64Callback>());
+	qtnRegisterMetaPropertyFactory(
+		QVariant::LongLong,
+		qtnCreateFactory<QtnPropertyInt64Callback>());
 
 	QtnPropertyDelegateFactory::staticInstance()
-		.registerDelegateDefault(&QtnPropertyInt64Base::staticMetaObject
+	.registerDelegateDefault(
+		&QtnPropertyInt64Base::staticMetaObject
 		, &qtnCreateDelegate<QtnPropertyDelegateInt64, QtnPropertyInt64Base>
 		, "LineEdit");
 }
@@ -89,7 +91,7 @@ bool QtnPropertyDelegateInt64::eventFilter(QObject *obj, QEvent *event)
 {
 	if (event->type() == QEvent::KeyPress)
 	{
-		auto keyEvent = static_cast<QKeyEvent*>(event);
+		auto keyEvent = static_cast<QKeyEvent *>(event);
 
 		switch (keyEvent->key())
 		{
@@ -111,24 +113,32 @@ bool QtnPropertyDelegateInt64::eventFilter(QObject *obj, QEvent *event)
 	return QObject::eventFilter(obj, event);
 }
 
-bool QtnPropertyDelegateInt64::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
+bool QtnPropertyDelegateInt64::acceptKeyPressedForInplaceEditImpl(
+	QKeyEvent *keyEvent) const
 {
-	if (QtnPropertyDelegateTyped<QtnPropertyInt64Base>::acceptKeyPressedForInplaceEditImpl(keyEvent))
+	if (QtnPropertyDelegateTyped<QtnPropertyInt64Base>::
+		acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_SIGNED_INT);
 }
 
-QWidget *QtnPropertyDelegateInt64::createValueEditorImpl(QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+QWidget *QtnPropertyDelegateInt64::createValueEditorImpl(
+	QWidget *parent, const
+	QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	editor = createValueEditorLineEdit(parent, rect, !owner().isEditableByUser(), inplaceInfo);
+	editor = createValueEditorLineEdit(
+			parent, rect,
+			!owner().isEditableByUser(), inplaceInfo);
 
 	editor->installEventFilter(this);
-	QObject::connect(editor, &QLineEdit::editingFinished,
-					 this, &QtnPropertyDelegateInt64::onEditingFinished);
+	QObject::connect(
+		editor, &QLineEdit::editingFinished,
+		this, &QtnPropertyDelegateInt64::onEditingFinished);
 
-	QObject::connect(editor, &QObject::destroyed,
-					 this, &QtnPropertyDelegateInt64::onEditorDestroyed);
+	QObject::connect(
+		editor, &QObject::destroyed,
+		this, &QtnPropertyDelegateInt64::onEditorDestroyed);
 
 	return editor;
 }
@@ -174,6 +184,7 @@ void QtnPropertyDelegateInt64::updateEditor()
 	{
 		QString str;
 		propertyValueToStr(str);
+		str.remove(QLocale().groupSeparator());
 		editor->setText(str);
 		editor->selectAll();
 	}
