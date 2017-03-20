@@ -127,7 +127,8 @@ protected:
 	virtual void onToolButtonClick() = 0;
 	virtual bool eventFilter(QObject *obj, QEvent *event) override
 	{
-		if (nullptr != m_property && m_property->isEditableByUser())
+		if (nullptr != Inherited::m_property &&
+			Inherited::m_property->isEditableByUser())
 			switch (event->type())
 			{
 				case QEvent::MouseButtonDblClick:
