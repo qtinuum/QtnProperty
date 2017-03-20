@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,10 +28,10 @@
 
 class QDialog;
 
-class QTN_IMPORT_EXPORT QtnPropertyEditorHandlerBase: public QObject
+class QTN_IMPORT_EXPORT QtnPropertyEditorHandlerBase : public QObject
 {
 protected:
-	QtnPropertyEditorHandlerBase(QtnProperty& property, QWidget& editor);
+	QtnPropertyEditorHandlerBase(QtnProperty &property, QWidget &editor);
 
 	inline QtnProperty *propertyBase() const;
 	inline QWidget *editorBase() const;
@@ -60,8 +60,8 @@ protected:
 	QtnProperty *m_property;
 	QWidget *m_editor;
 
-	bool reverted:1;
-	bool returned:1;
+	bool reverted : 1;
+	bool returned : 1;
 
 private:
 	void onPropertyDestroyed();
@@ -79,18 +79,30 @@ QWidget *QtnPropertyEditorHandlerBase::editorBase() const
 }
 
 template <typename PropertyClass, typename PropertyEditorClass>
-class QtnPropertyEditorHandler: public QtnPropertyEditorHandlerBase
+class QtnPropertyEditorHandler : public QtnPropertyEditorHandlerBase
 {
 protected:
-	typedef QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass> QtnPropertyEditorHandlerType;
+	typedef QtnPropertyEditorHandler<PropertyClass,
+									 PropertyEditorClass>
+		QtnPropertyEditorHandlerType;
 
-	QtnPropertyEditorHandler(PropertyClass& property, PropertyEditorClass& editor)
+	QtnPropertyEditorHandler(
+		PropertyClass &property,
+		PropertyEditorClass &editor)
 		: QtnPropertyEditorHandlerBase(property, editor)
 	{
 	}
 
-	PropertyClass &property() const { return *static_cast<PropertyClass *>(m_property);  }
-	PropertyEditorClass &editor() const { return *static_cast<PropertyEditorClass *>(m_editor); }
+	PropertyClass &property() const
+	{
+		return *static_cast<PropertyClass *>(m_property);
+	}
+
+	PropertyEditorClass &editor() const
+	{
+		return *static_cast<PropertyEditorClass *>(m_editor);
+	}
+
 };
 
 template <typename PropertyClass, typename PropertyEditorClass>
@@ -98,12 +110,14 @@ class QtnPropertyEditorBttnHandler
 	: public QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass>
 {
 private:
-	typedef QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass> Inherited;
+	typedef QtnPropertyEditorHandler<PropertyClass,
+									 PropertyEditorClass> Inherited;
 
 protected:
 	typedef QtnPropertyEditorBttnHandler QtnPropertyEditorHandlerType;
 
-	QtnPropertyEditorBttnHandler(PropertyClass& property, PropertyEditorClass& editor)
+	QtnPropertyEditorBttnHandler(
+		PropertyClass &property, PropertyEditorClass &editor)
 		: Inherited(property, editor)
 		, double_clicked(false)
 	{
@@ -113,24 +127,26 @@ protected:
 	virtual void onToolButtonClick() = 0;
 	virtual bool eventFilter(QObject *obj, QEvent *event) override
 	{
-		switch (event->type())
-		{
-			case QEvent::MouseButtonDblClick:
-				double_clicked = true;
-				return true;
-
-			case QEvent::MouseButtonRelease:
-				if (double_clicked)
-				{
-					double_clicked = false;
-					onToolButtonClick();
+		if (nullptr != m_property && m_property->isEditableByUser())
+			switch (event->type())
+			{
+				case QEvent::MouseButtonDblClick:
+					double_clicked = true;
 					return true;
-				}
-				break;
 
-			default:
-				break;
-		}
+				case QEvent::MouseButtonRelease:
+					if (double_clicked)
+					{
+						double_clicked = false;
+						onToolButtonClick();
+						return true;
+					}
+					break;
+
+				default:
+					break;
+			}
+
 
 		return Inherited::eventFilter(obj, event);
 	}
@@ -139,5 +155,4 @@ private:
 	bool double_clicked;
 };
 
-
-#endif // PROPERTY_EDITOR_HANDLER_H
+#endif	// PROPERTY_EDITOR_HANDLER_H

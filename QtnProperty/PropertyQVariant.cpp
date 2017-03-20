@@ -5,14 +5,14 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 
 #include "PropertyQVariant.h"
 
@@ -28,11 +28,13 @@
 #include <QKeyEvent>
 
 class QtnPropertyQVariantEditBttnHandler
-	: public QtnPropertyEditorBttnHandler<QtnPropertyQVariantBase, QtnLineEditBttn>
+	: public QtnPropertyEditorBttnHandler<QtnPropertyQVariantBase,
+										  QtnLineEditBttn>
 {
 public:
-	QtnPropertyQVariantEditBttnHandler(QtnPropertyQVariantBase &property,
-									   QtnLineEditBttn &editor);
+	QtnPropertyQVariantEditBttnHandler(
+		QtnPropertyQVariantBase &property,
+		QtnLineEditBttn &editor);
 
 protected:
 	virtual void revertInput() override;
@@ -76,33 +78,39 @@ bool QtnPropertyQVariantBase::toVariantImpl(QVariant &var) const
 	return var.isValid();
 }
 
-QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(QObject *object, const QMetaProperty &meta_property)
+QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(
+	QObject *object,
+	const QMetaProperty &meta_property)
 	: QtnSinglePropertyCallback<QtnPropertyQVariantBase>(nullptr)
 {
-	setCallbackValueGet([this, object, meta_property]() -> const QVariant &
+	setCallbackValueGet(
+		[this, object, meta_property]() -> const QVariant &
 	{
 		value = meta_property.read(object);
 		return value;
 	});
 
-	setCallbackValueSet([this, object, meta_property](const QVariant &value)
+	setCallbackValueSet(
+		[this, object, meta_property](const QVariant &value)
 	{
 		this->value = value;
 		meta_property.write(object, value);
 	});
 
-	setCallbackValueAccepted([this](const QVariant &) -> bool
+	setCallbackValueAccepted(
+		[this](const QVariant &) -> bool
 	{
 		return isEditableByUser();
 	});
 
-	setCallbackValueEqual([this, object, meta_property](const QVariant &value) -> bool
+	setCallbackValueEqual(
+		[this, object, meta_property](const QVariant &value) -> bool
 	{
 		this->value = meta_property.read(object);
 
 		return (this->value.isValid() == value.isValid()
-			&&	value.type() == this->value.type()
-			&&	value == this->value);
+				&& value.type() == this->value.type()
+				&& value == this->value);
 	});
 }
 
@@ -113,16 +121,19 @@ QtnPropertyQVariant::QtnPropertyQVariant(QObject *parent)
 
 void QtnPropertyQVariant::Register()
 {
-	qtnRegisterMetaPropertyFactory(QMetaType::QVariant,
-	[](QObject *object, const QMetaProperty &metaProperty) -> QtnProperty *
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QVariant,
+		[](QObject *object, const QMetaProperty &metaProperty) -> QtnProperty *
 	{
 		return new QtnPropertyQVariantCallback(object, metaProperty);
 	});
 
 	QtnPropertyDelegateFactory::staticInstance()
-		.registerDelegateDefault(&QtnPropertyQVariantBase::staticMetaObject,
-								 &qtnCreateDelegate<QtnPropertyDelegateQVariant, QtnPropertyQVariantBase>,
-								 "QVariant");
+	.registerDelegateDefault(
+		&QtnPropertyQVariantBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQVariant,
+						   QtnPropertyQVariantBase>,
+		"QVariant");
 }
 
 QString QtnPropertyQVariant::valueToString(const QVariant &value)
@@ -162,22 +173,28 @@ QString QtnPropertyQVariant::getPlaceholderStr(QVariant::Type type)
 	return tr("(Empty)");
 }
 
-QtnPropertyDelegateQVariant::QtnPropertyDelegateQVariant(QtnPropertyQVariantBase &owner)
+QtnPropertyDelegateQVariant::QtnPropertyDelegateQVariant(
+	QtnPropertyQVariantBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyQVariantBase>(owner)
 {
 
 }
 
-bool QtnPropertyDelegateQVariant::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
+bool QtnPropertyDelegateQVariant::acceptKeyPressedForInplaceEditImpl(
+	QKeyEvent *keyEvent) const
 {
-	if (QtnPropertyDelegateTyped<QtnPropertyQVariantBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
+	if (QtnPropertyDelegateTyped<QtnPropertyQVariantBase>::
+		acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	// accept any printable key
 	return qtnAcceptForLineEdit(keyEvent);
 }
 
-QWidget *QtnPropertyDelegateQVariant::createValueEditorImpl(QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+QWidget *QtnPropertyDelegateQVariant::createValueEditorImpl(
+	QWidget *parent,
+	const QRect &rect,
+	QtnInplaceInfo *inplaceInfo)
 {
 	auto editor = new QtnLineEditBttn(parent);
 	editor->setGeometry(rect);
@@ -198,8 +215,9 @@ bool QtnPropertyDelegateQVariant::propertyValueToStr(QString &strValue) const
 	return true;
 }
 
-void QtnPropertyDelegateQVariant::drawValueImpl(QStylePainter &painter, const QRect &rect,
-												const QStyle::State &state, bool *needTooltip) const
+void QtnPropertyDelegateQVariant::drawValueImpl(
+	QStylePainter &painter, const QRect &rect,
+	const QStyle::State &state, bool *needTooltip) const
 {
 	QPen oldPen = painter.pen();
 	if (QtnPropertyQVariant::valueToString(owner().value()).isEmpty())
@@ -209,7 +227,8 @@ void QtnPropertyDelegateQVariant::drawValueImpl(QStylePainter &painter, const QR
 	painter.setPen(oldPen);
 }
 
-QtnPropertyQVariantEditBttnHandler::QtnPropertyQVariantEditBttnHandler(QtnPropertyQVariantBase &property, QtnLineEditBttn &editor)
+QtnPropertyQVariantEditBttnHandler::QtnPropertyQVariantEditBttnHandler(
+	QtnPropertyQVariantBase &property, QtnLineEditBttn &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
 	, dialog(new CustomPropertyEditorDialog(&editor))
 	, is_object(false)
@@ -219,14 +238,17 @@ QtnPropertyQVariantEditBttnHandler::QtnPropertyQVariantEditBttnHandler(QtnProper
 
 	editor.lineEdit->installEventFilter(this);
 
-	QObject::connect(editor.toolButton, &QToolButton::clicked,
-					 this, &QtnPropertyQVariantEditBttnHandler::onToolButtonClicked);
+	QObject::connect(
+		editor.toolButton, &QToolButton::clicked,
+		this, &QtnPropertyQVariantEditBttnHandler::onToolButtonClicked);
 
-	QObject::connect(editor.lineEdit, &QLineEdit::editingFinished,
-					 this, &QtnPropertyQVariantEditBttnHandler::onEditingFinished);
+	QObject::connect(
+		editor.lineEdit, &QLineEdit::editingFinished,
+		this, &QtnPropertyQVariantEditBttnHandler::onEditingFinished);
 
-	QObject::connect(dialog, &CustomPropertyEditorDialog::apply,
-					 this, &QtnPropertyQVariantEditBttnHandler::onApplyData);
+	QObject::connect(
+		dialog, &CustomPropertyEditorDialog::apply,
+		this, &QtnPropertyQVariantEditBttnHandler::onApplyData);
 }
 
 void QtnPropertyQVariantEditBttnHandler::revertInput()
@@ -256,7 +278,6 @@ void QtnPropertyQVariantEditBttnHandler::updateEditor()
 		{
 			is_object = true;
 			edit->setText(QString());
-			value.clear();
 		} else
 		{
 			is_object = false;
@@ -264,7 +285,7 @@ void QtnPropertyQVariantEditBttnHandler::updateEditor()
 		}
 
 		edit->setPlaceholderText(
-					QtnPropertyQVariant::getPlaceholderStr(value.type()));
+			QtnPropertyQVariant::getPlaceholderStr(value.type()));
 		edit->selectAll();
 	}
 }
@@ -304,8 +325,9 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 	dialog->setReadOnly(!property->isEditableByUser());
 
 	volatile bool destroyed = false;
-	auto connection = QObject::connect(this, &QObject::destroyed,
-									   [&destroyed]() mutable
+	auto connection = QObject::connect(
+			this, &QObject::destroyed,
+			[&destroyed]() mutable
 	{
 		destroyed = true;
 	});

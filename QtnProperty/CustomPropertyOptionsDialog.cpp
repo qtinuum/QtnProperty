@@ -5,14 +5,14 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 
 #include "CustomPropertyOptionsDialog.h"
 #include "ui_CustomPropertyOptionsDialog.h"
@@ -25,15 +25,19 @@
 #include <QMessageBox>
 
 BasePropertyDialog::BasePropertyDialog(QWidget *parent)
-		: QDialog(parent)
-		, result_index(-1)
+	: QDialog(parent)
+	, result_index(-1)
 {
-	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint))
-				|	Qt::MSWindowsFixedSizeDialogHint
-				|	Qt::CustomizeWindowHint);
+	setWindowFlags(
+		(windowFlags() &
+		 ~(Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint))
+		| Qt::MSWindowsFixedSizeDialogHint
+		| Qt::CustomizeWindowHint);
 }
 
-void BasePropertyDialog::initWithCount(int actual_index, int existing_count, bool readonly)
+void BasePropertyDialog::initWithCount(
+	int actual_index, int existing_count,
+	bool readonly)
 {
 	if (actual_index < 0)
 		actual_index = existing_count;
@@ -50,7 +54,10 @@ void BasePropertyDialog::initWithCount(int actual_index, int existing_count, boo
 	index_edit->setReadOnly(readonly);
 }
 
-void BasePropertyDialog::initWithName(const QString &actual_name, const IsNameAvailableCB &is_name_available, bool readonly)
+void BasePropertyDialog::initWithName(
+	const QString &actual_name,
+	const IsNameAvailableCB &is_name_available,
+	bool readonly)
 {
 	result_index = -1;
 	result_name = "";
@@ -87,8 +94,9 @@ bool BasePropertyDialog::ValidateInput()
 			result_name = name;
 		} else
 		{
-			QMessageBox::critical(this, QCoreApplication::applicationName(),
-								  tr("Property with name '%1' is already exist.").arg(name));
+			QMessageBox::critical(
+				this, QApplication::applicationDisplayName(),
+				tr("Property with name '%1' is already exist.").arg(name));
 			return false;
 		}
 	} else
@@ -107,12 +115,14 @@ void BasePropertyDialog::on_buttonBox_clicked(QAbstractButton *button)
 		{
 			if (ValidateInput())
 				accept();
-		}	break;
+			break;
+		}
 
 		case QDialogButtonBox::RejectRole:
 		{
 			reject();
-		}	break;
+			break;
+		}
 
 		default:
 			break;
@@ -120,8 +130,8 @@ void BasePropertyDialog::on_buttonBox_clicked(QAbstractButton *button)
 }
 
 CustomPropertyOptionsDialog::CustomPropertyOptionsDialog(QWidget *parent)
-		: BasePropertyDialog(parent)
-		, ui(new Ui::CustomPropertyOptionsDialog)
+	: BasePropertyDialog(parent)
+	, ui(new Ui::CustomPropertyOptionsDialog)
 {
 	ui->setupUi(this);
 
@@ -134,8 +144,16 @@ CustomPropertyOptionsDialog::~CustomPropertyOptionsDialog()
 	delete ui;
 }
 
-bool CustomPropertyOptionsDialog::execute(CustomPropertyData &result)
+void CustomPropertyOptionsDialog::executeReadOnly()
 {
+	setReadOnly(true);
+	BasePropertyDialog::execute();
+}
+
+bool CustomPropertyOptionsDialog::execute(
+	CustomPropertyData &result)
+{
+	setReadOnly(false);
 	if (BasePropertyDialog::execute())
 	{
 		result.index = result_index;
@@ -169,7 +187,6 @@ void CustomPropertyOptionsDialog::setType(QVariant::Type type)
 		case QVariant::LongLong:
 		case QVariant::ULongLong:
 		case QVariant::Double:
-		case QVariant::Invalid:
 			ui->rbNumeric->setChecked(true);
 			break;
 
@@ -184,19 +201,36 @@ void CustomPropertyOptionsDialog::setTypeBoxEnabled(bool value)
 	ui->typeBox->setEnabled(value);
 }
 
+void CustomPropertyOptionsDialog::setReadOnly(bool readOnly)
+{
+	setTypeBoxEnabled(!readOnly);
+	GetLabel()->setEnabled(!readOnly);
+	GetNameEdit()->setEnabled(!readOnly);
+	GetIndexEdit()->setEnabled(!readOnly);
+
+	GetButtonBox()->setStandardButtons(
+		readOnly
+		? QDialogButtonBox::Close
+		: QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+}
+
 bool CustomPropertyOptionsDialog::ValidateInput()
 {
 	if (BasePropertyDialog::ValidateInput())
 	{
 		if (ui->rbBoolean->isChecked())
 			value_type = false;
-		else if (ui->rbNumeric->isChecked())
+		else
+		if (ui->rbNumeric->isChecked())
 			value_type = 0.0;
-		else if (ui->rbString->isChecked())
+		else
+		if (ui->rbString->isChecked())
 			value_type = "";
-		else if (ui->rbDictionary->isChecked())
+		else
+		if (ui->rbDictionary->isChecked())
 			value_type = QVariantMap();
-		else if (ui->rbList->isChecked())
+		else
+		if (ui->rbList->isChecked())
 			value_type = QVariantList();
 
 		return true;

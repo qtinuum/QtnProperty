@@ -92,6 +92,7 @@ private:
 QtnPropertyDelegateQString::QtnPropertyDelegateQString(
 	QtnPropertyQStringBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyQStringBase>(owner)
+	, maxLength(0x1000000)
 {
 	owner.setMultilineEnabled(true);
 }
@@ -101,6 +102,7 @@ void QtnPropertyDelegateQString::applyAttributesImpl(
 {
 	bool check_multiline;
 	qtnGetAttribute(attributes, "multiline_edit", check_multiline);
+	qtnGetAttribute(attributes, "max_length", maxLength);
 	owner().setMultilineEnabled(check_multiline);
 }
 
@@ -116,14 +118,14 @@ bool QtnPropertyDelegateQString::acceptKeyPressedForInplaceEditImpl(
 }
 
 QWidget *QtnPropertyDelegateQString::createValueEditorImpl(
-	QWidget *parent,
-	const QRect &rect,
-	QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	if (owner().isMultilineEnabled())
 	{
 		QtnLineEditBttn *editor = new QtnLineEditBttn(parent);
 		editor->setGeometry(rect);
+
+		editor->lineEdit->setMaxLength(maxLength);
 
 		new QtnPropertyQStringMultilineEditBttnHandler(owner(), *editor);
 
@@ -132,6 +134,7 @@ QWidget *QtnPropertyDelegateQString::createValueEditorImpl(
 	}
 
 	QLineEdit *lineEdit = new QLineEdit(parent);
+	lineEdit->setMaxLength(maxLength);
 
 	lineEdit->setGeometry(rect);
 
@@ -254,9 +257,8 @@ bool QtnPropertyDelegateQStringFile::isPropertyValid() const
 	return QFileInfo(owner().value()).exists();
 }
 
-class QtnPropertyQStringListComboBoxHandler : public QtnPropertyEditorHandler<
-												QtnPropertyQStringBase,
-												QComboBox>
+class QtnPropertyQStringListComboBoxHandler
+	: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QComboBox>
 {
 public:
 	QtnPropertyQStringListComboBoxHandler(
@@ -367,8 +369,7 @@ void QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged(
 
 QtnPropertyQStringFileLineEditBttnHandler::
 QtnPropertyQStringFileLineEditBttnHandler(
-	QtnPropertyQStringBase &property,
-	QtnLineEditBttn &editor)
+	QtnPropertyQStringBase &property, QtnLineEditBttn &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
 	, dialog(new QFileDialog(&editor))
 {
@@ -468,7 +469,7 @@ void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked(bool)
 	{
 		QStringList files = dialog->selectedFiles();
 		if (files.size() == 1)
-			property->edit(files.first());
+			property->edit(QDir::toNativeSeparators(files.first()));
 	}
 
 	if (!destroyed)
@@ -625,7 +626,8 @@ void QtnPropertyQStringLineEditHandler::updateEditor()
 	if (property().valueIsHidden())
 	{
 		editor().clear();
-		editor().setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
+		editor().setPlaceholderText(
+			QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
 		editor().setText(property().value());
