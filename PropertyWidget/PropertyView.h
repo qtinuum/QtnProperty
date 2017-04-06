@@ -170,7 +170,7 @@ private:
     void updateSplitRatio(float splitRatio);
 
     void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
-
+    void onPropertyDestroyed();
 private:
     QtnPropertySet* m_propertySet;
     QtnPropertyBase* m_activeProperty;

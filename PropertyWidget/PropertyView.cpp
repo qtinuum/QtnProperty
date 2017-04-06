@@ -116,8 +116,10 @@ void QtnPropertyView::setPropertySet(QtnPropertySet* newPropertySet)
 
     m_propertySet = newPropertySet;
 
-    if (m_propertySet)
+    if (m_propertySet){
         QObject::connect(m_propertySet, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyView::onPropertyDidChange);
+        QObject::connect(m_propertySet, &QtnPropertyBase::destroyed, this, &QtnPropertyView::onPropertyDestroyed);
+    }
 
     updateItemsTree();
 }
@@ -899,5 +901,10 @@ void QtnPropertyView::onPropertyDidChange(const QtnPropertyBase* changedProperty
     {
         viewport()->update();
     }
+}
+
+void QtnPropertyView::onPropertyDestroyed()
+{
+    setPropertySet(0);
 }
 
