@@ -111,8 +111,10 @@ QtnAccessibilityProxy *QtnPropertyView::accessibilityProxy()
 
 void QtnPropertyView::setPropertySet(QtnPropertySet* newPropertySet)
 {
-    if (m_propertySet)
+    if (m_propertySet){
         QObject::disconnect(m_propertySet, &QtnPropertyBase::propertyDidChange, this, &QtnPropertyView::onPropertyDidChange);
+        QObject::disconnect(m_propertySet, &QtnPropertyBase::destroyed, this, &QtnPropertyView::onPropertyDestroyed);
+    }
 
     m_propertySet = newPropertySet;
 
