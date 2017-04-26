@@ -304,6 +304,14 @@ property_set AllPropertyTypes
         id = 40;
     }
 
+    QPointF ppf { id = 41; }
+    QPointCallback ppfc
+    {
+        callbackValueGet = [this]() { return _pf; };
+        callbackValueSet = [this](QPointF v) { _pf = v; };
+        id = 41;
+    }
+
     AllPropertyTypes()
         : _b(true)
     {
@@ -314,6 +322,7 @@ property_set AllPropertyTypes
         _s = "name";
         _r = QRect(10, 10, 10, 10);
         _p = QPoint(9, 2);
+	_pf = QPoint(9.9, 2.2);
         _sz = QSize(33, 21);
         _e = COLOR::RED;
         _ef = MASK::ONE|MASK::FOUR;
@@ -337,6 +346,7 @@ property_set AllPropertyTypes
         QString _s;
         QRect _r;
         QPoint _p;
+	QPointF _pf;
         QSize _sz;
         QtnEnumValueType _e;
         QtnEnumFlagsValueType _ef;

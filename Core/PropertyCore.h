@@ -12,6 +12,7 @@
 #include "Core/PropertyQString.h"
 #include "Core/PropertyQRect.h"
 #include "Core/PropertyQPoint.h"
+#include "Core/PropertyQPointF.h"
 #include "Core/PropertyQSize.h"
 
 #endif // PROPERTYCORE_H

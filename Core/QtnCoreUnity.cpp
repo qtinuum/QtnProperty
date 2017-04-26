@@ -14,6 +14,7 @@
 #include "Core/PropertyEnumFlags.cpp"
 #include "Core/PropertyQSize.cpp"
 #include "Core/PropertyQPoint.cpp"
+#include "Core/PropertyQPointF.cpp"
 #include "GUI/PropertyQColor.cpp"
 #include "GUI/PropertyQPen.cpp"
 #include "GUI/PropertyQBrush.cpp"

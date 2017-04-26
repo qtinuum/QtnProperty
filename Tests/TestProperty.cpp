@@ -27,6 +27,8 @@ static void verifyInitialValues(QtnPropertySetAllPropertyTypes& pp)
     QVERIFY(pp.rpc == QRect(10, 10, 10, 10));
     QVERIFY(pp.pp == QPoint());
     QVERIFY(pp.ppc == QPoint(9, 2));
+    QVERIFY(pp.ppf == QPointF());
+    QVERIFY(pp.ppfc == QPointF(9.9, 2.2));
     QVERIFY(pp.szp == QSize());
     QVERIFY(pp.szpc == QSize(33, 21));
     QVERIFY(pp.ep == COLOR::BLUE);
@@ -57,6 +59,8 @@ static void modify(QtnPropertySetAllPropertyTypes& pp)
     pp.rpc = QRect(4, 3, 1, 0);
     pp.pp = QPoint(21, 9);
     pp.ppc = QPoint(15, 0);
+    pp.ppf = QPointF(21.21, 9.9);
+    pp.ppfc = QPointF(15.15, 0.0);
     pp.szp = QSize(90, 87);
     pp.szpc = QSize(0, 1);
     pp.ep = COLOR::RED;
@@ -87,6 +91,8 @@ static void verifyModified(QtnPropertySetAllPropertyTypes& pp)
     QVERIFY(pp.rpc == QRect(4, 3, 1, 0));
     QVERIFY(pp.pp == QPoint(21, 9));
     QVERIFY(pp.ppc == QPoint(15, 0));
+    QVERIFY(pp.ppf == QPointF(21.21, 9.9));
+    QVERIFY(pp.ppfc == QPointF(15.15, 0.0));
     QVERIFY(pp.szp == QSize(90, 87));
     QVERIFY(pp.szpc == QSize(0, 1));
     QVERIFY(pp.ep == COLOR::RED);
@@ -1088,6 +1094,27 @@ void TestProperty::variantConversions()
         QVERIFY(!pp.ppc.fromVariant(value));
         QCOMPARE(pp.ppc.value(), QPoint(100, 100));
 
+
+        QVERIFY(pp.ppf.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QPointF);
+        QCOMPARE(value.toPointF(), QPointF());
+        value = QPointF(-2.2, 3.3);
+        QVERIFY(pp.ppf.fromVariant(value));
+        QCOMPARE(pp.ppf.value(), QPointF(-2.2, 3.3));
+        value = "sss";
+        QVERIFY(!pp.ppf.fromVariant(value));
+        QCOMPARE(pp.ppf.value(), QPointF(-2.2, 3.3));
+
+        QVERIFY(pp.ppfc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QPointF);
+        QCOMPARE(value.toPointF(), QPointF(9.9, 2.2));
+        value = QPointF(100.100, 100.100);
+        QVERIFY(pp.ppfc.fromVariant(value));
+        QCOMPARE(pp.ppfc.value(), QPointF(100.100, 100.100));
+        value = "sss";
+        QVERIFY(!pp.ppfc.fromVariant(value));
+        QCOMPARE(pp.ppfc.value(), QPointF(100.100, 100.100));
+
         QVERIFY(pp.szp.toVariant(value));
         QCOMPARE(value.userType(), (int)QMetaType::QSize);
         QCOMPARE(value.toSize(), QSize());
@@ -1362,6 +1389,24 @@ void TestProperty::stringConversions()
         QCOMPARE(str, tr("QPoint(-3, 20)"));
         QVERIFY(!pp.ppc.fromStr("weee"));
         QCOMPARE(pp.ppc.value(), QPoint(-3, 20));
+
+        QVERIFY(pp.ppf.toStr(str));
+        QCOMPARE(str, tr("QPointF(0, 0)"));
+        QVERIFY(pp.ppf.fromStr(tr("QPointF (-2.2, 3.3 )   ")));
+        QCOMPARE(pp.ppf.value(), QPointF(-2.2, 3.3));
+        QVERIFY(pp.ppf.toStr(str));
+        QCOMPARE(str, tr("QPointF(-2.2, 3.3)"));
+        QVERIFY(!pp.ppf.fromStr("ddlwk,s"));
+        QCOMPARE(pp.ppf.value(), QPointF(-2.2, 3.3));
+
+        QVERIFY(pp.ppfc.toStr(str));
+        QCOMPARE(str, tr("QPointF(9.9, 2.2)"));
+        QVERIFY(pp.ppfc.fromStr(tr("QPointF(-3.3, 20.20)")));
+        QCOMPARE(pp.ppfc.value(), QPointF(-3.3, 20.20));
+        QVERIFY(pp.ppfc.toStr(str));
+        QCOMPARE(str, tr("QPointF(-3.3, 20.2)"));
+        QVERIFY(!pp.ppfc.fromStr("weee"));
+        QCOMPARE(pp.ppfc.value(), QPointF(-3.3, 20.20));
 
         QVERIFY(pp.szp.toStr(str));
         QCOMPARE(str, tr("QSize(-1, -1)"));

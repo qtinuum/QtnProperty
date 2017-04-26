@@ -26,6 +26,7 @@ else: SOURCES += PropertyBase.cpp \
     Core/PropertyEnumFlags.cpp \
     Core/PropertyQSize.cpp \
     Core/PropertyQPoint.cpp \
+    Core/PropertyQPointF.cpp \
     GUI/PropertyQColor.cpp \
     GUI/PropertyQPen.cpp \
     GUI/PropertyQBrush.cpp \
@@ -55,6 +56,7 @@ HEADERS += CoreAPI.h\
     Core/PropertyEnumFlags.h \
     Core/PropertyQSize.h \
     Core/PropertyQPoint.h \
+    Core/PropertyQPointF.h \
     GUI/PropertyQColor.h \
     GUI/PropertyQPen.h \
     GUI/PropertyQBrush.h \

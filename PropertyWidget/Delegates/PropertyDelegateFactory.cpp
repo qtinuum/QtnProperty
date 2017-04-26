@@ -129,6 +129,7 @@ void regEnumFlagsDelegates();
 void regFloatDelegates();
 void regIntDelegates();
 void regQPointDelegates();
+void regQPointFDelegates();
 void regQRectDelegates();
 void regQSizeDelegates();
 void regQStringDelegates();
@@ -158,6 +159,7 @@ bool initQtnPropertyWidgetLibrary(QIcon *resetIcon)
     regFloatDelegates();
     regIntDelegates();
     regQPointDelegates();
+    regQPointFDelegates();
     regQRectDelegates();
     regQSizeDelegates();
     regQStringDelegates();
