@@ -681,6 +681,8 @@ QtnPropertySetAllPropertyTypes::QtnPropertySetAllPropertyTypes(QObject* parent)
     , rpc(*new QtnPropertyQRectCallback(this))
     , pp(*new QtnPropertyQPoint(this))
     , ppc(*new QtnPropertyQPointCallback(this))
+    , ppf(*new QtnPropertyQPointF(this))
+    , ppfc(*new QtnPropertyQPointFCallback(this))
     , szp(*new QtnPropertyQSize(this))
     , szpc(*new QtnPropertyQSizeCallback(this))
     , ep(*new QtnPropertyEnum(this))
@@ -702,6 +704,7 @@ QtnPropertySetAllPropertyTypes::QtnPropertySetAllPropertyTypes(QObject* parent)
         _s = "name";
         _r = QRect(10, 10, 10, 10);
         _p = QPoint(9, 2);
+        _pf = QPointF(9.9, 2.2);
         _sz = QSize(33, 21);
         _e = COLOR::RED;
         _ef = MASK::ONE|MASK::FOUR;
@@ -741,6 +744,8 @@ QtnPropertySetAllPropertyTypes& QtnPropertySetAllPropertyTypes::operator=(const 
     rpc = other.rpc;
     pp = other.pp;
     ppc = other.ppc;
+    ppf = other.ppf;
+    ppfc = other.ppfc;
     szp = other.szp;
     szpc = other.szpc;
     ep = other.ep;
@@ -854,6 +859,16 @@ bool QtnPropertySetAllPropertyTypes::copyValuesImpl(QtnPropertySet* propertySetC
     if (!(theCopyFrom->ppc.state() & ignoreMask))
     {
         ppc = theCopyFrom->ppc;
+    }
+
+    if (!(theCopyFrom->ppf.state() & ignoreMask))
+    {
+        ppf = theCopyFrom->ppf;
+    }
+
+    if (!(theCopyFrom->ppfc.state() & ignoreMask))
+    {
+        ppfc = theCopyFrom->ppfc;
     }
 
     if (!(theCopyFrom->szp.state() & ignoreMask))
@@ -1035,7 +1050,15 @@ void QtnPropertySetAllPropertyTypes::init()
     fnpc.setId(39);
     static QString bttn_name = tr("bttn");
     bttn.setName(bttn_name);
-    bttn.setId(40);
+    bttn.setId(40);    
+    static QString ppf_name = tr("ppf");
+    ppf.setName(ppf_name);
+    ppf.setId(41);
+    static QString ppfc_name = tr("ppfc");
+    ppfc.setName(ppfc_name);
+    ppfc.setCallbackValueGet([this]() { return _pf; });
+    ppfc.setCallbackValueSet([this](QPointF v) { _pf = v; });
+    ppfc.setId(42);
     // end children initialization
 }
 

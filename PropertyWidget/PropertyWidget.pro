@@ -61,6 +61,7 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/Utils/PropertyEditorAux.h \
     Delegates/Core/PropertyDelegateQSize.h \
     Delegates/Core/PropertyDelegateQPoint.h \
+    Delegates/Core/PropertyDelegateQPointF.h \
     Delegates/GUI/PropertyDelegateQFont.h \
     Delegates/GUI/PropertyDelegateQPen.h \
     Delegates/GUI/PropertyDelegateQBrush.h \

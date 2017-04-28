@@ -291,6 +291,8 @@ public:
     QtnPropertyQRectCallback& rpc;
     QtnPropertyQPoint& pp;
     QtnPropertyQPointCallback& ppc;
+    QtnPropertyQPointF& ppf;
+    QtnPropertyQPointFCallback& ppfc;
     QtnPropertyQSize& szp;
     QtnPropertyQSizeCallback& szpc;
     QtnPropertyEnum& ep;
@@ -326,6 +328,7 @@ private:
         QString _s;
         QRect _r;
         QPoint _p;
+        QPointF _pf;
         QSize _sz;
         QtnEnumValueType _e;
         QtnEnumFlagsValueType _ef;
