@@ -87,12 +87,6 @@ public:
     
     // start children declarations
     QtnPropertyBool& BoolProperty;
-    QtnPropertyFreq& FreqProperty;
-    QtnPropertyLayer& LayerProperty;
-    QtnPropertyQBrushStyle& BrushStyleProperty;
-    QtnPropertyPenWidth& PenWidthProperty;
-    QtnPropertyQPenStyle& PenStyleProperty;
-    QtnPropertyQPen& PenProperty;
     QtnPropertyButton& ButtonProperty;
     QtnPropertyButton& ButtonLinkProperty;
     QtnPropertyABColor& RGBColor;
@@ -111,8 +105,17 @@ public:
     QtnPropertyQPoint& QPointProperty;
     QtnPropertyQSize& QSizeProperty;
     QtnPropertyQRect& QRectProperty;
+    QtnPropertyQPointF& QPointFProperty;
+    QtnPropertyQSizeF& QSizeFProperty;
+    QtnPropertyQRectF& QRectFProperty;
     QtnPropertyQColor& QColorProperty;
     QtnPropertyQFont& QFontProperty;
+    QtnPropertyFreq& FreqProperty;
+    QtnPropertyLayer& LayerProperty;
+    QtnPropertyQBrushStyle& BrushStyleProperty;
+    QtnPropertyPenWidth& PenWidthProperty;
+    QtnPropertyQPenStyle& PenStyleProperty;
+    QtnPropertyQPen& PenProperty;
     QtnPropertySetSubPropertySetType& SubPropertySet2;
     // end children declarations
 

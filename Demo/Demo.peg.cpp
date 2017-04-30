@@ -125,14 +125,14 @@ void QtnPropertySetSubPropertySetType::init()
 {
     static QString SubPropertySet_name = tr("SubPropertySet");
     setName(SubPropertySet_name);
-    static QString description = tr("This property set is part of the root property set.");
+    static QString description = "This property set is part of the root property set.";
     setDescription(description);
     setState(QtnPropertyStateImmutable);
     
     // start children initialization
     static QString SwitchProperty_name = tr("SwitchProperty");
     SwitchProperty.setName(SwitchProperty_name);
-    static QString SwitchProperty_description = tr("Boolean property with customized True/False values.");
+    static QString SwitchProperty_description = "Boolean property with customized True/False values.";
     SwitchProperty.setDescription(SwitchProperty_description);
     SwitchProperty.setValue(true);
     static QString ReadOnlyString_name = tr("ReadOnlyString");
@@ -143,27 +143,27 @@ void QtnPropertySetSubPropertySetType::init()
                 else
                     return "Switch is off";
             });
-    static QString ReadOnlyString_description = tr("This property is callback and read-only.");
+    static QString ReadOnlyString_description = "This property is callback and read-only.";
     ReadOnlyString.setDescription(ReadOnlyString_description);
     ReadOnlyString.setState(QtnPropertyStateImmutable);
     static QString FileNameProperty_name = tr("FileNameProperty");
     FileNameProperty.setName(FileNameProperty_name);
-    static QString FileNameProperty_description = tr("QString property tuned to handle file names.");
+    static QString FileNameProperty_description = "QString property tuned to handle file names.";
     FileNameProperty.setDescription(FileNameProperty_description);
     FileNameProperty.setValue("~/test_file.txt");
     static QString FolderNameProperty_name = tr("FolderNameProperty");
     FolderNameProperty.setName(FolderNameProperty_name);
-    static QString FolderNameProperty_description = tr("QString property tuned to handle folder names.");
+    static QString FolderNameProperty_description = "QString property tuned to handle folder names.";
     FolderNameProperty.setDescription(FolderNameProperty_description);
     FolderNameProperty.setValue("/var");
     static QString StringFromList_name = tr("StringFromList");
     StringFromList.setName(StringFromList_name);
-    static QString StringFromList_description = tr("QString property with list of acepted values (one, two, three, four).");
+    static QString StringFromList_description = "QString property with list of acepted values (one, two, three, four).";
     StringFromList.setDescription(StringFromList_description);
     StringFromList.setValue("two");
     static QString CircleShapeColor_name = tr("CircleShapeColor");
     CircleShapeColor.setName(CircleShapeColor_name);
-    static QString CircleShapeColor_description = tr("QColor property with delegate tuned to draw circle");
+    static QString CircleShapeColor_description = "QColor property with delegate tuned to draw circle";
     CircleShapeColor.setDescription(CircleShapeColor_description);
     CircleShapeColor.setValue(QColor(255, 100, 100));
     // end children initialization
@@ -217,12 +217,6 @@ void QtnPropertySetSubPropertySetType::connectDelegates()
 QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
     , BoolProperty(*new QtnPropertyBool(this))
-    , FreqProperty(*new QtnPropertyFreq(this))
-    , LayerProperty(*new QtnPropertyLayer(this))
-    , BrushStyleProperty(*new QtnPropertyQBrushStyle(this))
-    , PenWidthProperty(*new QtnPropertyPenWidth(this))
-    , PenStyleProperty(*new QtnPropertyQPenStyle(this))
-    , PenProperty(*new QtnPropertyQPen(this))
     , ButtonProperty(*new QtnPropertyButton(this))
     , ButtonLinkProperty(*new QtnPropertyButton(this))
     , RGBColor(*new QtnPropertyABColor(this))
@@ -241,8 +235,17 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , QPointProperty(*new QtnPropertyQPoint(this))
     , QSizeProperty(*new QtnPropertyQSize(this))
     , QRectProperty(*new QtnPropertyQRect(this))
+    , QPointFProperty(*new QtnPropertyQPointF(this))
+    , QSizeFProperty(*new QtnPropertyQSizeF(this))
+    , QRectFProperty(*new QtnPropertyQRectF(this))
     , QColorProperty(*new QtnPropertyQColor(this))
     , QFontProperty(*new QtnPropertyQFont(this))
+    , FreqProperty(*new QtnPropertyFreq(this))
+    , LayerProperty(*new QtnPropertyLayer(this))
+    , BrushStyleProperty(*new QtnPropertyQBrushStyle(this))
+    , PenWidthProperty(*new QtnPropertyPenWidth(this))
+    , PenStyleProperty(*new QtnPropertyQPenStyle(this))
+    , PenProperty(*new QtnPropertyQPen(this))
     , SubPropertySet2(*new QtnPropertySetSubPropertySetType(this))
 {
     init();
@@ -260,12 +263,6 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     Q_UNUSED(other);
 
     BoolProperty = other.BoolProperty;
-    FreqProperty = other.FreqProperty;
-    LayerProperty = other.LayerProperty;
-    BrushStyleProperty = other.BrushStyleProperty;
-    PenWidthProperty = other.PenWidthProperty;
-    PenStyleProperty = other.PenStyleProperty;
-    PenProperty = other.PenProperty;
     ButtonProperty = other.ButtonProperty;
     ButtonLinkProperty = other.ButtonLinkProperty;
     RGBColor = other.RGBColor;
@@ -284,8 +281,17 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     QPointProperty = other.QPointProperty;
     QSizeProperty = other.QSizeProperty;
     QRectProperty = other.QRectProperty;
+    QPointFProperty = other.QPointFProperty;
+    QSizeFProperty = other.QSizeFProperty;
+    QRectFProperty = other.QRectFProperty;
     QColorProperty = other.QColorProperty;
     QFontProperty = other.QFontProperty;
+    FreqProperty = other.FreqProperty;
+    LayerProperty = other.LayerProperty;
+    BrushStyleProperty = other.BrushStyleProperty;
+    PenWidthProperty = other.PenWidthProperty;
+    PenStyleProperty = other.PenStyleProperty;
+    PenProperty = other.PenProperty;
     SubPropertySet2 = other.SubPropertySet2;
 
     return *this;
@@ -314,36 +320,6 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->BoolProperty.state() & ignoreMask))
     {
         BoolProperty = theCopyFrom->BoolProperty;
-    }
-
-    if (!(theCopyFrom->FreqProperty.state() & ignoreMask))
-    {
-        FreqProperty = theCopyFrom->FreqProperty;
-    }
-
-    if (!(theCopyFrom->LayerProperty.state() & ignoreMask))
-    {
-        LayerProperty = theCopyFrom->LayerProperty;
-    }
-
-    if (!(theCopyFrom->BrushStyleProperty.state() & ignoreMask))
-    {
-        BrushStyleProperty = theCopyFrom->BrushStyleProperty;
-    }
-
-    if (!(theCopyFrom->PenWidthProperty.state() & ignoreMask))
-    {
-        PenWidthProperty = theCopyFrom->PenWidthProperty;
-    }
-
-    if (!(theCopyFrom->PenStyleProperty.state() & ignoreMask))
-    {
-        PenStyleProperty = theCopyFrom->PenStyleProperty;
-    }
-
-    if (!(theCopyFrom->PenProperty.state() & ignoreMask))
-    {
-        PenProperty = theCopyFrom->PenProperty;
     }
 
     if (!(theCopyFrom->ButtonProperty.state() & ignoreMask))
@@ -433,6 +409,21 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
         QRectProperty = theCopyFrom->QRectProperty;
     }
 
+    if (!(theCopyFrom->QPointFProperty.state() & ignoreMask))
+    {
+        QPointFProperty = theCopyFrom->QPointFProperty;
+    }
+
+    if (!(theCopyFrom->QSizeFProperty.state() & ignoreMask))
+    {
+        QSizeFProperty = theCopyFrom->QSizeFProperty;
+    }
+
+    if (!(theCopyFrom->QRectFProperty.state() & ignoreMask))
+    {
+        QRectFProperty = theCopyFrom->QRectFProperty;
+    }
+
     if (!(theCopyFrom->QColorProperty.state() & ignoreMask))
     {
         QColorProperty = theCopyFrom->QColorProperty;
@@ -441,6 +432,36 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->QFontProperty.state() & ignoreMask))
     {
         QFontProperty = theCopyFrom->QFontProperty;
+    }
+
+    if (!(theCopyFrom->FreqProperty.state() & ignoreMask))
+    {
+        FreqProperty = theCopyFrom->FreqProperty;
+    }
+
+    if (!(theCopyFrom->LayerProperty.state() & ignoreMask))
+    {
+        LayerProperty = theCopyFrom->LayerProperty;
+    }
+
+    if (!(theCopyFrom->BrushStyleProperty.state() & ignoreMask))
+    {
+        BrushStyleProperty = theCopyFrom->BrushStyleProperty;
+    }
+
+    if (!(theCopyFrom->PenWidthProperty.state() & ignoreMask))
+    {
+        PenWidthProperty = theCopyFrom->PenWidthProperty;
+    }
+
+    if (!(theCopyFrom->PenStyleProperty.state() & ignoreMask))
+    {
+        PenStyleProperty = theCopyFrom->PenStyleProperty;
+    }
+
+    if (!(theCopyFrom->PenProperty.state() & ignoreMask))
+    {
+        PenProperty = theCopyFrom->PenProperty;
     }
 
     SubPropertySet2.copyValues(&theCopyFrom->SubPropertySet2, ignoreMask);
@@ -456,18 +477,158 @@ void QtnPropertySetSamplePS::init()
     // start children initialization
     static QString BoolProperty_name = tr("BoolProperty");
     BoolProperty.setName(BoolProperty_name);
-    static QString BoolProperty_description = tr("Property to hold boolean values.");
+    static QString BoolProperty_description = "Property to hold boolean values.";
     BoolProperty.setDescription(BoolProperty_description);
     BoolProperty.setValue(false);
+    static QString ButtonProperty_name = tr("ButtonProperty");
+    ButtonProperty.setName(ButtonProperty_name);
+    ButtonProperty.setClickHandler([](const QtnPropertyButton* bttn) {
+            qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
+        });
+    static QString ButtonProperty_description = "Start calculate a long operation.";
+    ButtonProperty.setDescription(ButtonProperty_description);
+    static QString ButtonLinkProperty_name = tr("ButtonLinkProperty");
+    ButtonLinkProperty.setName(ButtonLinkProperty_name);
+    ButtonLinkProperty.setClickHandler([](const QtnPropertyButton* bttn) {
+            qDebug() << Q_FUNC_INFO << "Link has clicked: " << bttn;
+        });
+    static QString RGBColor_name = tr("RGBColor");
+    RGBColor.setName(RGBColor_name);
+    RGBColor.setClickHandler([this](const QtnPropertyABColor* color) {
+            qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
+            RGBColor = QColor::fromRgb(qrand()%255, qrand()%255, qrand()%255);
+        });
+    static QString RGBColor_description = "ABColor property with RGB components";
+    RGBColor.setDescription(RGBColor_description);
+    RGBColor.setResetCallback([this](QtnPropertyBase&){
+            RGBColor = Qt::green;
+        });
+    RGBColor.setValue(QColor(123, 150, 10));
+    static QString ColorSolidDelegate_name = tr("ColorSolidDelegate");
+    ColorSolidDelegate.setName(ColorSolidDelegate_name);
+    static QString ColorSolidDelegate_description = "QColor property with Solid delegate";
+    ColorSolidDelegate.setDescription(ColorSolidDelegate_description);
+    ColorSolidDelegate.setValue(QColor(13, 150, 10));
+    static QString FloatPropertySliderBox_name = tr("FloatPropertySliderBox");
+    FloatPropertySliderBox.setName(FloatPropertySliderBox_name);
+    static QString FloatPropertySliderBox_description = "Property to hold float values in range [0, 10].";
+    FloatPropertySliderBox.setDescription(FloatPropertySliderBox_description);
+    FloatPropertySliderBox.setDisplayName("Float Property Slider Box");
+    FloatPropertySliderBox.setMaxValue(10.f);
+    FloatPropertySliderBox.setMinValue(0);
+    FloatPropertySliderBox.setStepValue(0.1f);
+    FloatPropertySliderBox.setValue(1.f);
+    static QString DoubleProperty_name = tr("DoubleProperty");
+    DoubleProperty.setName(DoubleProperty_name);
+    static QString DoubleProperty_description = "Property to hold double values in range [10, 20].";
+    DoubleProperty.setDescription(DoubleProperty_description);
+    DoubleProperty.setMaxValue(20);
+    DoubleProperty.setMinValue(10);
+    DoubleProperty.setStepValue(0.5);
+    DoubleProperty.setValue(12.3);
+    static QString FloatProperty_name = tr("FloatProperty");
+    FloatProperty.setName(FloatProperty_name);
+    static QString FloatProperty_description = "Property to hold float values in range [-10, 0].";
+    FloatProperty.setDescription(FloatProperty_description);
+    FloatProperty.setMaxValue(0);
+    FloatProperty.setMinValue(-10);
+    FloatProperty.setStepValue(0.5);
+    FloatProperty.setValue(-3.5);
+    static QString IntProperty_name = tr("IntProperty");
+    IntProperty.setName(IntProperty_name);
+    static QString IntProperty_description = "Property to hold integer values with changing step 15.";
+    IntProperty.setDescription(IntProperty_description);
+    IntProperty.setStepValue(15);
+    IntProperty.setValue(10);
+    static QString IntPropertyComboBox_name = tr("IntPropertyComboBox");
+    IntPropertyComboBox.setName(IntPropertyComboBox_name);
+    static QString IntPropertyComboBox_description = "Property to hold integer values with changing step 15.";
+    IntPropertyComboBox.setDescription(IntPropertyComboBox_description);
+    IntPropertyComboBox.setStepValue(15);
+    IntPropertyComboBox.setValue(10);
+    static QString UIntProperty_name = tr("UIntProperty");
+    UIntProperty.setName(UIntProperty_name);
+    static QString UIntProperty_description = "Property to hold unsigned integer values in range [100, 200].";
+    UIntProperty.setDescription(UIntProperty_description);
+    UIntProperty.setMaxValue(200);
+    UIntProperty.setMinValue(100);
+    UIntProperty.setValue(100);
+    static QString EnumProperty_name = tr("EnumProperty");
+    EnumProperty.setName(EnumProperty_name);
+    static QString EnumProperty_description = "Property to hold enum value (color).";
+    EnumProperty.setDescription(EnumProperty_description);
+    EnumProperty.setEnumInfo(&COLOR::info());
+    EnumProperty.setValue(COLOR::red);
+    static QString EnumFlagsProperty_name = tr("EnumFlagsProperty");
+    EnumFlagsProperty.setName(EnumFlagsProperty_name);
+    static QString EnumFlagsProperty_description = "Property to hold combination of enum values (options).";
+    EnumFlagsProperty.setDescription(EnumFlagsProperty_description);
+    EnumFlagsProperty.setEnumInfo(&FLAGS::info());
+    EnumFlagsProperty.setValue(FLAGS::opt2);
+    static QString QStringValue_name = tr("QStringValue");
+    QStringValue.setName(QStringValue_name);
+    static QString QStringValue_description = "Property to hold QString value.";
+    QStringValue.setDescription(QStringValue_description);
+    QStringValue.setValue("Hello world!");
+    static QString EnableSubPropertySet_name = tr("EnableSubPropertySet");
+    EnableSubPropertySet.setName(EnableSubPropertySet_name);
+    static QString EnableSubPropertySet_description = "Enable/Disable Sub-PropertySet.";
+    EnableSubPropertySet.setDescription(EnableSubPropertySet_description);
+    EnableSubPropertySet.setValue(false);
+    static QString SubPropertySet_name = tr("SubPropertySet");
+    SubPropertySet.setName(SubPropertySet_name);
+    static QString SubPropertySet_description = "This property set is part of the root property set.";
+    SubPropertySet.setDescription(SubPropertySet_description);
+    SubPropertySet.setState(QtnPropertyStateImmutable);
+    static QString QPointProperty_name = tr("QPointProperty");
+    QPointProperty.setName(QPointProperty_name);
+    static QString QPointProperty_description = "Property to hold QPoint value.";
+    QPointProperty.setDescription(QPointProperty_description);
+    QPointProperty.setValue(QPoint(-10, 10));
+    static QString QSizeProperty_name = tr("QSizeProperty");
+    QSizeProperty.setName(QSizeProperty_name);
+    static QString QSizeProperty_description = "Property to hold QSize value.";
+    QSizeProperty.setDescription(QSizeProperty_description);
+    QSizeProperty.setValue(QSize(100, 200));
+    static QString QRectProperty_name = tr("QRectProperty");
+    QRectProperty.setName(QRectProperty_name);
+    static QString QRectProperty_description = "Property to hold QRect value.";
+    QRectProperty.setDescription(QRectProperty_description);
+    QRectProperty.setValue(QRect(10, 10, 200, 200));
+    static QString QPointFProperty_name = tr("QPointFProperty");
+    QPointFProperty.setName(QPointFProperty_name);
+    static QString QPointFProperty_description = "Property to hold QPointF value.";
+    QPointFProperty.setDescription(QPointFProperty_description);
+    QPointFProperty.setValue(QPointF(-10.5, 10.2));
+    static QString QSizeFProperty_name = tr("QSizeFProperty");
+    QSizeFProperty.setName(QSizeFProperty_name);
+    static QString QSizeFProperty_description = "Property to hold QSizeF value.";
+    QSizeFProperty.setDescription(QSizeFProperty_description);
+    QSizeFProperty.setValue(QSizeF(100.0, 200.1));
+    static QString QRectFProperty_name = tr("QRectFProperty");
+    QRectFProperty.setName(QRectFProperty_name);
+    static QString QRectFProperty_description = "Property to hold QRectF value.";
+    QRectFProperty.setDescription(QRectFProperty_description);
+    QRectFProperty.setValue(QRectF(10.23, 10.4, 200.2, 200.6));
+    static QString QColorProperty_name = tr("QColorProperty");
+    QColorProperty.setName(QColorProperty_name);
+    static QString QColorProperty_description = "Property to hold QColor value.";
+    QColorProperty.setDescription(QColorProperty_description);
+    QColorProperty.setValue(Qt::blue);
+    static QString QFontProperty_name = tr("QFontProperty");
+    QFontProperty.setName(QFontProperty_name);
+    static QString QFontProperty_description = "Property to hold QFont value.";
+    QFontProperty.setDescription(QFontProperty_description);
+    QFontProperty.setValue(QFont("Sans Serif", 14));
     static QString FreqProperty_name = tr("FreqProperty");
     FreqProperty.setName(FreqProperty_name);
-    static QString FreqProperty_description = tr("Property to hold frequency values.");
+    static QString FreqProperty_description = "Property to hold frequency values.";
     FreqProperty.setDescription(FreqProperty_description);
     FreqProperty.setUnit(FreqUnit::KHz);
     FreqProperty.setValue(15);
     static QString LayerProperty_name = tr("LayerProperty");
     LayerProperty.setName(LayerProperty_name);
-    static QString LayerProperty_description = tr("Property to hold layer.");
+    static QString LayerProperty_description = "Property to hold layer.";
     LayerProperty.setDescription(LayerProperty_description);
     LayerProperty.setValue(0);
     static QString BrushStyleProperty_name = tr("BrushStyleProperty");
@@ -482,138 +643,13 @@ void QtnPropertySetSamplePS::init()
     PenWidthProperty.setValue(PenWidth::Middle);
     static QString PenStyleProperty_name = tr("PenStyleProperty");
     PenStyleProperty.setName(PenStyleProperty_name);
-    static QString PenStyleProperty_description = tr("Property to hold pen style values.");
+    static QString PenStyleProperty_description = "Property to hold pen style values.";
     PenStyleProperty.setDescription(PenStyleProperty_description);
     PenStyleProperty.setValue(Qt::DashLine);
     static QString PenProperty_name = tr("PenProperty");
     PenProperty.setName(PenProperty_name);
-    static QString PenProperty_description = tr("Property to hold QPen values.");
+    static QString PenProperty_description = "Property to hold QPen values.";
     PenProperty.setDescription(PenProperty_description);
-    static QString ButtonProperty_name = tr("ButtonProperty");
-    ButtonProperty.setName(ButtonProperty_name);
-    ButtonProperty.setClickHandler([](const QtnPropertyButton* bttn) {
-            qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
-        });
-    static QString ButtonProperty_description = tr("Start calculate a long operation.");
-    ButtonProperty.setDescription(ButtonProperty_description);
-    static QString ButtonLinkProperty_name = tr("ButtonLinkProperty");
-    ButtonLinkProperty.setName(ButtonLinkProperty_name);
-    ButtonLinkProperty.setClickHandler([](const QtnPropertyButton* bttn) {
-            qDebug() << Q_FUNC_INFO << "Link has clicked: " << bttn;
-        });
-    static QString RGBColor_name = tr("RGBColor");
-    RGBColor.setName(RGBColor_name);
-    RGBColor.setClickHandler([this](const QtnPropertyABColor* color) {
-            qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
-            RGBColor = QColor::fromRgb(qrand()%255, qrand()%255, qrand()%255);
-        });
-    static QString RGBColor_description = tr("ABColor property with RGB components");
-    RGBColor.setDescription(RGBColor_description);
-    RGBColor.setResetCallback([this](QtnPropertyBase&){
-            RGBColor = Qt::green;
-        });
-    RGBColor.setValue(QColor(123, 150, 10));
-    static QString ColorSolidDelegate_name = tr("ColorSolidDelegate");
-    ColorSolidDelegate.setName(ColorSolidDelegate_name);
-    static QString ColorSolidDelegate_description = tr("QColor property with Solid delegate");
-    ColorSolidDelegate.setDescription(ColorSolidDelegate_description);
-    ColorSolidDelegate.setValue(QColor(13, 150, 10));
-    static QString FloatPropertySliderBox_name = tr("FloatPropertySliderBox");
-    FloatPropertySliderBox.setName(FloatPropertySliderBox_name);
-    static QString FloatPropertySliderBox_description = tr("Property to hold float values in range [0, 10].");
-    FloatPropertySliderBox.setDescription(FloatPropertySliderBox_description);
-    FloatPropertySliderBox.setDisplayName("Float Property Slider Box");
-    FloatPropertySliderBox.setMaxValue(10.f);
-    FloatPropertySliderBox.setMinValue(0);
-    FloatPropertySliderBox.setStepValue(0.1f);
-    FloatPropertySliderBox.setValue(1.f);
-    static QString DoubleProperty_name = tr("DoubleProperty");
-    DoubleProperty.setName(DoubleProperty_name);
-    static QString DoubleProperty_description = tr("Property to hold double values in range [10, 20].");
-    DoubleProperty.setDescription(DoubleProperty_description);
-    DoubleProperty.setMaxValue(20);
-    DoubleProperty.setMinValue(10);
-    DoubleProperty.setStepValue(0.5);
-    DoubleProperty.setValue(12.3);
-    static QString FloatProperty_name = tr("FloatProperty");
-    FloatProperty.setName(FloatProperty_name);
-    static QString FloatProperty_description = tr("Property to hold float values in range [-10, 0].");
-    FloatProperty.setDescription(FloatProperty_description);
-    FloatProperty.setMaxValue(0);
-    FloatProperty.setMinValue(-10);
-    FloatProperty.setStepValue(0.5);
-    FloatProperty.setValue(-3.5);
-    static QString IntProperty_name = tr("IntProperty");
-    IntProperty.setName(IntProperty_name);
-    static QString IntProperty_description = tr("Property to hold integer values with changing step 15.");
-    IntProperty.setDescription(IntProperty_description);
-    IntProperty.setStepValue(15);
-    IntProperty.setValue(10);
-    static QString IntPropertyComboBox_name = tr("IntPropertyComboBox");
-    IntPropertyComboBox.setName(IntPropertyComboBox_name);
-    static QString IntPropertyComboBox_description = tr("Property to hold integer values with changing step 15.");
-    IntPropertyComboBox.setDescription(IntPropertyComboBox_description);
-    IntPropertyComboBox.setStepValue(15);
-    IntPropertyComboBox.setValue(10);
-    static QString UIntProperty_name = tr("UIntProperty");
-    UIntProperty.setName(UIntProperty_name);
-    static QString UIntProperty_description = tr("Property to hold unsigned integer values in range [100, 200].");
-    UIntProperty.setDescription(UIntProperty_description);
-    UIntProperty.setMaxValue(200);
-    UIntProperty.setMinValue(100);
-    UIntProperty.setValue(100);
-    static QString EnumProperty_name = tr("EnumProperty");
-    EnumProperty.setName(EnumProperty_name);
-    static QString EnumProperty_description = tr("Property to hold enum value (color).");
-    EnumProperty.setDescription(EnumProperty_description);
-    EnumProperty.setEnumInfo(&COLOR::info());
-    EnumProperty.setValue(COLOR::red);
-    static QString EnumFlagsProperty_name = tr("EnumFlagsProperty");
-    EnumFlagsProperty.setName(EnumFlagsProperty_name);
-    static QString EnumFlagsProperty_description = tr("Property to hold combination of enum values (options).");
-    EnumFlagsProperty.setDescription(EnumFlagsProperty_description);
-    EnumFlagsProperty.setEnumInfo(&FLAGS::info());
-    EnumFlagsProperty.setValue(FLAGS::opt2);
-    static QString QStringValue_name = tr("QStringValue");
-    QStringValue.setName(QStringValue_name);
-    static QString QStringValue_description = tr("Property to hold QString value.");
-    QStringValue.setDescription(QStringValue_description);
-    QStringValue.setValue("Hello world!");
-    static QString EnableSubPropertySet_name = tr("EnableSubPropertySet");
-    EnableSubPropertySet.setName(EnableSubPropertySet_name);
-    static QString EnableSubPropertySet_description = tr("Enable/Disable Sub-PropertySet.");
-    EnableSubPropertySet.setDescription(EnableSubPropertySet_description);
-    EnableSubPropertySet.setValue(false);
-    static QString SubPropertySet_name = tr("SubPropertySet");
-    SubPropertySet.setName(SubPropertySet_name);
-    static QString SubPropertySet_description = tr("This property set is part of the root property set.");
-    SubPropertySet.setDescription(SubPropertySet_description);
-    SubPropertySet.setState(QtnPropertyStateImmutable);
-    static QString QPointProperty_name = tr("QPointProperty");
-    QPointProperty.setName(QPointProperty_name);
-    static QString QPointProperty_description = tr("Property to hold QPoint value.");
-    QPointProperty.setDescription(QPointProperty_description);
-    QPointProperty.setValue(QPoint(-10, 10));
-    static QString QSizeProperty_name = tr("QSizeProperty");
-    QSizeProperty.setName(QSizeProperty_name);
-    static QString QSizeProperty_description = tr("Property to hold QSize value.");
-    QSizeProperty.setDescription(QSizeProperty_description);
-    QSizeProperty.setValue(QSize(100, 200));
-    static QString QRectProperty_name = tr("QRectProperty");
-    QRectProperty.setName(QRectProperty_name);
-    static QString QRectProperty_description = tr("Property to hold QRect value.");
-    QRectProperty.setDescription(QRectProperty_description);
-    QRectProperty.setValue(QRect(10, 10, 200, 200));
-    static QString QColorProperty_name = tr("QColorProperty");
-    QColorProperty.setName(QColorProperty_name);
-    static QString QColorProperty_description = tr("Property to hold QColor value.");
-    QColorProperty.setDescription(QColorProperty_description);
-    QColorProperty.setValue(Qt::blue);
-    static QString QFontProperty_name = tr("QFontProperty");
-    QFontProperty.setName(QFontProperty_name);
-    static QString QFontProperty_description = tr("Property to hold QFont value.");
-    QFontProperty.setDescription(QFontProperty_description);
-    QFontProperty.setValue(QFont("Sans Serif", 14));
     static QString SubPropertySet2_name = tr("SubPropertySet2");
     SubPropertySet2.setName(SubPropertySet2_name);
     SubPropertySet2.setState(QtnPropertyStateCollapsed);
@@ -650,13 +686,6 @@ void QtnPropertySetSamplePS::on_QColorProperty_propertyDidChange(const QtnProper
 
 void QtnPropertySetSamplePS::connectDelegates()
 {
-    PenProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
-        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
-        info->attributes["editColor"] = true;
-        info->attributes["editStyle"] = true;
-        info->attributes["editWidth"] = true;
-        return info.take();
-    });
     ButtonProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->attributes["title"] = "Click me";
@@ -689,6 +718,13 @@ void QtnPropertySetSamplePS::connectDelegates()
         QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
         info->name = "IntList";
         info->attributes["values"] = QVariant::fromValue(QList<int>() << 10 << 12 << 15);
+        return info.take();
+    });
+    PenProperty.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {
+        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
+        info->attributes["editColor"] = true;
+        info->attributes["editStyle"] = true;
+        info->attributes["editWidth"] = true;
         return info.take();
     });
 }

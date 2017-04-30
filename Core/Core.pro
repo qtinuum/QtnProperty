@@ -22,9 +22,11 @@ else: SOURCES += PropertyBase.cpp \
     Core/PropertyDouble.cpp \
     Core/PropertyQString.cpp \
     Core/PropertyQRect.cpp \
+    Core/PropertyQRectF.cpp \
     Core/PropertyEnum.cpp \
     Core/PropertyEnumFlags.cpp \
     Core/PropertyQSize.cpp \
+    Core/PropertyQSizeF.cpp \
     Core/PropertyQPoint.cpp \
     Core/PropertyQPointF.cpp \
     GUI/PropertyQColor.cpp \
@@ -52,9 +54,11 @@ HEADERS += CoreAPI.h\
     Core/PropertyDouble.h \
     Core/PropertyQString.h \
     Core/PropertyQRect.h \
+    Core/PropertyQRectF.h \
     Core/PropertyEnum.h \
     Core/PropertyEnumFlags.h \
     Core/PropertyQSize.h \
+    Core/PropertyQSizeF.h \
     Core/PropertyQPoint.h \
     Core/PropertyQPointF.h \
     GUI/PropertyQColor.h \

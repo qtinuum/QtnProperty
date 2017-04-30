@@ -11,8 +11,10 @@
 #include "Core/PropertyEnumFlags.h"
 #include "Core/PropertyQString.h"
 #include "Core/PropertyQRect.h"
+#include "Core/PropertyQRectF.h"
 #include "Core/PropertyQPoint.h"
 #include "Core/PropertyQPointF.h"
 #include "Core/PropertyQSize.h"
+#include "Core/PropertyQSizeF.h"
 
 #endif // PROPERTYCORE_H

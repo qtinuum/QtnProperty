@@ -21,6 +21,7 @@ else: SOURCES += PropertyWidget.cpp \
     Delegates/Core/PropertyDelegateDouble.cpp \
     Delegates/Core/PropertyDelegateEnum.cpp \
     Delegates/Core/PropertyDelegateQRect.cpp \
+    Delegates/Core/PropertyDelegateQRectF.cpp \
     Delegates/Utils/PropertyEditorHandler.cpp \
     Delegates/Core/PropertyDelegateEnumFlags.cpp \
     Delegates/PropertyDelegate.cpp \
@@ -30,7 +31,9 @@ else: SOURCES += PropertyWidget.cpp \
     Delegates/Utils/PropertyDelegateMisc.cpp \
     Delegates/Utils/PropertyEditorAux.cpp \
     Delegates/Core/PropertyDelegateQSize.cpp \
+    Delegates/Core/PropertyDelegateQSizeF.cpp \
     Delegates/Core/PropertyDelegateQPoint.cpp \
+    Delegates/Core/PropertyDelegateQPointF.cpp \
     Delegates/GUI/PropertyDelegateQFont.cpp \
     Delegates/GUI/PropertyDelegateQColor.cpp \
     Delegates/GUI/PropertyDelegateQPen.cpp \
@@ -56,10 +59,12 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/Core/PropertyDelegateDouble.h \
     Delegates/Core/PropertyDelegateEnum.h \
     Delegates/Core/PropertyDelegateQRect.h \
+    Delegates/Core/PropertyDelegateQRectF.h \
     Delegates/Utils/PropertyEditorHandler.h \
     Delegates/Core/PropertyDelegateEnumFlags.h \
     Delegates/Utils/PropertyEditorAux.h \
     Delegates/Core/PropertyDelegateQSize.h \
+    Delegates/Core/PropertyDelegateQSizeF.h \
     Delegates/Core/PropertyDelegateQPoint.h \
     Delegates/Core/PropertyDelegateQPointF.h \
     Delegates/GUI/PropertyDelegateQFont.h \
