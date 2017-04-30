@@ -102,7 +102,7 @@ void TestGeneratedProperty::testLoadSave()
 #ifdef Q_OS_WIN
             QCOMPARE(result.size(), 1188);
 #else
-            QCOMPARE(result.size(), 1160);
+            QCOMPARE(result.size(), 1154);
 #endif
         }
     }
