@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/lexxmark/QtnProperty.svg?branch=master)](https://travis-ci.org/lexxmark/QtnProperty)
 
-#QtnProperty
+# QtnProperty
 This is user and programmist friendly properties for Qt framework
-#Overview
+# Overview
 There are some limitations of standard Qt property system.
 This project is an attempt to make better properties.
 The key features are:
@@ -22,7 +22,7 @@ Some screenshots of the Demo application:
 ![Demo_screenshot_linux](Docs/img/Demo1.png)
 ![Demo_screenshot_win](Docs/img/DemoWin.png)
 
-#How to build
+# How to build
 **Requirements:**
 
 1. Qt 5.2 framework or later
@@ -52,15 +52,15 @@ QtnProperty project consists of five submodules:
 4. **QtnPropertyTests** - tests for QtnPropertyCore library
 5. **QtnPropertyDemo** - demo application
 
-#How to use
+# How to use
 
-##Step 1.
+## Step 1.
 To have QtnProperty in your project your should include QtnProperty.pri file into your pro file. It will add QtnPropertyCore and QtnPropertyWidget static libraries to your project.
 ```C++
     include(QtnProperty\QtnProperty.pri)
 ```
 
-##Step 2.
+## Step 2.
 Then you can manually create property sets in your C++ code, create QtnPropertyWidget or QtnPropertyView widgets and assign property set to the widget:
 
 ```C++
@@ -108,10 +108,10 @@ NOTE:
 
 If the function isn't called for some reason you will see an empty property widget and some warnings in application output. You should call it manually (for example somewhere in the main function). Pass **resetIcon**  parameter if you want to override default reset icon for resettable properties.
 
-##Step 3.
+## Step 3.
 If you want to use *.pef files to generate properties C++ code you need to build QtnPEG executable.
 
-##Step 4.
+## Step 4.
 To use *.pef files in your project you should do the following in your pro file:
 
 * Define PEG_TOOL variable as full path to the QtnPEG executable
@@ -124,7 +124,7 @@ include(../PEG.pri)
 PEG_SOURCES += TextEditor.pef
 ```
 
-##Step 5.
+## Step 5.
 Write *.pef file with propertyset declaration. See [wiki](https://github.com/lexxmark/QtnProperty/wiki/Property-Enum-file-format-(*.pef)) for more info. For example TextEditor.pef:
   
 ```C++
@@ -158,11 +158,11 @@ property_set TextEditor
 }
 ```
     
-##Step 6.
+## Step 6.
 Include generated TextEditor.peg.h and TextEditor.peg.cpp files into 
 your project.
 
-##Step 7.
+## Step 7.
 Now you can use QtnPropertySetTextEditor class (defined in generated files) in your C++ code like this:
 ```C++
     QtnPropertySetTextEditor params;
