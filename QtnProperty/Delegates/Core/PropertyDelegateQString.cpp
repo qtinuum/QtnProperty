@@ -505,7 +505,8 @@ QtnPropertyQStringMultilineEditBttnHandler(
 
 	QObject::connect(
 		editor.lineEdit, &QLineEdit::editingFinished,
-		this, &QtnPropertyQStringMultilineEditBttnHandler::onEditingFinished);
+		this, &QtnPropertyQStringMultilineEditBttnHandler::onEditingFinished,
+		Qt::QueuedConnection);
 }
 
 void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
