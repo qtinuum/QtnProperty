@@ -234,7 +234,8 @@ QtnProperty *qtnCreateQObjectProperty(
 	Q_ASSERT(propertyIndex >= 0 && propertyIndex < metaObject->propertyCount());
 
 	return qtnCreateQObjectProperty(
-		object, metaObject->property(propertyIndex), connect);
+		object, metaObject->property(propertyIndex), connect,
+		metaObject->className());
 }
 
 QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
