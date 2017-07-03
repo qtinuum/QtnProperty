@@ -91,11 +91,13 @@ private:
 		CustomPropertyData &customData);
 
 	QVariant *dataPtr;
-	QtnPropertySet *rootSet;
 	QVariant::Type lastAddType;
 	bool readOnly : 1;
 	bool autoUpdate : 1;
 	bool backupAutoUpdate : 1;
+
+protected:
+	QtnPropertySet *rootSet;
 };
 
 bool CustomPropertyWidget::isReadOnly() const
