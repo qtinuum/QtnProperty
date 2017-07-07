@@ -803,10 +803,9 @@ void CustomPropertyWidget::dropEnd()
 
 void CustomPropertyWidget::updateData()
 {
-	auto propertySet = this->propertySet();
-	if (!readOnly && nullptr != dataPtr && nullptr != propertySet)
+	if (!readOnly && nullptr != dataPtr && nullptr != rootSet)
 	{
-		auto varProperty = getVarProperty(propertySet->childProperties().at(0));
+		auto varProperty = getVarProperty(rootSet->childProperties().at(0));
 		auto oldValue = *dataPtr;
 		*dataPtr = varProperty->CreateVariant();
 		editData(oldValue);
@@ -877,8 +876,10 @@ VarProperty *CustomPropertyWidget::getVarProperty(QtnPropertyBase *source)
 {
 	VarProperty *varProperty = nullptr;
 	if (nullptr != source)
+	{
 		varProperty = source->findChild<VarProperty *>(
 				QString(), Qt::FindDirectChildrenOnly);
+	}
 
 	return varProperty;
 }

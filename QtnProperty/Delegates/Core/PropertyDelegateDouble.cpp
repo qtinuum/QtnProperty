@@ -118,7 +118,8 @@ QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
 		static_cast<void (QDoubleSpinBox::*)(
 						double)>(&QDoubleSpinBox::valueChanged),
 		this,
-		&QtnPropertyDoubleSpinBoxHandler::onValueChanged);
+		&QtnPropertyDoubleSpinBoxHandler::onValueChanged,
+		Qt::QueuedConnection);
 }
 
 void QtnPropertyDoubleSpinBoxHandler::updateEditor()
