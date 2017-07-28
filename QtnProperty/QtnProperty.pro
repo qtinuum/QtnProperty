@@ -8,6 +8,10 @@ VERSION = 1.2.6
 
 DEFINES += QTN_DYNAMIC_LIBRARY
 
+macx {
+    QMAKE_SONAME_PREFIX = @executable_path/../lib
+}
+
 SOURCES += PropertyBase.cpp \
     Property.cpp \
     PropertySet.cpp \
