@@ -39,11 +39,11 @@ static const QString kCustomPropertyData = "QtnCustomPropertyData";
 CustomPropertyWidget::CustomPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
 	, dataPtr(nullptr)
-	, rootSet(nullptr)
 	, lastAddType(QVariant::Invalid)
 	, readOnly(false)
 	, autoUpdate(false)
 	, backupAutoUpdate(false)
+	, rootSet(nullptr)
 {
 }
 
@@ -947,7 +947,7 @@ void CustomPropertyWidget::addProperty(
 
 	auto it = std::find(children.begin(), children.end(), new_property);
 
-	set->addChildProperty(new_property, true, it - children.begin());
+	set->addChildProperty(new_property, true, int(it - children.begin()));
 	propertyView()->setActiveProperty(new_property);
 
 	if (autoUpdate)
@@ -1031,7 +1031,7 @@ void CustomPropertyWidget::updatePropertyOptions(
 
 			auto it = std::find(children.begin(), children.end(), varProperty);
 
-			index = it - children.begin();
+			index = int(it - children.begin());
 		} else
 		if (old_index != index)
 		{

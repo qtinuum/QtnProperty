@@ -32,9 +32,11 @@ bool QtnPropertyUInt64Base::fromStrImpl(const QString &str, bool edit)
 {
 	bool ok = false;
 	ValueType value = str.toULongLong(&ok);
+
 	if (!ok)
 	{
 		value = QLocale().toULongLong(str, &ok);
+
 		if (!ok)
 			return false;
 	}
@@ -52,6 +54,7 @@ bool QtnPropertyUInt64Base::fromVariantImpl(const QVariant &var, bool edit)
 {
 	bool ok = false;
 	ValueType value = var.toULongLong(&ok);
+
 	if (!ok)
 		return false;
 
@@ -89,7 +92,6 @@ QtnPropertyDelegateUInt64::QtnPropertyDelegateUInt64(
 	, reverted(false)
 	, applied(false)
 {
-
 }
 
 bool QtnPropertyDelegateUInt64::eventFilter(QObject *obj, QEvent *event)
@@ -139,7 +141,8 @@ QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(
 	editor->installEventFilter(this);
 	QObject::connect(
 		editor, &QLineEdit::editingFinished,
-		this, &QtnPropertyDelegateUInt64::onEditingFinished);
+		this, &QtnPropertyDelegateUInt64::onEditingFinished,
+		Qt::QueuedConnection);
 
 	QObject::connect(
 		editor, &QObject::destroyed,

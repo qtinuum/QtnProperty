@@ -26,11 +26,14 @@
 #include <QLineEdit>
 #include <QLocale>
 
-class QtnPropertyUIntSpinBoxHandler: public QtnPropertyEditorHandler<QtnPropertyUIntBase, QtnUnsignedSpinBox>
+class QtnPropertyUIntSpinBoxHandler : public
+									QtnPropertyEditorHandler<QtnPropertyUIntBase,
+															 QtnUnsignedSpinBox>
 {
 public:
-	QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase &property,
-								  QtnUnsignedSpinBox &editor);
+	QtnPropertyUIntSpinBoxHandler(
+		QtnPropertyUIntBase &property,
+		QtnUnsignedSpinBox &editor);
 
 private:
 	virtual void updateEditor() override;
@@ -43,11 +46,14 @@ private:
 };
 
 static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
-								.registerDelegateDefault(&QtnPropertyUIntBase::staticMetaObject
-								, &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
-								, "SpinBox");
+	.registerDelegateDefault(
+		&QtnPropertyUIntBase::staticMetaObject
+		, &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
+		, "SpinBox");
 
-QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget *parent, const QRect& rect, QtnInplaceInfo *inplaceInfo)
+QWidget *QtnPropertyDelegateUInt::createValueEditorImpl(
+	QWidget *parent, const
+	QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnUnsignedSpinBox(parent);
 	spinBox->setGeometry(rect);
@@ -62,47 +68,57 @@ QWidget* QtnPropertyDelegateUInt::createValueEditorImpl(QWidget *parent, const Q
 	return spinBox;
 }
 
-bool QtnPropertyDelegateUInt::acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
+bool QtnPropertyDelegateUInt::acceptKeyPressedForInplaceEditImpl(
+	QKeyEvent *keyEvent) const
 {
-	if (QtnPropertyDelegateTyped<QtnPropertyUIntBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
+	if (QtnPropertyDelegateTyped<QtnPropertyUIntBase>::
+		acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_UNSIGNED_INT);
 }
 
-bool QtnPropertyDelegateUInt::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateUInt::propertyValueToStr(QString &strValue) const
 {
 	strValue = QLocale().toString(owner().value());
 	return true;
 }
 
-QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(QtnPropertyUIntBase &property, QtnUnsignedSpinBox &editor)
+QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(
+	QtnPropertyUIntBase &property, QtnUnsignedSpinBox &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
 	, block(0)
 {
 	if (!property.isEditableByUser())
 		editor.setReadOnly(true);
 
-	editor.setRange(QtnUnsignedSpinBox::qtn_u2i(property.minValue()),
-					QtnUnsignedSpinBox::qtn_u2i(property.maxValue()));
+	editor.setRange(
+		QtnUnsignedSpinBox::qtn_u2i(property.minValue()),
+		QtnUnsignedSpinBox::qtn_u2i(property.maxValue()));
 	editor.setSingleStep(QtnUnsignedSpinBox::qtn_u2i(property.stepValue()));
 
 	updateEditor();
 
 	editor.setKeyboardTracking(false);
 	editor.installEventFilter(this);
-	QObject::connect(&editor,
-					 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this,
-					 &QtnPropertyUIntSpinBoxHandler::onValueChanged);
-	QObject::connect(editor.lineEdit(),
-					 &QLineEdit::textEdited,
-					 this,
-					 &QtnPropertyUIntSpinBoxHandler::onTextEdited);
-	QObject::connect(&editor,
-					 &QSpinBox::editingFinished,
-					 this,
-					 &QtnPropertyUIntSpinBoxHandler::onEditingFinished);
+	QObject::connect(
+		&editor,
+		static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+		this,
+		&QtnPropertyUIntSpinBoxHandler::onValueChanged,
+		Qt::QueuedConnection);
+	QObject::connect(
+		editor.lineEdit(),
+		&QLineEdit::textEdited,
+		this,
+		&QtnPropertyUIntSpinBoxHandler::onTextEdited,
+		Qt::QueuedConnection);
+	QObject::connect(
+		&editor,
+		&QSpinBox::editingFinished,
+		this,
+		&QtnPropertyUIntSpinBoxHandler::onEditingFinished,
+		Qt::QueuedConnection);
 }
 
 void QtnPropertyUIntSpinBoxHandler::updateEditor()

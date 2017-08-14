@@ -151,6 +151,7 @@ bool QtnPropertyDelegateQString::propertyValueToStr(QString &strValue) const
 	auto placeholder = QtnPropertyQString::getPlaceholderStr(
 			strValue,
 			owner().isMultilineEnabled());
+
 	if (!placeholder.isEmpty())
 		strValue.swap(placeholder);
 
@@ -164,6 +165,7 @@ void QtnPropertyDelegateQString::drawValueImpl(
 	bool *needTooltip) const
 {
 	QPen oldPen = painter.pen();
+
 	if (!owner().getPlaceholderText().isEmpty())
 		painter.setPen(Qt::darkGray);
 
@@ -196,8 +198,8 @@ private:
 
 QtnPropertyDelegateQStringInvalidBase::QtnPropertyDelegateQStringInvalidBase(
 	QtnPropertyQStringBase &owner)
-	: QtnPropertyDelegateQString(owner),
-	m_invalidColor(Qt::red)
+	: QtnPropertyDelegateQString(owner)
+	, m_invalidColor(Qt::red)
 {
 	owner.setMultilineEnabled(false);
 }
@@ -213,6 +215,7 @@ void QtnPropertyDelegateQStringInvalidBase::drawValueImpl(
 	bool *needTooltip) const
 {
 	QPen oldPen = painter.pen();
+
 	if ((m_invalidColor.alpha() != 0) && !isPropertyValid())
 		painter.setPen(m_invalidColor);
 
@@ -326,7 +329,8 @@ QtnPropertyQStringListComboBoxHandler::QtnPropertyQStringListComboBoxHandler(
 
 	QObject::connect(
 		&editor, &QComboBox::currentTextChanged,
-		this, &QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged);
+		this, &QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged,
+		Qt::QueuedConnection);
 }
 
 void QtnPropertyQStringListComboBoxHandler::applyAttributes(
@@ -337,6 +341,7 @@ void QtnPropertyQStringListComboBoxHandler::applyAttributes(
 
 	editor().setEditable(editable);
 	editor().setAutoCompletion(false);
+
 	if (editable)
 		editor().installEventFilter(this);
 }
@@ -344,6 +349,7 @@ void QtnPropertyQStringListComboBoxHandler::applyAttributes(
 void QtnPropertyQStringListComboBoxHandler::updateEditor()
 {
 	updating++;
+
 	if (property().valueIsHidden())
 		editor().clearEditText();
 	else
@@ -374,6 +380,7 @@ QtnPropertyQStringFileLineEditBttnHandler(
 	, dialog(new QFileDialog(&editor))
 {
 	dialogContainer = connectDialog(dialog);
+
 	if (!property.isEditableByUser())
 	{
 		editor.lineEdit->setReadOnly(true);
@@ -388,18 +395,20 @@ QtnPropertyQStringFileLineEditBttnHandler(
 		this, &QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked);
 	QObject::connect(
 		editor.lineEdit, &QLineEdit::editingFinished,
-		this, &QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished);
-
+		this, &QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished,
+		Qt::QueuedConnection);
 }
 
 void QtnPropertyQStringFileLineEditBttnHandler::applyAttributes(
 	const QtnPropertyDelegateAttributes &attributes)
 {
 	int option = 0;
+
 	if (qtnGetAttribute(attributes, "acceptMode", option))
 		dialog->setAcceptMode(QFileDialog::AcceptMode(option));
 
 	QString str;
+
 	if (qtnGetAttribute(attributes, "defaultSuffix", str))
 		dialog->setDefaultSuffix(str);
 
@@ -419,6 +428,7 @@ void QtnPropertyQStringFileLineEditBttnHandler::applyAttributes(
 		dialog->setNameFilter(str);
 
 	QStringList list;
+
 	if (qtnGetAttribute(attributes, "nameFilters", list))
 		dialog->setNameFilters(list);
 }
@@ -457,17 +467,21 @@ void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked(bool)
 	QString filePath = property->value();
 	QString dirPath = this->defaultDirectory;
 	QFileInfo fileInfo(filePath);
+
 	if (!filePath.isEmpty())
 	{
 		filePath = QDir(dirPath).absoluteFilePath(filePath);
 		fileInfo.setFile(filePath);
 		dirPath = fileInfo.path();
 	}
+
 	dialog->setDirectory(dirPath);
 	dialog->selectFile(filePath);
+
 	if (dialog->exec() == QDialog::Accepted && !destroyed)
 	{
 		QStringList files = dialog->selectedFiles();
+
 		if (files.size() == 1)
 			property->edit(QDir::toNativeSeparators(files.first()));
 	}
@@ -521,6 +535,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
 	} else
 	{
 		auto text = property().value();
+
 		if (QtnPropertyQString::isMultilineText(text))
 		{
 			multiline = true;
@@ -554,6 +569,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::onEditingFinished()
 	if (canApply())
 	{
 		auto text = editor().lineEdit->text();
+
 		if (!multiline || !text.isEmpty())
 		{
 			property().edit(text);
@@ -579,12 +595,14 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 	bool readonly = !property->isEditableByUser();
 	auto dialogContainer = this->dialogContainer;
 	dialog->setReadOnly(readonly);
+
 	if (readonly)
 		dialog->setWindowTitle(
 			QtnPropertyQString::getReadOnlyPropertyTitleFormat()
 			.arg(property->name()));
 	else
 		dialog->setWindowTitle(property->name());
+
 	dialog->setText(text);
 	dialog->show();
 	dialog->raise();
@@ -595,6 +613,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 	{
 		destroyed = true;
 	});
+
 	if (dialog->exec() == QDialog::Accepted && !destroyed)
 		property->edit(dialog->getText());
 

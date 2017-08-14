@@ -4,9 +4,13 @@ QT += core gui widgets script
 
 TARGET = QtnPropertyAC
 TEMPLATE = lib
-VERSION = 1.2.5
+VERSION = 1.2.6
 
 DEFINES += QTN_DYNAMIC_LIBRARY
+
+macx {
+    QMAKE_SONAME_PREFIX = @executable_path/../lib
+}
 
 SOURCES += PropertyBase.cpp \
     Property.cpp \
