@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,9 @@
 #include "Core/PropertyDouble.h"
 #include "Core/PropertyQString.h"
 
-VarProperty::VarProperty(QObject *parent, VarProperty::Type type, const QString &name, int index, const QVariant &value)
+VarProperty::VarProperty(
+	QObject *parent, VarProperty::Type type, const
+	QString &name, int index, const QVariant &value)
 	: QObject(parent)
 	, varParent(nullptr)
 	, value(type == Value ? value : QVariant())
@@ -32,7 +34,6 @@ VarProperty::VarProperty(QObject *parent, VarProperty::Type type, const QString 
 	, index(index)
 	, type(type)
 {
-
 }
 
 void VarProperty::ChangePropertyValue(const QVariant &value, QVariant *dest)
@@ -71,16 +72,20 @@ VarProperty *VarProperty::Duplicate(VarProperty *child, int newIndex)
 {
 	Q_ASSERT(nullptr != child);
 
-	return AddChild(new VarProperty(nullptr, VarProperty::Value, "", newIndex,
-									child->CreateVariant()), newIndex);
+	return AddChild(
+		new VarProperty(
+			nullptr, VarProperty::Value, "", newIndex,
+			child->CreateVariant()), newIndex);
 }
 
 VarProperty *VarProperty::Duplicate(VarProperty *child, const QString &newName)
 {
 	Q_ASSERT(nullptr != child);
 
-	return AddChild(new VarProperty(nullptr, VarProperty::Value, newName,
-									-1, child->CreateVariant()));
+	return AddChild(
+		new VarProperty(
+			nullptr, VarProperty::Value, newName,
+			-1, child->CreateVariant()));
 }
 
 VarProperty *VarProperty::Duplicate(int new_index)
@@ -108,17 +113,22 @@ VarProperty *VarProperty::AddChild(VarProperty *child, int index)
 
 VarProperty *VarProperty::AddChild(int index, const QVariant &value)
 {
-	return AddChild(new VarProperty(nullptr, GetTypeFromValue(value), "", index, value), index);
+	return AddChild(
+		new VarProperty(
+			nullptr, GetTypeFromValue(value), "", index, value), index);
 }
 
 VarProperty *VarProperty::AddChild(const QString &name, const QVariant &value)
 {
-	return AddChild(new VarProperty(nullptr, GetTypeFromValue(value), name, -1, value));
+	return AddChild(
+		new VarProperty(
+			nullptr, GetTypeFromValue(value), name, -1, value));
 }
 
 VarProperty::Type VarProperty::GetTypeFromValue(const QVariant &value)
 {
 	Type type;
+
 	switch (value.type())
 	{
 		case QVariant::Map:
@@ -169,6 +179,7 @@ bool VarProperty::SetIndex(int newIndex)
 	if (index != newIndex)
 	{
 		index = newIndex;
+
 		if (newIndex >= 0)
 			name = QString("[%1]").arg(QString::number(newIndex));
 
@@ -198,12 +209,14 @@ bool VarProperty::SetName(const QString &newName)
 VarProperty *VarProperty::TopParent()
 {
 	auto p = varParent;
+
 	if (nullptr == p)
 		return this;
 
 	while (nullptr != p)
 	{
 		auto next_p = p->varParent;
+
 		if (nullptr == next_p)
 			return p;
 
@@ -225,22 +238,25 @@ VarProperty::VarChildren &VarProperty::GetChildren()
 
 int VarProperty::GetChildrenCount() const
 {
-	return static_cast<int>(varChildren.size());
+	return int(varChildren.size());
 }
 
 void VarProperty::SetValue(const QVariant &value)
 {
 	this->value = value;
+
 	switch (type)
 	{
 		case Map:
 		case List:
+
 			for (auto child : varChildren)
 			{
 				child->SetValue(QVariant());
 				child->setParent(nullptr);
 				delete child;
 			}
+
 			varChildren.clear();
 			break;
 
@@ -286,7 +302,8 @@ QVariant VarProperty::CreateVariant() const
 	return value;
 }
 
-bool VarProperty::IsChildNameAvailable(const QString &name, VarProperty *skip) const
+bool VarProperty::IsChildNameAvailable(
+	const QString &name, VarProperty *skip) const
 {
 	for (auto prop : varChildren)
 	{
@@ -300,13 +317,15 @@ bool VarProperty::IsChildNameAvailable(const QString &name, VarProperty *skip) c
 	return true;
 }
 
-QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVariant &value,
-											   const QString &key, int index, VarProperty *mapParent,
-											   const RegisterPropertyCallback &registerProperty)
+QtnPropertyBase *VarProperty::NewExtraProperty(
+	QtnPropertySet *set, const QVariant &value,
+	const QString &key, int index, VarProperty *mapParent,
+	const RegisterPropertyCallback &registerProperty)
 {
 	QtnProperty *prop = nullptr;
 
 	QString name(key);
+
 	if (index >= 0)
 		name = QString("[%1]").arg(QString::number(index));
 
@@ -316,13 +335,17 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 	{
 		case QVariant::Map:
 		{
-			return NewExtraPropertySet(set, value.toMap(), mapParent, name, index, registerProperty);
-		} break;
+			return NewExtraPropertySet(
+				set, value.toMap(), mapParent, name,
+				index, registerProperty);
+		}
 
 		case QVariant::List:
 		{
-			return NewExtraPropertyList(set, value.toList(), mapParent, name, index, registerProperty);
-		} break;
+			return NewExtraPropertyList(
+				set, value.toList(), mapParent, name,
+				index, registerProperty);
+		}
 
 		case QVariant::Int:
 		{
@@ -332,7 +355,8 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 			p->setValue(value.toInt());
 
 			prop = p;
-		} break;
+			break;
+		}
 
 		case QVariant::UInt:
 		{
@@ -342,7 +366,8 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 			p->setValue(value.toUInt());
 
 			prop = p;
-		} break;
+			break;
+		}
 
 		case QVariant::LongLong:
 		case QVariant::ULongLong:
@@ -354,7 +379,8 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 			p->setValue(value.toDouble());
 
 			prop = p;
-		} break;
+			break;
+		}
 
 		case QVariant::Bool:
 		{
@@ -364,7 +390,8 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 			p->setValue(value.toBool());
 
 			prop = p;
-		} break;
+			break;
+		}
 
 		default:
 		{
@@ -374,12 +401,16 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 			p->setValue(value.toString());
 
 			prop = p;
-		} break;
+			break;
+		}
 	}
 
 	if (nullptr != prop)
 	{
-		auto varprop = new VarProperty(prop, VarProperty::Value, name, index, value);
+		auto varprop = new VarProperty(
+				prop, VarProperty::Value, name, index,
+				value);
+
 		if (nullptr != mapParent)
 			mapParent->AddChild(varprop, index);
 
@@ -391,7 +422,8 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set, const QVaria
 	return prop;
 }
 
-bool VarProperty::PropertyValueAccept(const QtnProperty *property, void *valueToAccept, QVariant *dest)
+bool VarProperty::PropertyValueAccept(
+	const QtnProperty *property, void *valueToAccept, QVariant *dest)
 {
 	switch (property->id())
 	{
@@ -402,7 +434,9 @@ bool VarProperty::PropertyValueAccept(const QtnProperty *property, void *valueTo
 		case VarProperty::PID_EXTRA_FLOAT:
 		case VarProperty::PID_EXTRA_BOOL:
 		{
-			auto var_property = property->findChild<VarProperty *>(QString(), Qt::FindDirectChildrenOnly);
+			auto var_property = property->findChild<VarProperty *>(
+					QString(),
+					Qt::FindDirectChildrenOnly);
 
 			QVariant value;
 
@@ -411,23 +445,33 @@ bool VarProperty::PropertyValueAccept(const QtnProperty *property, void *valueTo
 				switch (property->id())
 				{
 					case PID_EXTRA_STRING:
-						value = QVariant(*(QtnPropertyQString::ValueTypeStore *) valueToAccept);
+						value = QVariant(
+								*(QtnPropertyQString::ValueTypeStore *)
+								valueToAccept);
 						break;
 
 					case PID_EXTRA_INT:
-						value = QVariant(*(QtnPropertyInt::ValueTypeStore *) valueToAccept);
+						value = QVariant(
+								*(QtnPropertyInt::ValueTypeStore *)
+								valueToAccept);
 						break;
 
 					case PID_EXTRA_UINT:
-						value = QVariant(*(QtnPropertyUInt::ValueTypeStore *) valueToAccept);
+						value = QVariant(
+								*(QtnPropertyUInt::ValueTypeStore *)
+								valueToAccept);
 						break;
 
 					case PID_EXTRA_FLOAT:
-						value = QVariant(*(QtnPropertyDouble::ValueTypeStore *) valueToAccept);
+						value = QVariant(
+								*(QtnPropertyDouble::ValueTypeStore *)
+								valueToAccept);
 						break;
 
 					case PID_EXTRA_BOOL:
-						value = QVariant(*(QtnPropertyBool::ValueTypeStore *) valueToAccept);
+						value = QVariant(
+								*(QtnPropertyBool::ValueTypeStore *)
+								valueToAccept);
 						break;
 
 					default:
@@ -445,15 +489,19 @@ bool VarProperty::PropertyValueAccept(const QtnProperty *property, void *valueTo
 	return false;
 }
 
-QtnPropertySet *VarProperty::NewExtraPropertySet(QObject *parent, const QVariantMap &map,
-												 VarProperty *mapParent, const QString &name,
-												 int index, const RegisterPropertyCallback &registerProperty)
+QtnPropertySet *VarProperty::NewExtraPropertySet(
+	QObject *parent, const QVariantMap &map,
+	VarProperty *mapParent, const QString &name,
+	int index, const RegisterPropertyCallback &registerProperty)
 {
 	auto set = new QtnPropertySet(parent);
 
-	auto varprop = new VarProperty(set, VarProperty::Map, name, index, QVariant());
+	auto varprop = new VarProperty(
+			set, VarProperty::Map, name, index, QVariant());
+
 	if (nullptr != mapParent)
 		mapParent->AddChild(varprop, index);
+
 	mapParent = varprop;
 
 	set->setId(PID_EXTRA);
@@ -470,15 +518,19 @@ QtnPropertySet *VarProperty::NewExtraPropertySet(QObject *parent, const QVariant
 	return set;
 }
 
-QtnPropertySet *VarProperty::NewExtraPropertyList(QObject *parent, const QVariantList &list,
-												  VarProperty *mapParent, const QString &name,
-												  int index, const RegisterPropertyCallback &registerProperty)
+QtnPropertySet *VarProperty::NewExtraPropertyList(
+	QObject *parent, const QVariantList &list,
+	VarProperty *mapParent, const QString &name,
+	int index, const RegisterPropertyCallback &registerProperty)
 {
 	auto set = new QtnPropertySet(parent);
 
-	auto varprop = new VarProperty(set, VarProperty::List, name, index, QVariant());
+	auto varprop = new VarProperty(
+			set, VarProperty::List, name, index, QVariant());
+
 	if (nullptr != mapParent)
 		mapParent->AddChild(varprop, index);
+
 	mapParent = varprop;
 
 	set->setId(PID_EXTRA);
