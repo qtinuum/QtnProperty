@@ -107,9 +107,15 @@ void QtnPropertyIntSpinBoxHandler::updateEditor()
 	updating++;
 
 	if (property().valueIsHidden())
-		editor().setValue(0);
-	else
-		editor().setValue(property());
+	{
+		editor().setValue(editor().minimum());
+		editor().setSpecialValueText(
+			QtnMultiProperty::getMultiValuePlaceholder());
+	} else
+	{
+		editor().setValue(property().value());
+		editor().setSpecialValueText(QString());
+	}
 
 	editor().selectAll();
 

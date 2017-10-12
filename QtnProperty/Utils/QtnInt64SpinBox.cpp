@@ -91,6 +91,15 @@ void QtnInt64SpinBox::setMaximum(qint64 max)
 	setRange(mMinimum, max);
 }
 
+void QtnInt64SpinBox::setSpecialValueText(const QString &txt)
+{
+	if (specialValueText() != txt)
+	{
+		QAbstractSpinBox::setSpecialValueText(txt);
+		updateEdit(true);
+	}
+}
+
 void QtnInt64SpinBox::interpretText()
 {
 	interpret(EmitIfChanged);

@@ -21,6 +21,7 @@
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
 #include "Utils/QtnInt64SpinBox.h"
+#include "MultiProperty.h"
 
 #include <QSpinBox>
 #include <QLineEdit>
@@ -109,9 +110,15 @@ void QtnPropertyUIntSpinBoxHandler::updateEditor()
 	updating++;
 
 	if (property().valueIsHidden())
-		editor().setValue(0);
-	else
+	{
+		editor().setValue(editor().minimum());
+		editor().setSpecialValueText(
+			QtnMultiProperty::getMultiValuePlaceholder());
+	} else
+	{
 		editor().setValue(property().value());
+		editor().setSpecialValueText(QString());
+	}
 
 	editor().selectAll();
 

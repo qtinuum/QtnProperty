@@ -37,6 +37,9 @@ class QTN_IMPORT_EXPORT QtnInt64SpinBox : public QAbstractSpinBox
 		int displayIntegerBase READ displayIntegerBase
 		WRITE setDisplayIntegerBase)
 	Q_PROPERTY(bool isSpecialValue READ isSpecialValue)
+	Q_PROPERTY(
+		QString specialValueText READ specialValueText WRITE
+		setSpecialValueText)
 
 public:
 	explicit QtnInt64SpinBox(QWidget *parent = nullptr);
@@ -59,6 +62,8 @@ public:
 
 	inline qint64 maximum() const;
 	void setMaximum(qint64 max);
+
+	void setSpecialValueText(const QString &txt);
 
 	void interpretText();
 
