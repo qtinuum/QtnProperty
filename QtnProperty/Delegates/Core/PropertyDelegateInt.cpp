@@ -20,6 +20,7 @@
 #include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
+#include "MultiProperty.h"
 
 #include <QCoreApplication>
 #include <QSpinBox>
