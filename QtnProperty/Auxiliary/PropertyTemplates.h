@@ -42,6 +42,16 @@ public:
 
 	bool setValue(ValueType newValue, bool edit = false)
 	{
+		QtnPropertyChangeReason reason;
+
+		if (edit)
+			reason |= QtnPropertyChangeReasonEditValue;
+
+		return setValueWithReason(newValue, reason);
+	}
+
+	bool setValueWithReason(ValueType newValue, QtnPropertyChangeReason reason)
+	{
 		if (!valueIsHidden() && isValueEqualImpl(newValue))
 			return true;
 
@@ -54,9 +64,7 @@ public:
 		if (!accept)
 			return false;
 
-		QtnPropertyChangeReason reason = QtnPropertyChangeReasonNewValue;
-		if (edit)
-			reason |= QtnPropertyChangeReasonEditValue;
+		reason |= QtnPropertyChangeReasonNewValue;
 
 		emit propertyWillChange(reason,
 								QtnPropertyValuePtr(&newValue),
@@ -214,15 +222,14 @@ protected:
 
 	virtual ValueType valueImpl() const override
 	{
-		//Q_ASSERT(m_callbackValueGet);
+		Q_ASSERT(m_callbackValueGet);
 		return m_callbackValueGet();
 	}
 
 	virtual void setValueImpl(ValueType newValue) override
 	{
 		Q_ASSERT(m_callbackValueSet);
-		if (m_callbackValueSet)
-			m_callbackValueSet(newValue);
+		m_callbackValueSet(newValue);
 	}
 
 	virtual bool isValueAcceptedImpl(ValueType valueToAccept) override

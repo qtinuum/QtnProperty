@@ -18,7 +18,7 @@
 #include "PropertyDelegateQFont.h"
 #include "GUI/PropertyQFont.h"
 #include "Core/PropertyQString.h"
-#include "Core/PropertyUInt.h"
+#include "Core/PropertyInt.h"
 #include "Core/PropertyBool.h"
 #include "Core/PropertyEnum.h"
 #include "Delegates/PropertyDelegateFactory.h"
@@ -159,14 +159,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		delegate.attributes["editable"] = true;
 		propertyStyle->setDelegate(delegate);
 
-		std::shared_ptr<QMetaObject::Connection> c(new QMetaObject::Connection);
-		*c.get() = QObject::connect(propertyFamily, &QtnPropertyBase::propertyDidChange, [&owner, c]() mutable
-		{
-			QObject::disconnect(*c.get());
-			c = nullptr;
-
-			emit owner.propertyDidChange(QtnPropertyChangeReasonChildren);
-		});
+		owner.postUpdateEvent(QtnPropertyChangeReasonChildren);
 #endif
 	});
 
@@ -206,37 +199,44 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 
 	addSubProperty(propertyStyle);
 
-	QtnPropertyUIntCallback* propertySize = new QtnPropertyUIntCallback(0);
+	auto propertySize = new QtnPropertyIntCallback(0);
 	addSubProperty(propertySize);
 	propertySize->setName(QtnPropertyQFont::getSizeLabel());
-	propertySize->setDescription(QtnPropertyQFont::getSizeDescription(owner.name()));
-	propertySize->setCallbackValueGet([&owner]() -> quint32
+	propertySize->setDescription(
+		QtnPropertyQFont::getSizeDescription(owner.name()));
+	propertySize->setCallbackValueGet(
+		[&owner]() -> qint32
 	{
 		int ps = owner.value().pointSize();
+
 		if (ps < 0)
 			ps = owner.value().pixelSize();
-		if (ps < 1)
+
+		if (ps <= 0)
 			ps = 1;
+
+		if (ps > 256)
+			ps = 256;
+
 		return ps;
 	});
-	propertySize->setCallbackValueSet([&owner](quint32 value)
+	propertySize->setCallbackValueSet(
+		[&owner](qint32 value)
 	{
-		if (value == 0)
+		if (value <= 0)
 			value = 1;
+		else
+		if (value > 256)
+			value = 256;
 
 		QFont font = owner.value();
+
 		if (font.pointSize() > 0)
 		{
-			if (value > 128)
-				value = 128;
-
-			font.setPointSize((int) value);
+			font.setPointSize(value);
 		} else
 		{
-			if (value > 256)
-				value = 256;
-
-			font.setPixelSize((int) value);
+			font.setPixelSize(value);
 		}
 
 		owner.setValue(font);
@@ -266,6 +266,12 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QFont font = owner.value();
 
 		int size = std::max(font.pointSize(), font.pixelSize());
+
+		if (size <= 0)
+			size = 1;
+
+		if (size > 256)
+			size = 256;
 
 		switch (value)
 		{

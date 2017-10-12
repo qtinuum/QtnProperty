@@ -169,31 +169,24 @@ QtnPropertyBase::QtnPropertyBase(QObject *parent)
 	, m_stateLocal(QtnPropertyStateNone)
 	, m_stateInherited(QtnPropertyStateNone)
 	, changeReasons(0)
-	, timer(0)
+	, updateEvent(nullptr)
 {
 	qtnAddPropertyAsChild(parent, this, false);
 }
 
 bool QtnPropertyBase::event(QEvent *e)
 {
-	switch (e->type())
+	if (e == updateEvent)
 	{
-		case QEvent::Timer:
-		{
-			int reasons = changeReasons;
-			if (reasons != 0)
-			{
-				emit propertyDidChange(QtnPropertyChangeReason(reasons));
-				changeReasons = 0;
-			} else
-			{
-				killTimer(timer);
-				timer = 0;
-			}
-		}	break;
+		updateEvent = nullptr;
+		int reasons = changeReasons;
 
-		default:
-			break;
+		if (reasons != 0)
+		{
+			emit propertyDidChange(QtnPropertyChangeReason(reasons));
+			changeReasons = 0;
+			return true;
+		}
 	}
 
 	return QObject::event(e);
@@ -555,7 +548,35 @@ QtnPropertyBase *QtnPropertyBase::getRootProperty()
 	return result;
 }
 
-bool QtnPropertyBase::fromVariantImpl(const QVariant& var, bool edit)
+QtnPropertySet *QtnPropertyBase::getRootPropertySet()
+{
+	auto p = this;
+
+	while (p != nullptr)
+	{
+		auto set = dynamic_cast<QtnPropertySet *>(p);
+
+		auto mp = p->getRootProperty();
+
+		if (set && mp == p &&
+			dynamic_cast<QtnPropertySet *>(set->parent()) == nullptr)
+		{
+			return set;
+		}
+
+		if (mp != p)
+		{
+			p = mp;
+		} else
+		{
+			p = dynamic_cast<QtnPropertyBase *>(p->parent());
+		}
+	}
+
+	return nullptr;
+}
+
+bool QtnPropertyBase::fromVariantImpl(const QVariant &var, bool edit)
 {
 	if (var.canConvert<QString>())
 		return fromStr(var.value<QString>(), edit);
@@ -590,10 +611,13 @@ void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
 
 	setStateInherited(masterProperty->state());
 
-	QObject::connect(masterProperty, &QObject::destroyed,
-					 this, &QtnPropertyBase::onMasterPropertyDestroyed);
-	QObject::connect(masterProperty, &QtnPropertyBase::propertyDidChange,
-					 this, &QtnPropertyBase::masterPropertyStateDidChange);
+	QObject::connect(
+		masterProperty, &QObject::destroyed,
+		this, &QtnPropertyBase::onMasterPropertyDestroyed);
+	QObject::connect(
+		masterProperty, &QtnPropertyBase::propertyDidChange,
+		this, &QtnPropertyBase::masterPropertyStateDidChange,
+		Qt::QueuedConnection);
 }
 
 void QtnPropertyBase::disconnectMasterState()
@@ -613,9 +637,13 @@ void QtnPropertyBase::disconnectMasterState()
 
 void QtnPropertyBase::postUpdateEvent(QtnPropertyChangeReason reason)
 {
-	changeReasons.store(changeReasons | reason);
-	if (timer == 0)
-		timer = startTimer(20);
+	changeReasons |= reason;
+
+	if (nullptr == updateEvent)
+	{
+		updateEvent = new QEvent(QEvent::User);
+		QCoreApplication::postEvent(this, updateEvent);
+	}
 }
 
 void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)

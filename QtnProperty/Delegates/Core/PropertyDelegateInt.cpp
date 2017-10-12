@@ -21,13 +21,12 @@
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
 
+#include <QCoreApplication>
 #include <QSpinBox>
-
 #include <QLocale>
 
-class QtnPropertyIntSpinBoxHandler : public
-								   QtnPropertyEditorHandler<QtnPropertyIntBase,
-															QSpinBox>
+class QtnPropertyIntSpinBoxHandler
+	: public QtnPropertyEditorHandlerVT<QtnPropertyIntBase, QSpinBox>
 {
 public:
 	QtnPropertyIntSpinBoxHandler(
@@ -35,11 +34,6 @@ public:
 
 protected:
 	virtual void updateEditor() override;
-
-private:
-	void onValueChanged(int value);
-
-	unsigned updating;
 };
 
 static bool regIntDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -89,8 +83,7 @@ bool QtnPropertyDelegateInt::propertyValueToStr(QString &strValue) const
 
 QtnPropertyIntSpinBoxHandler::QtnPropertyIntSpinBoxHandler(
 	QtnPropertyIntBase &property, QSpinBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, updating(0)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	if (!property.isEditableByUser())
 		editor.setReadOnly(true);
@@ -106,8 +99,7 @@ QtnPropertyIntSpinBoxHandler::QtnPropertyIntSpinBoxHandler(
 		&editor,
 		static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 		this,
-		&QtnPropertyIntSpinBoxHandler::onValueChanged,
-		Qt::QueuedConnection);
+		&QtnPropertyIntSpinBoxHandler::onValueChanged);
 }
 
 void QtnPropertyIntSpinBoxHandler::updateEditor()
@@ -122,12 +114,4 @@ void QtnPropertyIntSpinBoxHandler::updateEditor()
 	editor().selectAll();
 
 	updating--;
-}
-
-void QtnPropertyIntSpinBoxHandler::onValueChanged(int value)
-{
-	if (updating > 0)
-		return;
-
-	property().edit(value);
 }

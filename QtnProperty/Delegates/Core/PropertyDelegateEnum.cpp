@@ -24,7 +24,7 @@
 #include <QLineEdit>
 
 class QtnPropertyEnumComboBoxHandler
-	: public QtnPropertyEditorHandler<QtnPropertyEnumBase, QComboBox>
+	: public QtnPropertyEditorHandlerVT<QtnPropertyEnumBase, QComboBox>
 {
 public:
 	QtnPropertyEnumComboBoxHandler(
@@ -101,9 +101,9 @@ bool QtnPropertyDelegateEnum::propertyValueToStr(QString &strValue) const
 	return true;
 }
 
-QtnPropertyEnumComboBoxHandler::QtnPropertyEnumComboBoxHandler(QtnPropertyEnumBase &property, QComboBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, updating(0)
+QtnPropertyEnumComboBoxHandler::QtnPropertyEnumComboBoxHandler(
+	QtnPropertyEnumBase &property, QComboBox &editor)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	updateEditor();
 
@@ -135,13 +135,11 @@ void QtnPropertyEnumComboBoxHandler::updateEditor()
 
 void QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged(int index)
 {
-	if (updating)
-		return;
-
 	if (index >= 0)
 	{
 		QVariant data = editor().itemData(index);
+
 		if (data.canConvert<int>())
-			property().edit(data.toInt());
+			onValueChanged(data.toInt());
 	}
 }

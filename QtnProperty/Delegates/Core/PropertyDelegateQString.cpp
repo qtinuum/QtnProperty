@@ -59,10 +59,9 @@ public:
 	QtnPropertyQStringLineEditHandler(
 		QtnPropertyQStringBase &property, QLineEdit &editor);
 
-private:
+protected:
 	virtual void updateEditor() override;
-
-	void onEditingFinished();
+	void updateValue();
 };
 
 class QtnPropertyQStringMultilineEditBttnHandler
@@ -257,7 +256,7 @@ bool QtnPropertyDelegateQStringFile::isPropertyValid() const
 }
 
 class QtnPropertyQStringListComboBoxHandler
-	: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QComboBox>
+	: public QtnPropertyEditorHandlerVT<QtnPropertyQStringBase, QComboBox>
 {
 public:
 	QtnPropertyQStringListComboBoxHandler(
@@ -267,10 +266,7 @@ public:
 
 private:
 	virtual void updateEditor() override;
-
-	void onCurrentTextChanged(const QString &text);
-
-	unsigned updating;
+	virtual void updateValue() override;
 };
 
 QtnPropertyDelegateQStringList::QtnPropertyDelegateQStringList(
@@ -312,8 +308,7 @@ QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
 
 QtnPropertyQStringListComboBoxHandler::QtnPropertyQStringListComboBoxHandler(
 	QtnPropertyQStringBase &property, QComboBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, updating(0)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	updateEditor();
 
@@ -322,8 +317,7 @@ QtnPropertyQStringListComboBoxHandler::QtnPropertyQStringListComboBoxHandler(
 
 	QObject::connect(
 		&editor, &QComboBox::currentTextChanged,
-		this, &QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged,
-		Qt::QueuedConnection);
+		this, &QtnPropertyQStringListComboBoxHandler::onValueChanged);
 }
 
 void QtnPropertyQStringListComboBoxHandler::applyAttributes(
@@ -354,14 +348,10 @@ void QtnPropertyQStringListComboBoxHandler::updateEditor()
 	updating--;
 }
 
-void QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged(
-	const QString &text)
+void QtnPropertyQStringListComboBoxHandler::updateValue()
 {
-	if (updating > 0)
-		return;
-
 	if (!editor().isEditable() || canApply())
-		property().edit(text);
+		property().edit(newValue);
 
 	applyReset();
 }
@@ -622,7 +612,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 
 QtnPropertyQStringLineEditHandler::QtnPropertyQStringLineEditHandler(
 	QtnPropertyQStringBase &property, QLineEdit &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
+	: QtnPropertyEditorHandler(property, editor)
 {
 	updateEditor();
 
@@ -632,7 +622,7 @@ QtnPropertyQStringLineEditHandler::QtnPropertyQStringLineEditHandler(
 	editor.installEventFilter(this);
 	QObject::connect(
 		&editor, &QLineEdit::editingFinished,
-		this, &QtnPropertyQStringLineEditHandler::onEditingFinished);
+		this, &QtnPropertyQStringLineEditHandler::updateValue);
 }
 
 void QtnPropertyQStringLineEditHandler::updateEditor()
@@ -651,7 +641,7 @@ void QtnPropertyQStringLineEditHandler::updateEditor()
 	}
 }
 
-void QtnPropertyQStringLineEditHandler::onEditingFinished()
+void QtnPropertyQStringLineEditHandler::updateValue()
 {
 	if (canApply())
 		property().edit(editor().text());

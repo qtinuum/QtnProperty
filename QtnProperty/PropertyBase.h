@@ -98,6 +98,7 @@ public:
 
 	inline QtnPropertyBase *getMasterProperty() const;
 	QtnPropertyBase *getRootProperty();
+	QtnPropertySet *getRootPropertySet();
 	virtual void connectMasterState(QtnPropertyBase *masterProperty);
 	virtual void disconnectMasterState();
 
@@ -157,8 +158,8 @@ private:
 	QtnPropertyState m_stateLocal;
 	QtnPropertyState m_stateInherited;
 
-	std::atomic<int> changeReasons;
-	int timer;
+	int changeReasons;
+	QEvent *updateEvent;
 
 	friend class QtnPropertySet;
 };

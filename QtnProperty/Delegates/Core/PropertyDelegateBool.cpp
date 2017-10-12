@@ -26,7 +26,8 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-class QtnPropertyBoolComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyBoolBase, QComboBox>
+class QtnPropertyBoolComboBoxHandler
+	: public QtnPropertyEditorHandlerVT<QtnPropertyBoolBase, QComboBox>
 {
 public:
 	QtnPropertyBoolComboBoxHandler(
@@ -129,9 +130,8 @@ bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(
 }
 
 QtnPropertyBoolComboBoxHandler::QtnPropertyBoolComboBoxHandler(
-		QtnPropertyBoolBase &property, QComboBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, updating(0)
+	QtnPropertyBoolBase &property, QComboBox &editor)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	updateEditor();
 
@@ -163,13 +163,13 @@ void QtnPropertyBoolComboBoxHandler::updateEditor()
 
 void QtnPropertyBoolComboBoxHandler::onCurrentIndexChanged(int index)
 {
-	if (updating > 0)
-		return;
-
 	if (index >= 0)
 	{
-		QVariant data = editor().itemData(index);
+		auto data = editor().itemData(index);
+
 		if (data.canConvert<bool>())
-			property().edit(data.toBool());
+		{
+			onValueChanged(data.toBool());
+		}
 	}
 }

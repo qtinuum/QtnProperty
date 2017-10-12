@@ -23,10 +23,11 @@
 
 #include "Utils/DoubleSpinBox.h"
 
+#include <QCoreApplication>
 #include <QLocale>
 
 class QtnPropertyDoubleSpinBoxHandler
-	: public QtnPropertyEditorHandler<QtnPropertyDoubleBase, QDoubleSpinBox>
+	: public QtnPropertyEditorHandlerVT<QtnPropertyDoubleBase, QDoubleSpinBox>
 {
 public:
 	QtnPropertyDoubleSpinBoxHandler(
@@ -94,8 +95,7 @@ void QtnPropertyDelegateDouble::applyAttributesImpl(
 
 QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
 	QtnPropertyDoubleBase &property, QDoubleSpinBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, updating(0)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	if (!property.isEditableByUser())
 		editor.setReadOnly(true);
@@ -127,12 +127,4 @@ void QtnPropertyDoubleSpinBoxHandler::updateEditor()
 	editor().selectAll();
 
 	updating--;
-}
-
-void QtnPropertyDoubleSpinBoxHandler::onValueChanged(double value)
-{
-	if (updating > 0)
-		return;
-
-	property().edit(value);
 }

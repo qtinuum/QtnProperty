@@ -70,6 +70,14 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 		return;
 	}
 
+	auto delegate = property->delegate();
+
+	if (delegate)
+	{
+		QtnPropertyDelegateInfo copy;
+		copy.attributes = delegate->attributes;
+		setDelegate(copy);
+	}
 
 	QObject::connect(
 		property, &QtnProperty::propertyValueAccept,
@@ -578,10 +586,11 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(
 
 		int superIndex = 0;
 
+		auto propertyToEdit = owner().properties.at(superIndex);
+
 		if (editable)
 		{
 			superIndex = owner().mutablePropertyIndex;
-			auto propertyToEdit = owner().properties.at(superIndex);
 			data = new PropertyToEdit;
 			data->owner = &owner();
 			data->property = propertyToEdit;
@@ -609,7 +618,16 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(
 		}
 
 		auto superDelegate = superDelegates.at(superIndex).get();
-		auto editor = superDelegate->createValueEditor(parent, rect, inplaceInfo);
+
+		auto delegate = propertyToEdit->delegate();
+
+		if (delegate)
+		{
+			superDelegate->applyAttributes(delegate->attributes);
+		}
+
+		auto editor = superDelegate->createValueEditor(
+				parent, rect, inplaceInfo);
 
 		if (editable)
 		{
