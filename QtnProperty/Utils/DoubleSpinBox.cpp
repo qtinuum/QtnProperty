@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 QtnDoubleSpinBox::QtnDoubleSpinBox(QWidget *parent)
 	: QDoubleSpinBox(parent)
 {
-
 }
 
 QString QtnDoubleSpinBox::textFromValue(double val) const
@@ -27,31 +26,34 @@ QString QtnDoubleSpinBox::textFromValue(double val) const
 	return valueToText(val, locale(), decimals(), isGroupSeparatorShown());
 }
 
-QString QtnDoubleSpinBox::valueToText(double value, const QLocale &locale, int decimals, bool groupSeparatorShown)
+QString QtnDoubleSpinBox::valueToText(
+	double value, const QLocale &locale, int decimals, bool groupSeparatorShown)
 {
 	auto result = locale.toString(value, 'f', decimals);
 
 	auto groupSeparator = locale.groupSeparator();
+
 	if (!groupSeparatorShown)
 		result.remove(groupSeparator);
 
 	auto decimalPoint = locale.decimalPoint();
 	auto zeroDigit = locale.zeroDigit();
 	int i = result.indexOf(decimalPoint);
+
 	if (i >= 0)
 	{
 		auto begin = result.constData();
 		auto data = &begin[result.length() - 1];
 		auto decBegin = &begin[i];
 
-		while (data >= decBegin && (	*data == zeroDigit
-									||	*data == decimalPoint
-									||	*data == groupSeparator))
+		while (data >= decBegin && (*data == zeroDigit ||
+									*data == decimalPoint ||
+									*data == groupSeparator))
 		{
 			data--;
 		}
 
-		result.resize(data + 1 - begin);
+		result.resize(int(data + 1 - begin));
 	}
 
 	return result;
