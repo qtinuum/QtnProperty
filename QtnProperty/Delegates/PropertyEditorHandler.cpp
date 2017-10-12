@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,18 +23,23 @@
 #include <QKeyEvent>
 #include <QDialog>
 
-QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(QtnProperty& property,
-														   QWidget& editor)
+QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(
+	QtnProperty &property, QWidget &editor)
 	: QObject(&editor)
 	, m_property(&property)
 	, m_editor(&editor)
 	, reverted(false)
 	, returned(false)
 {
-	QObject::connect(m_property, &QtnPropertyBase::propertyDidChange,
-					 this, &QtnPropertyEditorHandlerBase::onPropertyDidChange, Qt::QueuedConnection);
-	QObject::connect(m_property, &QObject::destroyed,
-					 this, &QtnPropertyEditorHandlerBase::onPropertyDestroyed);
+	QObject::connect(
+		m_property,
+		&QtnPropertyBase::propertyDidChange,
+		this,
+		&QtnPropertyEditorHandlerBase::onPropertyDidChange,
+		Qt::QueuedConnection);
+	QObject::connect(
+		m_property, &QObject::destroyed,
+		this, &QtnPropertyEditorHandlerBase::onPropertyDestroyed);
 }
 
 void QtnPropertyEditorHandlerBase::revertInput()
@@ -49,7 +54,8 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 	{
 		case QEvent::KeyPress:
 		{
-			auto keyEvent = static_cast<QKeyEvent*>(event);
+			auto keyEvent = static_cast<QKeyEvent *>(event);
+
 			// revert all changes
 			switch (keyEvent->key())
 			{
@@ -65,8 +71,8 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 				default:
 					break;
 			}
-
-		}	break;
+		}
+		break;
 
 		default:
 			break;
@@ -89,14 +95,16 @@ void QtnPropertyEditorHandlerBase::applyReset()
 	returned = false;
 }
 
-QtnPropertyEditorHandlerBase::DialogContainerPtr QtnPropertyEditorHandlerBase::connectDialog(QDialog *dialog)
+QtnPropertyEditorHandlerBase::DialogContainerPtr	//
+QtnPropertyEditorHandlerBase::connectDialog(QDialog *dialog)
 {
 	DialogContainerPtr result(new DialogContainer(dialog));
 	connectDialog(result);
 	return result;
 }
 
-void QtnPropertyEditorHandlerBase::connectDialog(const DialogContainerPtr &containerPtr)
+void QtnPropertyEditorHandlerBase::connectDialog(
+	const DialogContainerPtr &containerPtr)
 {
 	Q_ASSERT(nullptr != containerPtr);
 	auto dialog = containerPtr->dialog;
@@ -105,7 +113,8 @@ void QtnPropertyEditorHandlerBase::connectDialog(const DialogContainerPtr &conta
 	auto parent = dialog->parent();
 	Q_ASSERT(nullptr != parent);
 
-	QObject::connect(parent, &QObject::destroyed, [containerPtr]()
+	QObject::connect(
+		parent, &QObject::destroyed, [containerPtr]()
 	{
 		containerPtr->dialog->setParent(nullptr);
 	});
@@ -117,7 +126,8 @@ void QtnPropertyEditorHandlerBase::onPropertyDestroyed()
 	qtnStopInplaceEdit();
 }
 
-void QtnPropertyEditorHandlerBase::onPropertyDidChange(QtnPropertyChangeReason reason)
+void QtnPropertyEditorHandlerBase::onPropertyDidChange(
+	QtnPropertyChangeReason reason)
 {
 	if (reason & (QtnPropertyChangeReasonValue | QtnPropertyChangeReasonState))
 	{
@@ -129,7 +139,6 @@ void QtnPropertyEditorHandlerBase::onPropertyDidChange(QtnPropertyChangeReason r
 QtnPropertyEditorHandlerBase::DialogContainer::DialogContainer(QDialog *dialog)
 	: dialog(dialog)
 {
-
 }
 
 QtnPropertyEditorHandlerBase::DialogContainer::~DialogContainer()

@@ -30,23 +30,17 @@ class QtnPropertyDoubleSpinBoxHandler
 {
 public:
 	QtnPropertyDoubleSpinBoxHandler(
-		QtnPropertyDoubleBase &property,
-		QDoubleSpinBox &editor);
+		QtnPropertyDoubleBase &property, QDoubleSpinBox &editor);
 
 protected:
 	virtual void updateEditor() override;
-
-private:
-	void onValueChanged(double value);
-
-	unsigned updating;
 };
 
 static bool regDoubleDelegate = QtnPropertyDelegateFactory::staticInstance()
 	.registerDelegateDefault(
-		&QtnPropertyDoubleBase::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>
-		, "SpinBox");
+		&QtnPropertyDoubleBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>,
+		"SpinBox");
 
 QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(
 	QtnPropertyDoubleBase &owner)
@@ -55,8 +49,7 @@ QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(
 }
 
 QWidget *QtnPropertyDelegateDouble::createValueEditorImpl(
-	QWidget *parent, const QRect &rect,
-	QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnDoubleSpinBox(parent);
 	spinBox->setDecimals(10);
@@ -78,7 +71,9 @@ bool QtnPropertyDelegateDouble::acceptKeyPressedForInplaceEditImpl(
 {
 	if (QtnPropertyDelegateTyped<QtnPropertyDoubleBase>::
 		acceptKeyPressedForInplaceEditImpl(keyEvent))
+	{
 		return true;
+	}
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_FLOAT);
 }
@@ -92,8 +87,7 @@ bool QtnPropertyDelegateDouble::propertyValueToStr(QString &strValue) const
 }
 
 void QtnPropertyDelegateDouble::applyAttributesImpl(
-	const
-	QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateAttributes &attributes)
 {
 	qtnGetAttribute(attributes, "suffix", suffix);
 }
@@ -118,8 +112,7 @@ QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
 		static_cast<void (QDoubleSpinBox::*)(
 						double)>(&QDoubleSpinBox::valueChanged),
 		this,
-		&QtnPropertyDoubleSpinBoxHandler::onValueChanged,
-		Qt::QueuedConnection);
+		&QtnPropertyDoubleSpinBoxHandler::onValueChanged);
 }
 
 void QtnPropertyDoubleSpinBoxHandler::updateEditor()
@@ -127,7 +120,7 @@ void QtnPropertyDoubleSpinBoxHandler::updateEditor()
 	updating++;
 
 	if (property().valueIsHidden())
-		editor().setValue(0);
+		editor().setValue(0.0);
 	else
 		editor().setValue(property());
 

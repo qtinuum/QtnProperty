@@ -24,8 +24,11 @@
 class QTN_IMPORT_EXPORT QtnPropertyQVariantBase
 	: public QtnSinglePropertyBase<const QVariant &>
 {
-	Q_OBJECT QtnPropertyQVariantBase(const QtnPropertyQVariantBase &other)
-	Q_DECL_EQ_DELETE;
+	Q_OBJECT
+
+private:
+	QtnPropertyQVariantBase(
+		const QtnPropertyQVariantBase &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQVariantBase(QObject *parent);
@@ -40,13 +43,15 @@ protected:
 class QTN_IMPORT_EXPORT QtnPropertyQVariantCallback
 	: public QtnSinglePropertyCallback<QtnPropertyQVariantBase>
 {
-	Q_OBJECT QtnPropertyQVariantCallback(
+	Q_OBJECT
+
+private:
+	QtnPropertyQVariantCallback(
 		const QtnPropertyQVariantCallback &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQVariantCallback(
-		QObject *object,
-		const QMetaProperty &meta_property);
+		QObject *object, const QMetaProperty &meta_property);
 
 private:
 	QVariant value;
@@ -55,8 +60,10 @@ private:
 class QTN_IMPORT_EXPORT QtnPropertyQVariant
 	: public QtnSinglePropertyValue<QtnPropertyQVariantBase>
 {
-	Q_OBJECT QtnPropertyQVariant(const QtnPropertyQVariant &other)
-	Q_DECL_EQ_DELETE;
+	Q_OBJECT
+
+private:
+	QtnPropertyQVariant(const QtnPropertyQVariant &other)   Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQVariant(QObject *parent);
@@ -78,13 +85,15 @@ public:
 	QtnPropertyDelegateQVariant(QtnPropertyQVariantBase &owner);
 
 protected:
-	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const
-	override;
+	virtual bool acceptKeyPressedForInplaceEditImpl(
+		QKeyEvent *keyEvent) const override;
+
 	virtual QWidget *createValueEditorImpl(
 		QWidget *parent, const QRect &rect,
-		QtnInplaceInfo *inplaceInfo =
-			nullptr) override;
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
+
 	virtual bool propertyValueToStr(QString &strValue) const override;
+
 	virtual void drawValueImpl(
 		QStylePainter &painter, const QRect &rect,
 		const QStyle::State &state, bool *needTooltip = nullptr) const override;

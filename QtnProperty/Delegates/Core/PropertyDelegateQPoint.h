@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,16 +22,20 @@
 
 class QtnPropertyQPointBase;
 
-class QTN_IMPORT_EXPORT QtnPropertyDelegateQPoint: public QtnPropertyDelegateTypedEx<QtnPropertyQPointBase>
+class QTN_IMPORT_EXPORT QtnPropertyDelegateQPoint
+	: public QtnPropertyDelegateTypedEx<QtnPropertyQPointBase>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQPoint)
 
 public:
-	QtnPropertyDelegateQPoint(QtnPropertyQPointBase& owner);
+	QtnPropertyDelegateQPoint(QtnPropertyQPointBase &owner);
 
 protected:
-	QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-	bool propertyValueToStr(QString& strValue) const override;
+	virtual QWidget *createValueEditorImpl(
+		QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
+
+	virtual bool propertyValueToStr(QString &strValue) const override;
 };
 
-#endif // PROPERTY_DELEGATE_QPOINT_H
+#endif	// PROPERTY_DELEGATE_QPOINT_H

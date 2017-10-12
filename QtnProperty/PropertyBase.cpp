@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,85 +18,148 @@
 #include "PropertyBase.h"
 
 #include "PropertyConnector.h"
+#include "PropertySet.h"
 
 #include <QScriptEngine>
 #include <QCoreApplication>
 
-static int qtnPropertyChangeReasonMetaId = qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
-static int qtnPropertyPtrId = qRegisterMetaType<QtnPropertyBase*>("QtnPropertyBase*");
+static int qtnPropertyChangeReasonMetaId =
+	qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
+static int qtnPropertyPtrId =
+	qRegisterMetaType<QtnPropertyBase *>("QtnPropertyBase*");
 static quint16 qtnPropertyMagicNumber = 0x1984;
 
 // extern declaration
-void qtnAddPropertyAsChild(QObject* parent, QtnPropertyBase* child, bool moveOwnership);
-void qtnRemovePropertyAsChild(QObject* parent, QtnPropertyBase* child);
+void qtnAddPropertyAsChild(
+	QObject *parent, QtnPropertyBase *child, bool moveOwnership);
+void qtnRemovePropertyAsChild(QObject *parent, QtnPropertyBase *child);
 
-static QScriptValue qtnPropertyChangeReasonToScriptValue(QScriptEngine* engine, const QtnPropertyChangeReason& val)
+static QScriptValue qtnPropertyChangeReasonToScriptValue(
+	QScriptEngine *engine, const QtnPropertyChangeReason &val)
 {
-	QScriptValue obj((QtnPropertyChangeReason::Int)val);
+	QScriptValue obj(engine, QtnPropertyChangeReason::Int(val));
 	return obj;
 }
 
-static void qtnPropertyChangeReasonFromScriptValue(const QScriptValue& obj, QtnPropertyChangeReason& val)
+static void qtnPropertyChangeReasonFromScriptValue(
+	const QScriptValue &obj, QtnPropertyChangeReason &val)
 {
-	val = (QtnPropertyChangeReason::enum_type)obj.toInt32();
+	val = (QtnPropertyChangeReason::enum_type) obj.toInt32();
 }
 
-static QScriptValue qtnPropertyValuePtrToScriptValue(QScriptEngine* engine, const QtnPropertyValuePtr& val)
+static QScriptValue qtnPropertyValuePtrToScriptValue(
+	QScriptEngine *engine, const QtnPropertyValuePtr &val)
 {
+	Q_UNUSED(engine);
+	Q_UNUSED(val);
 	// no sutable conversion
 	return QScriptValue();
 }
 
-static void qtnPropertyValuePtrFromScriptValue(const QScriptValue& obj, QtnPropertyValuePtr& val)
+static void qtnPropertyValuePtrFromScriptValue(
+	const QScriptValue &obj, QtnPropertyValuePtr &val)
 {
+	Q_UNUSED(obj);
+	Q_UNUSED(val);
 	// no sutable conversion
 }
 
-typedef const QtnPropertyBase* QtnPropertyBasePtr_t;
+typedef const QtnPropertyBase *QtnPropertyBasePtr_t;
 
-static QScriptValue qtnPropertyBasePtrToScriptValue(QScriptEngine* engine, const QtnPropertyBasePtr_t& val)
+static QScriptValue qtnPropertyBasePtrToScriptValue(
+	QScriptEngine *engine, const QtnPropertyBasePtr_t &val)
 {
 	QtnPropertyBasePtr_t value = val;
-	QScriptValue obj = engine->newQObject(const_cast<QtnPropertyBase*>(value));
+	QScriptValue obj = engine->newQObject(const_cast<QtnPropertyBase *>(value));
 	return obj;
 }
 
-static void qtnPropertyBasePtrFromScriptValue(const QScriptValue& obj, QtnPropertyBasePtr_t& val)
+static void qtnPropertyBasePtrFromScriptValue(
+	const QScriptValue &obj, QtnPropertyBasePtr_t &val)
 {
-	val = qobject_cast<const QtnPropertyBase*>(obj.toQObject());
+	val = qobject_cast<const QtnPropertyBase *>(obj.toQObject());
 }
 
-void qtnScriptRegisterPropertyTypes(QScriptEngine* engine)
+void qtnScriptRegisterPropertyTypes(QScriptEngine *engine)
 {
-	qScriptRegisterMetaType(engine, qtnPropertyChangeReasonToScriptValue, qtnPropertyChangeReasonFromScriptValue);
-	qScriptRegisterMetaType(engine, qtnPropertyValuePtrToScriptValue, qtnPropertyValuePtrFromScriptValue);
-	qScriptRegisterMetaType(engine, qtnPropertyBasePtrToScriptValue, qtnPropertyBasePtrFromScriptValue);
+	qScriptRegisterMetaType(
+		engine, qtnPropertyChangeReasonToScriptValue,
+		qtnPropertyChangeReasonFromScriptValue);
+	qScriptRegisterMetaType(
+		engine, qtnPropertyValuePtrToScriptValue,
+		qtnPropertyValuePtrFromScriptValue);
+	qScriptRegisterMetaType(
+		engine, qtnPropertyBasePtrToScriptValue,
+		qtnPropertyBasePtrFromScriptValue);
 
 	QScriptValue obj = engine->globalObject();
 
-//    QScriptValue obj = engine->newObject();
+	obj.setProperty(
+		"QtnPropertyStateNone", QtnPropertyStateNone,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyStateNonSimple", QtnPropertyStateNonSimple,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyStateInvisible", QtnPropertyStateInvisible,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyStateImmutable", QtnPropertyStateImmutable,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyStateCollapsed", QtnPropertyStateCollapsed,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyStateNonSerialized",
+		QtnPropertyStateNonSerialized, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
 
-	obj.setProperty("QtnPropertyStateNone", QtnPropertyStateNone, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateNonSimple", QtnPropertyStateNonSimple, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateInvisible", QtnPropertyStateInvisible, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateImmutable", QtnPropertyStateImmutable, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateCollapsed", QtnPropertyStateCollapsed, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateNonSerialized", QtnPropertyStateNonSerialized, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-
-	obj.setProperty("QtnPropertyChangeReasonNewValue", QtnPropertyChangeReasonNewValue, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonLoadedValue", QtnPropertyChangeReasonLoadedValue, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonValue", QtnPropertyChangeReasonValue, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonName", QtnPropertyChangeReasonName, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonDescription", QtnPropertyChangeReasonDescription, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonId", QtnPropertyChangeReasonId, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonStateLocal", QtnPropertyChangeReasonStateLocal, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonStateInherited", QtnPropertyChangeReasonStateInherited, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonState", QtnPropertyChangeReasonState, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonChildPropertyAdd", QtnPropertyChangeReasonChildPropertyAdd, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonChildPropertyRemove", QtnPropertyChangeReasonChildPropertyRemove, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonChildren", QtnPropertyChangeReasonChildren, QScriptValue::ReadOnly|QScriptValue::Undeletable);
-
-//    engine->globalObject().setProperty("Qtinuum", obj);
+	obj.setProperty(
+		"QtnPropertyChangeReasonNewValue",
+		QtnPropertyChangeReasonNewValue, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonLoadedValue",
+		QtnPropertyChangeReasonLoadedValue, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonValue",
+		QtnPropertyChangeReasonValue, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonName", QtnPropertyChangeReasonName,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonDescription",
+		QtnPropertyChangeReasonDescription, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonId", QtnPropertyChangeReasonId,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonStateLocal",
+		QtnPropertyChangeReasonStateLocal, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonStateInherited",
+		QtnPropertyChangeReasonStateInherited, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonState",
+		QtnPropertyChangeReasonState, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonChildPropertyAdd",
+		QtnPropertyChangeReasonChildPropertyAdd, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonChildPropertyRemove",
+		QtnPropertyChangeReasonChildPropertyRemove, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
+	obj.setProperty(
+		"QtnPropertyChangeReasonChildren",
+		QtnPropertyChangeReasonChildren, QScriptValue::ReadOnly |
+		QScriptValue::Undeletable);
 }
 
 QtnPropertyBase::QtnPropertyBase(QObject *parent)
@@ -141,7 +204,7 @@ QtnPropertyBase::~QtnPropertyBase()
 	qtnRemovePropertyAsChild(parent(), this);
 }
 
-void QtnPropertyBase::setName(const QString& name)
+void QtnPropertyBase::setName(const QString &name)
 {
 	emit propertyWillChange(QtnPropertyChangeReasonName,
 							QtnPropertyValuePtr(&name),
@@ -152,7 +215,7 @@ void QtnPropertyBase::setName(const QString& name)
 	emit propertyDidChange(QtnPropertyChangeReasonName);
 }
 
-void QtnPropertyBase::setDescription(const QString& description)
+void QtnPropertyBase::setDescription(const QString &description)
 {
 	emit propertyWillChange(QtnPropertyChangeReasonDescription,
 							QtnPropertyValuePtr(&description),
@@ -192,7 +255,7 @@ void QtnPropertyBase::setState(QtnPropertyState stateToSet, bool force)
 
 void QtnPropertyBase::addState(QtnPropertyState stateToAdd, bool force)
 {
-	QtnPropertyState stateToSet = m_stateLocal|stateToAdd;
+	QtnPropertyState stateToSet = m_stateLocal | stateToAdd;
 
 	if (!force && (m_stateLocal == stateToSet))
 		return;
@@ -210,7 +273,7 @@ void QtnPropertyBase::addState(QtnPropertyState stateToAdd, bool force)
 
 void QtnPropertyBase::removeState(QtnPropertyState stateToRemove, bool force)
 {
-	QtnPropertyState stateToSet = m_stateLocal&~stateToRemove;
+	QtnPropertyState stateToSet = m_stateLocal & ~stateToRemove;
 
 	if (!force && (m_stateLocal == stateToSet))
 		return;
@@ -226,7 +289,8 @@ void QtnPropertyBase::removeState(QtnPropertyState stateToRemove, bool force)
 	updateStateInherited(force);
 }
 
-void QtnPropertyBase::switchState(QtnPropertyState stateToSwitch, bool switchOn, bool force)
+void QtnPropertyBase::switchState(
+	QtnPropertyState stateToSwitch, bool switchOn, bool force)
 {
 	if (switchOn)
 		addState(stateToSwitch, force);
@@ -234,7 +298,8 @@ void QtnPropertyBase::switchState(QtnPropertyState stateToSwitch, bool switchOn,
 		removeState(stateToSwitch, force);
 }
 
-void QtnPropertyBase::switchStateAuto(QtnPropertyState stateToSwitch, bool force)
+void QtnPropertyBase::switchStateAuto(
+	QtnPropertyState stateToSwitch, bool force)
 {
 	if (!(stateLocal() & stateToSwitch))
 		addState(stateToSwitch, force);
@@ -244,12 +309,12 @@ void QtnPropertyBase::switchStateAuto(QtnPropertyState stateToSwitch, bool force
 
 bool QtnPropertyBase::isEditableByUser() const
 {
-	return !(state()&(QtnPropertyStateImmutable|QtnPropertyStateInvisible));
+	return !(state() & (QtnPropertyStateImmutable | QtnPropertyStateInvisible));
 }
 
 bool QtnPropertyBase::isVisible() const
 {
-	return !(state()&(QtnPropertyStateInvisible));
+	return !(state() & (QtnPropertyStateInvisible));
 }
 
 bool QtnPropertyBase::valueIsHidden() const
@@ -262,6 +327,11 @@ bool QtnPropertyBase::valueIsDefault() const
 	return 0 == (m_stateLocal & QtnPropertyStateModifiedValue);
 }
 
+bool QtnPropertyBase::isSimple() const
+{
+	return !m_stateLocal.testFlag(QtnPropertyStateNonSimple);
+}
+
 bool QtnPropertyBase::load(QDataStream &stream)
 {
 	if (stream.status() != QDataStream::Ok)
@@ -269,12 +339,14 @@ bool QtnPropertyBase::load(QDataStream &stream)
 
 	quint16 magicNumber = 0;
 	stream >> magicNumber;
+
 	// consistency corrupted
 	if (magicNumber != qtnPropertyMagicNumber)
 		return false;
 
 	quint8 version = 0;
 	stream >> version;
+
 	// version incorrect
 	if (version != 1)
 		return false;
@@ -284,9 +356,11 @@ bool QtnPropertyBase::load(QDataStream &stream)
 
 #ifndef QT_NO_DEBUG
 	qint64 posBeforeLoadContent = 0;
-	QIODevice* device = stream.device();
+	QIODevice *device = stream.device();
+
 	if (device)
 		posBeforeLoadContent = device->pos();
+
 #endif
 
 	if (!loadImpl(stream))
@@ -294,6 +368,7 @@ bool QtnPropertyBase::load(QDataStream &stream)
 
 #ifndef QT_NO_DEBUG
 	qint64 posAfterLoadContent = 0;
+
 	if (device)
 		posAfterLoadContent = device->pos();
 
@@ -303,6 +378,7 @@ bool QtnPropertyBase::load(QDataStream &stream)
 	{
 		Q_ASSERT(false && "contentSize and loadContentImpl inconsistency.");
 	}
+
 #endif
 
 	return stream.status() == QDataStream::Ok;
@@ -322,11 +398,12 @@ bool QtnPropertyBase::save(QDataStream &stream) const
 
 	QByteArray data;
 	QDataStream contentStream(&data, QIODevice::WriteOnly);
+
 	if (!saveImpl(contentStream))
 		return false;
 
 	// size of data to save
-	stream << (qint32)data.size();
+	stream << (qint32) data.size();
 
 	// save content
 	int savedSize = stream.writeRawData(data.constData(), data.size());
@@ -337,19 +414,21 @@ bool QtnPropertyBase::save(QDataStream &stream) const
 	return stream.status() == QDataStream::Ok;
 }
 
-bool QtnPropertyBase::skipLoad(QDataStream& stream)
+bool QtnPropertyBase::skipLoad(QDataStream &stream)
 {
 	if (stream.status() != QDataStream::Ok)
 		return false;
 
 	quint16 magicNumber = 0;
 	stream >> magicNumber;
+
 	// consistency corrupted
 	if (magicNumber != qtnPropertyMagicNumber)
 		return false;
 
 	quint8 version = 0;
 	stream >> version;
+
 	// version incorrect
 	if (version != 1)
 		return false;
@@ -359,6 +438,7 @@ bool QtnPropertyBase::skipLoad(QDataStream& stream)
 
 	{
 		int read = stream.skipRawData(contentSize);
+
 		// corrupted data
 		if (read != contentSize)
 			return false;
@@ -367,12 +447,13 @@ bool QtnPropertyBase::skipLoad(QDataStream& stream)
 	return stream.status() == QDataStream::Ok;
 }
 
-bool QtnPropertyBase::loadImpl(QDataStream& stream)
+bool QtnPropertyBase::loadImpl(QDataStream &stream)
 {
 	Q_ASSERT(stream.status() == QDataStream::Ok);
 
 	qint16 version = 0;
 	stream >> version;
+
 	// incorrect version
 	if (version != 1)
 		return false;
@@ -387,20 +468,31 @@ bool QtnPropertyBase::loadImpl(QDataStream& stream)
 	return stream.status() == QDataStream::Ok;
 }
 
-bool QtnPropertyBase::saveImpl(QDataStream& stream) const
+bool QtnPropertyBase::saveImpl(QDataStream &stream) const
 {
 	Q_ASSERT(stream.status() == QDataStream::Ok);
 
 	qint16 version = 1;
 	stream << version;
 
-	stream << (QtnPropertyState::Int)m_stateLocal;
-	stream << (QtnPropertyState::Int)m_stateInherited;
+	stream << (QtnPropertyState::Int) m_stateLocal;
+	stream << (QtnPropertyState::Int) m_stateInherited;
 
 	return stream.status() == QDataStream::Ok;
 }
 
-bool QtnPropertyBase::fromStr(const QString& str, bool edit)
+bool QtnPropertyBase::fromStrImpl(const QString &, bool)
+{
+	return false;
+}
+
+bool QtnPropertyBase::toStrImpl(QString &str) const
+{
+	Q_UNUSED(str);
+	return false;
+}
+
+bool QtnPropertyBase::fromStr(const QString &str, bool edit)
 {
 	if (!isEditableByUser())
 		return false;
@@ -408,12 +500,12 @@ bool QtnPropertyBase::fromStr(const QString& str, bool edit)
 	return fromStrImpl(str, edit);
 }
 
-bool QtnPropertyBase::toStr(QString& str) const
+bool QtnPropertyBase::toStr(QString &str) const
 {
 	return toStrImpl(str);
 }
 
-bool QtnPropertyBase::fromVariant(const QVariant& var, bool edit)
+bool QtnPropertyBase::fromVariant(const QVariant &var, bool edit)
 {
 	if (!isEditableByUser())
 		return false;
@@ -421,17 +513,39 @@ bool QtnPropertyBase::fromVariant(const QVariant& var, bool edit)
 	return fromVariantImpl(var, edit);
 }
 
-bool QtnPropertyBase::toVariant(QVariant& var) const
+bool QtnPropertyBase::toVariant(QVariant &var) const
 {
 	return toVariantImpl(var);
+}
+
+QtnProperty *QtnPropertyBase::asProperty()
+{
+	return nullptr;
+}
+
+const QtnProperty *QtnPropertyBase::asProperty() const
+{
+	return nullptr;
+}
+
+QtnPropertySet *QtnPropertyBase::asPropertySet()
+{
+	return nullptr;
+}
+
+const QtnPropertySet *QtnPropertyBase::asPropertySet() const
+{
+	return nullptr;
 }
 
 QtnPropertyBase *QtnPropertyBase::getRootProperty()
 {
 	auto result = this;
+
 	do
 	{
 		auto mp = result->getMasterProperty();
+
 		if (nullptr == mp)
 			break;
 
@@ -449,14 +563,21 @@ bool QtnPropertyBase::fromVariantImpl(const QVariant& var, bool edit)
 		return false;
 }
 
-bool QtnPropertyBase::toVariantImpl(QVariant& var) const
+bool QtnPropertyBase::toVariantImpl(QVariant &var) const
 {
 	QString str;
+
 	if (!toStr(str))
 		return false;
 
 	var.setValue<QString>(str);
 	return true;
+}
+
+void QtnPropertyBase::updateStateInherited(bool force)
+{
+	Q_UNUSED(force);
+	/* does nothing by default */
 }
 
 void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
@@ -479,10 +600,12 @@ void QtnPropertyBase::disconnectMasterState()
 {
 	if (nullptr != m_masterProperty)
 	{
-		QObject::disconnect(m_masterProperty, &QObject::destroyed,
-							this, &QtnPropertyBase::onMasterPropertyDestroyed);
-		QObject::disconnect(m_masterProperty, &QtnPropertyBase::propertyDidChange,
-							this, &QtnPropertyBase::masterPropertyStateDidChange);
+		QObject::disconnect(
+			m_masterProperty, &QObject::destroyed,
+			this, &QtnPropertyBase::onMasterPropertyDestroyed);
+		QObject::disconnect(
+			m_masterProperty, &QtnPropertyBase::propertyDidChange,
+			this, &QtnPropertyBase::masterPropertyStateDidChange);
 
 		m_masterProperty = nullptr;
 	}
@@ -511,7 +634,8 @@ void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)
 	updateStateInherited(force);
 }
 
-void QtnPropertyBase::masterPropertyStateDidChange(QtnPropertyChangeReason reason)
+void QtnPropertyBase::masterPropertyStateDidChange(
+	QtnPropertyChangeReason reason)
 {
 	if (reason & QtnPropertyChangeReasonState)
 	{
@@ -530,7 +654,7 @@ QVariant QtnPropertyBase::valueAsVariant() const
 	return result;
 }
 
-void QtnPropertyBase::setValueAsVariant(const QVariant& value)
+void QtnPropertyBase::setValueAsVariant(const QVariant &value)
 {
 	fromVariant(value, false);
 }
@@ -541,13 +665,13 @@ void QtnPropertyBase::onMasterPropertyDestroyed(QObject *object)
 	m_masterProperty = nullptr;
 }
 
-QDataStream& operator<< (QDataStream& stream, const QtnPropertyBase& property)
+QDataStream &operator<<(QDataStream &stream, const QtnPropertyBase &property)
 {
 	property.save(stream);
 	return stream;
 }
 
-QDataStream& operator>> (QDataStream& stream, QtnPropertyBase& property)
+QDataStream &operator>>(QDataStream &stream, QtnPropertyBase &property)
 {
 	property.load(stream);
 	return stream;
@@ -571,6 +695,6 @@ void QtnPropertyBase::setCollapsed(bool collapsed)
 
 QtnPropertyConnector *QtnPropertyBase::getConnector() const
 {
-	return findChild<QtnPropertyConnector *>(QString(), Qt::FindDirectChildrenOnly);
+	return findChild<QtnPropertyConnector *>(
+		QString(), Qt::FindDirectChildrenOnly);
 }
-

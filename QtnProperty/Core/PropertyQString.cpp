@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ QtnPropertyQStringBase &QtnPropertyQStringBase::operator=(const char *newValue)
 	return *this;
 }
 
-bool QtnPropertyQStringBase::fromStrImpl(const QString& str, bool edit)
+bool QtnPropertyQStringBase::fromStrImpl(const QString &str, bool edit)
 {
 	if (!multiline)
 	{
@@ -57,7 +57,7 @@ bool QtnPropertyQStringBase::fromStrImpl(const QString& str, bool edit)
 	return setValue(str, edit);
 }
 
-bool QtnPropertyQStringBase::toStrImpl(QString& str) const
+bool QtnPropertyQStringBase::toStrImpl(QString &str) const
 {
 	str = value();
 	return true;
@@ -79,9 +79,10 @@ bool QtnPropertyQString::isMultilineText(const QString &text)
 	return text.contains('\n') || text.contains('\r');
 }
 
-QString QtnPropertyQString::getPlaceholderStr(const QString &text, bool check_multiline)
+QString QtnPropertyQString::getPlaceholderStr(
+	const QString &text, bool checkMultiline)
 {
-	if (check_multiline && isMultilineText(text))
+	if (checkMultiline && isMultilineText(text))
 		return tr("(Multiline Text)");
 
 	if (text.isEmpty())
@@ -100,7 +101,8 @@ QtnPropertyQStringCallback::QtnPropertyQStringCallback(QObject *parent)
 {
 }
 
-QtnPropertyQStringCallback &QtnPropertyQStringCallback::operator=(const char *newValue)
+QtnPropertyQStringCallback &QtnPropertyQStringCallback::operator=(
+	const char *newValue)
 {
 	setValue(QString(newValue));
 	return *this;

@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-		   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,8 +31,7 @@ class QtnPropertyIntSpinBoxHandler : public
 {
 public:
 	QtnPropertyIntSpinBoxHandler(
-		QtnPropertyIntBase &property,
-		QSpinBox &editor);
+		QtnPropertyIntBase &property, QSpinBox &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -55,8 +54,7 @@ QtnPropertyDelegateInt::QtnPropertyDelegateInt(QtnPropertyIntBase &owner)
 }
 
 QWidget *QtnPropertyDelegateInt::createValueEditorImpl(
-	QWidget *parent, const
-	QRect &rect, QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QSpinBox(parent);
 	spinBox->setGeometry(rect);
@@ -76,7 +74,9 @@ bool QtnPropertyDelegateInt::acceptKeyPressedForInplaceEditImpl(
 {
 	if (QtnPropertyDelegateTyped<QtnPropertyIntBase>::
 		acceptKeyPressedForInplaceEditImpl(keyEvent))
+	{
 		return true;
+	}
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_SIGNED_INT);
 }

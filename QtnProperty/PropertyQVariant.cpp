@@ -33,8 +33,7 @@ class QtnPropertyQVariantEditBttnHandler
 {
 public:
 	QtnPropertyQVariantEditBttnHandler(
-		QtnPropertyQVariantBase &property,
-		QtnLineEditBttn &editor);
+		QtnPropertyQVariantBase &property, QtnLineEditBttn &editor);
 
 protected:
 	virtual void revertInput() override;
@@ -177,7 +176,6 @@ QtnPropertyDelegateQVariant::QtnPropertyDelegateQVariant(
 	QtnPropertyQVariantBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyQVariantBase>(owner)
 {
-
 }
 
 bool QtnPropertyDelegateQVariant::acceptKeyPressedForInplaceEditImpl(
@@ -209,6 +207,7 @@ bool QtnPropertyDelegateQVariant::propertyValueToStr(QString &strValue) const
 {
 	auto &value = owner().value();
 	strValue = QtnPropertyQVariant::valueToString(value);
+
 	if (strValue.isEmpty())
 		strValue = QtnPropertyQVariant::getPlaceholderStr(value.type());
 
@@ -220,6 +219,7 @@ void QtnPropertyDelegateQVariant::drawValueImpl(
 	const QStyle::State &state, bool *needTooltip) const
 {
 	QPen oldPen = painter.pen();
+
 	if (QtnPropertyQVariant::valueToString(owner().value()).isEmpty())
 		painter.setPen(Qt::darkGray);
 
@@ -274,6 +274,7 @@ void QtnPropertyQVariantEditBttnHandler::updateEditor()
 	{
 		QVariant value;
 		value = property().value();
+
 		if (QtnPropertyQVariant::variantIsObject(value.type()))
 		{
 			is_object = true;
@@ -295,10 +296,12 @@ void QtnPropertyQVariantEditBttnHandler::onEditingFinished()
 	if (canApply())
 	{
 		auto text = editor().lineEdit->text();
+
 		if (!is_object || !text.isEmpty())
 		{
 			if (is_object || text != property().value().toString())
 				property().edit(text);
+
 			updateEditor();
 		}
 	}
@@ -340,6 +343,7 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 		QObject::disconnect(connection);
 		updateEditor();
 	}
+
 	Q_UNUSED(dialogContainer);
 }
 

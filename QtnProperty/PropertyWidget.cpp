@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,66 +19,33 @@
 #include <QSplitter>
 #include <QMouseEvent>
 
-class QtnSplitterEventsHandler: public QObject
+class QtnSplitterEventsHandler : public QObject
 {
 public:
-	QtnSplitterEventsHandler(QObject* parent)
-		: QObject(parent)
-	{
-	}
+	QtnSplitterEventsHandler(QObject *parent);
 
 protected:
-	bool eventFilter(QObject* obj, QEvent* event) override
-	{
-		// check input
-		if (event->type() != QEvent::MouseButtonDblClick)
-			return false;
-
-		 QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-		 if (mouseEvent->button() != Qt::LeftButton)
-			 return false;
-
-		QSplitterHandle* splitterHandle = qobject_cast<QSplitterHandle*>(obj);
-		if (!splitterHandle)
-			return false;
-
-		QSplitter* splitter = splitterHandle->splitter();
-		if (!splitter || splitter->count() < 2)
-			return false;
-
-		// change splitter sizes to make description panel occupy ideal height
-		QWidget* bottomWidget = splitter->widget(1);
-		QList<int> sizes = splitter->sizes();
-		if (sizes.size() != 2)
-			return false;
-
-		sizes[0] += sizes[1];
-		sizes[1] = bottomWidget->heightForWidth(bottomWidget->size().width());
-		sizes[0] -= qMax(sizes[1], 0);
-
-		splitter->setSizes(sizes);
-
-		return true;
-	}
+	virtual bool eventFilter(QObject *obj, QEvent *event) override;
 };
 
-QtnPropertyWidget::QtnPropertyWidget(QWidget* parent)
-	: QWidget(parent),
-	  m_parts(QtnPropertyWidgetPartsNone),
-	  m_layout(new QVBoxLayout(this)),
-	  m_toolbar(0),
-	  m_propertyView(new QtnPropertyView(this)),
-	  m_descriptionSplitter(0),
-	  m_descriptionPanel(0)
+QtnPropertyWidget::QtnPropertyWidget(QWidget *parent)
+	: QWidget(parent)
+	, m_parts(QtnPropertyWidgetPartsNone)
+	, m_layout(new QVBoxLayout(this))
+	, m_toolbar(0)
+	, m_propertyView(new QtnPropertyView(this))
+	, m_descriptionSplitter(0)
+	, m_descriptionPanel(0)
 {
 	m_layout->addWidget(m_propertyView);
 
-	QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged, this, &QtnPropertyWidget::setActiveProperty);
+	QObject::connect(
+		m_propertyView, &QtnPropertyView::activePropertyChanged,
+		this, &QtnPropertyWidget::setActiveProperty);
 }
 
 QtnPropertyWidget::~QtnPropertyWidget()
 {
-
 }
 
 void QtnPropertyWidget::setParts(QtnPropertyWidgetParts newParts)
@@ -94,7 +61,9 @@ void QtnPropertyWidget::updateParts()
 {
 	// clear layout
 	while (!m_layout->isEmpty())
+	{
 		m_layout->takeAt(0);
+	}
 
 	// check toolbar
 
@@ -105,7 +74,7 @@ void QtnPropertyWidget::updateParts()
 		{
 			// create splitter
 			Q_ASSERT(!m_descriptionPanel);
-			QSplitter* splitter = new QSplitter(Qt::Vertical, this);
+			QSplitter *splitter = new QSplitter(Qt::Vertical, this);
 
 			// add property view
 			splitter->addWidget(m_propertyView);
@@ -123,14 +92,14 @@ void QtnPropertyWidget::updateParts()
 			m_descriptionPanel->setSizePolicy(p);
 
 			// setup DblClick handler
-			splitter->handle(1)->installEventFilter(new QtnSplitterEventsHandler(splitter));
+			splitter->handle(1)->installEventFilter(
+				new QtnSplitterEventsHandler(splitter));
 
 			m_descriptionSplitter = splitter;
 		}
 
 		m_layout->addWidget(m_descriptionSplitter);
-	}
-	else
+	} else
 	{
 		if (m_descriptionSplitter)
 		{
@@ -143,17 +112,61 @@ void QtnPropertyWidget::updateParts()
 	}
 }
 
-void QtnPropertyWidget::setActiveProperty(const QtnPropertyBase* activeProperty)
+void QtnPropertyWidget::setActiveProperty(const QtnPropertyBase *activeProperty)
 {
 	if (m_descriptionPanel)
 	{
 		if (!activeProperty)
 		{
 			m_descriptionPanel->setText("");
-		}
-		else
+		} else
 		{
-			m_descriptionPanel->setText(QString("<b>%1</b><br>%2").arg(activeProperty->name(), activeProperty->description()));
+			m_descriptionPanel->setText(
+				QString("<b>%1</b><br>%2").arg(
+					activeProperty->name(),
+					activeProperty->description()));
 		}
 	}
+}
+
+QtnSplitterEventsHandler::QtnSplitterEventsHandler(QObject *parent)
+	: QObject(parent)
+{
+}
+
+bool QtnSplitterEventsHandler::eventFilter(QObject *obj, QEvent *event)
+{
+	// check input
+	if (event->type() != QEvent::MouseButtonDblClick)
+		return false;
+
+	QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+
+	if (mouseEvent->button() != Qt::LeftButton)
+		return false;
+
+	QSplitterHandle *splitterHandle = qobject_cast<QSplitterHandle *>(obj);
+
+	if (!splitterHandle)
+		return false;
+
+	QSplitter *splitter = splitterHandle->splitter();
+
+	if (!splitter || splitter->count() < 2)
+		return false;
+
+	// change splitter sizes to make description panel occupy ideal height
+	QWidget *bottomWidget = splitter->widget(1);
+	QList<int> sizes = splitter->sizes();
+
+	if (sizes.size() != 2)
+		return false;
+
+	sizes[0] += sizes[1];
+	sizes[1] = bottomWidget->heightForWidth(bottomWidget->size().width());
+	sizes[0] -= qMax(sizes[1], 0);
+
+	splitter->setSizes(sizes);
+
+	return true;
 }

@@ -61,10 +61,10 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringInvalidBase
 protected:
 	QtnPropertyDelegateQStringInvalidBase(QtnPropertyQStringBase &owner);
 
-	void applyAttributesImpl(
+	virtual void applyAttributesImpl(
 		const
 		QtnPropertyDelegateAttributes &attributes) override;
-	void drawValueImpl(
+	virtual void drawValueImpl(
 		QStylePainter &painter, const QRect &rect, const
 		QStyle::State &state, bool *needTooltip = nullptr) const override;
 
@@ -83,13 +83,13 @@ public:
 	QtnPropertyDelegateQStringFile(QtnPropertyQStringBase &owner);
 
 protected:
-	void applyAttributesImpl(
+	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;
-	QWidget *createValueEditorImpl(
+	virtual QWidget *createValueEditorImpl(
 		QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
-	bool isPropertyValid() const override;
+	virtual bool isPropertyValid() const override;
 
 private:
 	QtnPropertyDelegateAttributes m_editorAttributes;
@@ -104,10 +104,10 @@ public:
 	QtnPropertyDelegateQStringList(QtnPropertyQStringBase &owner);
 
 protected:
-	void applyAttributesImpl(
+	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;
 
-	QWidget *createValueEditorImpl(
+	virtual QWidget *createValueEditorImpl(
 		QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 

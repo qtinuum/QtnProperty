@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,17 +33,19 @@ QtnPropertyQRectFBase::QtnPropertyQRectFBase(QObject *parent)
 void QtnPropertyQRectFBase::setMode(bool coordinates)
 {
 	this->coordinates = coordinates;
-	rect_parser = QRegExp(coordinates
-				? "\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
-				  "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,"
-				  "\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
-				  "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*\\]\\s*"
-				: "\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
-				  "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,"
-				  "\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*x"
-				  "\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*\\]\\s*");
+	rect_parser = QRegExp(
+			coordinates
+			? "\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
+			"\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,"
+			"\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
+			"\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*\\]\\s*"
+			: "\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
+			"\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,"
+			"\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*x"
+			"\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*\\]\\s*");
 
-	setDelegateCallback([coordinates]() -> const QtnPropertyDelegateInfo *
+	setDelegateCallback(
+		[coordinates]() -> const QtnPropertyDelegateInfo *
 	{
 		auto result = new QtnPropertyDelegateInfo;
 		result->name = QByteArray(coordinates ? "QRectF_LTRB" : "QRectF_LTWH");
@@ -53,44 +55,50 @@ void QtnPropertyQRectFBase::setMode(bool coordinates)
 
 QtnProperty *QtnPropertyQRectFBase::createLeftProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Left"),
-							   QtnPropertyQRectF::tr("Left position of the %1"),
-							   &QRectF::left, move ? &QRectF::moveLeft : &QRectF::setLeft);
+	return createFieldProperty(
+		QtnPropertyQRectF::tr("Left"),
+		QtnPropertyQRectF::tr("Left position of the %1"),
+		&QRectF::left, move ? &QRectF::moveLeft : &QRectF::setLeft);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createTopProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Top"),
-							   QtnPropertyQRectF::tr("Top position of the %1"),
-							   &QRectF::top, move ? &QRectF::moveTop : &QRectF::setTop);
+	return createFieldProperty(
+		QtnPropertyQRectF::tr("Top"),
+		QtnPropertyQRectF::tr("Top position of the %1"),
+		&QRectF::top, move ? &QRectF::moveTop : &QRectF::setTop);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createRightProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Right"),
-							   QtnPropertyQRectF::tr("Right position of the %1"),
-							   &QRectF::right, move ? &QRectF::moveRight : &QRectF::setRight);
+	return createFieldProperty(
+		QtnPropertyQRectF::tr("Right"),
+		QtnPropertyQRectF::tr("Right position of the %1"),
+		&QRectF::right, move ? &QRectF::moveRight : &QRectF::setRight);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createBottomProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Bottom"),
-							   QtnPropertyQRectF::tr("Bottom position of the %1"),
-							   &QRectF::bottom, move ? &QRectF::moveBottom : &QRectF::setBottom);
+	return createFieldProperty(
+		QtnPropertyQRectF::tr("Bottom"),
+		QtnPropertyQRectF::tr("Bottom position of the %1"),
+		&QRectF::bottom, move ? &QRectF::moveBottom : &QRectF::setBottom);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createWidthProperty()
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Width"),
-							   QtnPropertyQRectF::tr("Width of the %1"),
-							   &QRectF::width, &QRectF::setWidth);
+	return createFieldProperty(
+		QtnPropertyQRectF::tr("Width"),
+		QtnPropertyQRectF::tr("Width of the %1"),
+		&QRectF::width, &QRectF::setWidth);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createHeightProperty()
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Height"),
-							   QtnPropertyQRectF::tr("Height of the %1"),
-							   &QRectF::height, &QRectF::setHeight);
+	return createFieldProperty(
+		QtnPropertyQRectF::tr("Height"),
+		QtnPropertyQRectF::tr("Height of the %1"),
+		&QRectF::height, &QRectF::setHeight);
 }
 
 bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
@@ -100,20 +108,24 @@ bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
 
 	bool ok;
 	qreal x = rect_parser.cap(1).toDouble(&ok);
+
 	if (!ok)
 		return false;
 
 	qreal y = rect_parser.cap(6).toDouble(&ok);
+
 	if (!ok)
 		return false;
 
 	if (coordinates)
 	{
 		qreal right = rect_parser.cap(11).toDouble(&ok);
+
 		if (!ok)
 			return false;
 
 		qreal bottom = rect_parser.cap(15).toDouble(&ok);
+
 		if (!ok)
 			return false;
 
@@ -121,10 +133,12 @@ bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
 	}
 
 	qreal width = rect_parser.cap(11).toDouble(&ok);
+
 	if (!ok)
 		return false;
 
 	qreal height = rect_parser.cap(15).toDouble(&ok);
+
 	if (!ok)
 		return false;
 
@@ -134,14 +148,20 @@ bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
 bool QtnPropertyQRectFBase::toStrImpl(QString &str) const
 {
 	auto v = value();
+
 	if (coordinates)
-		str = QString("[(%1, %2), (%3, %4)]").arg(v.left()).arg(v.top()).arg(v.right()).arg(v.bottom());
+		str = QString("[(%1, %2), (%3, %4)]").arg(v.left()).arg(v.top()).arg(
+				v.right()).arg(v.bottom());
 	else
-		str = QString("[(%1, %2), %3 x %4]").arg(v.left()).arg(v.top()).arg(v.width()).arg(v.height());
+		str = QString("[(%1, %2), %3 x %4]").arg(v.left()).arg(v.top()).arg(
+				v.width()).arg(v.height());
+
 	return true;
 }
 
-QtnPropertyQRectFCallback::QtnPropertyQRectFCallback(QObject *parent, bool coordinates)
+QtnPropertyQRectFCallback::QtnPropertyQRectFCallback(
+	QObject *parent, bool
+	coordinates)
 	: QtnSinglePropertyCallback<QtnPropertyQRectFBase>(parent)
 {
 	setMode(coordinates);
@@ -155,43 +175,52 @@ QtnPropertyQRectF::QtnPropertyQRectF(QObject *parent, bool coordinates)
 
 void QtnPropertyQRectF::Register()
 {
-	qtnRegisterMetaPropertyFactory(QVariant::RectF,
-	[](QObject *object, const QMetaProperty &meta_property) -> QtnProperty *
+	qtnRegisterMetaPropertyFactory(
+		QVariant::RectF,
+		[](QObject *object, const QMetaProperty &metaProperty) -> QtnProperty *
 	{
-		auto property = new QtnPropertyQRectFCallback(nullptr, meta_property.revision() == 1);
+		auto property = new QtnPropertyQRectFCallback(
+				nullptr, metaProperty.revision() == 1);
 
-		property->setCallbackValueGet([object, meta_property]() -> QRectF
+		property->setCallbackValueGet(
+			[object, metaProperty]() -> QRectF
 		{
-		   return meta_property.read(object).toRectF();
+			return metaProperty.read(object).toRectF();
 		});
 
-		property->setCallbackValueSet([object, meta_property](QRectF value)
+		property->setCallbackValueSet(
+			[object, metaProperty](QRectF value)
 		{
-		   meta_property.write(object, value);
+			metaProperty.write(object, value);
 		});
 
-		property->setCallbackValueAccepted([property](QRectF) -> bool
+		property->setCallbackValueAccepted(
+			[property](QRectF) -> bool
 		{
-		   return property->isEditableByUser();
+			return property->isEditableByUser();
 		});
 
 		return property;
 	});
 
 	QtnPropertyDelegateFactory::staticInstance()
-			.registerDelegateDefault(&QtnPropertyQRectFBase::staticMetaObject,
-									 &QtnPropertyDelegateQRectF::createLTWH, "QRectF_LTWH");
+	.registerDelegateDefault(
+		&QtnPropertyQRectFBase::staticMetaObject,
+		&QtnPropertyDelegateQRectF::createLTWH, "QRectF_LTWH");
 	QtnPropertyDelegateFactory::staticInstance()
-			.registerDelegateDefault(&QtnPropertyQRectFBase::staticMetaObject,
-									 &QtnPropertyDelegateQRectF::createLTRB, "QRectF_LTRB");
+	.registerDelegateDefault(
+		&QtnPropertyQRectFBase::staticMetaObject,
+		&QtnPropertyDelegateQRectF::createLTRB, "QRectF_LTRB");
 }
 
-QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(QtnPropertyQRectFBase &owner, bool coordinates)
+QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(
+	QtnPropertyQRectFBase &owner, bool coordinates)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQRectFBase>(owner)
 	, coordinates(coordinates)
 {
 	addSubProperty(owner.createLeftProperty(!coordinates));
 	addSubProperty(owner.createTopProperty(!coordinates));
+
 	if (coordinates)
 	{
 		addSubProperty(owner.createRightProperty(false));
@@ -206,6 +235,7 @@ QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(QtnPropertyQRectFBase &owne
 QtnPropertyDelegate *QtnPropertyDelegateQRectF::createLTWH(QtnProperty &owner)
 {
 	auto theOwner = qobject_cast<QtnPropertyQRectFBase *>(&owner);
+
 	if (!theOwner)
 		return nullptr;
 
@@ -215,13 +245,16 @@ QtnPropertyDelegate *QtnPropertyDelegateQRectF::createLTWH(QtnProperty &owner)
 QtnPropertyDelegate *QtnPropertyDelegateQRectF::createLTRB(QtnProperty &owner)
 {
 	auto theOwner = qobject_cast<QtnPropertyQRectFBase *>(&owner);
+
 	if (!theOwner)
 		return nullptr;
 
 	return new QtnPropertyDelegateQRectF(*theOwner, true);
 }
 
-QWidget *QtnPropertyDelegateQRectF::createValueEditorImpl(QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+QWidget *QtnPropertyDelegateQRectF::createValueEditorImpl(
+	QWidget *parent, const
+	QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
@@ -232,10 +265,13 @@ bool QtnPropertyDelegateQRectF::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQRect::getToStringFormat(coordinates)
-			.arg(locale.toString(value.left(), 'g', 6),
-				 locale.toString(value.top(), 'g', 6),
-				 locale.toString(coordinates ? value.right() : value.width(), 'g', 6),
-				 locale.toString(coordinates ? value.bottom() : value.height(), 'g', 6));
+		.arg(
+			locale.toString(value.left(), 'g', 6),
+			locale.toString(value.top(), 'g', 6),
+			locale.toString(
+				coordinates ? value.right() : value.width(), 'g', 6),
+			locale.toString(
+				coordinates ? value.bottom() : value.height(), 'g', 6));
 
 	return true;
 }

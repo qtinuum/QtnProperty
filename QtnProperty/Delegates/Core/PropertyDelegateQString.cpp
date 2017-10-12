@@ -57,8 +57,7 @@ class QtnPropertyQStringLineEditHandler
 {
 public:
 	QtnPropertyQStringLineEditHandler(
-		QtnPropertyQStringBase &property,
-		QLineEdit &editor);
+		QtnPropertyQStringBase &property, QLineEdit &editor);
 
 private:
 	virtual void updateEditor() override;
@@ -72,8 +71,7 @@ class QtnPropertyQStringMultilineEditBttnHandler
 {
 public:
 	QtnPropertyQStringMultilineEditBttnHandler(
-		QtnPropertyQStringBase &property,
-		QtnLineEditBttn &editor);
+		QtnPropertyQStringBase &property, QtnLineEditBttn &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -159,10 +157,8 @@ bool QtnPropertyDelegateQString::propertyValueToStr(QString &strValue) const
 }
 
 void QtnPropertyDelegateQString::drawValueImpl(
-	QStylePainter &painter,
-	const QRect &rect,
-	const QStyle::State &state,
-	bool *needTooltip) const
+	QStylePainter &painter, const QRect &rect,
+	const QStyle::State &state, bool *needTooltip) const
 {
 	QPen oldPen = painter.pen();
 
@@ -265,8 +261,7 @@ class QtnPropertyQStringListComboBoxHandler
 {
 public:
 	QtnPropertyQStringListComboBoxHandler(
-		QtnPropertyQStringBase &property,
-		QComboBox &editor);
+		QtnPropertyQStringBase &property, QComboBox &editor);
 
 	void applyAttributes(const QtnPropertyDelegateAttributes &attributes);
 
@@ -292,9 +287,7 @@ void QtnPropertyDelegateQStringList::applyAttributesImpl(
 }
 
 QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
-	QWidget *parent,
-	const QRect &rect,
-	QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	if (!owner().isEditableByUser())
 	{
@@ -547,9 +540,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
 		}
 
 		edit->setPlaceholderText(
-			QtnPropertyQString::getPlaceholderStr(
-				text,
-				true));
+			QtnPropertyQString::getPlaceholderStr(text, true));
 		edit->selectAll();
 	}
 }
@@ -597,11 +588,14 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 	dialog->setReadOnly(readonly);
 
 	if (readonly)
+	{
 		dialog->setWindowTitle(
 			QtnPropertyQString::getReadOnlyPropertyTitleFormat()
 			.arg(property->name()));
-	else
+	} else
+	{
 		dialog->setWindowTitle(property->name());
+	}
 
 	dialog->setText(text);
 	dialog->show();

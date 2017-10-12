@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,26 +22,28 @@ QtnPropertyUIntBase::QtnPropertyUIntBase(QObject *parent)
 {
 }
 
-bool QtnPropertyUIntBase::fromStrImpl(const QString& str, bool edit)
+bool QtnPropertyUIntBase::fromStrImpl(const QString &str, bool edit)
 {
 	bool ok = false;
 	ValueType value = str.toUInt(&ok);
+
 	if (!ok)
 		return false;
 
 	return setValue(value, edit);
 }
 
-bool QtnPropertyUIntBase::toStrImpl(QString& str) const
+bool QtnPropertyUIntBase::toStrImpl(QString &str) const
 {
 	str = QString::number(value());
 	return true;
 }
 
-bool QtnPropertyUIntBase::fromVariantImpl(const QVariant& var, bool edit)
+bool QtnPropertyUIntBase::fromVariantImpl(const QVariant &var, bool edit)
 {
 	bool ok = false;
 	ValueType value = var.toUInt(&ok);
+
 	if (!ok)
 		return false;
 

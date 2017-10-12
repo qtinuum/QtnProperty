@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ class QtnPropertyDelegateInfoGetter
 	Q_DISABLE_COPY(QtnPropertyDelegateInfoGetter)
 
 public:
-	virtual const QtnPropertyDelegateInfo* delegate() const = 0;
+	virtual const QtnPropertyDelegateInfo *delegate() const = 0;
 
 	virtual ~QtnPropertyDelegateInfoGetter() {}
 
@@ -32,47 +32,33 @@ protected:
 	QtnPropertyDelegateInfoGetter() {}
 };
 
-class QtnPropertyDelegateInfoGetterValue: public QtnPropertyDelegateInfoGetter
+class QtnPropertyDelegateInfoGetterValue
+	: public QtnPropertyDelegateInfoGetter
 {
 public:
-	QtnPropertyDelegateInfoGetterValue(const QtnPropertyDelegateInfo& delegate)
-		: m_delegate(delegate)
-	{
-	}
+	QtnPropertyDelegateInfoGetterValue(const QtnPropertyDelegateInfo &delegate);
 
-	const QtnPropertyDelegateInfo* delegate() const override
-	{
-		return &m_delegate;
-	}
+	virtual const QtnPropertyDelegateInfo *delegate() const override;
 
 private:
 	QtnPropertyDelegateInfo m_delegate;
 };
 
-class QtnPropertyDelegateInfoGetterCallback: public QtnPropertyDelegateInfoGetter
+class QtnPropertyDelegateInfoGetterCallback
+	: public QtnPropertyDelegateInfoGetter
 {
 public:
-	QtnPropertyDelegateInfoGetterCallback(const std::function<const QtnPropertyDelegateInfo* ()>& callback)
-		: m_callback(callback)
-	{
-	}
+	QtnPropertyDelegateInfoGetterCallback(
+		const std::function<const QtnPropertyDelegateInfo * ()> &callback);
 
-	const QtnPropertyDelegateInfo* delegate() const override
-	{
-		if (m_delegate.isNull())
-		{
-			m_delegate.reset(m_callback());
-		}
-
-		return m_delegate.data();
-	}
+	virtual const QtnPropertyDelegateInfo *delegate() const override;
 
 private:
-	std::function<const QtnPropertyDelegateInfo* ()> m_callback;
+	std::function<const QtnPropertyDelegateInfo * ()> m_callback;
 	mutable QScopedPointer<const QtnPropertyDelegateInfo> m_delegate;
 };
 
-QtnProperty::QtnProperty(QObject* parent)
+QtnProperty::QtnProperty(QObject *parent)
 	: QtnPropertyBase(parent)
 {
 }
@@ -82,7 +68,7 @@ QtnProperty::~QtnProperty()
 	// Do not remove! Will be compile errors.
 }
 
-const QtnPropertyDelegateInfo* QtnProperty::delegate() const
+const QtnPropertyDelegateInfo *QtnProperty::delegate() const
 {
 	if (m_delegateInfoGetter.isNull())
 		return 0;
@@ -90,14 +76,54 @@ const QtnPropertyDelegateInfo* QtnProperty::delegate() const
 	return m_delegateInfoGetter->delegate();
 }
 
-void QtnProperty::setDelegate(const QtnPropertyDelegateInfo& delegate)
+void QtnProperty::setDelegate(const QtnPropertyDelegateInfo &delegate)
 {
-	m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterValue(delegate));
+	m_delegateInfoGetter.reset(
+		new QtnPropertyDelegateInfoGetterValue(delegate));
 }
 
-void QtnProperty::setDelegateCallback(const std::function<const QtnPropertyDelegateInfo*()>& callback)
+void QtnProperty::setDelegateCallback(
+	const std::function<const QtnPropertyDelegateInfo *()> &callback)
 {
-	m_delegateInfoGetter.reset(new QtnPropertyDelegateInfoGetterCallback(callback));
+	m_delegateInfoGetter.reset(
+		new QtnPropertyDelegateInfoGetterCallback(callback));
 }
 
+QtnProperty *QtnProperty::asProperty()
+{
+	return this;
+}
 
+const QtnProperty *QtnProperty::asProperty() const
+{
+	return this;
+}
+
+QtnPropertyDelegateInfoGetterValue::QtnPropertyDelegateInfoGetterValue(
+	const QtnPropertyDelegateInfo &delegate)
+	: m_delegate(delegate)
+{
+}
+
+const QtnPropertyDelegateInfo *	//
+QtnPropertyDelegateInfoGetterValue::delegate() const
+{
+	return &m_delegate;
+}
+
+QtnPropertyDelegateInfoGetterCallback::QtnPropertyDelegateInfoGetterCallback(
+	const std::function<const QtnPropertyDelegateInfo *()> &callback)
+	: m_callback(callback)
+{
+}
+
+const QtnPropertyDelegateInfo *	//
+QtnPropertyDelegateInfoGetterCallback::delegate() const
+{
+	if (m_delegate.isNull())
+	{
+		m_delegate.reset(m_callback());
+	}
+
+	return m_delegate.data();
+}

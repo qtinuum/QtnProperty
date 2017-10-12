@@ -121,7 +121,6 @@ protected:
 		: Inherited(property, editor)
 		, double_clicked(false)
 	{
-
 	}
 
 	virtual void onToolButtonClick() = 0;
@@ -136,18 +135,19 @@ protected:
 					return true;
 
 				case QEvent::MouseButtonRelease:
+
 					if (double_clicked)
 					{
 						double_clicked = false;
 						onToolButtonClick();
 						return true;
 					}
+
 					break;
 
 				default:
 					break;
 			}
-
 
 		return Inherited::eventFilter(obj, event);
 	}

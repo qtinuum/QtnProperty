@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ void QObjectPropertyWidget::selectObject(QObject *object, bool addSelection)
 	auto it = selectedObjects.find(object);
 
 	if (it == selectedObjects.end()
-	||	(!addSelection && selectedObjects.size() > 1))
+		|| (!addSelection && selectedObjects.size() > 1))
 	{
 		if (addSelection)
 			disconnectObjects();
@@ -53,7 +53,8 @@ void QObjectPropertyWidget::selectObject(QObject *object, bool addSelection)
 	}
 }
 
-void QObjectPropertyWidget::selectObjects(const Objects &objects, bool addSelection)
+void QObjectPropertyWidget::selectObjects(
+	const Objects &objects, bool addSelection)
 {
 	if (objects != selectedObjects)
 	{
@@ -80,6 +81,7 @@ void QObjectPropertyWidget::deselectObject(QObject *object, bool destroyed)
 	else
 	{
 		auto it = selectedObjects.find(object);
+
 		if (it != selectedObjects.end())
 		{
 			disconnectObjects();
@@ -94,11 +96,13 @@ void QObjectPropertyWidget::deselectObject(QObject *object, bool destroyed)
 void QObjectPropertyWidget::onResetTriggered()
 {
 	auto multiProperty = getMultiProperty();
+
 	if (nullptr != multiProperty)
 		multiProperty->resetValues(true);
 	else
 	{
 		auto connector = getPropertyConnector();
+
 		if (nullptr != connector)
 			connector->resetPropertyValue(true);
 	}
@@ -107,6 +111,7 @@ void QObjectPropertyWidget::onResetTriggered()
 void QObjectPropertyWidget::onObjectDestroyed(QObject *object)
 {
 	auto it = selectedObjects.find(object);
+
 	if (it != selectedObjects.end())
 	{
 		selectedObjects.erase(it);
@@ -119,6 +124,7 @@ void QObjectPropertyWidget::onObjectDestroyed(QObject *object)
 void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 {
 	auto property = getActiveProperty();
+
 	if (nullptr == property)
 		return;
 
@@ -127,12 +133,14 @@ void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 
 	auto connector = getPropertyConnector();
 	auto multiProperty = getMultiProperty();
+
 	if (nullptr != connector || nullptr != multiProperty)
 	{
 		QMenu menu(this);
 
 		auto action = menu.addAction(tr("Reset to default"));
-		action->setStatusTip(tr("Reset value of %1 to default").arg(property->name()));
+		action->setStatusTip(
+			tr("Reset value of %1 to default").arg(property->name()));
 
 		bool resettable = (nullptr != multiProperty)
 			? multiProperty->hasResettableValues()
@@ -142,8 +150,9 @@ void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 
 		if (resettable)
 		{
-			QObject::connect(action, &QAction::triggered,
-							 this, &QObjectPropertyWidget::onResetTriggered);
+			QObject::connect(
+				action, &QAction::triggered,
+				this, &QObjectPropertyWidget::onResetTriggered);
 		}
 
 		menu.exec(event->globalPos());
@@ -160,8 +169,10 @@ QtnPropertyConnector *QObjectPropertyWidget::getPropertyConnector() const
 	auto property = getActiveProperty();
 
 	if (nullptr != property)
-		return property->findChild<QtnPropertyConnector *>(QString(),
-														Qt::FindDirectChildrenOnly);
+	{
+		return property->findChild<QtnPropertyConnector *>(
+			QString(), Qt::FindDirectChildrenOnly);
+	}
 
 	return nullptr;
 }
@@ -172,8 +183,10 @@ void QObjectPropertyWidget::connectObjects()
 	{
 		auto object = *selectedObjects.begin();
 		auto set = qtnCreateQObjectPropertySet(object);
+
 		if (nullptr != set)
 			set->setParent(this);
+
 		setPropertySet(set);
 
 		connectObject(object);
@@ -181,12 +194,16 @@ void QObjectPropertyWidget::connectObjects()
 	if (selectedObjects.size() > 1)
 	{
 		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects);
+
 		if (nullptr != set)
 			set->setParent(this);
+
 		setPropertySet(set);
 
 		for (auto object : selectedObjects)
+		{
 			connectObject(object);
+		}
 	}
 
 	hack();
@@ -196,8 +213,9 @@ void QObjectPropertyWidget::connectObject(QObject *object)
 {
 	Q_ASSERT(nullptr != object);
 
-	QObject::connect(object, &QObject::destroyed,
-					 this, &QObjectPropertyWidget::onObjectDestroyed);
+	QObject::connect(
+		object, &QObject::destroyed,
+		this, &QObjectPropertyWidget::onObjectDestroyed);
 }
 
 void QObjectPropertyWidget::disconnectObjects()
@@ -218,8 +236,9 @@ void QObjectPropertyWidget::disconnectObject(QObject *object)
 {
 	Q_ASSERT(nullptr != object);
 
-	QObject::disconnect(object, &QObject::destroyed,
-						this, &QObjectPropertyWidget::onObjectDestroyed);
+	QObject::disconnect(
+		object, &QObject::destroyed,
+		this, &QObjectPropertyWidget::onObjectDestroyed);
 }
 
 void QObjectPropertyWidget::hack()

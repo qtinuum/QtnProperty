@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,16 +18,17 @@
 #include "PropertyEnumFlags.h"
 
 QtnPropertyEnumFlagsBase::QtnPropertyEnumFlagsBase(QObject *parent)
-	: QtnSinglePropertyBase<QtnEnumFlagsValueType>(parent),
-	  m_enumInfo(0)
+	: QtnSinglePropertyBase<QtnEnumFlagsValueType>(parent)
+	, m_enumInfo(0)
 {
 	// collapsed by default
 	addState(QtnPropertyStateCollapsed);
 }
 
-bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString& str, bool edit)
+bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString &str, bool edit)
 {
-	static QRegExp parserEnumFlags("^\\s*([^|\\s]+)\\s*\\|(.+)$", Qt::CaseInsensitive);
+	static QRegExp parserEnumFlags(
+		"^\\s*([^|\\s]+)\\s*\\|(.+)$", Qt::CaseInsensitive);
 
 	if (!m_enumInfo)
 		return false;
@@ -40,29 +41,32 @@ bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString& str, bool edit)
 		while (parserEnumFlags.exactMatch(enumStr))
 		{
 			QStringList params = parserEnumFlags.capturedTexts();
+
 			if (params.size() != 3)
 				return false;
 
-			const QtnEnumValueInfo* enumValue = m_enumInfo->fromStr(params[1]);
+			const QtnEnumValueInfo *enumValue = m_enumInfo->fromStr(params[1]);
+
 			if (!enumValue)
 				return false;
 
-			val = val|enumValue->value();
+			val = val | enumValue->value();
 
 			enumStr = params[2];
 		}
 
-		const QtnEnumValueInfo* enumValue = m_enumInfo->fromStr(enumStr);
+		const QtnEnumValueInfo *enumValue = m_enumInfo->fromStr(enumStr);
+
 		if (!enumValue)
 			return false;
 
-		val = val|enumValue->value();
+		val = val | enumValue->value();
 	}
 
 	return setValue(val, edit);
 }
 
-bool QtnPropertyEnumFlagsBase::toStrImpl(QString& str) const
+bool QtnPropertyEnumFlagsBase::toStrImpl(QString &str) const
 {
 	if (!m_enumInfo)
 		return false;
@@ -76,7 +80,9 @@ bool QtnPropertyEnumFlagsBase::toStrImpl(QString& str) const
 	}
 
 	QString strValues;
-	m_enumInfo->forEachEnumValue([&strValues, v, this](const QtnEnumValueInfo& value)->bool {
+	m_enumInfo->forEachEnumValue(
+		[&strValues, v, this](const QtnEnumValueInfo &value) -> bool
+	{
 		if (v & value.value())
 		{
 			if (!strValues.isEmpty())
@@ -101,9 +107,10 @@ QtnPropertyEnumFlags::QtnPropertyEnumFlags(QObject *parent)
 {
 }
 
-QString QtnPropertyEnumFlags::getFlagLabelDescription(const QString &flag_name, const QString &owner_name)
+QString QtnPropertyEnumFlags::getFlagLabelDescription(
+	const QString &flagName, const QString &ownerName)
 {
-	return tr("%1 flag for %2").arg(flag_name, owner_name);
+	return tr("%1 flag for %2").arg(flagName, ownerName);
 }
 
 QtnPropertyEnumFlagsCallback::QtnPropertyEnumFlagsCallback(QObject *parent)

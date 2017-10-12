@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,11 +24,12 @@
 #include <QColorDialog>
 
 class QtnPropertyQColorLineEditBttnHandler
-	: public QtnPropertyEditorBttnHandler<QtnPropertyQColorBase, QtnLineEditBttn>
+	: public QtnPropertyEditorBttnHandler<QtnPropertyQColorBase,
+										  QtnLineEditBttn>
 {
 public:
-	QtnPropertyQColorLineEditBttnHandler(QtnPropertyQColorBase &property,
-										 QtnLineEditBttn &editor);
+	QtnPropertyQColorLineEditBttnHandler(
+		QtnPropertyQColorBase &property, QtnLineEditBttn &editor);
 
 protected:
 	virtual void onToolButtonClick() override;
@@ -40,22 +41,27 @@ private:
 };
 
 static bool regQColorDelegate = QtnPropertyDelegateFactory::staticInstance()
-								.registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
-								, &qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>
-								, "LineEditBttn");
+	.registerDelegateDefault(
+		&QtnPropertyQColorBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>,
+		"LineEditBttn");
 
-QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(QtnPropertyQColorBase& owner)
-	: QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner),
-	  m_shape(QtnColorDelegateShapeSquare)
+QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(
+	QtnPropertyQColorBase &owner)
+	: QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner)
+	, m_shape(QtnColorDelegateShapeSquare)
 {
 }
 
-void QtnPropertyDelegateQColor::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
+void QtnPropertyDelegateQColor::applyAttributesImpl(
+	const QtnPropertyDelegateAttributes &attributes)
 {
 	qtnGetAttribute(attributes, "shape", m_shape);
 }
 
-void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+void QtnPropertyDelegateQColor::drawValueImpl(
+	QStylePainter &painter, const QRect &rect,
+	const QStyle::State &state, bool *needTooltip) const
 {
 	QColor value = owner().value();
 
@@ -72,10 +78,11 @@ void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRec
 			painter.fillRect(colorRect, Qt::black);
 			colorRect.adjust(1, 1, -1, -1);
 			painter.fillRect(colorRect, value);
-		}
-		else if (m_shape == QtnColorDelegateShapeCircle)
+		} else
+		if (m_shape == QtnColorDelegateShapeCircle)
 		{
-			bool oldAntiAliasing = painter.testRenderHint(QPainter::Antialiasing);
+			bool oldAntiAliasing = painter.testRenderHint(
+					QPainter::Antialiasing);
 			painter.setRenderHint(QPainter::Antialiasing);
 
 			QPainterPath path;
@@ -91,13 +98,15 @@ void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter& painter, const QRec
 
 	if (textRect.isValid())
 	{
-		QtnPropertyDelegateTyped<QtnPropertyQColorBase>::drawValueImpl(painter, textRect, state, needTooltip);
+		QtnPropertyDelegateTyped<QtnPropertyQColorBase>::drawValueImpl(
+			painter, textRect, state, needTooltip);
 	}
 }
 
-QWidget* QtnPropertyDelegateQColor::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+QWidget *QtnPropertyDelegateQColor::createValueEditorImpl(
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	QtnLineEditBttn* editor = new QtnLineEditBttn(parent);
+	QtnLineEditBttn *editor = new QtnLineEditBttn(parent);
 	editor->setGeometry(rect);
 
 	new QtnPropertyQColorLineEditBttnHandler(owner(), *editor);
@@ -110,13 +119,14 @@ QWidget* QtnPropertyDelegateQColor::createValueEditorImpl(QWidget* parent, const
 	return editor;
 }
 
-bool QtnPropertyDelegateQColor::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQColor::propertyValueToStr(QString &strValue) const
 {
 	strValue = owner().value().name();
 	return true;
 }
 
-QtnPropertyQColorLineEditBttnHandler::QtnPropertyQColorLineEditBttnHandler(QtnPropertyQColorBase &property, QtnLineEditBttn &editor)
+QtnPropertyQColorLineEditBttnHandler::QtnPropertyQColorLineEditBttnHandler(
+	QtnPropertyQColorBase &property, QtnLineEditBttn &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
 {
 	if (!property.isEditableByUser())
@@ -127,10 +137,12 @@ QtnPropertyQColorLineEditBttnHandler::QtnPropertyQColorLineEditBttnHandler(QtnPr
 
 	updateEditor();
 	editor.lineEdit->installEventFilter(this);
-	QObject::connect(editor.toolButton, &QToolButton::clicked,
-					 this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
-	QObject::connect(editor.lineEdit, &QLineEdit::editingFinished,
-					 this, &QtnPropertyQColorLineEditBttnHandler::onEditingFinished);
+	QObject::connect(
+		editor.toolButton, &QToolButton::clicked,
+		this, &QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
+	QObject::connect(
+		editor.lineEdit, &QLineEdit::editingFinished,
+		this, &QtnPropertyQColorLineEditBttnHandler::onEditingFinished);
 }
 
 void QtnPropertyQColorLineEditBttnHandler::onToolButtonClick()
@@ -148,13 +160,15 @@ void QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked(bool)
 {
 	auto property = &this->property();
 	volatile bool destroyed = false;
-	auto connection = QObject::connect(property, &QObject::destroyed, [&destroyed]() mutable
+	auto connection = QObject::connect(
+			property, &QObject::destroyed, [&destroyed]() mutable
 	{
 		destroyed = true;
 	});
 	reverted = true;
 	auto dialog = new QColorDialog(property->value(), editorBase());
 	auto dialogContainer = connectDialog(dialog);
+
 	if (dialog->exec() == QDialog::Accepted && !destroyed)
 	{
 		property->edit(dialog->currentColor());
@@ -162,6 +176,7 @@ void QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked(bool)
 
 	if (!destroyed)
 		QObject::disconnect(connection);
+
 	Q_UNUSED(dialogContainer);
 }
 

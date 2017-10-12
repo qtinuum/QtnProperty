@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,8 @@ QtnPropertyConnector::QtnPropertyConnector(QtnPropertyBase *parent)
 {
 }
 
-void QtnPropertyConnector::connectProperty(QObject *object, const QMetaProperty &metaProperty)
+void QtnPropertyConnector::connectProperty(
+	QObject *object, const QMetaProperty &metaProperty)
 {
 	this->object = object;
 	this->metaProperty = metaProperty;
@@ -36,13 +37,17 @@ void QtnPropertyConnector::connectProperty(QObject *object, const QMetaProperty 
 	QObject::connect(object, metaProperty.notifySignal(), this, slot);
 
 	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
+
 	if (nullptr != stateProvider)
 	{
 		auto srcMetaObject = object->metaObject();
-		auto signal = srcMetaObject->method(srcMetaObject->indexOfSignal("modifiedSetChanged()"));
+		auto signal = srcMetaObject->method(
+				srcMetaObject->indexOfSignal("modifiedSetChanged()"));
 		Q_ASSERT(signal.isValid());
 
-		slot = metaObject->method(metaObject->indexOfSlot("onModifiedSetChanged()"));
+		slot = metaObject->method(
+				metaObject->indexOfSlot(
+					"onModifiedSetChanged()"));
 		QObject::connect(object, signal, this, slot);
 	}
 }
@@ -61,7 +66,9 @@ void QtnPropertyConnector::resetPropertyValue(bool edit)
 
 		if (!property->valueIsDefault() && property->isEditableByUser())
 		{
-			QtnPropertyChangeReason reasons = QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
+			QtnPropertyChangeReason reasons = QtnPropertyChangeReasonNewValue |
+				QtnPropertyChangeReasonResetValue;
+
 			if (edit)
 				reasons |= QtnPropertyChangeReasonEditValue;
 
@@ -75,6 +82,7 @@ void QtnPropertyConnector::resetPropertyValue(bool edit)
 void QtnPropertyConnector::onValueChanged()
 {
 	auto property = dynamic_cast<QtnPropertyBase *>(parent());
+
 	if (nullptr != property)
 	{
 		property->postUpdateEvent(QtnPropertyChangeReasonNewValue);
@@ -84,11 +92,13 @@ void QtnPropertyConnector::onValueChanged()
 void QtnPropertyConnector::onModifiedSetChanged()
 {
 	auto property = dynamic_cast<QtnPropertyBase *>(parent());
+
 	if (nullptr != property)
 	{
 		QtnPropertyState state;
 
 		auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
+
 		if (nullptr != stateProvider)
 			state = stateProvider->getPropertyState(metaProperty);
 

@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,9 @@
 
 #include "Auxiliary/PropertyTemplates.h"
 
-template <typename VALUE_T, typename FIELD_PROP_T, typename FIELD_T = typename FIELD_PROP_T::ValueType>
+template <typename VALUE_T,
+		  typename FIELD_PROP_T,
+		  typename FIELD_T = typename FIELD_PROP_T::ValueType>
 class QtnStructPropertyBase : public QtnSinglePropertyBase<VALUE_T>
 {
 public:
@@ -36,19 +38,22 @@ protected:
 	{
 	}
 
-	QtnProperty *createFieldProperty(const QString &name, const QString &desc_fmt,
-									 FieldValueType (VALUE_T::*get)() const,
-									 void (VALUE_T::*set)(FieldValueType))
+	QtnProperty *createFieldProperty(
+		const QString &name, const QString &desc_fmt,
+		FieldValueType (VALUE_T::*get)() const,
+		void (VALUE_T::*set)(FieldValueType))
 	{
 		auto result = new FieldProperty(nullptr);
 
 		result->setName(name);
 		result->setDescription(desc_fmt.arg(this->name()));
-		result->setCallbackValueGet([this, get]()->CallbackValueType
+		result->setCallbackValueGet(
+			[this, get]() -> CallbackValueType
 		{
 			return (Inherited::value().*get)();
 		});
-		result->setCallbackValueSet([this, set](CallbackValueType new_value)
+		result->setCallbackValueSet(
+			[this, set](CallbackValueType new_value)
 		{
 			auto rect = Inherited::value();
 			(rect.*set)(new_value);

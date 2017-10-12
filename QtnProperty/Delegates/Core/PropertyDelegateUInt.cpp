@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,8 +32,7 @@ class QtnPropertyUIntSpinBoxHandler : public
 {
 public:
 	QtnPropertyUIntSpinBoxHandler(
-		QtnPropertyUIntBase &property,
-		QtnUnsignedSpinBox &editor);
+		QtnPropertyUIntBase &property, QtnInt64SpinBox &editor);
 
 private:
 	virtual void updateEditor() override;
@@ -51,9 +50,13 @@ static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
 		, &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
 		, "SpinBox");
 
+QtnPropertyDelegateUInt::QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner)
+	: QtnPropertyDelegateTyped<QtnPropertyUIntBase>(owner)
+{
+}
+
 QWidget *QtnPropertyDelegateUInt::createValueEditorImpl(
-	QWidget *parent, const
-	QRect &rect, QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnUnsignedSpinBox(parent);
 	spinBox->setGeometry(rect);

@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,29 +23,33 @@
 #include <QLineEdit>
 
 static bool regQPointDelegate = QtnPropertyDelegateFactory::staticInstance()
-								.registerDelegateDefault(&QtnPropertyQPointBase::staticMetaObject
-								, &qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>
-								, "XY");
+	.registerDelegateDefault(
+		&QtnPropertyQPointBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>,
+		"XY");
 
-QtnPropertyDelegateQPoint::QtnPropertyDelegateQPoint(QtnPropertyQPointBase& owner)
+QtnPropertyDelegateQPoint::QtnPropertyDelegateQPoint(
+	QtnPropertyQPointBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointBase>(owner)
 {
 	addSubProperty(qtnCreateXProperty(0, &owner));
 	addSubProperty(qtnCreateYProperty(0, &owner));
 }
 
-QWidget* QtnPropertyDelegateQPoint::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+QWidget *QtnPropertyDelegateQPoint::createValueEditorImpl(
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool QtnPropertyDelegateQPoint::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateQPoint::propertyValueToStr(QString &strValue) const
 {
 	auto value = owner().value();
 
 	QLocale locale;
-	strValue = QtnPropertyQPoint::getToStringFormat().arg(locale.toString(value.x()),
-														  locale.toString(value.y()));
+	strValue = QtnPropertyQPoint::getToStringFormat().arg(
+			locale.toString(value.x()),
+			locale.toString(value.y()));
 
 	return true;
 }

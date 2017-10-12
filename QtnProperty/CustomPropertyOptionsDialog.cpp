@@ -41,6 +41,7 @@ void BasePropertyDialog::initWithCount(
 {
 	if (actual_index < 0)
 		actual_index = existing_count;
+
 	result_index = -1;
 	result_name = "";
 
@@ -85,6 +86,7 @@ bool BasePropertyDialog::execute()
 bool BasePropertyDialog::ValidateInput()
 {
 	auto name_edit = GetNameEdit();
+
 	if (name_edit->isVisible())
 	{
 		auto name = name_edit->text();
@@ -115,6 +117,7 @@ void BasePropertyDialog::on_buttonBox_clicked(QAbstractButton *button)
 		{
 			if (ValidateInput())
 				accept();
+
 			break;
 		}
 
@@ -154,6 +157,7 @@ bool CustomPropertyOptionsDialog::execute(
 	CustomPropertyData &result)
 {
 	setReadOnly(false);
+
 	if (BasePropertyDialog::execute())
 	{
 		result.index = result_index;

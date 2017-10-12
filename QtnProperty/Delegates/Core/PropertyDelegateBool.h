@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,35 +22,44 @@
 
 class QtnPropertyBoolBase;
 
-class QTN_IMPORT_EXPORT QtnPropertyDelegateBoolCheck: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
+class QTN_IMPORT_EXPORT QtnPropertyDelegateBoolCheck
+	: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateBoolCheck)
 
 public:
-	QtnPropertyDelegateBoolCheck(QtnPropertyBoolBase& owner)
-		: QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
-	{
-	}
+	QtnPropertyDelegateBoolCheck(QtnPropertyBoolBase &owner);
 
 protected:
-	void drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip = nullptr) const override;
-	QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
+	virtual void drawValueImpl(
+		QStylePainter &painter, const QRect &rect,
+		const QStyle::State &state, bool *needTooltip = nullptr) const override;
+
+	virtual QWidget *createValueEditorImpl(
+		QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
 };
 
-class QTN_IMPORT_EXPORT QtnPropertyDelegateBoolCombobox: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
+class QTN_IMPORT_EXPORT QtnPropertyDelegateBoolCombobox
+	: public QtnPropertyDelegateTyped<QtnPropertyBoolBase>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateBoolCombobox)
 
 public:
-	QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase& owner);
+	QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase &owner);
 
 protected:
-	void applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes) override;
-	QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-	bool propertyValueToStr(QString& strValue) const override;
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateAttributes &attributes) override;
+
+	virtual QWidget *createValueEditorImpl(
+		QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
+
+	virtual bool propertyValueToStr(QString &strValue) const override;
 
 private:
 	QString m_labels[2];
 };
 
-#endif // PROPERTY_DELEGATE_BOOL_H
+#endif	// PROPERTY_DELEGATE_BOOL_H
