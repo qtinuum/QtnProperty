@@ -85,7 +85,7 @@ void QtnPropertyConnector::onValueChanged()
 
 	if (nullptr != property)
 	{
-		property->postUpdateEvent(QtnPropertyChangeReasonNewValue);
+		property->postUpdateEvent(QtnPropertyChangeReasonNewValue, 20);
 	}
 }
 

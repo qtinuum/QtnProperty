@@ -169,6 +169,7 @@ QtnPropertyBase::QtnPropertyBase(QObject *parent)
 	, m_stateLocal(QtnPropertyStateNone)
 	, m_stateInherited(QtnPropertyStateNone)
 	, changeReasons(0)
+	, timer(0)
 	, updateEvent(nullptr)
 {
 	qtnAddPropertyAsChild(parent, this, false);
@@ -179,14 +180,29 @@ bool QtnPropertyBase::event(QEvent *e)
 	if (e == updateEvent)
 	{
 		updateEvent = nullptr;
-		int reasons = changeReasons;
 
-		if (reasons != 0)
+		if (changeReasons != 0)
 		{
-			emit propertyDidChange(QtnPropertyChangeReason(reasons));
+			emit propertyDidChange(QtnPropertyChangeReason(changeReasons));
 			changeReasons = 0;
-			return true;
 		}
+
+		return true;
+	}
+
+	if (e->type() == QEvent::Timer &&
+		static_cast<QTimerEvent *>(e)->timerId() == timer)
+	{
+		killTimer(timer);
+		timer = 0;
+
+		if (changeReasons != 0)
+		{
+			emit propertyDidChange(QtnPropertyChangeReason(changeReasons));
+			changeReasons = 0;
+		}
+
+		return true;
 	}
 
 	return QObject::event(e);
@@ -635,10 +651,18 @@ void QtnPropertyBase::disconnectMasterState()
 	}
 }
 
-void QtnPropertyBase::postUpdateEvent(QtnPropertyChangeReason reason)
+void QtnPropertyBase::postUpdateEvent(
+	QtnPropertyChangeReason reason, int afterMS)
 {
 	changeReasons |= reason;
 
+	if (afterMS > 0)
+	{
+		if (timer == 0)
+		{
+			timer = startTimer(afterMS);
+		}
+	} else
 	if (nullptr == updateEvent)
 	{
 		updateEvent = new QEvent(QEvent::User);

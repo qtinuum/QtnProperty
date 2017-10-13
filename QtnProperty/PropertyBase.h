@@ -102,7 +102,7 @@ public:
 	virtual void connectMasterState(QtnPropertyBase *masterProperty);
 	virtual void disconnectMasterState();
 
-	void postUpdateEvent(QtnPropertyChangeReason reason);
+	void postUpdateEvent(QtnPropertyChangeReason reason, int afterMS = 0);
 
 public:
 	// properties for scripting
@@ -159,6 +159,7 @@ private:
 	QtnPropertyState m_stateInherited;
 
 	int changeReasons;
+	int timer;
 	QEvent *updateEvent;
 
 	friend class QtnPropertySet;
