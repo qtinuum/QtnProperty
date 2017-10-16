@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-		   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,9 +20,24 @@
 
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorAux.h"
+#include "Delegates/PropertyEditorHandler.h"
+#include "Utils/QtnInt64SpinBox.h"
+#include "MultiProperty.h"
 
 #include <QLocale>
 #include <QKeyEvent>
+
+class QtnPropertyInt64SpinBoxHandler
+	: public QtnPropertyEditorHandlerVT<QtnPropertyInt64Base,
+										QtnInt64SpinBox>
+{
+public:
+	QtnPropertyInt64SpinBoxHandler(
+		QtnPropertyInt64Base &property, QtnInt64SpinBox &editor);
+
+private:
+	virtual void updateEditor() override;
+};
 
 QtnPropertyInt64Base::QtnPropertyInt64Base(QObject *parent)
 	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint64> >(parent)
@@ -33,9 +48,11 @@ bool QtnPropertyInt64Base::fromStrImpl(const QString &str, bool edit)
 {
 	bool ok = false;
 	ValueType value = str.toLongLong(&ok);
+
 	if (!ok)
 	{
 		value = QLocale().toLongLong(str, &ok);
+
 		if (!ok)
 			return false;
 	}
@@ -53,6 +70,7 @@ bool QtnPropertyInt64Base::fromVariantImpl(const QVariant &var, bool edit)
 {
 	bool ok = false;
 	ValueType value = var.toLongLong(&ok);
+
 	if (!ok)
 		return false;
 
@@ -78,39 +96,8 @@ void QtnPropertyInt64::Register()
 }
 
 QtnPropertyDelegateInt64::QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner)
-	: QObject(nullptr)
-	, QtnPropertyDelegateTyped<QtnPropertyInt64Base>(owner)
-	, editor(nullptr)
-	, reverted(false)
-	, applied(true)
+	: QtnPropertyDelegateTyped<QtnPropertyInt64Base>(owner)
 {
-
-}
-
-bool QtnPropertyDelegateInt64::eventFilter(QObject *obj, QEvent *event)
-{
-	if (event->type() == QEvent::KeyPress)
-	{
-		auto keyEvent = static_cast<QKeyEvent *>(event);
-
-		switch (keyEvent->key())
-		{
-			case Qt::Key_Escape:
-				reverted = true;
-				updateEditor();
-				break;
-
-			case Qt::Key_Enter:
-			case Qt::Key_Return:
-				applied = true;
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	return QObject::eventFilter(obj, event);
 }
 
 bool QtnPropertyDelegateInt64::acceptKeyPressedForInplaceEditImpl(
@@ -124,23 +111,19 @@ bool QtnPropertyDelegateInt64::acceptKeyPressedForInplaceEditImpl(
 }
 
 QWidget *QtnPropertyDelegateInt64::createValueEditorImpl(
-	QWidget *parent, const
-	QRect &rect, QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	editor = createValueEditorLineEdit(
-			parent, rect,
-			!owner().isEditableByUser(), inplaceInfo);
+	auto spinBox = new QtnInt64SpinBox(parent);
+	spinBox->setGeometry(rect);
 
-	editor->installEventFilter(this);
-	QObject::connect(
-		editor, &QLineEdit::editingFinished,
-		this, &QtnPropertyDelegateInt64::onEditingFinished);
+	new QtnPropertyInt64SpinBoxHandler(owner(), *spinBox);
 
-	QObject::connect(
-		editor, &QObject::destroyed,
-		this, &QtnPropertyDelegateInt64::onEditorDestroyed);
+	spinBox->selectAll();
 
-	return editor;
+	if (owner().isEditableByUser())
+		qtnInitNumEdit(spinBox, inplaceInfo, NUM_SIGNED_INT);
+
+	return spinBox;
 }
 
 bool QtnPropertyDelegateInt64::propertyValueToStr(QString &strValue) const
@@ -150,48 +133,49 @@ bool QtnPropertyDelegateInt64::propertyValueToStr(QString &strValue) const
 	return true;
 }
 
-void QtnPropertyDelegateInt64::onEditingFinished()
-{
-	bool ok = false;
-
-	if (!reverted && (applied || !owner().valueIsHidden()))
-	{
-		auto value = QLocale().toLongLong(editor->text(), &ok);
-		ok = ok && value >= owner().minValue() && value <= owner().maxValue();
-
-		if (ok)
-			owner().edit(value);
-	}
-
-	if (!ok)
-		updateEditor();
-
-	reverted = false;
-	applied = false;
-
-}
-
-void QtnPropertyDelegateInt64::onEditorDestroyed()
-{
-	editor = nullptr;
-}
-
-void QtnPropertyDelegateInt64::updateEditor()
-{
-	if (owner().valueIsHidden())
-		editor->clear();
-	else
-	{
-		QString str;
-		propertyValueToStr(str);
-		str.remove(QLocale().groupSeparator());
-		editor->setText(str);
-		editor->selectAll();
-	}
-}
-
 QtnPropertyInt64Callback::QtnPropertyInt64Callback(QObject *parent)
 	: QtnSinglePropertyCallback<QtnPropertyInt64Base>(parent)
 {
+}
 
+QtnPropertyInt64SpinBoxHandler::QtnPropertyInt64SpinBoxHandler(
+	QtnPropertyInt64Base &property, QtnInt64SpinBox &editor)
+	: QtnPropertyEditorHandlerVT(property, editor)
+{
+	if (!property.isEditableByUser())
+		editor.setReadOnly(true);
+
+	editor.setRange(property.minValue(), property.maxValue());
+	editor.setSingleStep(property.stepValue());
+
+	updateEditor();
+
+	editor.setKeyboardTracking(false);
+	editor.installEventFilter(this);
+	QObject::connect(
+		&editor,
+		static_cast<void (QtnInt64SpinBox::*)(qint64)>(
+			&QtnInt64SpinBox::valueChanged),
+		this,
+		&QtnPropertyInt64SpinBoxHandler::onValueChanged);
+}
+
+void QtnPropertyInt64SpinBoxHandler::updateEditor()
+{
+	updating++;
+
+	if (property().valueIsHidden())
+	{
+		editor().setValue(editor().minimum());
+		editor().setSpecialValueText(
+			QtnMultiProperty::getMultiValuePlaceholder());
+	} else
+	{
+		editor().setValue(property().value());
+		editor().setSpecialValueText(QString());
+	}
+
+	editor().selectAll();
+
+	updating--;
 }

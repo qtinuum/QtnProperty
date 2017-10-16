@@ -113,6 +113,7 @@ QShortcut *QtnPropertyWidgetEx::addShortcutForAction(
 	QObject::connect(
 		shortcut, &QShortcut::activated,
 		action, &QAction::trigger);
+
 	if (QKeySequence::ExactMatch != action->shortcut().matches(seq))
 	{
 		auto shortcut2 = new QShortcut(action->shortcut(), parent);
@@ -153,9 +154,11 @@ void QtnPropertyWidgetEx::cutToClipboard()
 void QtnPropertyWidgetEx::copyToClipboard()
 {
 	auto property = getActiveProperty();
+
 	if (nullptr != property)
 	{
 		auto mime = getPropertyDataForAction(property, Qt::IgnoreAction);
+
 		if (nullptr != mime)
 			QApplication::clipboard()->setMimeData(mime);
 	}
@@ -164,6 +167,7 @@ void QtnPropertyWidgetEx::copyToClipboard()
 void QtnPropertyWidgetEx::pasteFromClipboard()
 {
 	auto data = QApplication::clipboard()->mimeData();
+
 	if (dataHasSupportedFormats(data))
 	{
 		applyPropertyData(data, getActiveProperty(), QtnApplyPosition::Over);
@@ -180,6 +184,7 @@ QMimeData *QtnPropertyWidgetEx::getPropertyDataForAction(
 	Qt::DropAction)
 {
 	QString str;
+
 	if (property->toStr(str))
 	{
 		auto mime = new QMimeData;
@@ -191,11 +196,10 @@ QMimeData *QtnPropertyWidgetEx::getPropertyDataForAction(
 }
 
 bool QtnPropertyWidgetEx::applyPropertyData(
-	const QMimeData *data,
-	QtnPropertyBase *destination,
-	QtnApplyPosition)
+	const QMimeData *data, QtnPropertyBase *destination, QtnApplyPosition)
 {
 	bool result = false;
+
 	if (nullptr != destination)
 	{
 		QtnConnections connections;
@@ -203,6 +207,7 @@ bool QtnPropertyWidgetEx::applyPropertyData(
 		propertyView()->connectPropertyToEdit(destination, connections);
 
 		Q_ASSERT(nullptr != data);
+
 		if (data->hasUrls())
 		{
 			QStringList list;
@@ -238,6 +243,7 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 		case QEvent::MouseButtonPress:
 		{
 			auto mevent = static_cast<QMouseEvent *>(event);
+
 			if (mevent->button() == Qt::LeftButton)
 			{
 				dragStartPos = mevent->pos();
@@ -245,12 +251,14 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 				canRemove = canDeleteProperty(draggedProperty);
 				return true;
 			}
+
 			break;
 		}
 
 		case QEvent::MouseMove:
 		{
 			auto mevent = static_cast<QMouseEvent *>(event);
+
 			if (nullptr != draggedProperty
 				&& 0 != (mevent->buttons() & Qt::LeftButton))
 			{
@@ -263,6 +271,7 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 					return true;
 				}
 			}
+
 			break;
 		}
 
@@ -281,8 +290,7 @@ void QtnPropertyWidgetEx::dragEnterEvent(QDragEnterEvent *event)
 
 void QtnPropertyWidgetEx::dragMoveEvent(QDragMoveEvent *event)
 {
-	if (Qt::ControlModifier == QApplication::keyboardModifiers()
-		|| !canRemove)
+	if (Qt::ControlModifier == QApplication::keyboardModifiers() || !canRemove)
 	{
 		event->setDropAction(Qt::CopyAction);
 		dropAction = Qt::CopyAction;
@@ -317,6 +325,7 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			int partHeight = view->itemHeight() / 3;
 
 			QtnApplyPosition applyPosition;
+
 			if (QRect(
 					rect.left(), rect.top(),
 					rect.width(), partHeight).contains(pos))
@@ -330,9 +339,11 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 				applyPosition = QtnApplyPosition::Over;
 
 			auto data = event->mimeData();
+
 			if (dataHasSupportedFormats(data)
 				&& drop(data, property, applyPosition))
 				event->accept();
+
 			break;
 		}
 
@@ -360,6 +371,7 @@ void QtnPropertyWidgetEx::dropEnd()
 bool QtnPropertyWidgetEx::dragAndDrop()
 {
 	auto data = getPropertyDataForAction(draggedProperty, Qt::CopyAction);
+
 	if (nullptr != data)
 	{
 		auto drag = new QDrag(this);

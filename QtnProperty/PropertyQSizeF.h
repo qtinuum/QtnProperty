@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,9 @@ class QTN_IMPORT_EXPORT QtnPropertyQSizeFBase
 	: public QtnStructPropertyBase<QSizeF, QtnPropertyDoubleCallback>
 {
 	Q_OBJECT
-	QtnPropertyQSizeFBase(const QtnPropertyQSizeFBase& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyQSizeFBase(const QtnPropertyQSizeFBase &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQSizeFBase(QObject *parent);
@@ -38,13 +40,13 @@ public:
 
 protected:
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString& str, bool edit) override;
-	virtual bool toStrImpl(QString& str) const override;
+	virtual bool fromStrImpl(const QString &str, bool edit) override;
+	virtual bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQSizeFBase)
 
 private:
-	QRegExp size_parser;
+	QRegExp sizeParser;
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQSizeFBase, QSizeF)
@@ -53,19 +55,25 @@ class QTN_IMPORT_EXPORT QtnPropertyQSizeFCallback
 	: public QtnSinglePropertyCallback<QtnPropertyQSizeFBase>
 {
 	Q_OBJECT
-	QtnPropertyQSizeFCallback(const QtnPropertyQSizeFCallback& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyQSizeFCallback(
+		const QtnPropertyQSizeFCallback &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQSizeFCallback(QObject *parent);
 
-	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSizeFCallback, QtnPropertyQSizeFBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS2(
+		QtnPropertyQSizeFCallback, QtnPropertyQSizeFBase)
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyQSizeF
 	: public QtnSinglePropertyValue<QtnPropertyQSizeFBase>
 {
 	Q_OBJECT
-	QtnPropertyQSizeF(const QtnPropertyQSizeF& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyQSizeF(const QtnPropertyQSizeF &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQSizeF(QObject *parent);
@@ -81,9 +89,11 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQSizeF
 	Q_DISABLE_COPY(QtnPropertyDelegateQSizeF)
 
 public:
-	QtnPropertyDelegateQSizeF(QtnPropertyQSizeFBase& owner);
+	QtnPropertyDelegateQSizeF(QtnPropertyQSizeFBase &owner);
 
 protected:
-	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo = nullptr) override;
-	virtual bool propertyValueToStr(QString& strValue) const override;
+	virtual QWidget *createValueEditorImpl(
+		QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
+	virtual bool propertyValueToStr(QString &strValue) const override;
 };

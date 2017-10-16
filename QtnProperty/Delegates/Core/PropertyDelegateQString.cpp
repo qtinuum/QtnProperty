@@ -57,13 +57,11 @@ class QtnPropertyQStringLineEditHandler
 {
 public:
 	QtnPropertyQStringLineEditHandler(
-		QtnPropertyQStringBase &property,
-		QLineEdit &editor);
+		QtnPropertyQStringBase &property, QLineEdit &editor);
 
-private:
+protected:
 	virtual void updateEditor() override;
-
-	void onEditingFinished();
+	void updateValue();
 };
 
 class QtnPropertyQStringMultilineEditBttnHandler
@@ -72,8 +70,7 @@ class QtnPropertyQStringMultilineEditBttnHandler
 {
 public:
 	QtnPropertyQStringMultilineEditBttnHandler(
-		QtnPropertyQStringBase &property,
-		QtnLineEditBttn &editor);
+		QtnPropertyQStringBase &property, QtnLineEditBttn &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -149,8 +146,7 @@ bool QtnPropertyDelegateQString::propertyValueToStr(QString &strValue) const
 {
 	strValue = owner().value();
 	auto placeholder = QtnPropertyQString::getPlaceholderStr(
-			strValue,
-			owner().isMultilineEnabled());
+			strValue, owner().isMultilineEnabled());
 
 	if (!placeholder.isEmpty())
 		strValue.swap(placeholder);
@@ -159,10 +155,8 @@ bool QtnPropertyDelegateQString::propertyValueToStr(QString &strValue) const
 }
 
 void QtnPropertyDelegateQString::drawValueImpl(
-	QStylePainter &painter,
-	const QRect &rect,
-	const QStyle::State &state,
-	bool *needTooltip) const
+	QStylePainter &painter, const QRect &rect,
+	const QStyle::State &state, bool *needTooltip) const
 {
 	QPen oldPen = painter.pen();
 
@@ -220,8 +214,7 @@ void QtnPropertyDelegateQStringInvalidBase::drawValueImpl(
 		painter.setPen(m_invalidColor);
 
 	QtnPropertyDelegateQString::drawValueImpl(
-		painter, rect, state,
-		needTooltip);
+		painter, rect, state, needTooltip);
 	painter.setPen(oldPen);
 }
 
@@ -261,21 +254,17 @@ bool QtnPropertyDelegateQStringFile::isPropertyValid() const
 }
 
 class QtnPropertyQStringListComboBoxHandler
-	: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QComboBox>
+	: public QtnPropertyEditorHandlerVT<QtnPropertyQStringBase, QComboBox>
 {
 public:
 	QtnPropertyQStringListComboBoxHandler(
-		QtnPropertyQStringBase &property,
-		QComboBox &editor);
+		QtnPropertyQStringBase &property, QComboBox &editor);
 
 	void applyAttributes(const QtnPropertyDelegateAttributes &attributes);
 
 private:
 	virtual void updateEditor() override;
-
-	void onCurrentTextChanged(const QString &text);
-
-	unsigned updating;
+	virtual void updateValue() override;
 };
 
 QtnPropertyDelegateQStringList::QtnPropertyDelegateQStringList(
@@ -292,9 +281,7 @@ void QtnPropertyDelegateQStringList::applyAttributesImpl(
 }
 
 QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
-	QWidget *parent,
-	const QRect &rect,
-	QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	if (!owner().isEditableByUser())
 	{
@@ -319,8 +306,7 @@ QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
 
 QtnPropertyQStringListComboBoxHandler::QtnPropertyQStringListComboBoxHandler(
 	QtnPropertyQStringBase &property, QComboBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, updating(0)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	updateEditor();
 
@@ -329,8 +315,7 @@ QtnPropertyQStringListComboBoxHandler::QtnPropertyQStringListComboBoxHandler(
 
 	QObject::connect(
 		&editor, &QComboBox::currentTextChanged,
-		this, &QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged,
-		Qt::QueuedConnection);
+		this, &QtnPropertyQStringListComboBoxHandler::onValueChanged);
 }
 
 void QtnPropertyQStringListComboBoxHandler::applyAttributes(
@@ -361,14 +346,10 @@ void QtnPropertyQStringListComboBoxHandler::updateEditor()
 	updating--;
 }
 
-void QtnPropertyQStringListComboBoxHandler::onCurrentTextChanged(
-	const QString &text)
+void QtnPropertyQStringListComboBoxHandler::updateValue()
 {
-	if (updating > 0)
-		return;
-
 	if (!editor().isEditable() || canApply())
-		property().edit(text);
+		property().edit(newValue);
 
 	applyReset();
 }
@@ -547,9 +528,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()
 		}
 
 		edit->setPlaceholderText(
-			QtnPropertyQString::getPlaceholderStr(
-				text,
-				true));
+			QtnPropertyQString::getPlaceholderStr(text, true));
 		edit->selectAll();
 	}
 }
@@ -597,11 +576,14 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 	dialog->setReadOnly(readonly);
 
 	if (readonly)
+	{
 		dialog->setWindowTitle(
 			QtnPropertyQString::getReadOnlyPropertyTitleFormat()
 			.arg(property->name()));
-	else
+	} else
+	{
 		dialog->setWindowTitle(property->name());
+	}
 
 	dialog->setText(text);
 	dialog->show();
@@ -628,7 +610,7 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 
 QtnPropertyQStringLineEditHandler::QtnPropertyQStringLineEditHandler(
 	QtnPropertyQStringBase &property, QLineEdit &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
+	: QtnPropertyEditorHandler(property, editor)
 {
 	updateEditor();
 
@@ -638,7 +620,7 @@ QtnPropertyQStringLineEditHandler::QtnPropertyQStringLineEditHandler(
 	editor.installEventFilter(this);
 	QObject::connect(
 		&editor, &QLineEdit::editingFinished,
-		this, &QtnPropertyQStringLineEditHandler::onEditingFinished);
+		this, &QtnPropertyQStringLineEditHandler::updateValue);
 }
 
 void QtnPropertyQStringLineEditHandler::updateEditor()
@@ -657,7 +639,7 @@ void QtnPropertyQStringLineEditHandler::updateEditor()
 	}
 }
 
-void QtnPropertyQStringLineEditHandler::onEditingFinished()
+void QtnPropertyQStringLineEditHandler::updateValue()
 {
 	if (canApply())
 		property().edit(editor().text());

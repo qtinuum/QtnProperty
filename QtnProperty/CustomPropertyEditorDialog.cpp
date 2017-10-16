@@ -196,6 +196,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 	auto add_text = tr("New...");
 
 	auto var_property = CustomPropertyWidget::getVarProperty(property);
+
 	if (nullptr != var_property)
 	{
 		switch (var_property->GetType())

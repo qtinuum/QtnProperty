@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,17 +20,17 @@
 #include <QKeyEvent>
 #include <QDebug>
 
-class QtnInplaceEditorHandler: public QObject
+class QtnInplaceEditorHandler : public QObject
 {
 public:
-	bool eventFilter(QObject* watched, QEvent* event) override;
-	void OnEditorDestroyed(QObject* obj);
+	bool eventFilter(QObject *watched, QEvent *event) override;
+	void OnEditorDestroyed(QObject *obj);
 };
 
-static QWidget* g_inplaceEditor = 0;
-static QtnInplaceEditorHandler* g_inplaceEditorHandler = 0;
+static QWidget *g_inplaceEditor = 0;
+static QtnInplaceEditorHandler *g_inplaceEditorHandler = 0;
 
-bool qtnStartInplaceEdit(QWidget* editor)
+bool qtnStartInplaceEdit(QWidget *editor)
 {
 	if (!editor)
 		return false;
@@ -40,7 +40,8 @@ bool qtnStartInplaceEdit(QWidget* editor)
 		qtnStopInplaceEdit(false);
 	}
 
-	QCoreApplication* app = QCoreApplication::instance();
+	QCoreApplication *app = QCoreApplication::instance();
+
 	if (!app)
 	{
 		Q_ASSERT(false);
@@ -55,8 +56,9 @@ bool qtnStartInplaceEdit(QWidget* editor)
 		g_inplaceEditor->setFocus();
 
 	// connect to editor destroyed signal
-	QObject::connect(  g_inplaceEditor, &QObject::destroyed
-					 , g_inplaceEditorHandler, &QtnInplaceEditorHandler::OnEditorDestroyed);
+	QObject::connect(
+		g_inplaceEditor, &QObject::destroyed,
+		g_inplaceEditorHandler, &QtnInplaceEditorHandler::OnEditorDestroyed);
 
 	// install application event filter
 	app->installEventFilter(g_inplaceEditorHandler);
@@ -64,16 +66,16 @@ bool qtnStartInplaceEdit(QWidget* editor)
 	return true;
 }
 
-QWidget* qtnGetInplaceEdit()
+QWidget *qtnGetInplaceEdit()
 {
 	return g_inplaceEditor;
 }
 
-
-void onInplaceWidgetDestroyed(QObject* object)
+void onInplaceWidgetDestroyed(QObject *object)
 {
 	// set focus to parent of inplace widget
-	QWidget* parent = qobject_cast<QWidget*>(object->parent());
+	QWidget *parent = qobject_cast<QWidget *>(object->parent());
+
 	if (parent)
 		parent->setFocus();
 }
@@ -86,18 +88,21 @@ bool qtnStopInplaceEdit(bool delete_later)
 	delete g_inplaceEditorHandler;
 	g_inplaceEditorHandler = 0;
 
-	QObject::connect(g_inplaceEditor, &QObject::destroyed, &onInplaceWidgetDestroyed);
+	QObject::connect(
+		g_inplaceEditor, &QObject::destroyed,
+		&onInplaceWidgetDestroyed);
 
 	if (delete_later)
 		g_inplaceEditor->deleteLater();
 	else
 		delete g_inplaceEditor;
+
 	g_inplaceEditor = 0;
 
 	return true;
 }
 
-bool hasParent(QObject* child, QObject* parent)
+bool hasParent(QObject *child, QObject *parent)
 {
 	if (!child)
 		return false;
@@ -108,7 +113,7 @@ bool hasParent(QObject* child, QObject* parent)
 	return hasParent(child->parent(), parent);
 }
 
-bool QtnInplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
+bool QtnInplaceEditorHandler::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_ASSERT(g_inplaceEditor);
 
@@ -130,7 +135,7 @@ bool QtnInplaceEditorHandler::eventFilter(QObject* watched, QEvent* event)
 	return false;
 }
 
-void QtnInplaceEditorHandler::OnEditorDestroyed(QObject* obj)
+void QtnInplaceEditorHandler::OnEditorDestroyed(QObject *obj)
 {
 	Q_ASSERT(obj == g_inplaceEditor);
 
@@ -138,4 +143,3 @@ void QtnInplaceEditorHandler::OnEditorDestroyed(QObject* obj)
 	g_inplaceEditorHandler = 0;
 	g_inplaceEditor = 0;
 }
-

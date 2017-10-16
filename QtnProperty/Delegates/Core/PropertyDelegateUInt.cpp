@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,29 +20,24 @@
 #include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
-#include "Utils/UnsignedSpinBox.h"
+#include "Utils/QtnInt64SpinBox.h"
+#include "MultiProperty.h"
 
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QLocale>
 
-class QtnPropertyUIntSpinBoxHandler : public
-									QtnPropertyEditorHandler<QtnPropertyUIntBase,
-															 QtnUnsignedSpinBox>
+class QtnPropertyUIntSpinBoxHandler
+	: public QtnPropertyEditorHandlerVT<QtnPropertyUIntBase,
+										QtnInt64SpinBox>
 {
 public:
 	QtnPropertyUIntSpinBoxHandler(
-		QtnPropertyUIntBase &property,
-		QtnUnsignedSpinBox &editor);
+		QtnPropertyUIntBase &property, QtnInt64SpinBox &editor);
 
 private:
 	virtual void updateEditor() override;
-
-	void onTextEdited(const QString &text);
-	void onValueChanged(int value);
-	void onEditingFinished();
-
-	unsigned block;
+	void onValueChanged(qint64 value);
 };
 
 static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -51,11 +46,15 @@ static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
 		, &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
 		, "SpinBox");
 
-QWidget *QtnPropertyDelegateUInt::createValueEditorImpl(
-	QWidget *parent, const
-	QRect &rect, QtnInplaceInfo *inplaceInfo)
+QtnPropertyDelegateUInt::QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner)
+	: QtnPropertyDelegateTyped<QtnPropertyUIntBase>(owner)
 {
-	auto spinBox = new QtnUnsignedSpinBox(parent);
+}
+
+QWidget *QtnPropertyDelegateUInt::createValueEditorImpl(
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+{
+	auto spinBox = new QtnInt64SpinBox(parent);
 	spinBox->setGeometry(rect);
 
 	new QtnPropertyUIntSpinBoxHandler(owner(), *spinBox);
@@ -85,17 +84,14 @@ bool QtnPropertyDelegateUInt::propertyValueToStr(QString &strValue) const
 }
 
 QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(
-	QtnPropertyUIntBase &property, QtnUnsignedSpinBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, block(0)
+	QtnPropertyUIntBase &property, QtnInt64SpinBox &editor)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	if (!property.isEditableByUser())
 		editor.setReadOnly(true);
 
-	editor.setRange(
-		QtnUnsignedSpinBox::qtn_u2i(property.minValue()),
-		QtnUnsignedSpinBox::qtn_u2i(property.maxValue()));
-	editor.setSingleStep(QtnUnsignedSpinBox::qtn_u2i(property.stepValue()));
+	editor.setRange(property.minValue(), property.maxValue());
+	editor.setSingleStep(property.stepValue());
 
 	updateEditor();
 
@@ -103,63 +99,33 @@ QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(
 	editor.installEventFilter(this);
 	QObject::connect(
 		&editor,
-		static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+		static_cast<void (QtnInt64SpinBox::*)(qint64)>(
+			&QtnInt64SpinBox::valueChanged),
 		this,
-		&QtnPropertyUIntSpinBoxHandler::onValueChanged,
-		Qt::QueuedConnection);
-	QObject::connect(
-		editor.lineEdit(),
-		&QLineEdit::textEdited,
-		this,
-		&QtnPropertyUIntSpinBoxHandler::onTextEdited,
-		Qt::QueuedConnection);
-	QObject::connect(
-		&editor,
-		&QSpinBox::editingFinished,
-		this,
-		&QtnPropertyUIntSpinBoxHandler::onEditingFinished,
-		Qt::QueuedConnection);
+		&QtnPropertyUIntSpinBoxHandler::onValueChanged);
 }
 
 void QtnPropertyUIntSpinBoxHandler::updateEditor()
 {
-	block++;
+	updating++;
 
 	if (property().valueIsHidden())
-		editor().setValue(0);
-	else
-		editor().setValue(QtnUnsignedSpinBox::qtn_u2i(property().value()));
+	{
+		editor().setValue(editor().minimum());
+		editor().setSpecialValueText(
+			QtnMultiProperty::getMultiValuePlaceholder());
+	} else
+	{
+		editor().setValue(property().value());
+		editor().setSpecialValueText(QString());
+	}
 
 	editor().selectAll();
 
-	block--;
+	updating--;
 }
 
-void QtnPropertyUIntSpinBoxHandler::onTextEdited(const QString &text)
+void QtnPropertyUIntSpinBoxHandler::onValueChanged(qint64 value)
 {
-	bool ok = false;
-	auto value = text.toUInt(&ok);
-
-	if (ok)
-	{
-		block++;
-		editor().setValue(QtnUnsignedSpinBox::qtn_u2i(value));
-		block--;
-	}
-}
-
-void QtnPropertyUIntSpinBoxHandler::onValueChanged(int value)
-{
-	if (block > 0)
-		return;
-
-	property().edit(QtnUnsignedSpinBox::qtn_i2u(value));
-}
-
-void QtnPropertyUIntSpinBoxHandler::onEditingFinished()
-{
-	if (canApply())
-		property().edit(QtnUnsignedSpinBox::qtn_i2u(editor().value()));
-
-	applyReset();
+	QtnPropertyEditorHandlerVT::onValueChanged(ValueTypeStore(value));
 }

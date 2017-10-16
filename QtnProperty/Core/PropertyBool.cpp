@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,19 +19,28 @@
 
 #include <QCoreApplication>
 
-static bool getBoolValue(QString boolText, bool& success)
+static bool getBoolValue(QString boolText, bool &success)
 {
 	success = true;
-	if (0 == boolText.compare(QtnPropertyBool::getBoolText(false, true), Qt::CaseInsensitive))
+
+	if (0 == boolText.compare(
+			QtnPropertyBool::getBoolText(false, true),
+			Qt::CaseInsensitive))
 		return false;
 
-	if (0 == boolText.compare(QtnPropertyBool::getBoolText(true, true), Qt::CaseInsensitive))
+	if (0 == boolText.compare(
+			QtnPropertyBool::getBoolText(true, true),
+			Qt::CaseInsensitive))
 		return true;
 
-	if (0 == boolText.compare(QtnPropertyBool::getBoolText(false, false), Qt::CaseInsensitive))
+	if (0 == boolText.compare(
+			QtnPropertyBool::getBoolText(false, false),
+			Qt::CaseInsensitive))
 		return false;
 
-	if (0 == boolText.compare(QtnPropertyBool::getBoolText(true, false), Qt::CaseInsensitive))
+	if (0 == boolText.compare(
+			QtnPropertyBool::getBoolText(true, false),
+			Qt::CaseInsensitive))
 		return true;
 
 	if (boolText.toULongLong(&success) != 0)
@@ -46,7 +55,7 @@ QtnPropertyBoolBase::QtnPropertyBoolBase(QObject *parent)
 {
 }
 
-bool QtnPropertyBoolBase::fromStrImpl(const QString& str, bool edit)
+bool QtnPropertyBoolBase::fromStrImpl(const QString &str, bool edit)
 {
 	bool success = false;
 	bool value = getBoolValue(str.trimmed(), success);
@@ -57,7 +66,7 @@ bool QtnPropertyBoolBase::fromStrImpl(const QString& str, bool edit)
 	return setValue(value, edit);
 }
 
-bool QtnPropertyBoolBase::toStrImpl(QString& str) const
+bool QtnPropertyBoolBase::toStrImpl(QString &str) const
 {
 	bool boolValue = value();
 	str = QtnPropertyBool::getBoolText(boolValue, true);
@@ -77,7 +86,8 @@ QString QtnPropertyBool::getBoolText(bool value, bool internal)
 	if (internal)
 		return QString(value ? pTrue : pFalse);
 
-	return QCoreApplication::translate("QtnPropertyBool", value ? pTrue : pFalse);
+	return QCoreApplication::translate(
+		"QtnPropertyBool", value ? pTrue : pFalse);
 }
 
 QtnPropertyBoolCallback::QtnPropertyBoolCallback(QObject *parent)

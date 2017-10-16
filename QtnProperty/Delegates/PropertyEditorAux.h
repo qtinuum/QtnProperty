@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,13 +27,14 @@ class QKeyEvent;
 class QtnInplaceInfo;
 class QtnProperty;
 
-class QTN_IMPORT_EXPORT QtnLineEditBttn: public QWidget
+class QTN_IMPORT_EXPORT QtnLineEditBttn : public QWidget
 {
 public:
 	QtnLineEditBttn(QWidget *parent);
 
-	void setTextForProperty(QtnProperty *property,
-							const QString &text);
+	void setTextForProperty(
+		QtnProperty *property,
+		const QString &text);
 
 	QLineEdit *lineEdit;
 	QToolButton *toolButton;
@@ -47,9 +48,12 @@ enum QtnNumType
 };
 
 QTN_IMPORT_EXPORT bool qtnAcceptForLineEdit(QKeyEvent *keyEvent);
-QTN_IMPORT_EXPORT bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type);
+QTN_IMPORT_EXPORT bool qtnAcceptForNumEdit(
+	QKeyEvent *keyEvent, QtnNumType type);
 
-QTN_IMPORT_EXPORT void qtnInitLineEdit(QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo);
-QTN_IMPORT_EXPORT void qtnInitNumEdit(QWidget *numEdit, QtnInplaceInfo *inplaceInfo, QtnNumType type);
+QTN_IMPORT_EXPORT void qtnInitLineEdit(
+	QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo);
+QTN_IMPORT_EXPORT void qtnInitNumEdit(
+	QWidget *numEdit, QtnInplaceInfo *inplaceInfo, QtnNumType type);
 
-#endif // PROPERTY_EDITOR_AUX_H
+#endif	// PROPERTY_EDITOR_AUX_H

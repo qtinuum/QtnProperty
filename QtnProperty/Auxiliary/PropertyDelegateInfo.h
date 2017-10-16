@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,21 +29,17 @@ struct QTN_IMPORT_EXPORT QtnPropertyDelegateInfo
 	QByteArray name;
 	QtnPropertyDelegateAttributes attributes;
 
-	QtnPropertyDelegateInfo()
-	{
-	}
-
-	QtnPropertyDelegateInfo(const QtnPropertyDelegateInfo& other)
-		: name(other.name),
-		  attributes(other.attributes)
-	{
-	}
+	QtnPropertyDelegateInfo();
+	QtnPropertyDelegateInfo(const QtnPropertyDelegateInfo &other);
 };
 
 template <typename T>
-bool qtnGetAttribute(const QtnPropertyDelegateAttributes& attributes, const QByteArray& attributeName, T& attributeValue)
+inline bool qtnGetAttribute(
+	const QtnPropertyDelegateAttributes &attributes, const
+	QByteArray &attributeName, T &attributeValue)
 {
 	auto it = attributes.find(attributeName);
+
 	if (it == attributes.end())
 		return false;
 
@@ -51,4 +47,4 @@ bool qtnGetAttribute(const QtnPropertyDelegateAttributes& attributes, const QByt
 	return true;
 }
 
-#endif // QTN_PROPERTY_DELEGATE_INFO_H
+#endif	// QTN_PROPERTY_DELEGATE_INFO_H

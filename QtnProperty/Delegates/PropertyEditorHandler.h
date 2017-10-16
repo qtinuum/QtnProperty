@@ -23,6 +23,7 @@
 
 #include <QWidget>
 #include <QEvent>
+#include <QCoreApplication>
 
 #include <memory>
 
@@ -102,7 +103,63 @@ protected:
 	{
 		return *static_cast<PropertyEditorClass *>(m_editor);
 	}
+};
 
+template <typename PropertyClass, typename PropertyEditorClass>
+class QtnPropertyEditorHandlerVT
+	: public QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass>
+{
+protected:
+	using Inherited = QtnPropertyEditorHandler<PropertyClass,
+											   PropertyEditorClass>;
+	using ValueType = typename PropertyClass::ValueType;
+	using ValueTypeStore = typename PropertyClass::ValueTypeStore;
+
+	QtnPropertyEditorHandlerVT(
+		PropertyClass &property,
+		PropertyEditorClass &editor)
+		: Inherited(property, editor)
+		, newValueEvent(nullptr)
+		, updating(0)
+	{
+		newValue = property.value();
+	}
+
+	void onValueChanged(ValueType value)
+	{
+		if (updating > 0)
+			return;
+
+		newValue = value;
+
+		if (newValueEvent == nullptr)
+		{
+			newValueEvent = new QEvent(QEvent::User);
+
+			QCoreApplication::postEvent(this, newValueEvent);
+		}
+	}
+
+	virtual void updateValue()
+	{
+		Inherited::property().edit(newValue);
+	}
+
+	virtual bool event(QEvent *event) override
+	{
+		if (event == newValueEvent)
+		{
+			newValueEvent = nullptr;
+			updateValue();
+			return true;
+		}
+
+		return QtnPropertyEditorHandlerBase::event(event);
+	}
+
+	QEvent *newValueEvent;
+	ValueTypeStore newValue;
+	unsigned updating;
 };
 
 template <typename PropertyClass, typename PropertyEditorClass>
@@ -121,7 +178,6 @@ protected:
 		: Inherited(property, editor)
 		, double_clicked(false)
 	{
-
 	}
 
 	virtual void onToolButtonClick() = 0;
@@ -136,18 +192,19 @@ protected:
 					return true;
 
 				case QEvent::MouseButtonRelease:
+
 					if (double_clicked)
 					{
 						double_clicked = false;
 						onToolButtonClick();
 						return true;
 					}
+
 					break;
 
 				default:
 					break;
 			}
-
 
 		return Inherited::eventFilter(obj, event);
 	}

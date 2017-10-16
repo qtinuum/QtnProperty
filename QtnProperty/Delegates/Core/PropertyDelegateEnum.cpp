@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,10 +24,11 @@
 #include <QLineEdit>
 
 class QtnPropertyEnumComboBoxHandler
-	: public QtnPropertyEditorHandler<QtnPropertyEnumBase, QComboBox>
+	: public QtnPropertyEditorHandlerVT<QtnPropertyEnumBase, QComboBox>
 {
 public:
-	QtnPropertyEnumComboBoxHandler(QtnPropertyEnumBase &property, QComboBox &editor);
+	QtnPropertyEnumComboBoxHandler(
+		QtnPropertyEnumBase &property, QComboBox &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -38,23 +39,32 @@ private:
 	unsigned updating;
 };
 
+static bool regEnumDelegate =
+	QtnPropertyDelegateFactory::staticInstance()
+	.registerDelegateDefault(
+		&QtnPropertyEnumBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>,
+		"ComboBox");
 
-static bool regEnumDelegate = QtnPropertyDelegateFactory::staticInstance()
-								.registerDelegateDefault(&QtnPropertyEnumBase::staticMetaObject
-								, &qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>
-								, "ComboBox");
-
-QWidget* QtnPropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+QtnPropertyDelegateEnum::QtnPropertyDelegateEnum(QtnPropertyEnumBase &owner)
+	: QtnPropertyDelegateTyped<QtnPropertyEnumBase>(owner)
 {
-	const QtnEnumInfo* info = owner().enumInfo();
+}
+
+QWidget *QtnPropertyDelegateEnum::createValueEditorImpl(
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+{
+	const QtnEnumInfo *info = owner().enumInfo();
 
 	if (!info)
 		return 0;
 
 	if (owner().isEditableByUser())
 	{
-		QComboBox* combo = new QComboBox(parent);
-		info->forEachEnumValue([combo](const QtnEnumValueInfo &value)->bool {
+		QComboBox *combo = new QComboBox(parent);
+		info->forEachEnumValue(
+			[combo](const QtnEnumValueInfo &value) -> bool
+		{
 			combo->addItem(value.name(), QVariant(value.value()));
 			return true;
 		});
@@ -67,23 +77,22 @@ QWidget* QtnPropertyDelegateEnum::createValueEditorImpl(QWidget* parent, const Q
 			combo->showPopup();
 
 		return combo;
-	}
-	else
+	} else
 	{
-		const QtnEnumValueInfo* valueInfo = info->findByValue(owner());
+		const QtnEnumValueInfo *valueInfo = info->findByValue(owner());
+
 		if (!valueInfo)
 			return nullptr;
 
 		return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 	}
-
 }
 
-bool QtnPropertyDelegateEnum::propertyValueToStr(QString& strValue) const
+bool QtnPropertyDelegateEnum::propertyValueToStr(QString &strValue) const
 {
 	QtnEnumValueType value = owner().value();
-	const QtnEnumInfo* info = owner().enumInfo();
-	const QtnEnumValueInfo* valueInfo = info ? info->findByValue(value) : 0;
+	const QtnEnumInfo *info = owner().enumInfo();
+	const QtnEnumValueInfo *valueInfo = info ? info->findByValue(value) : 0;
 
 	if (!valueInfo)
 		return false;
@@ -92,17 +101,19 @@ bool QtnPropertyDelegateEnum::propertyValueToStr(QString& strValue) const
 	return true;
 }
 
-QtnPropertyEnumComboBoxHandler::QtnPropertyEnumComboBoxHandler(QtnPropertyEnumBase &property, QComboBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, updating(0)
+QtnPropertyEnumComboBoxHandler::QtnPropertyEnumComboBoxHandler(
+	QtnPropertyEnumBase &property, QComboBox &editor)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	updateEditor();
 
 	if (!property.isEditableByUser())
 		editor.setDisabled(true);
 
-	QObject::connect(  &editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
-					   , this, &QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged);
+	QObject::connect(
+		&editor, static_cast<void (QComboBox::*)(int)>(
+			&QComboBox::currentIndexChanged),
+		this, &QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged);
 }
 
 void QtnPropertyEnumComboBoxHandler::updateEditor()
@@ -113,7 +124,8 @@ void QtnPropertyEnumComboBoxHandler::updateEditor()
 		editor().setCurrentIndex(-1);
 	else
 	{
-		int index = editor().findData((int)property());
+		int index = editor().findData((int) property());
+
 		if (index >= 0)
 			editor().setCurrentIndex(index);
 	}
@@ -123,13 +135,11 @@ void QtnPropertyEnumComboBoxHandler::updateEditor()
 
 void QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged(int index)
 {
-	if (updating)
-		return;
-
 	if (index >= 0)
 	{
 		QVariant data = editor().itemData(index);
+
 		if (data.canConvert<int>())
-			property().edit(data.toInt());
+			onValueChanged(data.toInt());
 	}
 }

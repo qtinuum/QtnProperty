@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,30 +31,22 @@ enum QtnEnumValueStateFlag
 	QtnEnumValueStateObsolete = 0x0002,
 	QtnEnumValueStateInvalid = 0x0004
 };
+
 Q_DECLARE_FLAGS(QtnEnumValueState, QtnEnumValueStateFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnEnumValueState)
 
 class QTN_IMPORT_EXPORT QtnEnumValueInfo
 {
 public:
-	QtnEnumValueInfo()
-		: m_value(0),
-		  m_state(QtnEnumValueStateInvalid)
-	{
-	}
+	QtnEnumValueInfo();
 
-	QtnEnumValueInfo(QtnEnumValueType value, const QString& name, QtnEnumValueState state = QtnEnumValueStateNone)
-		: m_value(value),
-		  m_name(name),
-		  m_state(state)
-	{
-	}
+	QtnEnumValueInfo(
+		QtnEnumValueType value, const QString &name,
+		QtnEnumValueState state = QtnEnumValueStateNone);
 
-	~QtnEnumValueInfo() {}
-
-	QtnEnumValueType value() const { return m_value; }
-	const QString& name() const { return m_name; }
-	QtnEnumValueState state() const { return m_state; }
+	inline QtnEnumValueType value() const;
+	inline const QString &name() const;
+	inline QtnEnumValueState state() const;
 
 private:
 	QtnEnumValueType m_value;
@@ -62,18 +54,33 @@ private:
 	QtnEnumValueState m_state;
 };
 
+QtnEnumValueType QtnEnumValueInfo::value() const
+{
+	return m_value;
+}
+
+const QString &QtnEnumValueInfo::name() const
+{
+	return m_name;
+}
+
+QtnEnumValueState QtnEnumValueInfo::state() const
+{
+	return m_state;
+}
+
 class QTN_IMPORT_EXPORT QtnEnumInfo
 {
 public:
 	QtnEnumInfo();
-	QtnEnumInfo(const QString& name, QVector<QtnEnumValueInfo>& staticValues);
+	QtnEnumInfo(const QString &name, QVector<QtnEnumValueInfo> &staticValues);
 
-	const QString& name() const { return m_name; }
+	inline const QString &name() const;
 
 	template <typename Pred>
 	bool forEachEnumValue(Pred pred) const
 	{
-		foreach(const QtnEnumValueInfo& value, m_values)
+		for (const auto &value : m_values)
 		{
 			if (!pred(value))
 				return false;
@@ -82,11 +89,11 @@ public:
 		return true;
 	}
 
-	const QtnEnumValueInfo* findByValue(QtnEnumValueType value) const;
-	const QtnEnumValueInfo* findByName(const QString& name) const;
+	const QtnEnumValueInfo *findByValue(QtnEnumValueType value) const;
+	const QtnEnumValueInfo *findByName(const QString &name) const;
 
-	const QtnEnumValueInfo* fromStr(const QString& str) const;
-	bool toStr(QString& str, const QtnEnumValueInfo* value) const;
+	const QtnEnumValueInfo *fromStr(const QString &str) const;
+	bool toStr(QString &str, const QtnEnumValueInfo *value) const;
 
 	Qt::CaseSensitivity getCaseSensitivity() const;
 	void setCaseSensitivity(Qt::CaseSensitivity value);
@@ -99,4 +106,9 @@ private:
 	QVector<QtnEnumValueInfo> m_values;
 };
 
-#endif // QTN_ENUM_H
+const QString &QtnEnumInfo::name() const
+{
+	return m_name;
+}
+
+#endif	// QTN_ENUM_H

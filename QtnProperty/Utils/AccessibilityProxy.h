@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,34 +25,33 @@
 
 class QtnPropertyView;
 
-class QTN_IMPORT_EXPORT QtnAccessibilityProxy: public QObject
+class QTN_IMPORT_EXPORT QtnAccessibilityProxy : public QObject
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnAccessibilityProxy)
 
 public:
-	explicit QtnAccessibilityProxy(QtnPropertyView* owner = 0);
-	~QtnAccessibilityProxy();
+	explicit QtnAccessibilityProxy(QtnPropertyView *owner = 0);
+	virtual ~QtnAccessibilityProxy() override;
 
 public slots:
-	QtnPropertyView* owner();
-	QtnPropertyBase* activeProperty();
-	QtnPropertySet* propertySet();
-	QtnPropertyBase* findProperty(QString nameOrPath);
-	QtnPropertyBase* propertyUnderPoint(QPoint point);
-	void ensureVisibleProperty(QtnPropertyBase* property);
+	QtnPropertyView *owner();
+	QtnPropertyBase *activeProperty();
+	QtnPropertySet *propertySet();
+	QtnPropertyBase *findProperty(QString nameOrPath);
+	QtnPropertyBase *propertyUnderPoint(QPoint point);
+	void ensureVisibleProperty(QtnPropertyBase *property);
 
-	QRect propertyNameRect(QtnPropertyBase* property);
-	QRect propertyValueRect(QtnPropertyBase* property);
-	QRect propertyActionRect(QtnPropertyBase* property, int actionIndex);
+	QRect propertyNameRect(QtnPropertyBase *property);
+	QRect propertyValueRect(QtnPropertyBase *property);
+	QRect propertyActionRect(QtnPropertyBase *property, int actionIndex);
 
-	QString propertyDelegateName(QtnPropertyBase* property);
+	QString propertyDelegateName(QtnPropertyBase *property);
 
 private:
-	QtnPropertyView* m_owner;
+	QtnPropertyView *m_owner;
 };
 
-Q_DECLARE_METATYPE(QtnAccessibilityProxy*)
+Q_DECLARE_METATYPE(QtnAccessibilityProxy *)
 
-
-#endif // QTN_ACCESSIBILITY_PROXY_H
+#endif	// QTN_ACCESSIBILITY_PROXY_H

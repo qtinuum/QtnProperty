@@ -1,5 +1,6 @@
 /*
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+   Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,19 +15,15 @@
    limitations under the License.
 */
 
-#pragma once
+#include "PropertyDelegateInfo.h"
 
-#include "QtnProperty/CoreAPI.h"
-
-#include <QMetaObject>
-
-#include <vector>
-
-class QTN_IMPORT_EXPORT QtnConnections
-	: public std::vector<QMetaObject::Connection>
+QtnPropertyDelegateInfo::QtnPropertyDelegateInfo()
 {
-public:
-	void disconnect();
+}
 
-	~QtnConnections();
-};
+QtnPropertyDelegateInfo::QtnPropertyDelegateInfo(
+	const QtnPropertyDelegateInfo &other)
+	: name(other.name)
+	, attributes(other.attributes)
+{
+}

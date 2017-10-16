@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,42 +20,53 @@
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
 
-class QTN_IMPORT_EXPORT QtnPropertyUIntBase: public QtnNumericPropertyBase<QtnSinglePropertyBase<quint32> >
+class QTN_IMPORT_EXPORT QtnPropertyUIntBase
+	: public QtnNumericPropertyBase<QtnSinglePropertyBase<quint32> >
 {
 	Q_OBJECT
-	QtnPropertyUIntBase(const QtnPropertyUIntBase& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyUIntBase(const QtnPropertyUIntBase &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyUIntBase(QObject *parent);
 
 protected:
 	// string conversion implementation
-	bool fromStrImpl(const QString& str, bool edit) override;
-	bool toStrImpl(QString& str) const override;
+	bool fromStrImpl(const QString &str, bool edit) override;
+	bool toStrImpl(QString &str) const override;
 
 	// variant conversion implementation
-	bool fromVariantImpl(const QVariant& var, bool edit) override;
+	bool fromVariantImpl(const QVariant &var, bool edit) override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyUIntBase)
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyUIntBase, quint32)
 
-class QTN_IMPORT_EXPORT QtnPropertyUIntCallback: public QtnSinglePropertyCallback<QtnPropertyUIntBase>
+class QTN_IMPORT_EXPORT QtnPropertyUIntCallback
+	: public QtnSinglePropertyCallback<QtnPropertyUIntBase>
 {
 	Q_OBJECT
-	QtnPropertyUIntCallback(const QtnPropertyUIntCallback& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyUIntCallback(
+		const QtnPropertyUIntCallback &other) Q_DECL_EQ_DELETE;
 
 public:
 	Q_INVOKABLE explicit QtnPropertyUIntCallback(QObject *parent = nullptr);
 
-	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyUIntCallback, QtnPropertyUIntBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS2(
+		QtnPropertyUIntCallback, QtnPropertyUIntBase)
 };
 
-class QTN_IMPORT_EXPORT QtnPropertyUInt: public QtnSinglePropertyValue<QtnPropertyUIntBase>
+class QTN_IMPORT_EXPORT QtnPropertyUInt
+	: public QtnSinglePropertyValue<QtnPropertyUIntBase>
 {
 	Q_OBJECT
-	QtnPropertyUInt(const QtnPropertyUInt& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyUInt(const QtnPropertyUInt &other) Q_DECL_EQ_DELETE;
 
 public:
 	Q_INVOKABLE explicit QtnPropertyUInt(QObject *parent = nullptr);
@@ -63,4 +74,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyUInt, QtnPropertyUIntBase)
 };
 
-#endif // PROPERTYUINT_H
+#endif	// PROPERTYUINT_H

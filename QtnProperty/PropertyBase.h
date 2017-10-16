@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,8 @@ class QtnPropertySet;
 class QtnProperty;
 class QtnPropertyConnector;
 
-class QTN_IMPORT_EXPORT QtnPropertyBase: public QObject
+class QTN_IMPORT_EXPORT QtnPropertyBase
+	: public QObject
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyBase)
@@ -37,13 +38,13 @@ class QTN_IMPORT_EXPORT QtnPropertyBase: public QObject
 public:
 	virtual ~QtnPropertyBase();
 
-	QString name() const { return objectName(); }
-	void setName(const QString& name);
+	inline QString name() const;
+	void setName(const QString &name);
 
-	QString description() const { return m_description; }
-	void setDescription(const QString& description);
+	inline QString description() const;
+	void setDescription(const QString &description);
 
-	QtnPropertyID id() const { return m_id; }
+	inline QtnPropertyID id() const;
 	void setId(QtnPropertyID id);
 
 	inline bool isExpanded() const;
@@ -59,49 +60,52 @@ public:
 	inline bool isQObjectProperty() const;
 
 	// states
-	QtnPropertyState state() const { return m_stateLocal|m_stateInherited; }
-	QtnPropertyState stateLocal() const { return m_stateLocal; }
-	QtnPropertyState stateInherited() const { return m_stateInherited; }
+	inline QtnPropertyState state() const;
+	inline QtnPropertyState stateLocal() const;
+	inline QtnPropertyState stateInherited() const;
 
 	void setState(QtnPropertyState stateToSet, bool force = false);
 	void addState(QtnPropertyState stateToAdd, bool force = false);
 	void removeState(QtnPropertyState stateToRemove, bool force = false);
-	void switchState(QtnPropertyState stateToSwitch, bool switchOn, bool force = false);
+	void switchState(
+		QtnPropertyState stateToSwitch, bool switchOn, bool force = false);
 	void switchStateAuto(QtnPropertyState stateToSwitch, bool force = false);
 
 	bool isEditableByUser() const;
 	bool isVisible() const;
 	bool valueIsHidden() const;
 	bool valueIsDefault() const;
-	bool isSimple() const { return !m_stateLocal.testFlag(QtnPropertyStateNonSimple); }
+	bool isSimple() const;
 
 	// serialization
-	bool load(QDataStream& stream);
-	bool save(QDataStream& stream) const;
-	static bool skipLoad(QDataStream& stream);
+	bool load(QDataStream &stream);
+	bool save(QDataStream &stream) const;
+	static bool skipLoad(QDataStream &stream);
 
 	// string conversion
-	bool fromStr(const QString& str, bool edit);
-	bool toStr(QString& str) const;
+	bool fromStr(const QString &str, bool edit);
+	bool toStr(QString &str) const;
 
 	// variant conversion
-	bool fromVariant(const QVariant& var, bool edit);
-	bool toVariant(QVariant& var) const;
+	bool fromVariant(const QVariant &var, bool edit);
+	bool toVariant(QVariant &var) const;
 
 	// casts
-	virtual QtnProperty* asProperty() { return nullptr; }
-	virtual const QtnProperty* asProperty() const { return nullptr; }
-	virtual QtnPropertySet* asPropertySet() { return nullptr; }
-	virtual const QtnPropertySet* asPropertySet() const { return nullptr; }
+	virtual QtnProperty *asProperty();
+	virtual const QtnProperty *asProperty() const;
+	virtual QtnPropertySet *asPropertySet();
+	virtual const QtnPropertySet *asPropertySet() const;
 
 	inline QtnPropertyBase *getMasterProperty() const;
 	QtnPropertyBase *getRootProperty();
+	QtnPropertySet *getRootPropertySet();
 	virtual void connectMasterState(QtnPropertyBase *masterProperty);
 	virtual void disconnectMasterState();
 
-	void postUpdateEvent(QtnPropertyChangeReason reason);
+	void postUpdateEvent(QtnPropertyChangeReason reason, int afterMS = 0);
 
-public: // properties for scripting
+public:
+	// properties for scripting
 	Q_PROPERTY(QString name READ name)
 	Q_PROPERTY(QString description READ description)
 	Q_PROPERTY(qint32 id READ id)
@@ -111,36 +115,38 @@ public: // properties for scripting
 
 	// getter/setter for "value" property
 	QVariant valueAsVariant() const;
-	void setValueAsVariant(const QVariant& value);
+	void setValueAsVariant(const QVariant &value);
 
 Q_SIGNALS:
-	void propertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId);
+	void propertyWillChange(
+		QtnPropertyChangeReason reason,
+		QtnPropertyValuePtr newValue, int typeId);
 	void propertyDidChange(QtnPropertyChangeReason reason);
 
 private slots:
 	void onMasterPropertyDestroyed(QObject *object);
 
 protected:
-	QtnPropertyBase(QObject* parent);
+	QtnPropertyBase(QObject *parent);
 
 	virtual void masterPropertyStateDidChange(QtnPropertyChangeReason reason);
 
 	virtual bool event(QEvent *e) override;
 
 	// serialization implementation
-	virtual bool loadImpl(QDataStream& stream);
-	virtual bool saveImpl(QDataStream& stream) const;
+	virtual bool loadImpl(QDataStream &stream);
+	virtual bool saveImpl(QDataStream &stream) const;
 
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString &, bool) { return false; }
-	virtual bool toStrImpl(QString& str) const { return false; }
+	virtual bool fromStrImpl(const QString &, bool);
+	virtual bool toStrImpl(QString &str) const;
 
 	// variant conversion implementation
-	virtual bool fromVariantImpl(const QVariant& var, bool edit);
-	virtual bool toVariantImpl(QVariant& var) const;
+	virtual bool fromVariantImpl(const QVariant &var, bool edit);
+	virtual bool toVariantImpl(QVariant &var) const;
 
 	// inherited states support
-	virtual void updateStateInherited(bool force) { /* does nothing by default */ }
+	virtual void updateStateInherited(bool force);
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
 private:
@@ -152,11 +158,27 @@ private:
 	QtnPropertyState m_stateLocal;
 	QtnPropertyState m_stateInherited;
 
-	std::atomic<int> changeReasons;
+	int changeReasons;
 	int timer;
+	QEvent *updateEvent;
 
 	friend class QtnPropertySet;
 };
+
+QString QtnPropertyBase::name() const
+{
+	return objectName();
+}
+
+QString QtnPropertyBase::description() const
+{
+	return m_description;
+}
+
+QtnPropertyID QtnPropertyBase::id() const
+{
+	return m_id;
+}
 
 bool QtnPropertyBase::isExpanded() const
 {
@@ -183,17 +205,34 @@ bool QtnPropertyBase::isQObjectProperty() const
 	return (nullptr != getConnector());
 }
 
+QtnPropertyState QtnPropertyBase::state() const
+{
+	return m_stateLocal | m_stateInherited;
+}
+
+QtnPropertyState QtnPropertyBase::stateLocal() const
+{
+	return m_stateLocal;
+}
+
+QtnPropertyState QtnPropertyBase::stateInherited() const
+{
+	return m_stateInherited;
+}
+
 QtnPropertyBase *QtnPropertyBase::getMasterProperty() const
 {
 	return m_masterProperty;
 }
 
-QTN_IMPORT_EXPORT QDataStream& operator<< (QDataStream& stream, const QtnPropertyBase& property);
-QTN_IMPORT_EXPORT QDataStream& operator>> (QDataStream& stream, QtnPropertyBase& property);
+QTN_IMPORT_EXPORT QDataStream &operator<<(
+	QDataStream &stream, const QtnPropertyBase &property);
+QTN_IMPORT_EXPORT QDataStream &operator>>(
+	QDataStream &stream, QtnPropertyBase &property);
 
-QTN_IMPORT_EXPORT void qtnScriptRegisterPropertyTypes(QScriptEngine* engine);
+QTN_IMPORT_EXPORT void qtnScriptRegisterPropertyTypes(QScriptEngine *engine);
 
-Q_DECLARE_METATYPE(const QtnPropertyBase*)
-Q_DECLARE_METATYPE(QtnPropertyBase*)
+Q_DECLARE_METATYPE(const QtnPropertyBase *)
+Q_DECLARE_METATYPE(QtnPropertyBase *)
 
-#endif // QTN_PROPERTY_BASE_H
+#endif	// QTN_PROPERTY_BASE_H

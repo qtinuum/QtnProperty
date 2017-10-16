@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,17 +20,19 @@
 #include <QLocale>
 
 QtnPropertyIntBase::QtnPropertyIntBase(QObject *parent)
-	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint32>>(parent)
+	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint32> >(parent)
 {
 }
 
-bool QtnPropertyIntBase::fromStrImpl(const QString& str, bool edit)
+bool QtnPropertyIntBase::fromStrImpl(const QString &str, bool edit)
 {
 	bool ok = false;
 	ValueType value = str.toInt(&ok);
+
 	if (!ok)
 	{
 		value = QLocale().toInt(str, &ok);
+
 		if (!ok)
 			return false;
 	}
@@ -38,16 +40,17 @@ bool QtnPropertyIntBase::fromStrImpl(const QString& str, bool edit)
 	return setValue(value, edit);
 }
 
-bool QtnPropertyIntBase::toStrImpl(QString& str) const
+bool QtnPropertyIntBase::toStrImpl(QString &str) const
 {
 	str = QString::number(value());
 	return true;
 }
 
-bool QtnPropertyIntBase::fromVariantImpl(const QVariant& var, bool edit)
+bool QtnPropertyIntBase::fromVariantImpl(const QVariant &var, bool edit)
 {
 	bool ok = false;
 	ValueType value = var.toInt(&ok);
+
 	if (!ok)
 		return false;
 

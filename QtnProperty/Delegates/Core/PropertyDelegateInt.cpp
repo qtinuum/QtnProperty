@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-		   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,27 +20,21 @@
 #include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
+#include "MultiProperty.h"
 
+#include <QCoreApplication>
 #include <QSpinBox>
-
 #include <QLocale>
 
-class QtnPropertyIntSpinBoxHandler : public
-								   QtnPropertyEditorHandler<QtnPropertyIntBase,
-															QSpinBox>
+class QtnPropertyIntSpinBoxHandler
+	: public QtnPropertyEditorHandlerVT<QtnPropertyIntBase, QSpinBox>
 {
 public:
 	QtnPropertyIntSpinBoxHandler(
-		QtnPropertyIntBase &property,
-		QSpinBox &editor);
+		QtnPropertyIntBase &property, QSpinBox &editor);
 
 protected:
 	virtual void updateEditor() override;
-
-private:
-	void onValueChanged(int value);
-
-	unsigned updating;
 };
 
 static bool regIntDelegate = QtnPropertyDelegateFactory::staticInstance()
@@ -55,8 +49,7 @@ QtnPropertyDelegateInt::QtnPropertyDelegateInt(QtnPropertyIntBase &owner)
 }
 
 QWidget *QtnPropertyDelegateInt::createValueEditorImpl(
-	QWidget *parent, const
-	QRect &rect, QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QSpinBox(parent);
 	spinBox->setGeometry(rect);
@@ -76,7 +69,9 @@ bool QtnPropertyDelegateInt::acceptKeyPressedForInplaceEditImpl(
 {
 	if (QtnPropertyDelegateTyped<QtnPropertyIntBase>::
 		acceptKeyPressedForInplaceEditImpl(keyEvent))
+	{
 		return true;
+	}
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_SIGNED_INT);
 }
@@ -89,8 +84,7 @@ bool QtnPropertyDelegateInt::propertyValueToStr(QString &strValue) const
 
 QtnPropertyIntSpinBoxHandler::QtnPropertyIntSpinBoxHandler(
 	QtnPropertyIntBase &property, QSpinBox &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
-	, updating(0)
+	: QtnPropertyEditorHandlerVT(property, editor)
 {
 	if (!property.isEditableByUser())
 		editor.setReadOnly(true);
@@ -106,8 +100,7 @@ QtnPropertyIntSpinBoxHandler::QtnPropertyIntSpinBoxHandler(
 		&editor,
 		static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 		this,
-		&QtnPropertyIntSpinBoxHandler::onValueChanged,
-		Qt::QueuedConnection);
+		&QtnPropertyIntSpinBoxHandler::onValueChanged);
 }
 
 void QtnPropertyIntSpinBoxHandler::updateEditor()
@@ -115,19 +108,17 @@ void QtnPropertyIntSpinBoxHandler::updateEditor()
 	updating++;
 
 	if (property().valueIsHidden())
-		editor().setValue(0);
-	else
-		editor().setValue(property());
+	{
+		editor().setValue(editor().minimum());
+		editor().setSpecialValueText(
+			QtnMultiProperty::getMultiValuePlaceholder());
+	} else
+	{
+		editor().setValue(property().value());
+		editor().setSpecialValueText(QString());
+	}
 
 	editor().selectAll();
 
 	updating--;
-}
-
-void QtnPropertyIntSpinBoxHandler::onValueChanged(int value)
-{
-	if (updating > 0)
-		return;
-
-	property().edit(value);
 }

@@ -39,8 +39,7 @@ public:
 	explicit BasePropertyDialog(QWidget *parent = nullptr);
 
 	void initWithCount(
-		int actual_index, int existing_count,
-		bool readonly = false);
+		int actual_index, int existing_count, bool readonly = false);
 	void initWithName(
 		const QString &actual_name,
 		const IsNameAvailableCB &is_name_available,

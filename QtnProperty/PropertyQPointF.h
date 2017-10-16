@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,10 @@ class QTN_IMPORT_EXPORT QtnPropertyQPointFBase
 	: public QtnStructPropertyBase<QPointF, QtnPropertyDoubleCallback>
 {
 	Q_OBJECT
-	QtnPropertyQPointFBase(const QtnPropertyQPointFBase& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyQPointFBase(
+		const QtnPropertyQPointFBase &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQPointFBase(QObject *parent);
@@ -43,8 +46,8 @@ protected:
 	virtual QString getYDescriptionFormat();
 
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString& str, bool edit) override;
-	virtual bool toStrImpl(QString& str) const override;
+	virtual bool fromStrImpl(const QString &str, bool edit) override;
+	virtual bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQPointFBase)
 
@@ -58,24 +61,32 @@ class QTN_IMPORT_EXPORT QtnPropertyQPointFCallback
 	: public QtnSinglePropertyCallback<QtnPropertyQPointFBase>
 {
 	Q_OBJECT
-	QtnPropertyQPointFCallback(const QtnPropertyQPointFCallback& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyQPointFCallback(
+		const QtnPropertyQPointFCallback &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQPointFCallback(QObject *parent);
 
-	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQPointFCallback, QtnPropertyQPointFBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS2(
+		QtnPropertyQPointFCallback, QtnPropertyQPointFBase)
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyQPointF
 	: public QtnSinglePropertyValue<QtnPropertyQPointFBase>
 {
 	Q_OBJECT
-	QtnPropertyQPointF(const QtnPropertyQPointF& other) Q_DECL_EQ_DELETE;
+
+private:
+	QtnPropertyQPointF(
+		const QtnPropertyQPointF &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQPointF(QObject *parent);
 
-	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQPointF, QtnPropertyQPointFBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS2(
+		QtnPropertyQPointF, QtnPropertyQPointFBase)
 
 	static void Register();
 };
@@ -86,9 +97,11 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQPointF
 	Q_DISABLE_COPY(QtnPropertyDelegateQPointF)
 
 public:
-	QtnPropertyDelegateQPointF(QtnPropertyQPointFBase& owner);
+	QtnPropertyDelegateQPointF(QtnPropertyQPointFBase &owner);
 
 protected:
-	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo = nullptr) override;
-	virtual bool propertyValueToStr(QString& strValue) const override;
+	virtual QWidget *createValueEditorImpl(
+		QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
+	virtual bool propertyValueToStr(QString &strValue) const override;
 };

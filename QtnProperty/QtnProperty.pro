@@ -4,7 +4,7 @@ QT += core gui widgets script
 
 TARGET = QtnPropertyAC
 TEMPLATE = lib
-VERSION = 1.2.6
+VERSION = 1.2.7
 
 DEFINES += QTN_DYNAMIC_LIBRARY
 
@@ -51,7 +51,6 @@ SOURCES += PropertyBase.cpp \
     Utils/AccessibilityProxy.cpp \
     Utils/DoubleSpinBox.cpp \
     Utils/MultilineTextDialog.cpp \
-    Utils/UnsignedSpinBox.cpp \
     PropertyInt64.cpp \
     PropertyUInt64.cpp \
     PropertyQRectF.cpp \
@@ -67,7 +66,9 @@ SOURCES += PropertyBase.cpp \
     MultiProperty.cpp \
     PropertyConnector.cpp \
     Config.cpp \
-    Utils/QtnConnections.cpp
+    Utils/QtnConnections.cpp \
+    Utils/QtnInt64SpinBox.cpp \
+    Auxiliary/PropertyDelegateInfo.cpp
 
 HEADERS += CoreAPI.h\
     PropertyBase.h \
@@ -115,7 +116,6 @@ HEADERS += CoreAPI.h\
     Utils/AccessibilityProxy.h \
     Utils/DoubleSpinBox.h \
     Utils/MultilineTextDialog.h \
-    Utils/UnsignedSpinBox.h \
     PropertyInt64.h \
     PropertyUInt64.h \
     PropertyQRectF.h \
@@ -133,7 +133,8 @@ HEADERS += CoreAPI.h\
     StructPropertyBase.h \
     PropertyConnector.h \
     Config.h \
-    Utils/QtnConnections.h
+    Utils/QtnConnections.h \
+    Utils/QtnInt64SpinBox.h
 
 win32 {
     TARGET_EXT = .dll

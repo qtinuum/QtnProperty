@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,12 +43,14 @@ QtnLineEditBttn::QtnLineEditBttn(QWidget *parent)
 	setAutoFillBackground(true);
 }
 
-void QtnLineEditBttn::setTextForProperty(QtnProperty *property, const QString &text)
+void QtnLineEditBttn::setTextForProperty(
+	QtnProperty *property, const QString &text)
 {
 	if (property->valueIsHidden())
 	{
 		lineEdit->clear();
-		lineEdit->setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
+		lineEdit->setPlaceholderText(
+			QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
 		lineEdit->setText(text);
@@ -71,16 +73,18 @@ void qtnInitLineEdit(QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo)
 	if (!lineEdit || !inplaceInfo)
 		return;
 
-	if (!lineEdit->isReadOnly() && (inplaceInfo->activationEvent->type() == QEvent::KeyPress))
+	if (!lineEdit->isReadOnly() &&
+		(inplaceInfo->activationEvent->type() == QEvent::KeyPress))
 	{
-		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(inplaceInfo->activationEvent);
+		QKeyEvent *keyEvent =
+			static_cast<QKeyEvent *>(inplaceInfo->activationEvent);
+
 		if (qtnAcceptForLineEdit(keyEvent))
 		{
 			lineEdit->setText(keyEvent->text());
 			return;
 		}
-	}
-	else
+	} else
 	{
 		lineEdit->selectAll();
 	}
@@ -93,6 +97,7 @@ bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type)
 
 	// any numeric key press is acceptable
 	QString text = keyEvent->text();
+
 	if (text.size() == 1)
 	{
 		auto c = text.at(0);
@@ -102,12 +107,18 @@ bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type)
 		switch (type)
 		{
 			case NUM_FLOAT:
+
 				if (c == '.' || c == locale.decimalPoint())
 					return true;
+
 			case NUM_SIGNED_INT:
-				if (c == '-' || c == '+' || c == locale.negativeSign() || c == locale.positiveSign())
+
+				if (c == '-' || c == '+' || c == locale.negativeSign() ||
+					c == locale.positiveSign())
 					return true;
+
 			case NUM_UNSIGNED_INT:
+
 				if (c.isNumber())
 					return true;
 		}
@@ -116,14 +127,23 @@ bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type)
 	return false;
 }
 
-void qtnInitNumEdit(QWidget *numEdit, QtnInplaceInfo *inplaceInfo, QtnNumType type)
+void qtnInitNumEdit(
+	QWidget *numEdit, QtnInplaceInfo *inplaceInfo, QtnNumType type)
 {
-	if (nullptr != inplaceInfo && inplaceInfo->activationEvent->type() == QEvent::KeyPress)
+	if (nullptr != inplaceInfo &&
+		inplaceInfo->activationEvent->type() == QEvent::KeyPress)
 	{
-		auto keyEvent = static_cast<QKeyEvent*>(inplaceInfo->activationEvent);
+		auto keyEvent = static_cast<QKeyEvent *>(inplaceInfo->activationEvent);
+
 		if (qtnAcceptForNumEdit(keyEvent, type))
 		{
-			QCoreApplication::sendEvent(numEdit, keyEvent);
+			keyEvent = new QKeyEvent(
+					keyEvent->type(),
+					keyEvent->key(),
+					keyEvent->modifiers(),
+					keyEvent->text());
+
+			QCoreApplication::postEvent(numEdit, keyEvent);
 		}
 	}
 }

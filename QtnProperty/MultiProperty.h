@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,12 +25,15 @@
 #include <memory>
 
 class QtnMultiPropertyDelegate;
-class QTN_IMPORT_EXPORT QtnMultiProperty : public QtnProperty
+class QTN_IMPORT_EXPORT QtnMultiProperty
+	: public QtnProperty
 {
 	Q_OBJECT
 
 public:
-	explicit QtnMultiProperty(const QMetaObject *propertyMetaObject, QObject *parent = nullptr);
+	explicit QtnMultiProperty(
+		const QMetaObject *propertyMetaObject,
+		QObject *parent = nullptr);
 	virtual ~QtnMultiProperty();
 
 	void addProperty(QtnProperty *property, bool own = true);
@@ -47,9 +50,11 @@ public:
 	QMetaProperty getMetaProperty() const;
 
 private slots:
-	void onPropertyValueAccept(QtnPropertyValuePtr valueToAccept, bool* accept);
+	void onPropertyValueAccept(QtnPropertyValuePtr valueToAccept, bool *accept);
 
-	void onPropertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId);
+	void onPropertyWillChange(
+		QtnPropertyChangeReason reason,
+		QtnPropertyValuePtr newValue, int typeId);
 
 	void onPropertyDidChange(QtnPropertyChangeReason reason);
 
@@ -60,8 +65,8 @@ protected:
 	virtual bool fromStrImpl(const QString &str, bool edit) override;
 	virtual bool toStrImpl(QString &str) const override;
 
-	virtual bool fromVariantImpl(const QVariant& var, bool edit) override;
-	virtual bool toVariantImpl(QVariant& var) const override;
+	virtual bool fromVariantImpl(const QVariant &var, bool edit) override;
+	virtual bool toVariantImpl(QVariant &var) const override;
 
 private:
 	void updateStateFrom(QtnProperty *source);
@@ -84,14 +89,14 @@ std::vector<QtnProperty *> QtnMultiProperty::getProperties() const
 }
 
 class QtnMultiPropertyDelegate
-		: public QtnPropertyDelegateTypedEx<QtnMultiProperty>
+	: public QtnPropertyDelegateTypedEx<QtnMultiProperty>
 {
 	Q_DISABLE_COPY(QtnMultiPropertyDelegate)
 
 	typedef QtnPropertyDelegateTypedEx<QtnMultiProperty> Inherited;
 
 public:
-	QtnMultiPropertyDelegate(QtnMultiProperty& owner);
+	QtnMultiPropertyDelegate(QtnMultiProperty &owner);
 	virtual ~QtnMultiPropertyDelegate();
 
 private:
@@ -102,24 +107,32 @@ private:
 		std::vector<QMetaObject::Connection> connections;
 	};
 
-	static void onEditedPropertyWillChange(PropertyToEdit *data,
-										   QtnPropertyChangeReason reason,
-										   QtnPropertyValuePtr newValue,
-										   int typeId);
-	static void onEditedPropertyDidChange(PropertyToEdit *data, QtnPropertyChangeReason reason);
+	static void onEditedPropertyWillChange(
+		PropertyToEdit *data, QtnPropertyChangeReason reason,
+		QtnPropertyValuePtr newValue, int typeId);
+	static void onEditedPropertyDidChange(
+		PropertyToEdit *data, QtnPropertyChangeReason reason);
 	static void onEditedPropertyDestroyed(PropertyToEdit *data);
 	static void onEditorDestroyed(PropertyToEdit *data);
 
 protected:
 	virtual bool propertyValueToStr(QString &strValue) const override;
 
-	virtual void applyAttributesImpl(const QtnPropertyDelegateAttributes &attributes) override;
-	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
-							   const QStyle::State &state, bool *needTooltip = nullptr) const override;
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateAttributes &attributes) override;
+
+	virtual void drawValueImpl(
+		QStylePainter &painter, const QRect &rect,
+		const QStyle::State &state, bool *needTooltip = nullptr) const override;
+
 	virtual QString toolTipImpl() const override;
-	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const override;
-	virtual QWidget* createValueEditorImpl(QWidget *parent, const QRect &rect,
-										   QtnInplaceInfo *inplaceInfo = nullptr) override;
+
+	virtual bool acceptKeyPressedForInplaceEditImpl(
+		QKeyEvent *keyEvent) const override;
+
+	virtual QWidget *createValueEditorImpl(
+		QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 private:
 	typedef std::unique_ptr<QtnPropertyDelegate> DelegatePtr;
@@ -132,4 +145,3 @@ struct QtnMultiVariant
 };
 
 Q_DECLARE_METATYPE(QtnMultiVariant)
-

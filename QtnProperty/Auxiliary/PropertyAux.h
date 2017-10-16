@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,6 +37,7 @@ enum QtnPropertyStateFlag
 	QtnPropertyStateHiddenValue = 0x0020,
 	QtnPropertyStateModifiedValue = 0x0040
 };
+
 Q_DECLARE_FLAGS(QtnPropertyState, QtnPropertyStateFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyState)
 
@@ -49,29 +50,44 @@ enum QtnPropertyChangeReasonFlag
 	QtnPropertyChangeReasonId = 0x0010,
 	QtnPropertyChangeReasonStateLocal = 0x0020,
 	QtnPropertyChangeReasonStateInherited = 0x0040,
-	QtnPropertyChangeReasonState = QtnPropertyChangeReasonStateLocal|QtnPropertyChangeReasonStateInherited,
+	QtnPropertyChangeReasonState = QtnPropertyChangeReasonStateLocal |
+		QtnPropertyChangeReasonStateInherited,
 	QtnPropertyChangeReasonChildPropertyAdd = 0x0080,
 	QtnPropertyChangeReasonChildPropertyRemove = 0x0100,
 	QtnPropertyChangeReasonEditValue = 0x0200,
 	QtnPropertyChangeReasonResetValue = 0x0400,
-	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd|QtnPropertyChangeReasonChildPropertyRemove,
-	QtnPropertyChangeReasonValue = QtnPropertyChangeReasonNewValue|QtnPropertyChangeReasonLoadedValue|QtnPropertyChangeReasonResetValue
+	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd |
+		QtnPropertyChangeReasonChildPropertyRemove,
+	QtnPropertyChangeReasonValue = QtnPropertyChangeReasonNewValue |
+		QtnPropertyChangeReasonLoadedValue | QtnPropertyChangeReasonResetValue
 };
+
 Q_DECLARE_FLAGS(QtnPropertyChangeReason, QtnPropertyChangeReasonFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyChangeReason)
 
 typedef qint32 QtnPropertyID;
-const QtnPropertyID QtnPropertyIDInvalid = -1;
-typedef void* QtnPropertyValuePtr;
+enum
+{
+	QtnPropertyIDInvalid = -1
+};
 
-template<typename T>
-inline T* qtnCastPropertyValue(QtnPropertyValuePtr value) { return reinterpret_cast<T*>(value); }
-template<typename T>
-inline const T* qtnConstCastPropertyValue(QtnPropertyValuePtr value) { return reinterpret_cast<const T*>(value); }
+typedef void *QtnPropertyValuePtr;
+
+template <typename T>
+inline T *qtnCastPropertyValue(QtnPropertyValuePtr value)
+{
+	return reinterpret_cast<T *>(value);
+}
+
+template <typename T>
+inline const T *qtnConstCastPropertyValue(QtnPropertyValuePtr value)
+{
+	return reinterpret_cast<const T *>(value);
+}
 
 Q_DECLARE_METATYPE(QtnPropertyID)
 Q_DECLARE_METATYPE(QtnPropertyState)
 Q_DECLARE_METATYPE(QtnPropertyChangeReason)
 Q_DECLARE_METATYPE(QtnPropertyValuePtr)
 
-#endif // QTN_PROPERTY_AUX_H
+#endif	// QTN_PROPERTY_AUX_H

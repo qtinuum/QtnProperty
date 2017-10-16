@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,10 +30,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 #include <QLocale>
 
 static QtnProperty *createRealNumberProperty(
-	QObject *object, const
-	QMetaProperty &metaProperty)
+	QObject *object, const QMetaProperty &metaProperty)
 {
 	auto property = new QtnPropertyDoubleCallback(nullptr);
+
 	switch (metaProperty.revision())
 	{
 		case PERCENT_SUFFIX:
@@ -172,8 +172,10 @@ QtnProperty *qtnCreateQObjectProperty(
 		return nullptr;
 
 	auto it = qtnFactoryMap.find(metaProperty.type());
+
 	if (it == qtnFactoryMap.end())
 		it = qtnFactoryMap.find(metaProperty.userType());
+
 	if (it == qtnFactoryMap.end())
 		return nullptr;
 
@@ -181,6 +183,7 @@ QtnProperty *qtnCreateQObjectProperty(
 		return nullptr;
 
 	QtnProperty *property = it.value() (object, metaProperty);
+
 	if (!property)
 		return property;
 
@@ -190,6 +193,7 @@ QtnProperty *qtnCreateQObjectProperty(
 		: metaProperty.name());
 
 	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
+
 	if (nullptr != stateProvider)
 	{
 		auto state = stateProvider->getPropertyState(metaProperty);
@@ -219,6 +223,7 @@ QtnProperty *qtnCreateQObjectProperty(
 	while (metaObject)
 	{
 		propertyIndex = object->metaObject()->indexOfProperty(propertyName);
+
 		if (propertyIndex != -1)
 			break;
 
@@ -248,11 +253,13 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 	std::map<QString, QtnPropertySet *> propertySetsByClass;
 
 	auto metaObject = object->metaObject();
+
 	while (nullptr != metaObject)
 	{
 		if (metaObject->propertyCount() > 0)
 		{
 			QList<QtnProperty *> properties;
+
 			for (int propertyIndex = metaObject->propertyOffset(),
 				 n = metaObject->propertyCount();
 				 propertyIndex < n; ++propertyIndex)
@@ -260,6 +267,7 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 				auto metaProperty = metaObject->property(propertyIndex);
 				auto property = qtnCreateQObjectProperty(
 						object, metaProperty, true, metaObject->className());
+
 				if (nullptr != property)
 					properties.append(property);
 			}
@@ -272,6 +280,7 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 				auto it = propertySetsByClass.find(className);
 
 				QtnPropertySet *propertySetByClass;
+
 				if (it != propertySetsByClass.end())
 					propertySetByClass = it->second;
 				else
@@ -310,8 +319,7 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 }
 
 QtnPropertySet *qtnCreateQObjectMultiPropertySet(
-	const
-	std::set<QObject *> &objects)
+	const std::set<QObject *> &objects)
 {
 	if (objects.empty())
 		return nullptr;
@@ -322,6 +330,7 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 	for (auto object : objects)
 	{
 		auto propertySet = qtnCreateQObjectPropertySet(object);
+
 		if (nullptr == propertySet)
 			continue;
 
@@ -341,6 +350,7 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 			});
 
 			QtnPropertySet *multiSet;
+
 			if (it == subSets.end())
 			{
 				multiSet = new QtnPropertySet(nullptr);
@@ -356,6 +366,7 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 			}
 
 			auto &ncp = multiSet->childProperties();
+
 			for (auto subProp : subSet->childProperties())
 			{
 				auto propIt = std::find_if(
@@ -366,6 +377,7 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 				});
 
 				QtnMultiProperty *multiProperty;
+
 				if (propIt == ncp.end())
 				{
 					multiProperty = new QtnMultiProperty(subProp->metaObject());

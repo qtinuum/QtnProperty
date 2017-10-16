@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,39 +31,65 @@ enum QtnPropertyWidgetPartsFlag
 	QtnPropertyWidgetPartsToolbar = 0x0001,
 	QtnPropertyWidgetPartsDescriptionPanel = 0x0002
 };
+
 Q_DECLARE_FLAGS(QtnPropertyWidgetParts, QtnPropertyWidgetPartsFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyWidgetParts)
 
-class QTN_IMPORT_EXPORT QtnPropertyWidget: public QWidget
+class QTN_IMPORT_EXPORT QtnPropertyWidget : public QWidget
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyWidget)
 
 public:
-	explicit QtnPropertyWidget(QWidget* parent = 0);
+	explicit QtnPropertyWidget(QWidget *parent = 0);
 	virtual ~QtnPropertyWidget();
 
-	QtnPropertyWidgetParts parts() const { return m_parts; }
+	inline QtnPropertyWidgetParts parts() const;
 	void setParts(QtnPropertyWidgetParts newParts);
 
-	const QtnPropertySet* propertySet() const { return m_propertyView->propertySet(); }
-	QtnPropertySet* propertySet() { return m_propertyView->propertySet(); }
-	void setPropertySet(QtnPropertySet* newPropertySet) { m_propertyView->setPropertySet(newPropertySet); }
+	inline const QtnPropertySet *propertySet() const;
+	inline QtnPropertySet *propertySet();
+	inline void setPropertySet(QtnPropertySet *newPropertySet);
 
-	QtnPropertyView* propertyView() const { return m_propertyView; }
+	inline QtnPropertyView *propertyView() const;
 
 private:
 	void updateParts();
-	void setActiveProperty(const QtnPropertyBase* activeProperty);
+	void setActiveProperty(const QtnPropertyBase *activeProperty);
 
 private:
 	QtnPropertyWidgetParts m_parts;
 
-	QVBoxLayout* m_layout;
-	QLabel* m_toolbar;
-	QtnPropertyView* m_propertyView;
-	QWidget* m_descriptionSplitter;
-	QLabel* m_descriptionPanel;
+	QVBoxLayout *m_layout;
+	QLabel *m_toolbar;
+	QtnPropertyView *m_propertyView;
+	QWidget *m_descriptionSplitter;
+	QLabel *m_descriptionPanel;
 };
 
-#endif // QTN_PROPERTYWIDGET_H
+QtnPropertyWidgetParts QtnPropertyWidget::parts() const
+{
+	return m_parts;
+}
+
+const QtnPropertySet *QtnPropertyWidget::propertySet() const
+{
+	return m_propertyView->propertySet();
+}
+
+QtnPropertySet *QtnPropertyWidget::propertySet()
+{
+	return m_propertyView->propertySet();
+}
+
+void QtnPropertyWidget::setPropertySet(QtnPropertySet *newPropertySet)
+{
+	m_propertyView->setPropertySet(newPropertySet);
+}
+
+QtnPropertyView *QtnPropertyWidget::propertyView() const
+{
+	return m_propertyView;
+}
+
+#endif	// QTN_PROPERTYWIDGET_H

@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,16 +22,20 @@
 
 class QtnPropertyEnumFlagsBase;
 
-class QTN_IMPORT_EXPORT QtnPropertyDelegateEnumFlags: public QtnPropertyDelegateTypedEx<QtnPropertyEnumFlagsBase>
+class QTN_IMPORT_EXPORT QtnPropertyDelegateEnumFlags
+	: public QtnPropertyDelegateTypedEx<QtnPropertyEnumFlagsBase>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateEnumFlags)
 
 public:
-	QtnPropertyDelegateEnumFlags(QtnPropertyEnumFlagsBase& owner);
+	QtnPropertyDelegateEnumFlags(QtnPropertyEnumFlagsBase &owner);
 
 protected:
-	QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
-	bool propertyValueToStr(QString& strValue) const override;
+	virtual QWidget *createValueEditorImpl(
+		QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
+
+	virtual bool propertyValueToStr(QString &strValue) const override;
 };
 
-#endif // PROPERTY_DELEGATE_ENUM_FLAGS_H
+#endif	// PROPERTY_DELEGATE_ENUM_FLAGS_H

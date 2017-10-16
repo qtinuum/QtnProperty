@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,6 @@ int Register()
 
 static const int qtnReg = Register();
 
-
 void qtnInstallTranslations(const QLocale &locale)
 {
 	static std::unique_ptr<QTranslator> translator;
@@ -63,5 +62,3 @@ void qtnInstallTranslations(const QLocale &locale)
 	if (translator->load(locale, "QtnProperty.qm", "", ":/Translations"))
 		QCoreApplication::installTranslator(translator.get());
 }
-
-

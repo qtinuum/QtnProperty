@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-	   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,14 +17,17 @@
 
 #include "PropertyDelegateFactory.h"
 
-QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory)
+QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(
+	const QtnPropertyDelegateFactory *superFactory)
 	: m_superFactory(superFactory)
 {
 }
 
-QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnProperty& owner) const
+QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegate(
+	QtnProperty &owner) const
 {
-	const QMetaObject* metaObject = owner.metaObject();
+	const QMetaObject *metaObject = owner.metaObject();
+
 	while (metaObject)
 	{
 		// try to find delegate factory by class name
@@ -33,22 +36,23 @@ QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnProperty& own
 		if (it != m_createItems.end())
 		{
 			// try to find delegate factory by name
-			const CreateItem& createItem = it.value();
-			const QtnPropertyDelegateInfo* propertyDelegate = owner.delegate();
+			const CreateItem &createItem = it.value();
+			const QtnPropertyDelegateInfo *propertyDelegate = owner.delegate();
 			QByteArray delegateName;
+
 			if (propertyDelegate)
 				delegateName = propertyDelegate->name;
 
-			CreateFunction* createFunction = 0;
+			CreateFunction *createFunction = 0;
 
 			if (delegateName.isEmpty())
 			{
 				createFunction = createItem.defaultCreateFunction;
-			}
-			else
+			} else
 			{
 				auto jt = createItem.createFunctions.find(delegateName);
 				Q_ASSERT(jt != createItem.createFunctions.end());
+
 				if (jt != createItem.createFunctions.end())
 					createFunction = jt.value();
 			}
@@ -69,38 +73,50 @@ QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnProperty& own
 	return nullptr;
 }
 
-bool QtnPropertyDelegateFactory::registerDelegateDefault(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)
+bool QtnPropertyDelegateFactory::registerDelegateDefault(
+	const QMetaObject *propertyMetaObject, CreateFunction *createFunction,
+	const QByteArray &delegateName)
 {
 	Q_ASSERT(propertyMetaObject);
 	Q_ASSERT(createFunction);
 
 	// find or create creation record
-	CreateItem& createItem = m_createItems[propertyMetaObject->className()];
+	CreateItem &createItem = m_createItems[propertyMetaObject->className()];
 	// register default create function
 	createItem.defaultCreateFunction = createFunction;
 
 	if (!delegateName.isEmpty())
-		return registerDelegate(propertyMetaObject, createFunction, delegateName);
+	{
+		return registerDelegate(
+			propertyMetaObject, createFunction, delegateName);
+	}
 
 	return true;
 }
 
-bool QtnPropertyDelegateFactory::registerDelegate(const QMetaObject* propertyMetaObject, CreateFunction* createFunction, const QByteArray& delegateName)
+bool QtnPropertyDelegateFactory::registerDelegate(
+	const QMetaObject *propertyMetaObject, CreateFunction *createFunction,
+	const QByteArray &delegateName)
 {
 	Q_ASSERT(propertyMetaObject);
 	Q_ASSERT(createFunction);
 	Q_ASSERT(!delegateName.isEmpty());
 
 	// find or create creation record
-	CreateItem& createItem = m_createItems[propertyMetaObject->className()];
+	CreateItem &createItem = m_createItems[propertyMetaObject->className()];
 	// register create function
 	createItem.createFunctions[delegateName] = createFunction;
 
 	return true;
 }
 
-QtnPropertyDelegateFactory& QtnPropertyDelegateFactory::staticInstance()
+QtnPropertyDelegateFactory &QtnPropertyDelegateFactory::staticInstance()
 {
 	static QtnPropertyDelegateFactory factory;
 	return factory;
+}
+
+QtnPropertyDelegateFactory::CreateItem::CreateItem()
+	: defaultCreateFunction(0)
+{
 }
