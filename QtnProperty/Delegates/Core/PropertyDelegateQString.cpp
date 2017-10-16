@@ -146,8 +146,7 @@ bool QtnPropertyDelegateQString::propertyValueToStr(QString &strValue) const
 {
 	strValue = owner().value();
 	auto placeholder = QtnPropertyQString::getPlaceholderStr(
-			strValue,
-			owner().isMultilineEnabled());
+			strValue, owner().isMultilineEnabled());
 
 	if (!placeholder.isEmpty())
 		strValue.swap(placeholder);
@@ -215,8 +214,7 @@ void QtnPropertyDelegateQStringInvalidBase::drawValueImpl(
 		painter.setPen(m_invalidColor);
 
 	QtnPropertyDelegateQString::drawValueImpl(
-		painter, rect, state,
-		needTooltip);
+		painter, rect, state, needTooltip);
 	painter.setPen(oldPen);
 }
 
