@@ -39,14 +39,11 @@ QtnPropertyWidget::QtnPropertyWidget(QWidget *parent)
 {
 	m_layout->addWidget(m_propertyView);
 
-	QObject::connect(
-		m_propertyView, &QtnPropertyView::activePropertyChanged,
+	QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged,
 		this, &QtnPropertyWidget::setActiveProperty);
 }
 
-QtnPropertyWidget::~QtnPropertyWidget()
-{
-}
+QtnPropertyWidget::~QtnPropertyWidget() {}
 
 void QtnPropertyWidget::setParts(QtnPropertyWidgetParts newParts)
 {
@@ -121,10 +118,9 @@ void QtnPropertyWidget::setActiveProperty(const QtnPropertyBase *activeProperty)
 			m_descriptionPanel->setText("");
 		} else
 		{
-			m_descriptionPanel->setText(
-				QString("<b>%1</b><br>%2").arg(
-					activeProperty->name(),
-					activeProperty->description()));
+			m_descriptionPanel->setText(QString("<b>%1</b><br>%2")
+											.arg(activeProperty->name(),
+												activeProperty->description()));
 		}
 	}
 }

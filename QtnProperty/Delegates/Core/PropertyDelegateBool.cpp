@@ -40,18 +40,18 @@ private:
 	void onCurrentIndexChanged(int index);
 };
 
-static bool regBoolDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
+static bool regBoolDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyBoolBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateBoolCheck, QtnPropertyBoolBase>,
 		"CheckBox");
 
 static bool regBoolDelegateCombobox =
-	QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegate(
+	QtnPropertyDelegateFactory::staticInstance().registerDelegate(
 		&QtnPropertyBoolBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateBoolCombobox,
-						   QtnPropertyBoolBase>, "ComboBox");
+			QtnPropertyBoolBase>,
+		"ComboBox");
 
 QtnPropertyDelegateBoolCheck::QtnPropertyDelegateBoolCheck(
 	QtnPropertyBoolBase &owner)
@@ -59,9 +59,8 @@ QtnPropertyDelegateBoolCheck::QtnPropertyDelegateBoolCheck(
 {
 }
 
-void QtnPropertyDelegateBoolCheck::drawValueImpl(
-	QStylePainter &painter, const QRect &rect,
-	const QStyle::State &state, bool *) const
+void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter &painter,
+	const QRect &rect, const QStyle::State &state, bool *) const
 {
 	QStyleOptionButton opt;
 	opt.rect = rect;
@@ -138,9 +137,8 @@ QtnPropertyBoolComboBoxHandler::QtnPropertyBoolComboBoxHandler(
 	if (!property.isEditableByUser())
 		editor.setDisabled(true);
 
-	QObject::connect(
-		&editor, static_cast<void (QComboBox::*)(int)>(
-			&QComboBox::currentIndexChanged),
+	QObject::connect(&editor,
+		static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 		this, &QtnPropertyBoolComboBoxHandler::onCurrentIndexChanged);
 }
 

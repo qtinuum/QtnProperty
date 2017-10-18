@@ -34,9 +34,8 @@ struct QTN_IMPORT_EXPORT QtnPropertyDelegateInfo
 };
 
 template <typename T>
-inline bool qtnGetAttribute(
-	const QtnPropertyDelegateAttributes &attributes, const
-	QByteArray &attributeName, T &attributeValue)
+inline bool qtnGetAttribute(const QtnPropertyDelegateAttributes &attributes,
+	const QByteArray &attributeName, T &attributeValue)
 {
 	auto it = attributes.find(attributeName);
 
@@ -47,4 +46,4 @@ inline bool qtnGetAttribute(
 	return true;
 }
 
-#endif	// QTN_PROPERTY_DELEGATE_INFO_H
+#endif // QTN_PROPERTY_DELEGATE_INFO_H

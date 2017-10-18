@@ -33,13 +33,11 @@ class QTN_IMPORT_EXPORT QtnInt64SpinBox : public QAbstractSpinBox
 	Q_PROPERTY(qint64 singleStep READ singleStep WRITE setSingleStep)
 	Q_PROPERTY(
 		qint64 value READ value WRITE setValue NOTIFY valueChanged USER true)
-	Q_PROPERTY(
-		int displayIntegerBase READ displayIntegerBase
-		WRITE setDisplayIntegerBase)
+	Q_PROPERTY(int displayIntegerBase READ displayIntegerBase WRITE
+			setDisplayIntegerBase)
 	Q_PROPERTY(bool isSpecialValue READ isSpecialValue)
-	Q_PROPERTY(
-		QString specialValueText READ specialValueText WRITE
-		setSpecialValueText)
+	Q_PROPERTY(QString specialValueText READ specialValueText WRITE
+			setSpecialValueText)
 
 public:
 	explicit QtnInt64SpinBox(QWidget *parent = nullptr);

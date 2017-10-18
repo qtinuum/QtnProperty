@@ -45,7 +45,10 @@
 
 #define P_PROPERTY_DECL_MEMBER_OPERATORS(ClassName) \
 public: \
-	operator ValueType() const { return value(); } \
+	operator ValueType() const \
+	{ \
+		return value(); \
+	} \
 	ClassName &operator=(const ClassName &newValue) \
 	{ \
 		setValue(newValue.value()); \
@@ -59,7 +62,10 @@ public: \
 
 #define P_PROPERTY_DECL_MEMBER_OPERATORS2(ClassName, BaseClassName) \
 public: \
-	operator ValueType() const { return value(); } \
+	operator ValueType() const \
+	{ \
+		return value(); \
+	} \
 	ClassName &operator=(const ClassName &newValue) \
 	{ \
 		setValue(newValue.value()); \
@@ -76,4 +82,4 @@ public: \
 		return *this; \
 	}
 
-#endif	// PROPERTYMACRO_H
+#endif // PROPERTYMACRO_H

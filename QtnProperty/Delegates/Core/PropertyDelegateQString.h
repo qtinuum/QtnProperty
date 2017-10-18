@@ -39,15 +39,13 @@ protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
 
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool propertyValueToStr(QString &strValue) const override;
 
-	virtual void drawValueImpl(
-		QStylePainter &painter, const QRect &rect, const
-		QStyle::State &state, bool *needTooltip = nullptr) const override;
+	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
+		const QStyle::State &state, bool *needTooltip = nullptr) const override;
 
 private:
 	int maxLength;
@@ -62,11 +60,9 @@ protected:
 	QtnPropertyDelegateQStringInvalidBase(QtnPropertyQStringBase &owner);
 
 	virtual void applyAttributesImpl(
-		const
-		QtnPropertyDelegateAttributes &attributes) override;
-	virtual void drawValueImpl(
-		QStylePainter &painter, const QRect &rect, const
-		QStyle::State &state, bool *needTooltip = nullptr) const override;
+		const QtnPropertyDelegateAttributes &attributes) override;
+	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
+		const QStyle::State &state, bool *needTooltip = nullptr) const override;
 
 	virtual bool isPropertyValid() const = 0;
 
@@ -85,8 +81,7 @@ public:
 protected:
 	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool isPropertyValid() const override;
@@ -107,8 +102,7 @@ protected:
 	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;
 
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 private:
@@ -117,4 +111,4 @@ private:
 	QtnPropertyDelegateAttributes m_editorAttributes;
 };
 
-#endif	// PROPERTY_DELEGATE_QSTRING_H
+#endif // PROPERTY_DELEGATE_QSTRING_H

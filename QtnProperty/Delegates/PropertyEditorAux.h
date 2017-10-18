@@ -32,9 +32,7 @@ class QTN_IMPORT_EXPORT QtnLineEditBttn : public QWidget
 public:
 	QtnLineEditBttn(QWidget *parent);
 
-	void setTextForProperty(
-		QtnProperty *property,
-		const QString &text);
+	void setTextForProperty(QtnProperty *property, const QString &text);
 
 	QLineEdit *lineEdit;
 	QToolButton *toolButton;
@@ -56,4 +54,4 @@ QTN_IMPORT_EXPORT void qtnInitLineEdit(
 QTN_IMPORT_EXPORT void qtnInitNumEdit(
 	QWidget *numEdit, QtnInplaceInfo *inplaceInfo, QtnNumType type);
 
-#endif	// PROPERTY_EDITOR_AUX_H
+#endif // PROPERTY_EDITOR_AUX_H

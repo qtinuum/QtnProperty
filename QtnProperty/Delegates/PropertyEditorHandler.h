@@ -83,13 +83,11 @@ template <typename PropertyClass, typename PropertyEditorClass>
 class QtnPropertyEditorHandler : public QtnPropertyEditorHandlerBase
 {
 protected:
-	typedef QtnPropertyEditorHandler<PropertyClass,
-									 PropertyEditorClass>
+	typedef QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass>
 		QtnPropertyEditorHandlerType;
 
 	QtnPropertyEditorHandler(
-		PropertyClass &property,
-		PropertyEditorClass &editor)
+		PropertyClass &property, PropertyEditorClass &editor)
 		: QtnPropertyEditorHandlerBase(property, editor)
 	{
 	}
@@ -110,14 +108,13 @@ class QtnPropertyEditorHandlerVT
 	: public QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass>
 {
 protected:
-	using Inherited = QtnPropertyEditorHandler<PropertyClass,
-											   PropertyEditorClass>;
+	using Inherited =
+		QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass>;
 	using ValueType = typename PropertyClass::ValueType;
 	using ValueTypeStore = typename PropertyClass::ValueTypeStore;
 
 	QtnPropertyEditorHandlerVT(
-		PropertyClass &property,
-		PropertyEditorClass &editor)
+		PropertyClass &property, PropertyEditorClass &editor)
 		: Inherited(property, editor)
 		, newValueEvent(nullptr)
 		, updating(0)
@@ -167,8 +164,8 @@ class QtnPropertyEditorBttnHandler
 	: public QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass>
 {
 private:
-	typedef QtnPropertyEditorHandler<PropertyClass,
-									 PropertyEditorClass> Inherited;
+	typedef QtnPropertyEditorHandler<PropertyClass, PropertyEditorClass>
+		Inherited;
 
 protected:
 	typedef QtnPropertyEditorBttnHandler QtnPropertyEditorHandlerType;
@@ -213,4 +210,4 @@ private:
 	bool double_clicked;
 };
 
-#endif	// PROPERTY_EDITOR_HANDLER_H
+#endif // PROPERTY_EDITOR_HANDLER_H

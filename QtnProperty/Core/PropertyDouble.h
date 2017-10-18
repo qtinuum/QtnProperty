@@ -21,7 +21,7 @@
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyDoubleBase
-	: public QtnNumericPropertyBase<QtnSinglePropertyBase<double> >
+	: public QtnNumericPropertyBase<QtnSinglePropertyBase<double>>
 {
 	Q_OBJECT
 
@@ -51,8 +51,7 @@ class QTN_IMPORT_EXPORT QtnPropertyDoubleCallback
 
 private:
 	QtnPropertyDoubleCallback(
-		const
-		QtnPropertyDoubleCallback &other) Q_DECL_EQ_DELETE;
+		const QtnPropertyDoubleCallback &other) Q_DECL_EQ_DELETE;
 
 public:
 	Q_INVOKABLE explicit QtnPropertyDoubleCallback(QObject *parent = nullptr);
@@ -75,4 +74,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyDouble, QtnPropertyDoubleBase)
 };
 
-#endif	// PROPERTYDOUBLE_H
+#endif // PROPERTYDOUBLE_H

@@ -92,4 +92,4 @@ QtnPropertyView *QtnPropertyWidget::propertyView() const
 	return m_propertyView;
 }
 
-#endif	// QTN_PROPERTYWIDGET_H
+#endif // QTN_PROPERTYWIDGET_H

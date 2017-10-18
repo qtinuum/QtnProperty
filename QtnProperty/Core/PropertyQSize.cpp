@@ -74,16 +74,10 @@ QtnProperty *qtnCreateWidthProperty(
 	QtnPropertyIntCallback *widthProperty = new QtnPropertyIntCallback(parent);
 	widthProperty->setName(QtnPropertyQSize::tr("Width"));
 	widthProperty->setDescription(
-		QtnPropertyQSize::tr("Width of the %1").arg(
-			propertySize->name()));
+		QtnPropertyQSize::tr("Width of the %1").arg(propertySize->name()));
 	widthProperty->setCallbackValueGet(
-		[propertySize]() -> int
-	{
-		return propertySize->value().width();
-	});
-	widthProperty->setCallbackValueSet(
-		[propertySize](int newWidth)
-	{
+		[propertySize]() -> int { return propertySize->value().width(); });
+	widthProperty->setCallbackValueSet([propertySize](int newWidth) {
 		QSize size = propertySize->value();
 		size.setWidth(newWidth);
 		propertySize->setValue(size);
@@ -100,13 +94,8 @@ QtnProperty *qtnCreateHeightProperty(
 	heightProperty->setDescription(
 		QtnPropertyQSize::tr("Height of the %1").arg(propertySize->name()));
 	heightProperty->setCallbackValueGet(
-		[propertySize]() -> int
-	{
-		return propertySize->value().height();
-	});
-	heightProperty->setCallbackValueSet(
-		[propertySize](int newHeight)
-	{
+		[propertySize]() -> int { return propertySize->value().height(); });
+	heightProperty->setCallbackValueSet([propertySize](int newHeight) {
 		QSize size = propertySize->value();
 		size.setHeight(newHeight);
 		propertySize->setValue(size);

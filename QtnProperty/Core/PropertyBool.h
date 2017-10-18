@@ -20,8 +20,7 @@
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
 
-class QTN_IMPORT_EXPORT QtnPropertyBoolBase
-	: public QtnSinglePropertyBase<bool>
+class QTN_IMPORT_EXPORT QtnPropertyBoolBase : public QtnSinglePropertyBase<bool>
 {
 	Q_OBJECT
 
@@ -54,8 +53,7 @@ public:
 	Q_INVOKABLE explicit QtnPropertyBoolCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
-		QtnPropertyBoolCallback,
-		QtnPropertyBoolBase)
+		QtnPropertyBoolCallback, QtnPropertyBoolBase)
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyBool
@@ -74,4 +72,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyBool, QtnPropertyBoolBase)
 };
 
-#endif	// PROPERTYBOOL_H
+#endif // PROPERTYBOOL_H

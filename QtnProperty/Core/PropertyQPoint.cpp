@@ -75,17 +75,11 @@ QtnProperty *qtnCreateXProperty(
 {
 	QtnPropertyIntCallback *xProperty = new QtnPropertyIntCallback(parent);
 	xProperty->setName(QtnPropertyQPoint::tr("X"));
-	xProperty->setDescription(
-		QtnPropertyQPoint::tr("X coordinate of the %1").arg(
-			propertyPoint->name()));
+	xProperty->setDescription(QtnPropertyQPoint::tr("X coordinate of the %1")
+								  .arg(propertyPoint->name()));
 	xProperty->setCallbackValueGet(
-		[propertyPoint]() -> int
-	{
-		return propertyPoint->value().x();
-	});
-	xProperty->setCallbackValueSet(
-		[propertyPoint](int newX)
-	{
+		[propertyPoint]() -> int { return propertyPoint->value().x(); });
+	xProperty->setCallbackValueSet([propertyPoint](int newX) {
 		QPoint point = propertyPoint->value();
 		point.setX(newX);
 		propertyPoint->setValue(point);
@@ -99,17 +93,11 @@ QtnProperty *qtnCreateYProperty(
 {
 	QtnPropertyIntCallback *yProperty = new QtnPropertyIntCallback(parent);
 	yProperty->setName(QtnPropertyQPoint::tr("Y"));
-	yProperty->setDescription(
-		QtnPropertyQPoint::tr("Y coordinate of the %1").arg(
-			propertyPoint->name()));
+	yProperty->setDescription(QtnPropertyQPoint::tr("Y coordinate of the %1")
+								  .arg(propertyPoint->name()));
 	yProperty->setCallbackValueGet(
-		[propertyPoint]() -> int
-	{
-		return propertyPoint->value().y();
-	});
-	yProperty->setCallbackValueSet(
-		[propertyPoint](int newY)
-	{
+		[propertyPoint]() -> int { return propertyPoint->value().y(); });
+	yProperty->setCallbackValueSet([propertyPoint](int newY) {
 		QPoint point = propertyPoint->value();
 		point.setY(newY);
 		propertyPoint->setValue(point);

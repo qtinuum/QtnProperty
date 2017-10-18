@@ -56,8 +56,7 @@ bool qtnStartInplaceEdit(QWidget *editor)
 		g_inplaceEditor->setFocus();
 
 	// connect to editor destroyed signal
-	QObject::connect(
-		g_inplaceEditor, &QObject::destroyed,
+	QObject::connect(g_inplaceEditor, &QObject::destroyed,
 		g_inplaceEditorHandler, &QtnInplaceEditorHandler::OnEditorDestroyed);
 
 	// install application event filter
@@ -89,8 +88,7 @@ bool qtnStopInplaceEdit(bool delete_later)
 	g_inplaceEditorHandler = 0;
 
 	QObject::connect(
-		g_inplaceEditor, &QObject::destroyed,
-		&onInplaceWidgetDestroyed);
+		g_inplaceEditor, &QObject::destroyed, &onInplaceWidgetDestroyed);
 
 	if (delete_later)
 		g_inplaceEditor->deleteLater();

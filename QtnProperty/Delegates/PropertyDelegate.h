@@ -36,9 +36,8 @@ public:
 	QtnInplaceInfo();
 };
 
-QTN_IMPORT_EXPORT QString qtnElidedText(
-	const QPainter &painter, const QString &text,
-	const QRect &rect, bool *elided = 0);
+QTN_IMPORT_EXPORT QString qtnElidedText(const QPainter &painter,
+	const QString &text, const QRect &rect, bool *elided = 0);
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegate
 {
@@ -53,19 +52,16 @@ public:
 
 	// tune up with attributes
 	inline void applyAttributes(
-		const
-		QtnPropertyDelegateAttributes &attributes);
+		const QtnPropertyDelegateAttributes &attributes);
 
-	inline void drawValue(
-		QStylePainter &painter, const QRect &rect,
+	inline void drawValue(QStylePainter &painter, const QRect &rect,
 		const QStyle::State &state, bool *needTooltip = nullptr) const;
 
 	inline QString toolTip() const;
 
 	inline bool acceptKeyPressedForInplaceEdit(QKeyEvent *keyEvent) const;
 
-	QWidget *createValueEditor(
-		QWidget *parent, const QRect &rect,
+	QWidget *createValueEditor(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr);
 
 	// override this if property value can be displayed as string
@@ -83,21 +79,18 @@ protected:
 	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes);
 
-	virtual void drawValueImpl(
-		QStylePainter &painter, const QRect &rect, const
-		QStyle::State &state, bool *needTooltip = nullptr) const;
+	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
+		const QStyle::State &state, bool *needTooltip = nullptr) const;
 	virtual QString toolTipImpl() const;
 	virtual bool acceptKeyPressedForInplaceEditImpl(QKeyEvent *keyEvent) const;
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) = 0;
 
 	// helper functions
-	static void drawValueText(
-		const QString &text, QStylePainter &painter, const
-		QRect &rect, const QStyle::State &state, bool *needTooltip = nullptr);
-	QLineEdit *createValueEditorLineEdit(
-		QWidget *parent, const QRect &rect,
+	static void drawValueText(const QString &text, QStylePainter &painter,
+		const QRect &rect, const QStyle::State &state,
+		bool *needTooltip = nullptr);
+	QLineEdit *createValueEditorLineEdit(QWidget *parent, const QRect &rect,
 		bool readOnly, QtnInplaceInfo *inplaceInfo = nullptr);
 
 	QtnProperty *ownerProperty;
@@ -119,8 +112,7 @@ void QtnPropertyDelegate::applyAttributes(
 	applyAttributesImpl(attributes);
 }
 
-void QtnPropertyDelegate::drawValue(
-	QStylePainter &painter, const QRect &rect,
+void QtnPropertyDelegate::drawValue(QStylePainter &painter, const QRect &rect,
 	const QStyle::State &state, bool *needTooltip) const
 {
 	drawValueImpl(painter, rect, state, needTooltip);
@@ -148,9 +140,15 @@ class QtnPropertyDelegateTyped : public QtnPropertyDelegate
 	Q_DISABLE_COPY(QtnPropertyDelegateTyped)
 
 public:
-	inline const PropertyClass &owner() const { return m_owner; }
+	inline const PropertyClass &owner() const
+	{
+		return m_owner;
+	}
 
-	inline PropertyClass &owner() { return m_owner; }
+	inline PropertyClass &owner()
+	{
+		return m_owner;
+	}
 
 protected:
 	QtnPropertyDelegateTyped(PropertyClass &owner)
@@ -198,7 +196,7 @@ protected:
 			QtnPropertyDelegateTyped<PropertyClass>::getOwnerProperty());
 	}
 
-	QList<QSharedPointer<QtnPropertyBase> > m_subProperties;
+	QList<QSharedPointer<QtnPropertyBase>> m_subProperties;
 };
 
-#endif	// QTN_PROPERTY_DELEGATE_H
+#endif // QTN_PROPERTY_DELEGATE_H

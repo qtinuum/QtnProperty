@@ -64,8 +64,7 @@ void CustomPropertyWidget::setReadOnly(bool value)
 }
 
 void CustomPropertyWidget::setData(
-	QVariant *dataPtr, const QString &title,
-	bool force)
+	QVariant *dataPtr, const QString &title, bool force)
 {
 	if (force || this->dataPtr != dataPtr)
 	{
@@ -136,11 +135,9 @@ void CustomPropertyWidget::addProperty()
 			case VarProperty::Map:
 			{
 				dialog.setWindowTitle(tr("New Property"));
-				dialog.initWithName(
-					QString(),
-					std::bind(
-						&VarProperty::IsChildNameAvailable,
-						var_property, std::placeholders::_1, nullptr));
+				dialog.initWithName(QString(),
+					std::bind(&VarProperty::IsChildNameAvailable, var_property,
+						std::placeholders::_1, nullptr));
 				break;
 			}
 
@@ -179,19 +176,16 @@ void CustomPropertyWidget::duplicateProperty()
 			{
 				dialog.setWindowTitle(tr("Duplicate Element"));
 				dialog.initWithCount(
-					var_property->GetIndex(),
-					var_parent->GetChildrenCount());
+					var_property->GetIndex(), var_parent->GetChildrenCount());
 				break;
 			}
 
 			case VarProperty::Map:
 			{
 				dialog.setWindowTitle(tr("Duplicate Property"));
-				dialog.initWithName(
-					var_property->GetName(),
-					std::bind(
-						&VarProperty::IsChildNameAvailable,
-						var_parent, std::placeholders::_1, nullptr));
+				dialog.initWithName(var_property->GetName(),
+					std::bind(&VarProperty::IsChildNameAvailable, var_parent,
+						std::placeholders::_1, nullptr));
 				break;
 			}
 
@@ -232,18 +226,15 @@ void CustomPropertyWidget::propertyOptions()
 				case VarProperty::List:
 				{
 					dialog.setWindowTitle(tr("Element Options"));
-					dialog.initWithCount(
-						var_property->GetIndex(),
+					dialog.initWithCount(var_property->GetIndex(),
 						var_parent->GetChildrenCount() - 1);
 					break;
 				}
 
 				case VarProperty::Map:
 				{
-					dialog.initWithName(
-						var_property->GetName(),
-						std::bind(
-							&VarProperty::IsChildNameAvailable,
+					dialog.initWithName(var_property->GetName(),
+						std::bind(&VarProperty::IsChildNameAvailable,
 							var_parent, std::placeholders::_1, var_property));
 					break;
 				}
@@ -259,8 +250,7 @@ void CustomPropertyWidget::propertyOptions()
 		if (readOnly)
 		{
 			dialog.executeReadOnly();
-		} else
-		if (dialog.execute(result_data))
+		} else if (dialog.execute(result_data))
 		{
 			auto old_data = var_property->CreateVariant();
 
@@ -300,10 +290,9 @@ void CustomPropertyWidget::propertyOptions()
 									QVariantMap result;
 
 									for (auto property :
-										 var_property->GetChildren())
+										var_property->GetChildren())
 									{
-										result.insert(
-											property->GetName(),
+										result.insert(property->GetName(),
 											property->CreateVariant());
 									}
 
@@ -321,7 +310,7 @@ void CustomPropertyWidget::propertyOptions()
 									QVariantList result;
 
 									for (auto property :
-										 var_property->GetChildren())
+										var_property->GetChildren())
 									{
 										result.push_back(
 											property->CreateVariant());
@@ -358,14 +347,12 @@ void CustomPropertyWidget::setAutoUpdate(bool yes)
 }
 
 void CustomPropertyWidget::onPropertyValueAccept(
-	void *valueToAccept,
-	bool *accept)
+	void *valueToAccept, bool *accept)
 {
 	if (nullptr != accept)
 	{
-		bool ok =
-			VarProperty::PropertyValueAccept(
-				dynamic_cast<QtnProperty *>(sender()), valueToAccept);
+		bool ok = VarProperty::PropertyValueAccept(
+			dynamic_cast<QtnProperty *>(sender()), valueToAccept);
 		Q_ASSERT(ok);
 
 		*accept = ok;
@@ -384,8 +371,8 @@ bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
 {
 	if (nullptr != data)
 	{
-		return (QtnPropertyWidgetEx::dataHasSupportedFormats(data)
-				|| data->hasFormat(kCustomPropertyData));
+		return (QtnPropertyWidgetEx::dataHasSupportedFormats(data) ||
+			data->hasFormat(kCustomPropertyData));
 	}
 
 	return false;
@@ -406,19 +393,17 @@ void CustomPropertyWidget::deleteProperty(QtnPropertyBase *property)
 
 			auto set = dynamic_cast<QtnPropertySet *>(property->parent());
 			auto &set_properties = set->childProperties();
-			auto active_property_index = set_properties.indexOf(
-					propertyView()->activeProperty());
-			updateSet(
-				set, active_property_index >= 0
-				? active_property_index
-				: set_properties.indexOf(property));
+			auto active_property_index =
+				set_properties.indexOf(propertyView()->activeProperty());
+			updateSet(set,
+				active_property_index >= 0 ? active_property_index
+										   : set_properties.indexOf(property));
 		}
 	}
 }
 
 QMimeData *CustomPropertyWidget::getPropertyDataForAction(
-	QtnPropertyBase *property,
-	Qt::DropAction action)
+	QtnPropertyBase *property, Qt::DropAction action)
 {
 	auto varProperty = getVarProperty(property);
 
@@ -436,8 +421,7 @@ QMimeData *CustomPropertyWidget::getPropertyDataForAction(
 
 				QJsonObject jobj;
 				jobj.insert(
-					varProperty->GetName(),
-					QJsonValue::fromVariant(variant));
+					varProperty->GetName(), QJsonValue::fromVariant(variant));
 
 				QJsonDocument doc;
 				doc.setObject(jobj);
@@ -449,9 +433,8 @@ QMimeData *CustomPropertyWidget::getPropertyDataForAction(
 					int end = json.lastIndexOf('}');
 
 					mime->setText(
-						QString::fromUtf8(
-							&json.constData()[start],
-							end - start).trimmed());
+						QString::fromUtf8(&json.constData()[start], end - start)
+							.trimmed());
 				} else
 				{
 					mime->setData(kCustomPropertyData, doc.toBinaryData());
@@ -469,8 +452,7 @@ QMimeData *CustomPropertyWidget::getPropertyDataForAction(
 }
 
 bool CustomPropertyWidget::insertReplaceOrCancel(
-	QtnPropertyBase *destination,
-	CustomPropertyData &customData)
+	QtnPropertyBase *destination, CustomPropertyData &customData)
 {
 	auto varProperty = getVarProperty(destination);
 	Q_ASSERT(nullptr != varProperty);
@@ -496,20 +478,15 @@ bool CustomPropertyWidget::insertReplaceOrCancel(
 	if (nullptr != insertDestination)
 	{
 		QMessageBox mb(QMessageBox::Question,
-					   QApplication::applicationDisplayName(),
-					   tr(
-						   "Do you want to insert new property "
-						   "from clipboard or to replace the selected one?"),
-					   QMessageBox::Cancel, this);
+			QApplication::applicationDisplayName(),
+			tr("Do you want to insert new property "
+			   "from clipboard or to replace the selected one?"),
+			QMessageBox::Cancel, this);
 
-		auto insertButton = mb.addButton(
-				tr(
-					"Insert",
-					"Paste"), QMessageBox::AcceptRole);
-		auto replaceButton = mb.addButton(
-				tr(
-					"Replace",
-					"Paste"), QMessageBox::AcceptRole);
+		auto insertButton =
+			mb.addButton(tr("Insert", "Paste"), QMessageBox::AcceptRole);
+		auto replaceButton =
+			mb.addButton(tr("Replace", "Paste"), QMessageBox::AcceptRole);
 		mb.setDefaultButton(QMessageBox::Cancel);
 
 		mb.show();
@@ -518,8 +495,7 @@ bool CustomPropertyWidget::insertReplaceOrCancel(
 
 		if (mb.clickedButton() == insertButton)
 			choice = INSERT;
-		else
-		if (mb.clickedButton() == replaceButton)
+		else if (mb.clickedButton() == replaceButton)
 			choice = REPLACE;
 		else
 			choice = CANCEL;
@@ -564,9 +540,8 @@ bool CustomPropertyWidget::insertReplaceOrCancel(
 	return true;
 }
 
-bool CustomPropertyWidget::applyPropertyData(
-	const QMimeData *data, QtnPropertyBase *destination,
-	QtnApplyPosition position)
+bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
+	QtnPropertyBase *destination, QtnApplyPosition position)
 {
 	if (readOnly)
 		return false;
@@ -586,8 +561,8 @@ bool CustomPropertyWidget::applyPropertyData(
 			{
 				auto obj = doc.object();
 
-				if (QtnApplyPosition::Over == position
-					&& varProperty->GetType() == VarProperty::Value)
+				if (QtnApplyPosition::Over == position &&
+					varProperty->GetType() == VarProperty::Value)
 				{
 					position = QtnApplyPosition::After;
 				}
@@ -608,9 +583,8 @@ bool CustomPropertyWidget::applyPropertyData(
 							if (varProperty != varProperty->TopParent())
 							{
 								auto parent_prop =
-									dynamic_cast<QtnPropertyBase *>(destination
-																	->
-																	parent());
+									dynamic_cast<QtnPropertyBase *>(
+										destination->parent());
 
 								switch (getVarProperty(parent_prop)->GetType())
 								{
@@ -761,8 +735,7 @@ bool CustomPropertyWidget::applyPropertyData(
 							customData.value = array.at(0).toVariant();
 
 							return insertReplaceOrCancel(
-								destination,
-								customData);
+								destination, customData);
 						}
 
 						if (array.size() > 1)
@@ -770,14 +743,13 @@ bool CustomPropertyWidget::applyPropertyData(
 							customData.value = array.toVariantList();
 
 							return insertReplaceOrCancel(
-								destination,
-								customData);
+								destination, customData);
 						}
 					}
 				}
 
 				doc = QJsonDocument::fromJson(
-						data->text().toUtf8(), &parseResult);
+					data->text().toUtf8(), &parseResult);
 
 				if (QJsonParseError::NoError == parseResult.error)
 				{
@@ -832,8 +804,7 @@ void CustomPropertyWidget::updateData()
 }
 
 void CustomPropertyWidget::updateSet(
-	QtnPropertyBase *setProperty,
-	int childIndex)
+	QtnPropertyBase *setProperty, int childIndex)
 {
 	Q_ASSERT(nullptr != setProperty);
 
@@ -846,11 +817,8 @@ void CustomPropertyWidget::updateSet(
 
 	varProperty->RemoveFromParent();
 
-	auto new_set = dynamic_cast<QtnPropertySet *>(newProperty(
-													  nullptr, data,
-													  varProperty->GetName(),
-													  varProperty->GetIndex(),
-													  var_parent));
+	auto new_set = dynamic_cast<QtnPropertySet *>(newProperty(nullptr, data,
+		varProperty->GetName(), varProperty->GetIndex(), var_parent));
 
 	Q_ASSERT(nullptr != new_set);
 
@@ -885,7 +853,7 @@ void CustomPropertyWidget::updateSet(
 }
 
 bool CustomPropertyWidget::getActiveVarProperty(
-	QtnPropertyBase * &property, VarProperty * &varProperty)
+	QtnPropertyBase *&property, VarProperty *&varProperty)
 {
 	property = propertyView()->activeProperty();
 
@@ -901,29 +869,25 @@ VarProperty *CustomPropertyWidget::getVarProperty(QtnPropertyBase *source)
 	if (nullptr != source)
 	{
 		varProperty = source->findChild<VarProperty *>(
-				QString(), Qt::FindDirectChildrenOnly);
+			QString(), Qt::FindDirectChildrenOnly);
 	}
 
 	return varProperty;
 }
 
-QtnPropertyBase *CustomPropertyWidget::newProperty(
-	QtnPropertySet *parent, const QVariant &value, const QString &key,
-	int index, VarProperty *mapParent)
+QtnPropertyBase *CustomPropertyWidget::newProperty(QtnPropertySet *parent,
+	const QVariant &value, const QString &key, int index,
+	VarProperty *mapParent)
 {
 	return VarProperty::NewExtraProperty(
-		parent, value, key, index, mapParent,
-		[this](QtnProperty *property)
-	{
-		QObject::connect(
-			property, &QtnProperty::propertyValueAccept,
-			this, &CustomPropertyWidget::onPropertyValueAccept);
-	});
+		parent, value, key, index, mapParent, [this](QtnProperty *property) {
+			QObject::connect(property, &QtnProperty::propertyValueAccept, this,
+				&CustomPropertyWidget::onPropertyValueAccept);
+		});
 }
 
 void CustomPropertyWidget::addProperty(
-	QtnPropertyBase *source,
-	const CustomPropertyData &data)
+	QtnPropertyBase *source, const CustomPropertyData &data)
 {
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
@@ -933,9 +897,8 @@ void CustomPropertyWidget::addProperty(
 	if (data.index >= 0)
 		Q_ASSERT(data.index <= varProperty->GetChildrenCount());
 
-	auto new_property = newProperty(
-			nullptr, data.value, data.name, data.index,
-			varProperty);
+	auto new_property =
+		newProperty(nullptr, data.value, data.name, data.index, varProperty);
 
 	std::vector<QtnPropertyBase *> children;
 
@@ -964,12 +927,10 @@ void CustomPropertyWidget::addProperty(
 		}
 	} else
 	{
-		std::sort(
-			children.begin(), children.end(),
-			[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool
-		{
-			return QString::localeAwareCompare(a->name(), b->name()) < 0;
-		});
+		std::sort(children.begin(), children.end(),
+			[](QtnPropertyBase *a, QtnPropertyBase *b) -> bool {
+				return QString::localeAwareCompare(a->name(), b->name()) < 0;
+			});
 	}
 
 	auto it = std::find(children.begin(), children.end(), new_property);
@@ -982,8 +943,7 @@ void CustomPropertyWidget::addProperty(
 }
 
 void CustomPropertyWidget::duplicateProperty(
-	QtnPropertyBase *source,
-	const CustomPropertyData &data)
+	QtnPropertyBase *source, const CustomPropertyData &data)
 {
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
@@ -995,8 +955,7 @@ void CustomPropertyWidget::duplicateProperty(
 }
 
 void CustomPropertyWidget::updatePropertyOptions(
-	QtnPropertyBase *source,
-	const CustomPropertyData &data)
+	QtnPropertyBase *source, const CustomPropertyData &data)
 {
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
@@ -1029,9 +988,8 @@ void CustomPropertyWidget::updatePropertyOptions(
 
 		delete source;
 
-		auto new_property = newProperty(
-				nullptr, data.value, prop_name,
-				data.index, var_parent);
+		auto new_property =
+			newProperty(nullptr, data.value, prop_name, data.index, var_parent);
 
 		set->addChildProperty(new_property, true, index);
 		propertyView()->setActiveProperty(new_property);
@@ -1048,20 +1006,16 @@ void CustomPropertyWidget::updatePropertyOptions(
 
 		if (index < 0)
 		{
-			std::sort(
-				children.begin(), children.end(),
-				[](VarProperty *a, VarProperty *b) -> bool
-			{
-				return QString::localeAwareCompare(
-					a->GetName(),
-					b->GetName()) < 0;
-			});
+			std::sort(children.begin(), children.end(),
+				[](VarProperty *a, VarProperty *b) -> bool {
+					return QString::localeAwareCompare(
+							   a->GetName(), b->GetName()) < 0;
+				});
 
 			auto it = std::find(children.begin(), children.end(), varProperty);
 
 			index = int(it - children.begin());
-		} else
-		if (old_index != index)
+		} else if (old_index != index)
 		{
 			children.at(index)->SetIndex(old_index);
 		}

@@ -24,7 +24,7 @@
 #include <QKeyEvent>
 
 QtnPropertyUInt64Base::QtnPropertyUInt64Base(QObject *parent)
-	: QtnNumericPropertyBase<QtnSinglePropertyBase<quint64> >(parent)
+	: QtnNumericPropertyBase<QtnSinglePropertyBase<quint64>>(parent)
 {
 }
 
@@ -74,14 +74,12 @@ QtnPropertyUInt64::QtnPropertyUInt64(QObject *parent)
 void QtnPropertyUInt64::Register()
 {
 	qtnRegisterMetaPropertyFactory(
-		QVariant::ULongLong,
-		qtnCreateFactory<QtnPropertyUInt64Callback>());
+		QVariant::ULongLong, qtnCreateFactory<QtnPropertyUInt64Callback>());
 
-	QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
-		&QtnPropertyUInt64Base::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateUInt64, QtnPropertyUInt64Base>
-		, "LineEdit");
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyUInt64Base::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateUInt64, QtnPropertyUInt64Base>,
+		"LineEdit");
 }
 
 QtnPropertyDelegateUInt64::QtnPropertyDelegateUInt64(
@@ -124,7 +122,7 @@ bool QtnPropertyDelegateUInt64::acceptKeyPressedForInplaceEditImpl(
 	QKeyEvent *keyEvent) const
 {
 	if (QtnPropertyDelegateTyped<QtnPropertyUInt64Base>::
-		acceptKeyPressedForInplaceEditImpl(keyEvent))
+			acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_UNSIGNED_INT);
@@ -134,18 +132,14 @@ QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	editor = createValueEditorLineEdit(
-			parent, rect,
-			!owner().isEditableByUser(), inplaceInfo);
+		parent, rect, !owner().isEditableByUser(), inplaceInfo);
 
 	editor->installEventFilter(this);
-	QObject::connect(
-		editor, &QLineEdit::editingFinished,
-		this, &QtnPropertyDelegateUInt64::onEditingFinished,
-		Qt::QueuedConnection);
+	QObject::connect(editor, &QLineEdit::editingFinished, this,
+		&QtnPropertyDelegateUInt64::onEditingFinished, Qt::QueuedConnection);
 
-	QObject::connect(
-		editor, &QObject::destroyed,
-		this, &QtnPropertyDelegateUInt64::onEditorDestroyed);
+	QObject::connect(editor, &QObject::destroyed, this,
+		&QtnPropertyDelegateUInt64::onEditorDestroyed);
 
 	return editor;
 }

@@ -42,12 +42,11 @@ void QtnPropertyConnector::connectProperty(
 	{
 		auto srcMetaObject = object->metaObject();
 		auto signal = srcMetaObject->method(
-				srcMetaObject->indexOfSignal("modifiedSetChanged()"));
+			srcMetaObject->indexOfSignal("modifiedSetChanged()"));
 		Q_ASSERT(signal.isValid());
 
 		slot = metaObject->method(
-				metaObject->indexOfSlot(
-					"onModifiedSetChanged()"));
+			metaObject->indexOfSlot("onModifiedSetChanged()"));
 		QObject::connect(object, signal, this, slot);
 	}
 }

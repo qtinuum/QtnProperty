@@ -34,12 +34,10 @@ protected:
 	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;
 
-	virtual void drawValueImpl(
-		QStylePainter &painter, const QRect &rect,
+	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
 		const QStyle::State &state, bool *needTooltip = nullptr) const override;
 
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool propertyValueToStr(QString &strValue) const override;
@@ -48,4 +46,4 @@ private:
 	quint32 m_shape;
 };
 
-#endif	// PROPERTY_DELEGATE_QCOLOR_H
+#endif // PROPERTY_DELEGATE_QCOLOR_H

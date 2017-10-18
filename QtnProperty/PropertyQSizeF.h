@@ -92,8 +92,7 @@ public:
 	QtnPropertyDelegateQSizeF(QtnPropertyQSizeFBase &owner);
 
 protected:
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 	virtual bool propertyValueToStr(QString &strValue) const override;
 };

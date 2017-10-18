@@ -33,18 +33,16 @@ QtnPropertyQSizeFBase::QtnPropertyQSizeFBase(QObject *parent)
 
 QtnProperty *QtnPropertyQSizeFBase::createWidthProperty()
 {
-	return createFieldProperty(
-		QtnPropertyQSizeF::tr("Width"),
-		QtnPropertyQSizeF::tr("Width of the %1"),
-		&QSizeF::width, &QSizeF::setWidth);
+	return createFieldProperty(QtnPropertyQSizeF::tr("Width"),
+		QtnPropertyQSizeF::tr("Width of the %1"), &QSizeF::width,
+		&QSizeF::setWidth);
 }
 
 QtnProperty *QtnPropertyQSizeFBase::createHeightProperty()
 {
-	return createFieldProperty(
-		QtnPropertyQSizeF::tr("Height"),
-		QtnPropertyQSizeF::tr("Height of the %1"),
-		&QSizeF::height, &QSizeF::setHeight);
+	return createFieldProperty(QtnPropertyQSizeF::tr("Height"),
+		QtnPropertyQSizeF::tr("Height of the %1"), &QSizeF::height,
+		&QSizeF::setHeight);
 }
 
 bool QtnPropertyQSizeFBase::fromStrImpl(const QString &str, bool edit)
@@ -86,14 +84,12 @@ QtnPropertyQSizeF::QtnPropertyQSizeF(QObject *parent)
 void QtnPropertyQSizeF::Register()
 {
 	qtnRegisterMetaPropertyFactory(
-		QVariant::SizeF,
-		qtnCreateFactory<QtnPropertyQSizeFCallback>());
+		QVariant::SizeF, qtnCreateFactory<QtnPropertyQSizeFCallback>());
 
-	QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
-		&QtnPropertyQSizeFBase::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateQSizeF, QtnPropertyQSizeFBase>
-		, "QSizeF");
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyQSizeFBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQSizeF, QtnPropertyQSizeFBase>,
+		"QSizeF");
 }
 
 QtnPropertyDelegateQSizeF::QtnPropertyDelegateQSizeF(
@@ -105,8 +101,7 @@ QtnPropertyDelegateQSizeF::QtnPropertyDelegateQSizeF(
 }
 
 QWidget *QtnPropertyDelegateQSizeF::createValueEditorImpl(
-	QWidget *parent, const
-	QRect &rect, QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
@@ -117,8 +112,8 @@ bool QtnPropertyDelegateQSizeF::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQSize::getToStringFormat().arg(
-			locale.toString(value.width(), 'g', 6),
-			locale.toString(value.height(), 'g', 6));
+		locale.toString(value.width(), 'g', 6),
+		locale.toString(value.height(), 'g', 6));
 
 	return true;
 }

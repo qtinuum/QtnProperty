@@ -76,8 +76,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQString
 	Q_OBJECT
 
 private:
-	QtnPropertyQString(
-		const QtnPropertyQString &other) Q_DECL_EQ_DELETE;
+	QtnPropertyQString(const QtnPropertyQString &other) Q_DECL_EQ_DELETE;
 
 public:
 	Q_INVOKABLE explicit QtnPropertyQString(QObject *parent = nullptr);
@@ -92,4 +91,4 @@ public:
 		QtnPropertyQString, QtnPropertyQStringBase)
 };
 
-#endif	// PROPERTYSTRING_H
+#endif // PROPERTYSTRING_H

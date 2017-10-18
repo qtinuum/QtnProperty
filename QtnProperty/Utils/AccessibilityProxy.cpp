@@ -19,8 +19,8 @@
 #include "PropertyView.h"
 #include <QMessageBox>
 
-static int typeID = qRegisterMetaType<QtnAccessibilityProxy *>(
-		"QtnAccessibilityProxy*");
+static int typeID =
+	qRegisterMetaType<QtnAccessibilityProxy *>("QtnAccessibilityProxy*");
 
 QtnAccessibilityProxy::QtnAccessibilityProxy(QtnPropertyView *owner)
 	: QObject(owner)
@@ -28,9 +28,7 @@ QtnAccessibilityProxy::QtnAccessibilityProxy(QtnPropertyView *owner)
 {
 }
 
-QtnAccessibilityProxy::~QtnAccessibilityProxy()
-{
-}
+QtnAccessibilityProxy::~QtnAccessibilityProxy() {}
 
 QtnPropertyView *QtnAccessibilityProxy::owner()
 {

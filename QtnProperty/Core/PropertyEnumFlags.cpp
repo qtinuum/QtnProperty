@@ -81,20 +81,20 @@ bool QtnPropertyEnumFlagsBase::toStrImpl(QString &str) const
 
 	QString strValues;
 	m_enumInfo->forEachEnumValue(
-		[&strValues, v, this](const QtnEnumValueInfo &value) -> bool
-	{
-		if (v & value.value())
+		[&strValues, v, this](const QtnEnumValueInfo &value) -> bool //
 		{
-			if (!strValues.isEmpty())
-				strValues += "|";
+			if (v & value.value())
+			{
+				if (!strValues.isEmpty())
+					strValues += "|";
 
-			QString enumStr;
-			m_enumInfo->toStr(enumStr, &value);
-			strValues += enumStr;
-		}
+				QString enumStr;
+				m_enumInfo->toStr(enumStr, &value);
+				strValues += enumStr;
+			}
 
-		return true;
-	});
+			return true;
+		});
 
 	Q_ASSERT(!strValues.isEmpty());
 

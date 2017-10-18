@@ -17,9 +17,7 @@
 
 #include "PropertyDelegateInfo.h"
 
-QtnPropertyDelegateInfo::QtnPropertyDelegateInfo()
-{
-}
+QtnPropertyDelegateInfo::QtnPropertyDelegateInfo() {}
 
 QtnPropertyDelegateInfo::QtnPropertyDelegateInfo(
 	const QtnPropertyDelegateInfo &other)

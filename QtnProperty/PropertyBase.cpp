@@ -82,84 +82,63 @@ static void qtnPropertyBasePtrFromScriptValue(
 
 void qtnScriptRegisterPropertyTypes(QScriptEngine *engine)
 {
-	qScriptRegisterMetaType(
-		engine, qtnPropertyChangeReasonToScriptValue,
+	qScriptRegisterMetaType(engine, qtnPropertyChangeReasonToScriptValue,
 		qtnPropertyChangeReasonFromScriptValue);
-	qScriptRegisterMetaType(
-		engine, qtnPropertyValuePtrToScriptValue,
+	qScriptRegisterMetaType(engine, qtnPropertyValuePtrToScriptValue,
 		qtnPropertyValuePtrFromScriptValue);
-	qScriptRegisterMetaType(
-		engine, qtnPropertyBasePtrToScriptValue,
+	qScriptRegisterMetaType(engine, qtnPropertyBasePtrToScriptValue,
 		qtnPropertyBasePtrFromScriptValue);
 
 	QScriptValue obj = engine->globalObject();
 
-	obj.setProperty(
-		"QtnPropertyStateNone", QtnPropertyStateNone,
+	obj.setProperty("QtnPropertyStateNone", QtnPropertyStateNone,
 		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyStateNonSimple", QtnPropertyStateNonSimple,
+	obj.setProperty("QtnPropertyStateNonSimple", QtnPropertyStateNonSimple,
 		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyStateInvisible", QtnPropertyStateInvisible,
+	obj.setProperty("QtnPropertyStateInvisible", QtnPropertyStateInvisible,
 		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyStateImmutable", QtnPropertyStateImmutable,
+	obj.setProperty("QtnPropertyStateImmutable", QtnPropertyStateImmutable,
 		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyStateCollapsed", QtnPropertyStateCollapsed,
+	obj.setProperty("QtnPropertyStateCollapsed", QtnPropertyStateCollapsed,
 		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyStateNonSerialized",
-		QtnPropertyStateNonSerialized, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyStateNonSerialized",
+		QtnPropertyStateNonSerialized,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
-	obj.setProperty(
-		"QtnPropertyChangeReasonNewValue",
-		QtnPropertyChangeReasonNewValue, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonLoadedValue",
-		QtnPropertyChangeReasonLoadedValue, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonValue",
-		QtnPropertyChangeReasonValue, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonName", QtnPropertyChangeReasonName,
+	obj.setProperty("QtnPropertyChangeReasonNewValue",
+		QtnPropertyChangeReasonNewValue,
 		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonDescription",
-		QtnPropertyChangeReasonDescription, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonId", QtnPropertyChangeReasonId,
+	obj.setProperty("QtnPropertyChangeReasonLoadedValue",
+		QtnPropertyChangeReasonLoadedValue,
 		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonStateLocal",
-		QtnPropertyChangeReasonStateLocal, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonStateInherited",
-		QtnPropertyChangeReasonStateInherited, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonState",
-		QtnPropertyChangeReasonState, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonChildPropertyAdd",
-		QtnPropertyChangeReasonChildPropertyAdd, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonChildPropertyRemove",
-		QtnPropertyChangeReasonChildPropertyRemove, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
-	obj.setProperty(
-		"QtnPropertyChangeReasonChildren",
-		QtnPropertyChangeReasonChildren, QScriptValue::ReadOnly |
-		QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonValue",
+		QtnPropertyChangeReasonValue,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonName", QtnPropertyChangeReasonName,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonDescription",
+		QtnPropertyChangeReasonDescription,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonId", QtnPropertyChangeReasonId,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonStateLocal",
+		QtnPropertyChangeReasonStateLocal,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonStateInherited",
+		QtnPropertyChangeReasonStateInherited,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonState",
+		QtnPropertyChangeReasonState,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonChildPropertyAdd",
+		QtnPropertyChangeReasonChildPropertyAdd,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonChildPropertyRemove",
+		QtnPropertyChangeReasonChildPropertyRemove,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
+	obj.setProperty("QtnPropertyChangeReasonChildren",
+		QtnPropertyChangeReasonChildren,
+		QScriptValue::ReadOnly | QScriptValue::Undeletable);
 }
 
 QtnPropertyBase::QtnPropertyBase(QObject *parent)
@@ -216,8 +195,7 @@ QtnPropertyBase::~QtnPropertyBase()
 void QtnPropertyBase::setName(const QString &name)
 {
 	emit propertyWillChange(QtnPropertyChangeReasonName,
-							QtnPropertyValuePtr(&name),
-							qMetaTypeId<QString>());
+		QtnPropertyValuePtr(&name), qMetaTypeId<QString>());
 
 	setObjectName(name);
 
@@ -227,8 +205,7 @@ void QtnPropertyBase::setName(const QString &name)
 void QtnPropertyBase::setDescription(const QString &description)
 {
 	emit propertyWillChange(QtnPropertyChangeReasonDescription,
-							QtnPropertyValuePtr(&description),
-							qMetaTypeId<QString>());
+		QtnPropertyValuePtr(&description), qMetaTypeId<QString>());
 
 	m_description = description;
 
@@ -237,9 +214,8 @@ void QtnPropertyBase::setDescription(const QString &description)
 
 void QtnPropertyBase::setId(QtnPropertyID id)
 {
-	emit propertyWillChange(QtnPropertyChangeReasonId,
-							QtnPropertyValuePtr(&id),
-							qMetaTypeId<QtnPropertyID>());
+	emit propertyWillChange(QtnPropertyChangeReasonId, QtnPropertyValuePtr(&id),
+		qMetaTypeId<QtnPropertyID>());
 
 	m_id = id;
 
@@ -252,8 +228,7 @@ void QtnPropertyBase::setState(QtnPropertyState stateToSet, bool force)
 		return;
 
 	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
-							QtnPropertyValuePtr(&stateToSet),
-							qMetaTypeId<QtnPropertyState>());
+		QtnPropertyValuePtr(&stateToSet), qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
@@ -270,8 +245,7 @@ void QtnPropertyBase::addState(QtnPropertyState stateToAdd, bool force)
 		return;
 
 	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
-							QtnPropertyValuePtr(&stateToSet),
-							qMetaTypeId<QtnPropertyState>());
+		QtnPropertyValuePtr(&stateToSet), qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
@@ -288,8 +262,7 @@ void QtnPropertyBase::removeState(QtnPropertyState stateToRemove, bool force)
 		return;
 
 	emit propertyWillChange(QtnPropertyChangeReasonStateLocal,
-							QtnPropertyValuePtr(&stateToSet),
-							qMetaTypeId<QtnPropertyState>());
+		QtnPropertyValuePtr(&stateToSet), qMetaTypeId<QtnPropertyState>());
 
 	m_stateLocal = stateToSet;
 
@@ -381,8 +354,7 @@ bool QtnPropertyBase::load(QDataStream &stream)
 	if (device)
 		posAfterLoadContent = device->pos();
 
-	if (posBeforeLoadContent != 0 &&
-		posAfterLoadContent != 0 &&
+	if (posBeforeLoadContent != 0 && posAfterLoadContent != 0 &&
 		(qint32(posAfterLoadContent - posBeforeLoadContent) != contentSize))
 	{
 		Q_ASSERT(false && "contentSize and loadContentImpl inconsistency.");
@@ -627,25 +599,21 @@ void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
 
 	setStateInherited(masterProperty->state());
 
-	QObject::connect(
-		masterProperty, &QObject::destroyed,
-		this, &QtnPropertyBase::onMasterPropertyDestroyed);
-	QObject::connect(
-		masterProperty, &QtnPropertyBase::propertyDidChange,
-		this, &QtnPropertyBase::masterPropertyStateDidChange,
-		Qt::QueuedConnection);
+	QObject::connect(masterProperty, &QObject::destroyed, this,
+		&QtnPropertyBase::onMasterPropertyDestroyed);
+	QObject::connect(masterProperty, &QtnPropertyBase::propertyDidChange, this,
+		&QtnPropertyBase::masterPropertyStateDidChange, Qt::QueuedConnection);
 }
 
 void QtnPropertyBase::disconnectMasterState()
 {
 	if (nullptr != m_masterProperty)
 	{
-		QObject::disconnect(
-			m_masterProperty, &QObject::destroyed,
-			this, &QtnPropertyBase::onMasterPropertyDestroyed);
-		QObject::disconnect(
-			m_masterProperty, &QtnPropertyBase::propertyDidChange,
-			this, &QtnPropertyBase::masterPropertyStateDidChange);
+		QObject::disconnect(m_masterProperty, &QObject::destroyed, this,
+			&QtnPropertyBase::onMasterPropertyDestroyed);
+		QObject::disconnect(m_masterProperty,
+			&QtnPropertyBase::propertyDidChange, this,
+			&QtnPropertyBase::masterPropertyStateDidChange);
 
 		m_masterProperty = nullptr;
 	}
@@ -662,8 +630,7 @@ void QtnPropertyBase::postUpdateEvent(
 		{
 			timer = startTimer(afterMS);
 		}
-	} else
-	if (nullptr == updateEvent)
+	} else if (nullptr == updateEvent)
 	{
 		updateEvent = new QEvent(QEvent::User);
 		QCoreApplication::postEvent(this, updateEvent);
@@ -676,8 +643,7 @@ void QtnPropertyBase::setStateInherited(QtnPropertyState stateToSet, bool force)
 		return;
 
 	emit propertyWillChange(QtnPropertyChangeReasonStateInherited,
-							QtnPropertyValuePtr(&stateToSet),
-							qMetaTypeId<QtnPropertyState>());
+		QtnPropertyValuePtr(&stateToSet), qMetaTypeId<QtnPropertyState>());
 
 	m_stateInherited = stateToSet;
 

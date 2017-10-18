@@ -63,7 +63,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQVariant
 	Q_OBJECT
 
 private:
-	QtnPropertyQVariant(const QtnPropertyQVariant &other)   Q_DECL_EQ_DELETE;
+	QtnPropertyQVariant(const QtnPropertyQVariant &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQVariant(QObject *parent);
@@ -88,13 +88,11 @@ protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
 
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool propertyValueToStr(QString &strValue) const override;
 
-	virtual void drawValueImpl(
-		QStylePainter &painter, const QRect &rect,
+	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
 		const QStyle::State &state, bool *needTooltip = nullptr) const override;
 };

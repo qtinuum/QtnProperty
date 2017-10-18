@@ -26,4 +26,4 @@ QTN_IMPORT_EXPORT bool qtnStartInplaceEdit(QWidget *editor);
 QTN_IMPORT_EXPORT QWidget *qtnGetInplaceEdit();
 QTN_IMPORT_EXPORT bool qtnStopInplaceEdit(bool delete_later = true);
 
-#endif	// INPLACE_EDITING_H
+#endif // INPLACE_EDITING_H

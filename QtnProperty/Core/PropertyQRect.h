@@ -42,8 +42,8 @@ protected:
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQRectBase, QRect)
 
-QTN_IMPORT_EXPORT QtnProperty * qtnCreateLeftProperty(
-	QObject * parent, QtnPropertyQRectBase * propertyRect);
+QTN_IMPORT_EXPORT QtnProperty *qtnCreateLeftProperty(
+	QObject *parent, QtnPropertyQRectBase *propertyRect);
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateRightProperty(
 	QObject *parent, QtnPropertyQRectBase *propertyRect);
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateTopProperty(
@@ -87,4 +87,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRect, QtnPropertyQRectBase)
 };
 
-#endif	// PROPERTYQRECT_H
+#endif // PROPERTYQRECT_H

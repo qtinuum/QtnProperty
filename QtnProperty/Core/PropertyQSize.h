@@ -42,8 +42,8 @@ protected:
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQSizeBase, QSize)
 
-QTN_IMPORT_EXPORT QtnProperty * qtnCreateWidthProperty(
-	QObject * parent, QtnPropertyQSizeBase * propertySize);
+QTN_IMPORT_EXPORT QtnProperty *qtnCreateWidthProperty(
+	QObject *parent, QtnPropertyQSizeBase *propertySize);
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateHeightProperty(
 	QObject *parent, QtnPropertyQSizeBase *propertySize);
 
@@ -79,4 +79,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSize, QtnPropertyQSizeBase)
 };
 
-#endif	// PROPERTYQSIZE_H
+#endif // PROPERTYQSIZE_H

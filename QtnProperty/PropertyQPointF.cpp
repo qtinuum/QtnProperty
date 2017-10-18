@@ -34,17 +34,13 @@ QtnPropertyQPointFBase::QtnPropertyQPointFBase(QObject *parent)
 QtnProperty *QtnPropertyQPointFBase::createXProperty()
 {
 	return createFieldProperty(
-		getXLabel(),
-		getXDescriptionFormat(),
-		&QPointF::x, &QPointF::setX);
+		getXLabel(), getXDescriptionFormat(), &QPointF::x, &QPointF::setX);
 }
 
 QtnProperty *QtnPropertyQPointFBase::createYProperty()
 {
 	return createFieldProperty(
-		getYLabel(),
-		getYDescriptionFormat(),
-		&QPointF::y, &QPointF::setY);
+		getYLabel(), getYDescriptionFormat(), &QPointF::y, &QPointF::setY);
 }
 
 QString QtnPropertyQPointFBase::getXLabel()
@@ -108,8 +104,7 @@ void QtnPropertyQPointF::Register()
 	qtnRegisterMetaPropertyFactory(
 		QVariant::PointF, qtnCreateFactory<QtnPropertyQPointFCallback>());
 
-	QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyQPointFBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQPointF, QtnPropertyQPointFBase>,
 		"QPointF");
@@ -135,8 +130,7 @@ bool QtnPropertyDelegateQPointF::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-			locale.toString(value.x(), 'g', 6),
-			locale.toString(value.y(), 'g', 6));
+		locale.toString(value.x(), 'g', 6), locale.toString(value.y(), 'g', 6));
 
 	return true;
 }

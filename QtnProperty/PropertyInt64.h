@@ -20,7 +20,7 @@
 #include "Delegates/PropertyDelegate.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyInt64Base
-	: public QtnNumericPropertyBase<QtnSinglePropertyBase<qint64> >
+	: public QtnNumericPropertyBase<QtnSinglePropertyBase<qint64>>
 {
 	Q_OBJECT
 
@@ -88,8 +88,7 @@ protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
 
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool propertyValueToStr(QString &strValue) const override;

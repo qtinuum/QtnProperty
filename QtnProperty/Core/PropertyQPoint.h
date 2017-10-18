@@ -42,8 +42,8 @@ protected:
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQPointBase, QPoint)
 
-QTN_IMPORT_EXPORT QtnProperty * qtnCreateXProperty(
-	QObject * parent, QtnPropertyQPointBase * propertyPoint);
+QTN_IMPORT_EXPORT QtnProperty *qtnCreateXProperty(
+	QObject *parent, QtnPropertyQPointBase *propertyPoint);
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateYProperty(
 	QObject *parent, QtnPropertyQPointBase *propertyPoint);
 
@@ -79,4 +79,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQPoint, QtnPropertyQPointBase)
 };
 
-#endif	// PROPERTYQPOINT_H
+#endif // PROPERTYQPOINT_H

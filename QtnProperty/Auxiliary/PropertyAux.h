@@ -90,4 +90,4 @@ Q_DECLARE_METATYPE(QtnPropertyState)
 Q_DECLARE_METATYPE(QtnPropertyChangeReason)
 Q_DECLARE_METATYPE(QtnPropertyValuePtr)
 
-#endif	// QTN_PROPERTY_AUX_H
+#endif // QTN_PROPERTY_AUX_H

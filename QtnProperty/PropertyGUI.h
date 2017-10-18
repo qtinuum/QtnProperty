@@ -22,4 +22,4 @@
 #include "GUI/PropertyQColor.h"
 #include "GUI/PropertyQFont.h"
 
-#endif	// PROPERTYGUI_H
+#endif // PROPERTYGUI_H

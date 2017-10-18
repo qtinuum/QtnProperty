@@ -21,7 +21,7 @@
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyIntBase
-	: public QtnNumericPropertyBase<QtnSinglePropertyBase<qint32> >
+	: public QtnNumericPropertyBase<QtnSinglePropertyBase<qint32>>
 {
 	Q_OBJECT
 
@@ -57,8 +57,7 @@ public:
 	Q_INVOKABLE explicit QtnPropertyIntCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
-		QtnPropertyIntCallback,
-		QtnPropertyIntBase)
+		QtnPropertyIntCallback, QtnPropertyIntBase)
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyInt
@@ -75,4 +74,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyInt, QtnPropertyIntBase)
 };
 
-#endif	// PROPERTYINT_H
+#endif // PROPERTYINT_H

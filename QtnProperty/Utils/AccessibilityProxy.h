@@ -54,4 +54,4 @@ private:
 
 Q_DECLARE_METATYPE(QtnAccessibilityProxy *)
 
-#endif	// QTN_ACCESSIBILITY_PROXY_H
+#endif // QTN_ACCESSIBILITY_PROXY_H

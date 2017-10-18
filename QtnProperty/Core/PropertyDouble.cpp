@@ -20,7 +20,7 @@
 #include <QLocale>
 
 QtnPropertyDoubleBase::QtnPropertyDoubleBase(QObject *parent)
-	: QtnNumericPropertyBase<QtnSinglePropertyBase<double> >(parent)
+	: QtnNumericPropertyBase<QtnSinglePropertyBase<double>>(parent)
 {
 }
 

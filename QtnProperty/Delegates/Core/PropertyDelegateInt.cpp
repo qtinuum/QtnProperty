@@ -37,11 +37,11 @@ protected:
 	virtual void updateEditor() override;
 };
 
-static bool regIntDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
-		&QtnPropertyIntBase::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>
-		, "SpinBox");
+static bool regIntDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyIntBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>,
+		"SpinBox");
 
 QtnPropertyDelegateInt::QtnPropertyDelegateInt(QtnPropertyIntBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyIntBase>(owner)
@@ -67,8 +67,8 @@ QWidget *QtnPropertyDelegateInt::createValueEditorImpl(
 bool QtnPropertyDelegateInt::acceptKeyPressedForInplaceEditImpl(
 	QKeyEvent *keyEvent) const
 {
-	if (QtnPropertyDelegateTyped<QtnPropertyIntBase>::
-		acceptKeyPressedForInplaceEditImpl(keyEvent))
+	if (QtnPropertyDelegateTyped<
+			QtnPropertyIntBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
 	{
 		return true;
 	}
@@ -96,10 +96,8 @@ QtnPropertyIntSpinBoxHandler::QtnPropertyIntSpinBoxHandler(
 
 	editor.setKeyboardTracking(false);
 	editor.installEventFilter(this);
-	QObject::connect(
-		&editor,
-		static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-		this,
+	QObject::connect(&editor,
+		static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
 		&QtnPropertyIntSpinBoxHandler::onValueChanged);
 }
 

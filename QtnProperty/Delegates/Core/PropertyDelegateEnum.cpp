@@ -40,8 +40,7 @@ private:
 };
 
 static bool regEnumDelegate =
-	QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyEnumBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>,
 		"ComboBox");
@@ -62,9 +61,7 @@ QWidget *QtnPropertyDelegateEnum::createValueEditorImpl(
 	if (owner().isEditableByUser())
 	{
 		QComboBox *combo = new QComboBox(parent);
-		info->forEachEnumValue(
-			[combo](const QtnEnumValueInfo &value) -> bool
-		{
+		info->forEachEnumValue([combo](const QtnEnumValueInfo &value) -> bool {
 			combo->addItem(value.name(), QVariant(value.value()));
 			return true;
 		});
@@ -110,9 +107,8 @@ QtnPropertyEnumComboBoxHandler::QtnPropertyEnumComboBoxHandler(
 	if (!property.isEditableByUser())
 		editor.setDisabled(true);
 
-	QObject::connect(
-		&editor, static_cast<void (QComboBox::*)(int)>(
-			&QComboBox::currentIndexChanged),
+	QObject::connect(&editor,
+		static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 		this, &QtnPropertyEnumComboBoxHandler::onCurrentIndexChanged);
 }
 

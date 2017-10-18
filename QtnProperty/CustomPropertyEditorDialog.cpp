@@ -32,14 +32,12 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	updateTitle();
 
-	setWindowFlags(
-		(windowFlags() & ~(Qt::WindowContextHelpButtonHint)) |
+	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint)) |
 		Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
 
-	QObject::connect(
-		ui->propertyWidget->propertyView(),
-		&QtnPropertyView::activePropertyChanged,
-		this, &CustomPropertyEditorDialog::onActivePropertyChanged);
+	QObject::connect(ui->propertyWidget->propertyView(),
+		&QtnPropertyView::activePropertyChanged, this,
+		&CustomPropertyEditorDialog::onActivePropertyChanged);
 
 	QtnPropertyWidgetEx::addShortcutForAction(
 		ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions, this);
@@ -237,8 +235,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 
 void CustomPropertyEditorDialog::updateTitle()
 {
-	setWindowTitle(
-		ui->propertyWidget->isReadOnly()
-		? tr("Read-only Properties")
-		: tr("Edit Custom Properties"));
+	setWindowTitle(ui->propertyWidget->isReadOnly()
+			? tr("Read-only Properties")
+			: tr("Edit Custom Properties"));
 }

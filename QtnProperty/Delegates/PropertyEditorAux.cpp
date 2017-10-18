@@ -137,11 +137,8 @@ void qtnInitNumEdit(
 
 		if (qtnAcceptForNumEdit(keyEvent, type))
 		{
-			keyEvent = new QKeyEvent(
-					keyEvent->type(),
-					keyEvent->key(),
-					keyEvent->modifiers(),
-					keyEvent->text());
+			keyEvent = new QKeyEvent(keyEvent->type(), keyEvent->key(),
+				keyEvent->modifiers(), keyEvent->text());
 
 			QCoreApplication::postEvent(numEdit, keyEvent);
 		}

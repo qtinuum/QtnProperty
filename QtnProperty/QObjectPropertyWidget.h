@@ -62,7 +62,7 @@ protected:
 	Objects selectedObjects;
 };
 
-const QObjectPropertyWidget::Objects &	//
+const QObjectPropertyWidget::Objects & //
 QObjectPropertyWidget::getSelectedObjects() const
 {
 	return selectedObjects;

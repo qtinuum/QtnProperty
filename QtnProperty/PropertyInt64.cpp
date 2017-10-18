@@ -28,8 +28,7 @@
 #include <QKeyEvent>
 
 class QtnPropertyInt64SpinBoxHandler
-	: public QtnPropertyEditorHandlerVT<QtnPropertyInt64Base,
-										QtnInt64SpinBox>
+	: public QtnPropertyEditorHandlerVT<QtnPropertyInt64Base, QtnInt64SpinBox>
 {
 public:
 	QtnPropertyInt64SpinBoxHandler(
@@ -40,7 +39,7 @@ private:
 };
 
 QtnPropertyInt64Base::QtnPropertyInt64Base(QObject *parent)
-	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint64> >(parent)
+	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint64>>(parent)
 {
 }
 
@@ -85,14 +84,12 @@ QtnPropertyInt64::QtnPropertyInt64(QObject *parent)
 void QtnPropertyInt64::Register()
 {
 	qtnRegisterMetaPropertyFactory(
-		QVariant::LongLong,
-		qtnCreateFactory<QtnPropertyInt64Callback>());
+		QVariant::LongLong, qtnCreateFactory<QtnPropertyInt64Callback>());
 
-	QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
-		&QtnPropertyInt64Base::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateInt64, QtnPropertyInt64Base>
-		, "LineEdit");
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyInt64Base::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateInt64, QtnPropertyInt64Base>,
+		"LineEdit");
 }
 
 QtnPropertyDelegateInt64::QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner)
@@ -103,8 +100,8 @@ QtnPropertyDelegateInt64::QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner)
 bool QtnPropertyDelegateInt64::acceptKeyPressedForInplaceEditImpl(
 	QKeyEvent *keyEvent) const
 {
-	if (QtnPropertyDelegateTyped<QtnPropertyInt64Base>::
-		acceptKeyPressedForInplaceEditImpl(keyEvent))
+	if (QtnPropertyDelegateTyped<
+			QtnPropertyInt64Base>::acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_SIGNED_INT);
@@ -152,12 +149,10 @@ QtnPropertyInt64SpinBoxHandler::QtnPropertyInt64SpinBoxHandler(
 
 	editor.setKeyboardTracking(false);
 	editor.installEventFilter(this);
-	QObject::connect(
-		&editor,
+	QObject::connect(&editor,
 		static_cast<void (QtnInt64SpinBox::*)(qint64)>(
 			&QtnInt64SpinBox::valueChanged),
-		this,
-		&QtnPropertyInt64SpinBoxHandler::onValueChanged);
+		this, &QtnPropertyInt64SpinBoxHandler::onValueChanged);
 }
 
 void QtnPropertyInt64SpinBoxHandler::updateEditor()

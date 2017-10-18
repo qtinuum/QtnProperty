@@ -37,7 +37,7 @@ public:
 
 	inline const QtnEnumInfo *enumInfo() const;
 
-	void setEnumInfo(const QtnEnumInfo *enumInfo) { m_enumInfo = enumInfo; }
+	inline void setEnumInfo(const QtnEnumInfo *enumInfo);
 
 protected:
 	// string conversion implementation
@@ -53,6 +53,11 @@ private:
 const QtnEnumInfo *QtnPropertyEnumFlagsBase::enumInfo() const
 {
 	return m_enumInfo;
+}
+
+void QtnPropertyEnumFlagsBase::setEnumInfo(const QtnEnumInfo *enumInfo)
+{
+	m_enumInfo = enumInfo;
 }
 
 P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyEnumFlagsBase, QtnEnumFlagsValueType)
@@ -80,8 +85,7 @@ class QTN_IMPORT_EXPORT QtnPropertyEnumFlags
 	Q_OBJECT
 
 private:
-	QtnPropertyEnumFlags(
-		const QtnPropertyEnumFlags &other) Q_DECL_EQ_DELETE;
+	QtnPropertyEnumFlags(const QtnPropertyEnumFlags &other) Q_DECL_EQ_DELETE;
 
 public:
 	Q_INVOKABLE explicit QtnPropertyEnumFlags(QObject *parent = nullptr);
@@ -93,4 +97,4 @@ public:
 		QtnPropertyEnumFlags, QtnPropertyEnumFlagsBase)
 };
 
-#endif	// PROPERTYENUMFLAGS_H
+#endif // PROPERTYENUMFLAGS_H

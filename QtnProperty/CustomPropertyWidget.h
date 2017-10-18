@@ -32,9 +32,8 @@ public:
 	inline bool isReadOnly() const;
 	void setReadOnly(bool value);
 	inline QVariant *getData() const;
-	void setData(
-		QVariant *dataPtr,
-		const QString &title = QString(), bool force = false);
+	void setData(QVariant *dataPtr, const QString &title = QString(),
+		bool force = false);
 
 	virtual bool canDeleteProperty(QtnPropertyBase *property) override;
 	virtual bool canCutToClipboard() override;
@@ -61,12 +60,9 @@ protected:
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void deleteProperty(QtnPropertyBase *property) override;
 	virtual QMimeData *getPropertyDataForAction(
-		QtnPropertyBase *property,
-		Qt::DropAction dropAction) override;
-	virtual bool applyPropertyData(
-		const QMimeData *data,
-		QtnPropertyBase *destination,
-		QtnApplyPosition position) override;
+		QtnPropertyBase *property, Qt::DropAction dropAction) override;
+	virtual bool applyPropertyData(const QMimeData *data,
+		QtnPropertyBase *destination, QtnApplyPosition position) override;
 	virtual void dropEvent(QDropEvent *event) override;
 	virtual void dropEnd() override;
 
@@ -74,21 +70,17 @@ private:
 	void updateSet(QtnPropertyBase *setProperty, int childIndex);
 
 	bool getActiveVarProperty(
-		QtnPropertyBase * &property, VarProperty * &varProperty);
-	QtnPropertyBase *newProperty(
-		QtnPropertySet *parent, const QVariant &value, const QString &key,
-		int index, VarProperty *mapParent);
+		QtnPropertyBase *&property, VarProperty *&varProperty);
+	QtnPropertyBase *newProperty(QtnPropertySet *parent, const QVariant &value,
+		const QString &key, int index, VarProperty *mapParent);
 
 	void addProperty(QtnPropertyBase *source, const CustomPropertyData &data);
 	void duplicateProperty(
-		QtnPropertyBase *source,
-		const CustomPropertyData &data);
+		QtnPropertyBase *source, const CustomPropertyData &data);
 	void updatePropertyOptions(
-		QtnPropertyBase *source,
-		const CustomPropertyData &data);
+		QtnPropertyBase *source, const CustomPropertyData &data);
 	bool insertReplaceOrCancel(
-		QtnPropertyBase *destination,
-		CustomPropertyData &customData);
+		QtnPropertyBase *destination, CustomPropertyData &customData);
 
 	QVariant *dataPtr;
 	QVariant::Type lastAddType;

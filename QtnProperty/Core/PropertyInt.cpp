@@ -20,7 +20,7 @@
 #include <QLocale>
 
 QtnPropertyIntBase::QtnPropertyIntBase(QObject *parent)
-	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint32> >(parent)
+	: QtnNumericPropertyBase<QtnSinglePropertyBase<qint32>>(parent)
 {
 }
 
