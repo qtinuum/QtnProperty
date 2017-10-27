@@ -104,22 +104,18 @@ QtnPropertyBase *QtnPropertyWidgetEx::getActiveProperty() const
 	return propertyView()->activeProperty();
 }
 
-QShortcut *QtnPropertyWidgetEx::addShortcutForAction(
+void QtnPropertyWidgetEx::addShortcutForAction(
 	const QKeySequence &seq, QAction *action, QWidget *parent)
 {
-	Q_ASSERT(nullptr != parent);
-	auto shortcut = new QShortcut(seq, parent);
-	QObject::connect(
-		shortcut, &QShortcut::activated, action, &QAction::trigger);
-
+	Q_ASSERT(nullptr != action);
 	if (QKeySequence::ExactMatch != action->shortcut().matches(seq))
 	{
-		auto shortcut2 = new QShortcut(action->shortcut(), parent);
+		Q_ASSERT(nullptr != parent);
+		auto shortcut = new QShortcut(
+			seq, parent, nullptr, nullptr, Qt::ApplicationShortcut);
 		QObject::connect(
-			shortcut2, &QShortcut::activated, action, &QAction::trigger);
+			shortcut, &QShortcut::activated, action, &QAction::trigger);
 	}
-
-	return shortcut;
 }
 
 void QtnPropertyWidgetEx::onMouseReleased()

@@ -67,7 +67,7 @@ public:
 
 	QtnPropertyBase *getActiveProperty() const;
 
-	static QShortcut *addShortcutForAction(
+	static void addShortcutForAction(
 		const QKeySequence &seq, QAction *action, QWidget *parent);
 
 private slots:
