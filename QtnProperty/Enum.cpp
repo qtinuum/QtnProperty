@@ -37,16 +37,16 @@ const QtnEnumValueInfo *QtnEnumInfo::findByValue(QtnEnumValueType value) const
 	const QtnEnumValueInfo *result = nullptr;
 
 	forEachEnumValue(
-		[&result, value](const QtnEnumValueInfo &enumValue) -> bool
-	{
-		if (enumValue.value() == value)
+		[&result, value](const QtnEnumValueInfo &enumValue) -> bool //
 		{
-			result = &enumValue;
-			return false;
-		}
+			if (enumValue.value() == value)
+			{
+				result = &enumValue;
+				return false;
+			}
 
-		return true;
-	});
+			return true;
+		});
 
 	return result;
 }
@@ -56,24 +56,25 @@ const QtnEnumValueInfo *QtnEnumInfo::findByName(const QString &name) const
 	const QtnEnumValueInfo *result = nullptr;
 
 	forEachEnumValue(
-		[&result, &name, this](const QtnEnumValueInfo &enumValue) -> bool
-	{
-		if (QString::compare(enumValue.name(), name, m_case_sensitivity) == 0)
+		[&result, &name, this](const QtnEnumValueInfo &enumValue) -> bool //
 		{
-			result = &enumValue;
-			return false;
-		}
+			if (0 ==
+				QString::compare(enumValue.name(), name, m_case_sensitivity))
+			{
+				result = &enumValue;
+				return false;
+			}
 
-		return true;
-	});
+			return true;
+		});
 
 	return result;
 }
 
 const QtnEnumValueInfo *QtnEnumInfo::fromStr(const QString &str) const
 {
-	static QRegExp parserEnum("^\\s*([^:\\s]+)::([^:\\s]+)\\s*$",
-							  m_case_sensitivity);
+	static QRegExp parserEnum(
+		"^\\s*([^:\\s]+)::([^:\\s]+)\\s*$", m_case_sensitivity);
 
 	QString enumStr = str.trimmed();
 
@@ -114,8 +115,7 @@ QtnEnumValueInfo::QtnEnumValueInfo()
 }
 
 QtnEnumValueInfo::QtnEnumValueInfo(
-	QtnEnumValueType value, const QString &name,
-	QtnEnumValueState state)
+	QtnEnumValueType value, const QString &name, QtnEnumValueState state)
 	: m_value(value)
 	, m_name(name)
 	, m_state(state)

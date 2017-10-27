@@ -29,8 +29,7 @@ class QtnPropertySet;
 class QtnProperty;
 class QtnPropertyConnector;
 
-class QTN_IMPORT_EXPORT QtnPropertyBase
-	: public QObject
+class QTN_IMPORT_EXPORT QtnPropertyBase : public QObject
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyBase)
@@ -118,8 +117,7 @@ public:
 	void setValueAsVariant(const QVariant &value);
 
 Q_SIGNALS:
-	void propertyWillChange(
-		QtnPropertyChangeReason reason,
+	void propertyWillChange(QtnPropertyChangeReason reason,
 		QtnPropertyValuePtr newValue, int typeId);
 	void propertyDidChange(QtnPropertyChangeReason reason);
 
@@ -235,4 +233,4 @@ QTN_IMPORT_EXPORT void qtnScriptRegisterPropertyTypes(QScriptEngine *engine);
 Q_DECLARE_METATYPE(const QtnPropertyBase *)
 Q_DECLARE_METATYPE(QtnPropertyBase *)
 
-#endif	// QTN_PROPERTY_BASE_H
+#endif // QTN_PROPERTY_BASE_H

@@ -30,27 +30,25 @@
 #include <QComboBox>
 #include <QDebug>
 
-static bool regQStringDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
-		&QtnPropertyQStringBase::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateQString, QtnPropertyQStringBase>
-		, "LineEdit");
+static bool regQStringDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyQStringBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQString, QtnPropertyQStringBase>,
+		"LineEdit");
 
 static bool regQStringFileDelegate =
-	QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegate(
-		&QtnPropertyQStringBase::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateQStringFile,
-							 QtnPropertyQStringBase>
-		, "File");
+	QtnPropertyDelegateFactory::staticInstance().registerDelegate(
+		&QtnPropertyQStringBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQStringFile,
+			QtnPropertyQStringBase>,
+		"File");
 
 static bool regQStringListDelegate =
-	QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegate(
-		&QtnPropertyQStringBase::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateQStringList,
-							 QtnPropertyQStringBase>
-		, "List");
+	QtnPropertyDelegateFactory::staticInstance().registerDelegate(
+		&QtnPropertyQStringBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQStringList,
+			QtnPropertyQStringBase>,
+		"List");
 
 class QtnPropertyQStringLineEditHandler
 	: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QLineEdit>
@@ -66,7 +64,7 @@ protected:
 
 class QtnPropertyQStringMultilineEditBttnHandler
 	: public QtnPropertyEditorBttnHandler<QtnPropertyQStringBase,
-										  QtnLineEditBttn>
+		  QtnLineEditBttn>
 {
 public:
 	QtnPropertyQStringMultilineEditBttnHandler(
@@ -107,7 +105,7 @@ bool QtnPropertyDelegateQString::acceptKeyPressedForInplaceEditImpl(
 	QKeyEvent *keyEvent) const
 {
 	if (QtnPropertyDelegateTyped<QtnPropertyQStringBase>::
-		acceptKeyPressedForInplaceEditImpl(keyEvent))
+			acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	// accept any printable key
@@ -146,7 +144,7 @@ bool QtnPropertyDelegateQString::propertyValueToStr(QString &strValue) const
 {
 	strValue = owner().value();
 	auto placeholder = QtnPropertyQString::getPlaceholderStr(
-			strValue, owner().isMultilineEnabled());
+		strValue, owner().isMultilineEnabled());
 
 	if (!placeholder.isEmpty())
 		strValue.swap(placeholder);
@@ -154,9 +152,8 @@ bool QtnPropertyDelegateQString::propertyValueToStr(QString &strValue) const
 	return true;
 }
 
-void QtnPropertyDelegateQString::drawValueImpl(
-	QStylePainter &painter, const QRect &rect,
-	const QStyle::State &state, bool *needTooltip) const
+void QtnPropertyDelegateQString::drawValueImpl(QStylePainter &painter,
+	const QRect &rect, const QStyle::State &state, bool *needTooltip) const
 {
 	QPen oldPen = painter.pen();
 
@@ -169,12 +166,11 @@ void QtnPropertyDelegateQString::drawValueImpl(
 
 class QtnPropertyQStringFileLineEditBttnHandler
 	: public QtnPropertyEditorBttnHandler<QtnPropertyQStringBase,
-										  QtnLineEditBttn>
+		  QtnLineEditBttn>
 {
 public:
 	QtnPropertyQStringFileLineEditBttnHandler(
-		QtnPropertyQStringBase &property,
-		QtnLineEditBttn &editor);
+		QtnPropertyQStringBase &property, QtnLineEditBttn &editor);
 
 	void applyAttributes(const QtnPropertyDelegateAttributes &attributes);
 
@@ -232,15 +228,13 @@ void QtnPropertyDelegateQStringFile::applyAttributesImpl(
 }
 
 QWidget *QtnPropertyDelegateQStringFile::createValueEditorImpl(
-	QWidget *parent,
-	const QRect &rect,
-	QtnInplaceInfo *inplaceInfo)
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	QtnLineEditBttn *editor = new QtnLineEditBttn(parent);
 	editor->setGeometry(rect);
 
-	auto handler = new QtnPropertyQStringFileLineEditBttnHandler(
-			owner(), *editor);
+	auto handler =
+		new QtnPropertyQStringFileLineEditBttnHandler(owner(), *editor);
 	handler->applyAttributes(m_editorAttributes);
 
 	qtnInitLineEdit(editor->lineEdit, inplaceInfo);
@@ -313,9 +307,8 @@ QtnPropertyQStringListComboBoxHandler::QtnPropertyQStringListComboBoxHandler(
 	if (!property.isEditableByUser())
 		editor.setDisabled(true);
 
-	QObject::connect(
-		&editor, &QComboBox::currentTextChanged,
-		this, &QtnPropertyQStringListComboBoxHandler::onValueChanged);
+	QObject::connect(&editor, &QComboBox::currentTextChanged, this,
+		&QtnPropertyQStringListComboBoxHandler::onValueChanged);
 }
 
 void QtnPropertyQStringListComboBoxHandler::applyAttributes(
@@ -355,8 +348,8 @@ void QtnPropertyQStringListComboBoxHandler::updateValue()
 }
 
 QtnPropertyQStringFileLineEditBttnHandler::
-QtnPropertyQStringFileLineEditBttnHandler(
-	QtnPropertyQStringBase &property, QtnLineEditBttn &editor)
+	QtnPropertyQStringFileLineEditBttnHandler(
+		QtnPropertyQStringBase &property, QtnLineEditBttn &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
 	, dialog(new QFileDialog(&editor))
 {
@@ -371,12 +364,10 @@ QtnPropertyQStringFileLineEditBttnHandler(
 	updateEditor();
 
 	editor.lineEdit->installEventFilter(this);
-	QObject::connect(
-		editor.toolButton, &QToolButton::clicked,
-		this, &QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked);
-	QObject::connect(
-		editor.lineEdit, &QLineEdit::editingFinished,
-		this, &QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished,
+	QObject::connect(editor.toolButton, &QToolButton::clicked, this,
+		&QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked);
+	QObject::connect(editor.lineEdit, &QLineEdit::editingFinished, this,
+		&QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished,
 		Qt::QueuedConnection);
 }
 
@@ -438,11 +429,8 @@ void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked(bool)
 {
 	auto property = &this->property();
 	volatile bool destroyed = false;
-	auto connection = QObject::connect(
-			property, &QObject::destroyed, [&destroyed]() mutable
-	{
-		destroyed = true;
-	});
+	auto connection = QObject::connect(property, &QObject::destroyed,
+		[&destroyed]() mutable { destroyed = true; });
 	reverted = true;
 	auto dialogContainer = this->dialogContainer;
 	QString filePath = property->value();
@@ -482,9 +470,8 @@ void QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished()
 }
 
 QtnPropertyQStringMultilineEditBttnHandler::
-QtnPropertyQStringMultilineEditBttnHandler(
-	QtnPropertyQStringBase &property,
-	QtnLineEditBttn &editor)
+	QtnPropertyQStringMultilineEditBttnHandler(
+		QtnPropertyQStringBase &property, QtnLineEditBttn &editor)
 	: QtnPropertyEditorHandlerType(property, editor)
 	, dialog(new MultilineTextDialog(&editor))
 	, multiline(false)
@@ -494,13 +481,11 @@ QtnPropertyQStringMultilineEditBttnHandler(
 
 	editor.lineEdit->installEventFilter(this);
 
-	QObject::connect(
-		editor.toolButton, &QToolButton::clicked,
-		this, &QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked);
+	QObject::connect(editor.toolButton, &QToolButton::clicked, this,
+		&QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked);
 
-	QObject::connect(
-		editor.lineEdit, &QLineEdit::editingFinished,
-		this, &QtnPropertyQStringMultilineEditBttnHandler::onEditingFinished,
+	QObject::connect(editor.lineEdit, &QLineEdit::editingFinished, this,
+		&QtnPropertyQStringMultilineEditBttnHandler::onEditingFinished,
 		Qt::QueuedConnection);
 }
 
@@ -578,8 +563,8 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 	if (readonly)
 	{
 		dialog->setWindowTitle(
-			QtnPropertyQString::getReadOnlyPropertyTitleFormat()
-			.arg(property->name()));
+			QtnPropertyQString::getReadOnlyPropertyTitleFormat().arg(
+				property->name()));
 	} else
 	{
 		dialog->setWindowTitle(property->name());
@@ -589,12 +574,8 @@ void QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked(bool)
 	dialog->show();
 	dialog->raise();
 	volatile bool destroyed = false;
-	auto connection = QObject::connect(
-			this, &QObject::destroyed,
-			[&destroyed]() mutable
-	{
-		destroyed = true;
-	});
+	auto connection = QObject::connect(this, &QObject::destroyed,
+		[&destroyed]() mutable { destroyed = true; });
 
 	if (dialog->exec() == QDialog::Accepted && !destroyed)
 		property->edit(dialog->getText());
@@ -618,9 +599,8 @@ QtnPropertyQStringLineEditHandler::QtnPropertyQStringLineEditHandler(
 		editor.setReadOnly(true);
 
 	editor.installEventFilter(this);
-	QObject::connect(
-		&editor, &QLineEdit::editingFinished,
-		this, &QtnPropertyQStringLineEditHandler::updateValue);
+	QObject::connect(&editor, &QLineEdit::editingFinished, this,
+		&QtnPropertyQStringLineEditHandler::updateValue);
 }
 
 void QtnPropertyQStringLineEditHandler::updateEditor()

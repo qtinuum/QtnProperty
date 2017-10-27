@@ -39,18 +39,18 @@ static QString enumFlagsProperty2Str(const QtnPropertyEnumFlagsBase &property)
 		return text;
 
 	enumInfo->forEachEnumValue(
-		[&text, value](const QtnEnumValueInfo &e) -> bool
-	{
-		if (value & e.value())
+		[&text, value](const QtnEnumValueInfo &e) -> bool //
 		{
-			if (!text.isEmpty())
-				text += "|";
+			if (value & e.value())
+			{
+				if (!text.isEmpty())
+					text += "|";
 
-			text += e.name();
-		}
+				text += e.name();
+			}
 
-		return true;
-	});
+			return true;
+		});
 
 	return text;
 }
@@ -66,11 +66,11 @@ protected:
 	virtual void updateEditor() override;
 };
 
-static bool regEnumFlagsDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
+static bool regEnumFlagsDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyEnumFlagsBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateEnumFlags,
-						   QtnPropertyEnumFlagsBase>,
+			QtnPropertyEnumFlagsBase>,
 		"FlagsList");
 
 QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(
@@ -83,39 +83,36 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(
 	{
 		QtnEnumFlagsValueType value = owner;
 		enumInfo->forEachEnumValue(
-			[this, &owner, value](const QtnEnumValueInfo &e) -> bool
-		{
-			if (e.state() == QtnEnumValueStateNone)
-			{
-				QtnEnumValueType enum_value = e.value();
-				QtnPropertyEnumFlagsBase &_owner = owner;
-
-				QtnPropertyBoolCallback *flagProperty =
-					new QtnPropertyBoolCallback(0);
-				flagProperty->setName(e.name());
-				flagProperty->setDescription(
-					QtnPropertyEnumFlags::getFlagLabelDescription(
-						e.name(), owner.name()));
-
-				flagProperty->setCallbackValueGet(
-					[&_owner, enum_value]() -> bool
+			[this, &owner, value](const QtnEnumValueInfo &e) -> bool {
+				if (e.state() == QtnEnumValueStateNone)
 				{
-					return _owner.value() & enum_value;
-				});
-				flagProperty->setCallbackValueSet(
-					[&_owner, enum_value](bool value)
-				{
-					if (value)
-						_owner.setValue(_owner.value() | enum_value);
-					else
-						_owner.setValue(_owner.value() & ~enum_value);
-				});
+					QtnEnumValueType enum_value = e.value();
+					QtnPropertyEnumFlagsBase &_owner = owner;
 
-				this->addSubProperty(flagProperty);
-			}
+					QtnPropertyBoolCallback *flagProperty =
+						new QtnPropertyBoolCallback(0);
+					flagProperty->setName(e.name());
+					flagProperty->setDescription(
+						QtnPropertyEnumFlags::getFlagLabelDescription(
+							e.name(), owner.name()));
 
-			return true;
-		});
+					flagProperty->setCallbackValueGet(
+						[&_owner, enum_value]() -> bool {
+							return _owner.value() & enum_value;
+						});
+					flagProperty->setCallbackValueSet(
+						[&_owner, enum_value](bool value) {
+							if (value)
+								_owner.setValue(_owner.value() | enum_value);
+							else
+								_owner.setValue(_owner.value() & ~enum_value);
+						});
+
+					this->addSubProperty(flagProperty);
+				}
+
+				return true;
+			});
 	}
 }
 

@@ -18,9 +18,8 @@
 
 #include "Auxiliary/PropertyTemplates.h"
 
-template <typename VALUE_T,
-		  typename FIELD_PROP_T,
-		  typename FIELD_T = typename FIELD_PROP_T::ValueType>
+template <typename VALUE_T, typename FIELD_PROP_T,
+	typename FIELD_T = typename FIELD_PROP_T::ValueType>
 class QtnStructPropertyBase : public QtnSinglePropertyBase<VALUE_T>
 {
 public:
@@ -38,23 +37,18 @@ protected:
 	{
 	}
 
-	QtnProperty *createFieldProperty(
-		const QString &name, const QString &desc_fmt,
-		FieldValueType (VALUE_T::*get)() const,
+	QtnProperty *createFieldProperty(const QString &name,
+		const QString &desc_fmt, FieldValueType (VALUE_T::*get)() const,
 		void (VALUE_T::*set)(FieldValueType))
 	{
 		auto result = new FieldProperty(nullptr);
 
 		result->setName(name);
 		result->setDescription(desc_fmt.arg(this->name()));
-		result->setCallbackValueGet(
-			[this, get]() -> CallbackValueType
-		{
+		result->setCallbackValueGet([this, get]() -> CallbackValueType {
 			return (Inherited::value().*get)();
 		});
-		result->setCallbackValueSet(
-			[this, set](CallbackValueType new_value)
-		{
+		result->setCallbackValueSet([this, set](CallbackValueType new_value) {
 			auto rect = Inherited::value();
 			(rect.*set)(new_value);
 			Inherited::setValue(rect);

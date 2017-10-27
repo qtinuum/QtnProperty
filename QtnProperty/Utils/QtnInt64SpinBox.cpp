@@ -168,12 +168,10 @@ void QtnInt64SpinBox::setLineEdit(QLineEdit *lineEdit)
 
 	if (lineEdit)
 	{
-		connect(
-			lineEdit, &QLineEdit::textChanged,
-			this, &QtnInt64SpinBox::onTextChanged);
-		connect(
-			lineEdit, &QLineEdit::cursorPositionChanged,
-			this, &QtnInt64SpinBox::onCursorPositionChanged);
+		connect(lineEdit, &QLineEdit::textChanged, this,
+			&QtnInt64SpinBox::onTextChanged);
+		connect(lineEdit, &QLineEdit::cursorPositionChanged, this,
+			&QtnInt64SpinBox::onCursorPositionChanged);
 	}
 
 	QAbstractSpinBox::setLineEdit(lineEdit);
@@ -201,9 +199,8 @@ QSize QtnInt64SpinBox::sizeHint() const
 {
 	if (mCachedSizeHint.isEmpty())
 	{
-		mCachedSizeHint = calcSize(
-				mPrefix + mSuffix + QLatin1Char(' '),
-				lineEdit()->sizeHint().height());
+		mCachedSizeHint = calcSize(mPrefix + mSuffix + QLatin1Char(' '),
+			lineEdit()->sizeHint().height());
 	}
 
 	return mCachedSizeHint;
@@ -214,8 +211,7 @@ QSize QtnInt64SpinBox::minimumSizeHint() const
 	if (mCachedMinimumSizeHint.isEmpty())
 	{
 		mCachedMinimumSizeHint = calcSize(
-				mPrefix + QLatin1Char(' '),
-				lineEdit()->minimumSizeHint().height());
+			mPrefix + QLatin1Char(' '), lineEdit()->minimumSizeHint().height());
 	}
 
 	return mCachedMinimumSizeHint;
@@ -239,14 +235,12 @@ qint64 QtnInt64SpinBox::validateAndInterpret(
 	QValidator::State state = QValidator::Acceptable;
 	qint64 num = mMinimum;
 
-	if (mMinimum != mMaximum && (
-			copy.isEmpty() ||
-			(mMinimum < 0 && copy == QLatin1String("-")) ||
+	if (mMinimum != mMaximum &&
+		(copy.isEmpty() || (mMinimum < 0 && copy == QLatin1String("-")) ||
 			(mMaximum >= 0 && copy == QLatin1String("+"))))
 	{
 		state = QValidator::Intermediate;
-	} else
-	if (copy.startsWith(QLatin1Char('-')) && mMinimum >= 0)
+	} else if (copy.startsWith(QLatin1Char('-')) && mMinimum >= 0)
 	{
 		state = QValidator::Invalid;
 	} else
@@ -260,8 +254,8 @@ qint64 QtnInt64SpinBox::validateAndInterpret(
 		{
 			num = locale.toLongLong(copy, &ok);
 
-			if (!ok && copy.contains(locale.groupSeparator()) && (
-					mMaximum >= 1000 || mMinimum <= -1000))
+			if (!ok && copy.contains(locale.groupSeparator()) &&
+				(mMaximum >= 1000 || mMinimum <= -1000))
 			{
 				QString copy2 = copy;
 				copy2.remove(locale.groupSeparator());
@@ -272,18 +266,15 @@ qint64 QtnInt64SpinBox::validateAndInterpret(
 		if (!ok)
 		{
 			state = QValidator::Invalid;
-		} else
-		if (num >= mMinimum && num <= mMaximum)
+		} else if (num >= mMinimum && num <= mMaximum)
 		{
 			state = QValidator::Acceptable;
-		} else
-		if (mMinimum == mMaximum)
+		} else if (mMinimum == mMaximum)
 		{
 			state = QValidator::Invalid;
 		} else
 		{
-			if ((num >= 0 && num > mMaximum) ||
-				(num < 0 && num < mMinimum))
+			if ((num >= 0 && num > mMaximum) || (num < 0 && num < mMinimum))
 			{
 				state = QValidator::Invalid;
 			} else
@@ -336,15 +327,15 @@ QSize QtnInt64SpinBox::calcSize(const QString &fixedContent, int h) const
 		w = qMax(w, fm.width(s));
 	}
 
-	w += 2;	// cursor blinking space
+	w += 2; // cursor blinking space
 
 	QStyleOptionSpinBox opt;
 	initStyleOption(&opt);
 	QSize hint(w, h);
 
-	return style()->sizeFromContents(
-		QStyle::CT_SpinBox, &opt, hint, this)
-		   .expandedTo(QApplication::globalStrut());
+	return style()
+		->sizeFromContents(QStyle::CT_SpinBox, &opt, hint, this)
+		.expandedTo(QApplication::globalStrut());
 }
 
 QValidator::State QtnInt64SpinBox::validate(QString &input, int &pos) const
@@ -366,11 +357,9 @@ QString QtnInt64SpinBox::textFromValue(qint64 val) const
 
 	if (mDisplayIntegerBase != 10)
 	{
-		const QLatin1String prefix = val < 0
-			? QLatin1String("-")
-			: QLatin1String();
-		str = prefix + QString::number(
-				qAbs(val), mDisplayIntegerBase);
+		const QLatin1String prefix =
+			val < 0 ? QLatin1String("-") : QLatin1String();
+		str = prefix + QString::number(qAbs(val), mDisplayIntegerBase);
 	} else
 	{
 		str = locale().toString(val);
@@ -421,16 +410,14 @@ void QtnInt64SpinBox::stepBy(int steps)
 		{
 			if (newValue < mMinimum || newValue > mValue)
 				newValue = mMinimum;
-		} else
-		if (step > 0)
+		} else if (step > 0)
 		{
 			if (newValue > mMaximum || newValue < mValue)
 				newValue = mMaximum;
 		}
 
 		setValue(newValue, ep);
-	} else
-	if (ep == AlwaysEmit)
+	} else if (ep == AlwaysEmit)
 	{
 		emitSignals();
 	}
@@ -518,8 +505,7 @@ void QtnInt64SpinBox::updateEdit(bool withGeometry, bool withValue)
 	if (withValue && !isSpecialValue())
 	{
 		setValue(mValue);
-	} else
-	if (!mCleared)
+	} else if (!mCleared)
 	{
 		auto edit = lineEdit();
 
@@ -541,8 +527,7 @@ void QtnInt64SpinBox::updateEdit(bool withGeometry, bool withValue)
 		if (!isSpecialValue)
 		{
 			cursor = qBound(
-					mPrefix.size(), cursor,
-					edit->text().size() - mSuffix.size());
+				mPrefix.size(), cursor, edit->text().size() - mSuffix.size());
 
 			if (selectedSize > 0)
 			{
@@ -603,9 +588,8 @@ void QtnInt64SpinBox::onCursorPositionChanged(int oldPos, int newPos)
 			{
 				pos = oldPos;
 			}
-		} else
-		if (newPos > edit->text().size() - mSuffix.size()
-			&& newPos != edit->text().size())
+		} else if (newPos > edit->text().size() - mSuffix.size() &&
+			newPos != edit->text().size())
 		{
 			if (oldPos == edit->text().size())
 			{
@@ -619,10 +603,9 @@ void QtnInt64SpinBox::onCursorPositionChanged(int oldPos, int newPos)
 
 		if (pos != -1)
 		{
-			const int selSize = edit->selectionStart() >= 0 &&
-				allowSelection
+			const int selSize = edit->selectionStart() >= 0 && allowSelection
 				? (edit->selectedText().size() * (newPos < pos ? -1 : 1)) -
-				newPos + pos
+					newPos + pos
 				: 0;
 
 			const QSignalBlocker blocker(edit);
@@ -688,8 +671,8 @@ void QtnInt64SpinBox::interpret(EmitPolicy ep)
 		const QString copy = tmp;
 		fixup(tmp);
 
-		doInterpret = tmp != copy &&
-			(validate(tmp, pos) == QValidator::Acceptable);
+		doInterpret =
+			tmp != copy && (validate(tmp, pos) == QValidator::Acceptable);
 
 		if (!doInterpret)
 		{

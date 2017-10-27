@@ -31,8 +31,7 @@ public:
 	QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner);
 
 protected:
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool acceptKeyPressedForInplaceEditImpl(
@@ -41,4 +40,4 @@ protected:
 	virtual bool propertyValueToStr(QString &strValue) const override;
 };
 
-#endif	// PROPERTY_DELEGATE_UINT_H
+#endif // PROPERTY_DELEGATE_UINT_H

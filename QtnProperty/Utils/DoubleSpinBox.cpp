@@ -46,9 +46,9 @@ QString QtnDoubleSpinBox::valueToText(
 		auto data = &begin[result.length() - 1];
 		auto decBegin = &begin[i];
 
-		while (data >= decBegin && (*data == zeroDigit ||
-									*data == decimalPoint ||
-									*data == groupSeparator))
+		while (data >= decBegin &&
+			(*data == zeroDigit || *data == decimalPoint ||
+				*data == groupSeparator))
 		{
 			data--;
 		}

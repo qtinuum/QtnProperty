@@ -23,24 +23,20 @@ static bool getBoolValue(QString boolText, bool &success)
 {
 	success = true;
 
-	if (0 == boolText.compare(
-			QtnPropertyBool::getBoolText(false, true),
-			Qt::CaseInsensitive))
+	if (boolText.compare(QtnPropertyBool::getBoolText(false, true),
+			Qt::CaseInsensitive) == 0)
 		return false;
 
-	if (0 == boolText.compare(
-			QtnPropertyBool::getBoolText(true, true),
-			Qt::CaseInsensitive))
+	if (boolText.compare(
+			QtnPropertyBool::getBoolText(true, true), Qt::CaseInsensitive) == 0)
 		return true;
 
-	if (0 == boolText.compare(
-			QtnPropertyBool::getBoolText(false, false),
-			Qt::CaseInsensitive))
+	if (boolText.compare(QtnPropertyBool::getBoolText(false, false),
+			Qt::CaseInsensitive) == 0)
 		return false;
 
-	if (0 == boolText.compare(
-			QtnPropertyBool::getBoolText(true, false),
-			Qt::CaseInsensitive))
+	if (boolText.compare(QtnPropertyBool::getBoolText(true, false),
+			Qt::CaseInsensitive) == 0)
 		return true;
 
 	if (boolText.toULongLong(&success) != 0)

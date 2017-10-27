@@ -26,19 +26,17 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateFactory
 	Q_DISABLE_COPY(QtnPropertyDelegateFactory)
 
 public:
-	typedef QtnPropertyDelegate *CreateFunction (QtnProperty &);
+	typedef QtnPropertyDelegate *CreateFunction(QtnProperty &);
 
 	explicit QtnPropertyDelegateFactory(
 		const QtnPropertyDelegateFactory *superFactory = nullptr);
 
 	QtnPropertyDelegate *createDelegate(QtnProperty &owner) const;
 
-	bool registerDelegateDefault(
-		const QMetaObject *propertyMetaObject,
+	bool registerDelegateDefault(const QMetaObject *propertyMetaObject,
 		CreateFunction *createFunction,
-		const QByteArray &delegateName = "");
-	bool registerDelegate(
-		const QMetaObject *propertyMetaObject,
+		const QByteArray &delegateName = QByteArray());
+	bool registerDelegate(const QMetaObject *propertyMetaObject,
 		CreateFunction *createFunction, const QByteArray &delegateName);
 
 	static QtnPropertyDelegateFactory &staticInstance();
@@ -68,4 +66,4 @@ QtnPropertyDelegate *qtnCreateDelegate(QtnProperty &owner)
 	return new PropertyDelegateClass(*theOwner);
 }
 
-#endif	// QTN_PROPERTY_DELEGATE_FACTORY_H
+#endif // QTN_PROPERTY_DELEGATE_FACTORY_H

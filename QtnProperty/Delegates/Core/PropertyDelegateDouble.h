@@ -31,8 +31,7 @@ public:
 	QtnPropertyDelegateDouble(QtnPropertyDoubleBase &owner);
 
 protected:
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool acceptKeyPressedForInplaceEditImpl(
@@ -45,4 +44,4 @@ protected:
 	QString suffix;
 };
 
-#endif	// PROPERTY_DELEGATE_DOUBLE_H
+#endif // PROPERTY_DELEGATE_DOUBLE_H

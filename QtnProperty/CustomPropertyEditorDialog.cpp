@@ -32,33 +32,25 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 
 	updateTitle();
 
-	setWindowFlags(
-		(windowFlags() & ~(Qt::WindowContextHelpButtonHint)) |
+	setWindowFlags((windowFlags() & ~(Qt::WindowContextHelpButtonHint)) |
 		Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
 
-	QObject::connect(
-		ui->propertyWidget->propertyView(),
-		&QtnPropertyView::activePropertyChanged,
-		this, &CustomPropertyEditorDialog::onActivePropertyChanged);
+	QObject::connect(ui->propertyWidget->propertyView(),
+		&QtnPropertyView::activePropertyChanged, this,
+		&CustomPropertyEditorDialog::onActivePropertyChanged);
 
-	QtnPropertyWidgetEx::addShortcutForAction(
-		ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions, this);
 #ifdef Q_OS_MAC
 	QtnPropertyWidgetEx::addShortcutForAction(
 		QKeySequence(Qt::Key_Backspace), ui->actionPropertyDelete, this);
-#else
-	QtnPropertyWidgetEx::addShortcutForAction(
-		ui->actionPropertyDelete->shortcut(), ui->actionPropertyDelete, this);
 #endif
-	QtnPropertyWidgetEx::addShortcutForAction(
-		QKeySequence::Cut, ui->actionPropertyCut, this);
-	QtnPropertyWidgetEx::addShortcutForAction(
-		QKeySequence::Copy, ui->actionPropertyCopy, this);
-	QtnPropertyWidgetEx::addShortcutForAction(
-		QKeySequence::Paste, ui->actionPropertyPaste, this);
 
+#ifdef Q_OS_WIN
 	QtnPropertyWidgetEx::addShortcutForAction(
-		ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd, this);
+		QKeySequence(Qt::CTRL | Qt::Key_Insert), ui->actionPropertyCopy, this);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		QKeySequence(Qt::SHIFT | Qt::Key_Insert), ui->actionPropertyPaste,
+		this);
+#endif
 
 	ui->propertyWidget->connectDeleteAction(ui->actionPropertyDelete, true);
 	ui->propertyWidget->connectCutAction(ui->actionPropertyCut, true);
@@ -237,8 +229,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 
 void CustomPropertyEditorDialog::updateTitle()
 {
-	setWindowTitle(
-		ui->propertyWidget->isReadOnly()
-		? tr("Read-only Properties")
-		: tr("Edit Custom Properties"));
+	setWindowTitle(ui->propertyWidget->isReadOnly()
+			? tr("Read-only Properties")
+			: tr("Edit Custom Properties"));
 }

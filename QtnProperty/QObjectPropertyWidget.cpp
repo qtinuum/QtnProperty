@@ -39,8 +39,8 @@ void QObjectPropertyWidget::selectObject(QObject *object, bool addSelection)
 {
 	auto it = selectedObjects.find(object);
 
-	if (it == selectedObjects.end()
-		|| (!addSelection && selectedObjects.size() > 1))
+	if (it == selectedObjects.end() ||
+		(!addSelection && selectedObjects.size() > 1))
 	{
 		if (addSelection)
 			disconnectObjects();
@@ -150,9 +150,8 @@ void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 
 		if (resettable)
 		{
-			QObject::connect(
-				action, &QAction::triggered,
-				this, &QObjectPropertyWidget::onResetTriggered);
+			QObject::connect(action, &QAction::triggered, this,
+				&QObjectPropertyWidget::onResetTriggered);
 		}
 
 		menu.exec(event->globalPos());
@@ -190,8 +189,7 @@ void QObjectPropertyWidget::connectObjects()
 		setPropertySet(set);
 
 		connectObject(object);
-	} else
-	if (selectedObjects.size() > 1)
+	} else if (selectedObjects.size() > 1)
 	{
 		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects);
 
@@ -213,9 +211,8 @@ void QObjectPropertyWidget::connectObject(QObject *object)
 {
 	Q_ASSERT(nullptr != object);
 
-	QObject::connect(
-		object, &QObject::destroyed,
-		this, &QObjectPropertyWidget::onObjectDestroyed);
+	QObject::connect(object, &QObject::destroyed, this,
+		&QObjectPropertyWidget::onObjectDestroyed);
 }
 
 void QObjectPropertyWidget::disconnectObjects()
@@ -236,9 +233,8 @@ void QObjectPropertyWidget::disconnectObject(QObject *object)
 {
 	Q_ASSERT(nullptr != object);
 
-	QObject::disconnect(
-		object, &QObject::destroyed,
-		this, &QObjectPropertyWidget::onObjectDestroyed);
+	QObject::disconnect(object, &QObject::destroyed, this,
+		&QObjectPropertyWidget::onObjectDestroyed);
 }
 
 void QObjectPropertyWidget::hack()

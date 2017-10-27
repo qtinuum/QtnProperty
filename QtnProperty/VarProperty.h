@@ -40,14 +40,10 @@ public:
 		Map
 	};
 
-	typedef std::function<void (QtnProperty *)> RegisterPropertyCallback;
+	typedef std::function<void(QtnProperty *)> RegisterPropertyCallback;
 	typedef std::vector<VarProperty *> VarChildren;
 
-	VarProperty(
-		QObject *parent,
-		Type type,
-		const QString &name,
-		int index,
+	VarProperty(QObject *parent, Type type, const QString &name, int index,
 		const QVariant &value);
 
 	void ChangePropertyValue(const QVariant &value, QVariant *dest = nullptr);
@@ -81,13 +77,12 @@ public:
 	QVariant CreateVariant() const;
 	bool IsChildNameAvailable(const QString &name, VarProperty *skip) const;
 
-	static QtnPropertyBase *NewExtraProperty(
-		QtnPropertySet *set, const QVariant &value,
-		const QString &key, int index, VarProperty *mapParent,
+	static QtnPropertyBase *NewExtraProperty(QtnPropertySet *set,
+		const QVariant &value, const QString &key, int index,
+		VarProperty *mapParent,
 		const RegisterPropertyCallback &registerProperty);
 
-	static bool PropertyValueAccept(
-		const QtnProperty *property,
+	static bool PropertyValueAccept(const QtnProperty *property,
 		void *valueToAccept, QVariant *dest = nullptr);
 
 	enum
@@ -104,14 +99,12 @@ public:
 	};
 
 private:
-	static QtnPropertySet *NewExtraPropertySet(
-		QObject *parent, const QVariantMap &map,
-		VarProperty *mapParent, const QString &name, int index,
-		const RegisterPropertyCallback &registerProperty);
-	static QtnPropertySet *NewExtraPropertyList(
-		QObject *parent, const QVariantList &list, VarProperty *mapParent,
-		const QString &name, int index,
-		const RegisterPropertyCallback &registerProperty);
+	static QtnPropertySet *NewExtraPropertySet(QObject *parent,
+		const QVariantMap &map, VarProperty *mapParent, const QString &name,
+		int index, const RegisterPropertyCallback &registerProperty);
+	static QtnPropertySet *NewExtraPropertyList(QObject *parent,
+		const QVariantList &list, VarProperty *mapParent, const QString &name,
+		int index, const RegisterPropertyCallback &registerProperty);
 
 	VarProperty *varParent;
 	VarChildren varChildren;

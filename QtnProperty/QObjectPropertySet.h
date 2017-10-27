@@ -32,19 +32,18 @@ class QtnProperty;
 class QtnPropertySet;
 struct QtnPropertyDelegateInfo;
 
-typedef std::function<QtnProperty * (QObject *, const QMetaProperty &)>
+typedef std::function<QtnProperty *(QObject *, const QMetaProperty &)>
 	QtnMetaPropertyFactory_t;
-QTN_IMPORT_EXPORT bool qtnRegisterMetaPropertyFactory(
-	int metaPropertyType,
+QTN_IMPORT_EXPORT bool qtnRegisterMetaPropertyFactory(int metaPropertyType,
 	const QtnMetaPropertyFactory_t &factory, bool force = false);
 QTN_IMPORT_EXPORT void qtnInitPercentSpinBoxDelegate(
 	QtnPropertyDelegateInfo &delegate);
 QTN_IMPORT_EXPORT void qtnInitDegreeSpinBoxDelegate(
 	QtnPropertyDelegateInfo &delegate);
 
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateQObjectProperty(
-	QObject *object, const QMetaProperty &metaProperty,
-	bool connect = false, const char *className = nullptr);
+QTN_IMPORT_EXPORT QtnProperty *qtnCreateQObjectProperty(QObject *object,
+	const QMetaProperty &metaProperty, bool connect = false,
+	const char *className = nullptr);
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateQObjectProperty(
 	QObject *object, const char *propertyName, bool connect = false);
 QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object);
@@ -57,42 +56,38 @@ QTN_IMPORT_EXPORT void qtnUpdatePropertyState(
 	QtnPropertyBase *property, const QMetaProperty &metaProperty);
 
 template <typename PropertyCallbackType,
-		  typename ValueType = typename PropertyCallbackType::ValueTypeStore>
+	typename ValueType = typename PropertyCallbackType::ValueTypeStore>
 QtnMetaPropertyFactory_t qtnCreateFactory()
 {
 	typedef typename PropertyCallbackType::ValueType CallbackValueType;
-	typedef typename PropertyCallbackType::ValueTypeStore
-		CallbackValueTypeStore;
+	typedef
+		typename PropertyCallbackType::ValueTypeStore CallbackValueTypeStore;
 
 	auto result = [](QObject *object,
-					 const QMetaProperty &metaProperty) -> QtnProperty *
-		{
-			auto property = new PropertyCallbackType(nullptr);
+					  const QMetaProperty &metaProperty) -> QtnProperty * {
+		auto property = new PropertyCallbackType(nullptr);
 
-			property->setCallbackValueGet(
-				[object, metaProperty]() -> CallbackValueType
-		{
-			auto variantValue = metaProperty.read(object);
-			return CallbackValueTypeStore(variantValue.value<ValueType>());
-		});
+		property->setCallbackValueGet(
+			[object, metaProperty]() -> CallbackValueType {
+				auto variantValue = metaProperty.read(object);
+				return CallbackValueTypeStore(variantValue.value<ValueType>());
+			});
 
-			property->setCallbackValueSet(
-				[object, metaProperty](CallbackValueType value)
-		{
-			auto variantValue = QVariant::fromValue<ValueType>(
-					ValueType(value));
-			metaProperty.write(object, variantValue);
-		});
+		property->setCallbackValueSet(
+			[object, metaProperty](CallbackValueType value) {
+				auto variantValue =
+					QVariant::fromValue<ValueType>(ValueType(value));
+				metaProperty.write(object, variantValue);
+			});
 
-			property->setCallbackValueAccepted(
-				[property](CallbackValueType) -> bool
-		{
-			return property->isEditableByUser();
-		});
+		property->setCallbackValueAccepted(
+			[property](CallbackValueType) -> bool {
+				return property->isEditableByUser();
+			});
 
-			return property;
-		};
+		return property;
+	};
 	return result;
 }
 
-#endif	// QTN_QOBJECT_PROPERTY_SET_H
+#endif // QTN_QOBJECT_PROPERTY_SET_H

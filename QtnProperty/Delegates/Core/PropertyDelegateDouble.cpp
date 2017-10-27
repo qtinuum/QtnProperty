@@ -37,8 +37,8 @@ protected:
 	virtual void updateEditor() override;
 };
 
-static bool regDoubleDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
+static bool regDoubleDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyDoubleBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>,
 		"SpinBox");
@@ -71,7 +71,7 @@ bool QtnPropertyDelegateDouble::acceptKeyPressedForInplaceEditImpl(
 	QKeyEvent *keyEvent) const
 {
 	if (QtnPropertyDelegateTyped<QtnPropertyDoubleBase>::
-		acceptKeyPressedForInplaceEditImpl(keyEvent))
+			acceptKeyPressedForInplaceEditImpl(keyEvent))
 	{
 		return true;
 	}
@@ -107,12 +107,10 @@ QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
 
 	editor.setKeyboardTracking(false);
 	editor.installEventFilter(this);
-	QObject::connect(
-		&editor,
-		static_cast<void (QDoubleSpinBox::*)(
-						double)>(&QDoubleSpinBox::valueChanged),
-		this,
-		&QtnPropertyDoubleSpinBoxHandler::onValueChanged);
+	QObject::connect(&editor,
+		static_cast<void (QDoubleSpinBox::*)(double)>(
+			&QDoubleSpinBox::valueChanged),
+		this, &QtnPropertyDoubleSpinBoxHandler::onValueChanged);
 }
 
 void QtnPropertyDoubleSpinBoxHandler::updateEditor()

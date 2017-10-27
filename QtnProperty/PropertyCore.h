@@ -30,4 +30,4 @@
 #include "Core/PropertyQPoint.h"
 #include "Core/PropertyQSize.h"
 
-#endif	// PROPERTYCORE_H
+#endif // PROPERTYCORE_H

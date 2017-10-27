@@ -25,15 +25,13 @@
 #include <memory>
 
 class QtnMultiPropertyDelegate;
-class QTN_IMPORT_EXPORT QtnMultiProperty
-	: public QtnProperty
+class QTN_IMPORT_EXPORT QtnMultiProperty : public QtnProperty
 {
 	Q_OBJECT
 
 public:
 	explicit QtnMultiProperty(
-		const QMetaObject *propertyMetaObject,
-		QObject *parent = nullptr);
+		const QMetaObject *propertyMetaObject, QObject *parent = nullptr);
 	virtual ~QtnMultiProperty();
 
 	void addProperty(QtnProperty *property, bool own = true);
@@ -52,8 +50,7 @@ public:
 private slots:
 	void onPropertyValueAccept(QtnPropertyValuePtr valueToAccept, bool *accept);
 
-	void onPropertyWillChange(
-		QtnPropertyChangeReason reason,
+	void onPropertyWillChange(QtnPropertyChangeReason reason,
 		QtnPropertyValuePtr newValue, int typeId);
 
 	void onPropertyDidChange(QtnPropertyChangeReason reason);
@@ -107,9 +104,9 @@ private:
 		std::vector<QMetaObject::Connection> connections;
 	};
 
-	static void onEditedPropertyWillChange(
-		PropertyToEdit *data, QtnPropertyChangeReason reason,
-		QtnPropertyValuePtr newValue, int typeId);
+	static void onEditedPropertyWillChange(PropertyToEdit *data,
+		QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue,
+		int typeId);
 	static void onEditedPropertyDidChange(
 		PropertyToEdit *data, QtnPropertyChangeReason reason);
 	static void onEditedPropertyDestroyed(PropertyToEdit *data);
@@ -121,8 +118,7 @@ protected:
 	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;
 
-	virtual void drawValueImpl(
-		QStylePainter &painter, const QRect &rect,
+	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
 		const QStyle::State &state, bool *needTooltip = nullptr) const override;
 
 	virtual QString toolTipImpl() const override;
@@ -130,8 +126,7 @@ protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
 
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 private:

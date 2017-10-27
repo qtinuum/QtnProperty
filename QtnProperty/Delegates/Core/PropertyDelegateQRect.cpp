@@ -22,8 +22,8 @@
 #include <QLineEdit>
 #include <QLocale>
 
-static bool regQRectDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
+static bool regQRectDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyQRectBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQRect, QtnPropertyQRectBase>,
 		"LTWH");
@@ -49,10 +49,8 @@ bool QtnPropertyDelegateQRect::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQRect::getToStringFormat().arg(
-			locale.toString(value.left()),
-			locale.toString(value.top()),
-			locale.toString(value.width()),
-			locale.toString(value.height()));
+		locale.toString(value.left()), locale.toString(value.top()),
+		locale.toString(value.width()), locale.toString(value.height()));
 
 	return true;
 }

@@ -22,8 +22,8 @@
 #include <QLineEdit>
 #include <QLocale>
 
-static bool regQSizeDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
+static bool regQSizeDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyQSizeBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQSize, QtnPropertyQSizeBase>,
 		"WH");
@@ -47,8 +47,7 @@ bool QtnPropertyDelegateQSize::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQSize::getToStringFormat().arg(
-			locale.toString(value.width()),
-			locale.toString(value.height()));
+		locale.toString(value.width()), locale.toString(value.height()));
 
 	return true;
 }

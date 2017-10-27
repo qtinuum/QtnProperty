@@ -48,9 +48,8 @@ QtnPropertyWidgetEx::QtnPropertyWidgetEx(QWidget *parent)
 	setAcceptDrops(true);
 	propertyView()->installEventFilter(this);
 
-	QObject::connect(
-		propertyView(), &QtnPropertyView::mouseReleased,
-		this, &QtnPropertyWidgetEx::onMouseReleased);
+	QObject::connect(propertyView(), &QtnPropertyView::mouseReleased, this,
+		&QtnPropertyWidgetEx::onMouseReleased);
 }
 
 void QtnPropertyWidgetEx::connectDeleteAction(QAction *action, bool connect)
@@ -96,8 +95,8 @@ bool QtnPropertyWidgetEx::canCopyToClipboard()
 
 bool QtnPropertyWidgetEx::canPasteFromClipboard()
 {
-	return dataHasSupportedFormats(QApplication::clipboard()->mimeData())
-		   && (nullptr != getActiveProperty());
+	return dataHasSupportedFormats(QApplication::clipboard()->mimeData()) &&
+		(nullptr != getActiveProperty());
 }
 
 QtnPropertyBase *QtnPropertyWidgetEx::getActiveProperty() const
@@ -105,24 +104,18 @@ QtnPropertyBase *QtnPropertyWidgetEx::getActiveProperty() const
 	return propertyView()->activeProperty();
 }
 
-QShortcut *QtnPropertyWidgetEx::addShortcutForAction(
+void QtnPropertyWidgetEx::addShortcutForAction(
 	const QKeySequence &seq, QAction *action, QWidget *parent)
 {
-	Q_ASSERT(nullptr != parent);
-	auto shortcut = new QShortcut(seq, parent);
-	QObject::connect(
-		shortcut, &QShortcut::activated,
-		action, &QAction::trigger);
-
+	Q_ASSERT(nullptr != action);
 	if (QKeySequence::ExactMatch != action->shortcut().matches(seq))
 	{
-		auto shortcut2 = new QShortcut(action->shortcut(), parent);
+		Q_ASSERT(nullptr != parent);
+		auto shortcut = new QShortcut(
+			seq, parent, nullptr, nullptr, Qt::ApplicationShortcut);
 		QObject::connect(
-			shortcut2, &QShortcut::activated,
-			action, &QAction::trigger);
+			shortcut, &QShortcut::activated, action, &QAction::trigger);
 	}
-
-	return shortcut;
 }
 
 void QtnPropertyWidgetEx::onMouseReleased()
@@ -180,8 +173,7 @@ void QtnPropertyWidgetEx::deleteProperty(QtnPropertyBase *)
 }
 
 QMimeData *QtnPropertyWidgetEx::getPropertyDataForAction(
-	QtnPropertyBase *property,
-	Qt::DropAction)
+	QtnPropertyBase *property, Qt::DropAction)
 {
 	QString str;
 
@@ -221,13 +213,11 @@ bool QtnPropertyWidgetEx::applyPropertyData(
 			}
 
 			result = destination->fromStr(list.join('\n'), true);
-		} else
-		if (data->hasColor())
+		} else if (data->hasColor())
 		{
 			result = destination->fromStr(
-					data->colorData().value<QColor>().name(), true);
-		} else
-		if (data->hasText())
+				data->colorData().value<QColor>().name(), true);
+		} else if (data->hasText())
 		{
 			result = destination->fromStr(data->text(), true);
 		}
@@ -259,11 +249,11 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 		{
 			auto mevent = static_cast<QMouseEvent *>(event);
 
-			if (nullptr != draggedProperty
-				&& 0 != (mevent->buttons() & Qt::LeftButton))
+			if (nullptr != draggedProperty &&
+				0 != (mevent->buttons() & Qt::LeftButton))
 			{
-				if ((mevent->pos() - dragStartPos).manhattanLength()
-					< QApplication::startDragDistance())
+				if ((mevent->pos() - dragStartPos).manhattanLength() <
+					QApplication::startDragDistance())
 				{
 					dropAction = Qt::IgnoreAction;
 					dragAndDrop();
@@ -315,8 +305,7 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			QRect rect;
 			auto property = view->getPropertyAt(pos, &rect);
 
-			if (property == draggedProperty
-				|| nullptr == property)
+			if (property == draggedProperty || nullptr == property)
 			{
 				draggedProperty = nullptr;
 				break;
@@ -326,22 +315,20 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 
 			QtnApplyPosition applyPosition;
 
-			if (QRect(
-					rect.left(), rect.top(),
-					rect.width(), partHeight).contains(pos))
+			if (QRect(rect.left(), rect.top(), rect.width(), partHeight)
+					.contains(pos))
 				applyPosition = QtnApplyPosition::Before;
-			else
-			if (QRect(
-					rect.left(), rect.bottom() - partHeight,
-					rect.width(), partHeight).contains(pos))
+			else if (QRect(rect.left(), rect.bottom() - partHeight,
+						 rect.width(), partHeight)
+						 .contains(pos))
 				applyPosition = QtnApplyPosition::After;
 			else
 				applyPosition = QtnApplyPosition::Over;
 
 			auto data = event->mimeData();
 
-			if (dataHasSupportedFormats(data)
-				&& drop(data, property, applyPosition))
+			if (dataHasSupportedFormats(data) &&
+				drop(data, property, applyPosition))
 				event->accept();
 
 			break;
@@ -352,8 +339,7 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 	}
 }
 
-bool QtnPropertyWidgetEx::drop(
-	const QMimeData *data, QtnPropertyBase *property,
+bool QtnPropertyWidgetEx::drop(const QMimeData *data, QtnPropertyBase *property,
 	QtnApplyPosition applyPosition)
 {
 	return applyPropertyData(data, property, applyPosition);

@@ -82,4 +82,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQColor, QtnPropertyQColorBase)
 };
 
-#endif	// PROPERTYCOLOR_H
+#endif // PROPERTYCOLOR_H

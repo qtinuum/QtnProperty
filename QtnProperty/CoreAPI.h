@@ -26,4 +26,4 @@
 #define QTN_IMPORT_EXPORT Q_DECL_IMPORT
 #endif
 
-#endif	// QTN_COREAPI_H
+#endif // QTN_COREAPI_H

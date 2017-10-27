@@ -24,8 +24,7 @@
 
 class QtnPropertyDelegateInfoGetter;
 
-class QTN_IMPORT_EXPORT QtnProperty
-	: public QtnPropertyBase
+class QTN_IMPORT_EXPORT QtnProperty : public QtnPropertyBase
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnProperty)
@@ -52,4 +51,4 @@ private:
 	QScopedPointer<QtnPropertyDelegateInfoGetter> m_delegateInfoGetter;
 };
 
-#endif	// QTN_PROPERTY_H
+#endif // QTN_PROPERTY_H

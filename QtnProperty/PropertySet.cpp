@@ -18,8 +18,8 @@
 #include "PropertySet.h"
 #include <QRegularExpression>
 
-static int qtnPropertySetPtrId = qRegisterMetaType<QtnPropertySet *>(
-		"QtnPropertySet*");
+static int qtnPropertySetPtrId =
+	qRegisterMetaType<QtnPropertySet *>("QtnPropertySet*");
 
 void qtnAddPropertyAsChild(
 	QObject *parent, QtnPropertyBase *child, bool moveOwnership)
@@ -41,22 +41,18 @@ void qtnRemovePropertyAsChild(QObject *parent, QtnPropertyBase *child)
 void qtnConnectChildProperty(
 	QtnPropertySet *masterProperty, QtnPropertyBase *childProperty)
 {
-	QObject::connect(
-		childProperty, &QtnPropertyBase::propertyWillChange,
+	QObject::connect(childProperty, &QtnPropertyBase::propertyWillChange,
 		masterProperty, &QtnPropertySet::childPropertyWillChange);
-	QObject::connect(
-		childProperty, &QtnPropertyBase::propertyDidChange,
+	QObject::connect(childProperty, &QtnPropertyBase::propertyDidChange,
 		masterProperty, &QtnPropertySet::childPropertyDidChange);
 }
 
 void qtnDisconnectChildProperty(
 	QtnPropertySet *masterProperty, QtnPropertyBase *childProperty)
 {
-	QObject::disconnect(
-		childProperty, &QtnPropertyBase::propertyWillChange,
+	QObject::disconnect(childProperty, &QtnPropertyBase::propertyWillChange,
 		masterProperty, &QtnPropertySet::childPropertyWillChange);
-	QObject::disconnect(
-		childProperty, &QtnPropertyBase::propertyDidChange,
+	QObject::disconnect(childProperty, &QtnPropertyBase::propertyDidChange,
 		masterProperty, &QtnPropertySet::childPropertyDidChange);
 }
 
@@ -91,8 +87,8 @@ QList<QtnPropertyBase *> QtnPropertySet::findChildProperties(
 		if (nameTail.isEmpty())
 			return result;
 
-		QList<QtnPropertyBase *> headResult = findChildProperties(
-				nameHead, options);
+		QList<QtnPropertyBase *> headResult =
+			findChildProperties(nameHead, options);
 
 		for (auto headProperty : headResult)
 		{
@@ -102,8 +98,7 @@ QList<QtnPropertyBase *> QtnPropertySet::findChildProperties(
 				continue;
 
 			result.append(
-				headPropertySet->findChildProperties(
-					nameTail, options));
+				headPropertySet->findChildProperties(nameTail, options));
 		}
 	} else
 	{
@@ -188,8 +183,7 @@ bool QtnPropertySet::addChildProperty(
 	Q_CHECK_PTR(childProperty);
 
 	emit propertyWillChange(QtnPropertyChangeReasonChildPropertyAdd,
-							QtnPropertyValuePtr(childProperty),
-							qMetaTypeId<QtnPropertyBase *>());
+		QtnPropertyValuePtr(childProperty), qMetaTypeId<QtnPropertyBase *>());
 
 	if (index < 0)
 		m_childProperties.append(childProperty);
@@ -222,8 +216,7 @@ bool QtnPropertySet::removeChildProperty(QtnPropertyBase *childProperty)
 	Q_ASSERT(childPropertyIndex < m_childProperties.size());
 
 	emit propertyWillChange(QtnPropertyChangeReasonChildPropertyRemove,
-							QtnPropertyValuePtr(childProperty),
-							qMetaTypeId<QtnPropertyBase *>());
+		QtnPropertyValuePtr(childProperty), qMetaTypeId<QtnPropertyBase *>());
 
 	qtnDisconnectChildProperty(this, childProperty);
 	m_childProperties.erase(m_childProperties.begin() + childPropertyIndex);
@@ -247,8 +240,7 @@ QtnPropertySet *QtnPropertySet::createCopy(QObject *parentForCopy) const
 }
 
 bool QtnPropertySet::copyValues(
-	QtnPropertySet *propertySetCopyFrom,
-	QtnPropertyState ignoreMask)
+	QtnPropertySet *propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
 	return copyValuesImpl(propertySetCopyFrom, ignoreMask);
 }
@@ -319,8 +311,8 @@ bool QtnPropertySet::fromStrImpl(const QString &str, bool edit)
 		QString propertyPath = params[1];
 		QString propertyStrValue = params[2];
 
-		QList<QtnPropertyBase *> subProperties = findChildProperties(
-				propertyPath, Qt::FindChildrenRecursively);
+		QList<QtnPropertyBase *> subProperties =
+			findChildProperties(propertyPath, Qt::FindChildrenRecursively);
 
 		if (subProperties.size() != 1)
 			continue;
@@ -492,9 +484,8 @@ bool QtnPropertySet::toStrWithPrefix(QString &str, const QString &prefix) const
 				return false;
 
 			str.append(
-				QString("%1%2 = %3%4").arg(
-					prefix, childProperty->name(),
-					strValue, lineEnd));
+				QString("%1%2 = %3%4")
+					.arg(prefix, childProperty->name(), strValue, lineEnd));
 		} else
 		{
 			QtnPropertySet *childPropertySet =
@@ -502,9 +493,8 @@ bool QtnPropertySet::toStrWithPrefix(QString &str, const QString &prefix) const
 
 			if (childPropertySet)
 			{
-				if (!childPropertySet->toStrWithPrefix(
-						str, QString("%1%2.").arg(
-							prefix, childPropertySet->name())))
+				if (!childPropertySet->toStrWithPrefix(str,
+						QString("%1%2.").arg(prefix, childPropertySet->name())))
 					return false;
 			} else
 			{

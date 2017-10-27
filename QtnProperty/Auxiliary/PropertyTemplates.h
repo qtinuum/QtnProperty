@@ -23,17 +23,18 @@
 #include <limits>
 #include <functional>
 
-template <typename T, typename EqPred = std::equal_to<T> >
-class QtnSinglePropertyBase
-	: public QtnProperty
+template <typename T, typename EqPred = std::equal_to<T>>
+class QtnSinglePropertyBase : public QtnProperty
 {
 public:
 	typedef T ValueType;
-	using ValueTypeStore =
-			typename std::remove_const<
-				typename std::remove_reference<ValueType>::type>::type;
+	using ValueTypeStore = typename std::remove_const<
+		typename std::remove_reference<ValueType>::type>::type;
 
-	inline ValueType value() const { return valueImpl(); }
+	inline ValueType value() const
+	{
+		return valueImpl();
+	}
 
 	inline bool edit(ValueType newValue)
 	{
@@ -66,9 +67,8 @@ public:
 
 		reason |= QtnPropertyChangeReasonNewValue;
 
-		emit propertyWillChange(reason,
-								QtnPropertyValuePtr(&newValue),
-								qMetaTypeId<ValueTypeStore>());
+		emit propertyWillChange(reason, QtnPropertyValuePtr(&newValue),
+			qMetaTypeId<ValueTypeStore>());
 		setValueImpl(newValue);
 		emit propertyDidChange(reason);
 
@@ -101,11 +101,14 @@ protected:
 
 	virtual ValueType valueImpl() const = 0;
 	virtual void setValueImpl(ValueType newValue) = 0;
-	virtual bool isValueAcceptedImpl(ValueType) { return true; }
+	virtual bool isValueAcceptedImpl(ValueType)
+	{
+		return true;
+	}
 
 	virtual bool isValueEqualImpl(ValueType valueToCompare)
 	{
-		return EqPred() (valueToCompare, value());
+		return EqPred()(valueToCompare, value());
 	}
 
 	// serialization implementation
@@ -121,8 +124,7 @@ protected:
 			return false;
 
 		emit propertyWillChange(QtnPropertyChangeReasonLoadedValue,
-								QtnPropertyValuePtr(&newValue),
-								qMetaTypeId<ValueTypeStore>());
+			QtnPropertyValuePtr(&newValue), qMetaTypeId<ValueTypeStore>());
 		setValueImpl(newValue);
 		emit propertyDidChange(QtnPropertyChangeReasonLoadedValue);
 
@@ -172,9 +174,15 @@ protected:
 	{
 	}
 
-	ValueType valueImpl() const override { return m_value; }
+	ValueType valueImpl() const override
+	{
+		return m_value;
+	}
 
-	void setValueImpl(ValueType newValue) override { m_value = newValue; }
+	void setValueImpl(ValueType newValue) override
+	{
+		m_value = newValue;
+	}
 
 private:
 	ValueTypeStore m_value;
@@ -190,9 +198,9 @@ public:
 	typedef typename QtnSinglePropertyType::ValueTypeStore ValueTypeStore;
 
 	typedef std::function<ValueType()> CallbackValueGet;
-	typedef std::function<void (ValueType)> CallbackValueSet;
-	typedef std::function<bool (ValueType)> CallbackValueAccepted;
-	typedef std::function<bool (ValueType)> CallbackValueEqual;
+	typedef std::function<void(ValueType)> CallbackValueSet;
+	typedef std::function<bool(ValueType)> CallbackValueAccepted;
+	typedef std::function<bool(ValueType)> CallbackValueEqual;
 
 	inline void setCallbackValueGet(const CallbackValueGet &callback)
 	{
@@ -364,7 +372,7 @@ class QtnNumericPropertyValue
 {
 public:
 	using ValueType =
-			typename QtnNumericPropertyBase<QtnSinglePropertyType>::ValueType;
+		typename QtnNumericPropertyBase<QtnSinglePropertyType>::ValueType;
 
 protected:
 	explicit QtnNumericPropertyValue(QObject *parent)
@@ -389,4 +397,4 @@ private:
 	Q_DISABLE_COPY(QtnNumericPropertyValue)
 };
 
-#endif	// PROPERTYBASIS_H
+#endif // PROPERTYBASIS_H

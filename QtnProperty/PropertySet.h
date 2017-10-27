@@ -34,18 +34,15 @@ public slots:
 	inline bool hasChildProperties() const;
 	inline const QList<QtnPropertyBase *> &childProperties() const;
 
-	QList<QtnPropertyBase *> findChildProperties(
-		QString name,
+	QList<QtnPropertyBase *> findChildProperties(QString name,
 		Qt::FindChildOptions options = Qt::FindChildrenRecursively);
 
-	QList<QtnPropertyBase *> findChildProperties(
-		const QRegularExpression &re,
+	QList<QtnPropertyBase *> findChildProperties(const QRegularExpression &re,
 		Qt::FindChildOptions options = Qt::FindChildrenRecursively);
 
 	QtnPropertyBase *findChildProperty(QtnPropertyID id);
 	void clearChildProperties();
-	bool addChildProperty(
-		QtnPropertyBase *childProperty,
+	bool addChildProperty(QtnPropertyBase *childProperty,
 		bool moveOwnership = true, int index = -1);
 	bool removeChildProperty(QtnPropertyBase *childProperty);
 
@@ -54,8 +51,7 @@ public slots:
 	QtnPropertySet *createCopy(QObject *parentForCopy) const;
 
 	// copy values
-	bool copyValues(
-		QtnPropertySet *propertySetCopyFrom,
+	bool copyValues(QtnPropertySet *propertySetCopyFrom,
 		QtnPropertyState ignoreMask = QtnPropertyStateNone);
 
 	// casts
@@ -71,8 +67,7 @@ protected:
 
 	// copy values
 	virtual bool copyValuesImpl(
-		QtnPropertySet *propertySetCopyFrom,
-		QtnPropertyState ignoreMask);
+		QtnPropertySet *propertySetCopyFrom, QtnPropertyState ignoreMask);
 
 	// string conversion implementation
 	virtual bool fromStrImpl(const QString &str, bool edit) override;
@@ -116,4 +111,4 @@ const QList<QtnPropertyBase *> &QtnPropertySet::childProperties() const
 
 Q_DECLARE_METATYPE(QtnPropertySet *)
 
-#endif	// QTN_PROPERTY_SET_H
+#endif // QTN_PROPERTY_SET_H

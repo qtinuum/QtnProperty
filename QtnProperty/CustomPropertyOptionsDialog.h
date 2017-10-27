@@ -29,7 +29,7 @@ class QSpinBox;
 class QDialogButtonBox;
 class QAbstractButton;
 
-typedef std::function<bool (const QString &)> IsNameAvailableCB;
+typedef std::function<bool(const QString &)> IsNameAvailableCB;
 
 class QTN_IMPORT_EXPORT BasePropertyDialog : public QDialog
 {
@@ -40,10 +40,8 @@ public:
 
 	void initWithCount(
 		int actual_index, int existing_count, bool readonly = false);
-	void initWithName(
-		const QString &actual_name,
-		const IsNameAvailableCB &is_name_available,
-		bool readonly = false);
+	void initWithName(const QString &actual_name,
+		const IsNameAvailableCB &is_name_available, bool readonly = false);
 
 private slots:
 	void on_buttonBox_clicked(QAbstractButton *button);

@@ -28,8 +28,7 @@
 #include <QLocale>
 
 class QtnPropertyUIntSpinBoxHandler
-	: public QtnPropertyEditorHandlerVT<QtnPropertyUIntBase,
-										QtnInt64SpinBox>
+	: public QtnPropertyEditorHandlerVT<QtnPropertyUIntBase, QtnInt64SpinBox>
 {
 public:
 	QtnPropertyUIntSpinBoxHandler(
@@ -40,11 +39,11 @@ private:
 	void onValueChanged(qint64 value);
 };
 
-static bool regUIntDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
-		&QtnPropertyUIntBase::staticMetaObject
-		, &qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>
-		, "SpinBox");
+static bool regUIntDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyUIntBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>,
+		"SpinBox");
 
 QtnPropertyDelegateUInt::QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyUIntBase>(owner)
@@ -70,8 +69,8 @@ QWidget *QtnPropertyDelegateUInt::createValueEditorImpl(
 bool QtnPropertyDelegateUInt::acceptKeyPressedForInplaceEditImpl(
 	QKeyEvent *keyEvent) const
 {
-	if (QtnPropertyDelegateTyped<QtnPropertyUIntBase>::
-		acceptKeyPressedForInplaceEditImpl(keyEvent))
+	if (QtnPropertyDelegateTyped<
+			QtnPropertyUIntBase>::acceptKeyPressedForInplaceEditImpl(keyEvent))
 		return true;
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_UNSIGNED_INT);
@@ -97,12 +96,10 @@ QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(
 
 	editor.setKeyboardTracking(false);
 	editor.installEventFilter(this);
-	QObject::connect(
-		&editor,
+	QObject::connect(&editor,
 		static_cast<void (QtnInt64SpinBox::*)(qint64)>(
 			&QtnInt64SpinBox::valueChanged),
-		this,
-		&QtnPropertyUIntSpinBoxHandler::onValueChanged);
+		this, &QtnPropertyUIntSpinBoxHandler::onValueChanged);
 }
 
 void QtnPropertyUIntSpinBoxHandler::updateEditor()

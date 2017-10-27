@@ -20,7 +20,7 @@
 #include "Delegates/PropertyDelegate.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyUInt64Base
-	: public QtnNumericPropertyBase<QtnSinglePropertyBase<quint64> >
+	: public QtnNumericPropertyBase<QtnSinglePropertyBase<quint64>>
 {
 	Q_OBJECT
 
@@ -77,7 +77,8 @@ public:
 
 class QLineEdit;
 class QTN_IMPORT_EXPORT QtnPropertyDelegateUInt64
-	: public QObject, public QtnPropertyDelegateTyped<QtnPropertyUInt64Base>
+	: public QObject
+	, public QtnPropertyDelegateTyped<QtnPropertyUInt64Base>
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyDelegateUInt64)
@@ -90,11 +91,9 @@ public:
 protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
-	virtual bool propertyValueToStr(
-		QString &strValue) const override;
+	virtual bool propertyValueToStr(QString &strValue) const override;
 
 private slots:
 	void onEditingFinished();

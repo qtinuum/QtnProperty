@@ -21,7 +21,7 @@
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyUIntBase
-	: public QtnNumericPropertyBase<QtnSinglePropertyBase<quint32> >
+	: public QtnNumericPropertyBase<QtnSinglePropertyBase<quint32>>
 {
 	Q_OBJECT
 
@@ -74,4 +74,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyUInt, QtnPropertyUIntBase)
 };
 
-#endif	// PROPERTYUINT_H
+#endif // PROPERTYUINT_H

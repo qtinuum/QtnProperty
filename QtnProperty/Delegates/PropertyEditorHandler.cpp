@@ -31,15 +31,11 @@ QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(
 	, reverted(false)
 	, returned(false)
 {
-	QObject::connect(
-		m_property,
-		&QtnPropertyBase::propertyDidChange,
-		this,
+	QObject::connect(m_property, &QtnPropertyBase::propertyDidChange, this,
 		&QtnPropertyEditorHandlerBase::onPropertyDidChange,
 		Qt::QueuedConnection);
-	QObject::connect(
-		m_property, &QObject::destroyed,
-		this, &QtnPropertyEditorHandlerBase::onPropertyDestroyed);
+	QObject::connect(m_property, &QObject::destroyed, this,
+		&QtnPropertyEditorHandlerBase::onPropertyDestroyed);
 }
 
 void QtnPropertyEditorHandlerBase::revertInput()
@@ -95,7 +91,7 @@ void QtnPropertyEditorHandlerBase::applyReset()
 	returned = false;
 }
 
-QtnPropertyEditorHandlerBase::DialogContainerPtr	//
+QtnPropertyEditorHandlerBase::DialogContainerPtr //
 QtnPropertyEditorHandlerBase::connectDialog(QDialog *dialog)
 {
 	DialogContainerPtr result(new DialogContainer(dialog));
@@ -113,11 +109,8 @@ void QtnPropertyEditorHandlerBase::connectDialog(
 	auto parent = dialog->parent();
 	Q_ASSERT(nullptr != parent);
 
-	QObject::connect(
-		parent, &QObject::destroyed, [containerPtr]()
-	{
-		containerPtr->dialog->setParent(nullptr);
-	});
+	QObject::connect(parent, &QObject::destroyed,
+		[containerPtr]() { containerPtr->dialog->setParent(nullptr); });
 }
 
 void QtnPropertyEditorHandlerBase::onPropertyDestroyed()

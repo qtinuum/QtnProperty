@@ -22,12 +22,11 @@
 #include <QLineEdit>
 #include <QKeyEvent>
 
-QString qtnElidedText(
-	const QPainter &painter, const QString &text,
+QString qtnElidedText(const QPainter &painter, const QString &text,
 	const QRect &rect, bool *elided)
 {
-	QString newText = painter.fontMetrics().elidedText(
-			text, Qt::ElideRight, rect.width());
+	QString newText =
+		painter.fontMetrics().elidedText(text, Qt::ElideRight, rect.width());
 
 	if (elided)
 		*elided = (newText != text);
@@ -35,9 +34,7 @@ QString qtnElidedText(
 	return newText;
 }
 
-QtnPropertyDelegate::~QtnPropertyDelegate()
-{
-}
+QtnPropertyDelegate::~QtnPropertyDelegate() {}
 
 QWidget *QtnPropertyDelegate::createValueEditor(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
@@ -79,9 +76,8 @@ void QtnPropertyDelegate::applyAttributesImpl(
 	Q_UNUSED(attributes);
 }
 
-void QtnPropertyDelegate::drawValueImpl(
-	QStylePainter &painter, const QRect &rect,
-	const QStyle::State &state, bool *needTooltip) const
+void QtnPropertyDelegate::drawValueImpl(QStylePainter &painter,
+	const QRect &rect, const QStyle::State &state, bool *needTooltip) const
 {
 	QString strValue;
 
@@ -105,23 +101,21 @@ bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(
 	return (key == Qt::Key_Space || key == Qt::Key_Return);
 }
 
-void QtnPropertyDelegate::drawValueText(
-	const QString &text, QStylePainter &painter, const QRect &rect,
-	const QStyle::State &state, bool *needTooltip)
+void QtnPropertyDelegate::drawValueText(const QString &text,
+	QStylePainter &painter, const QRect &rect, const QStyle::State &state,
+	bool *needTooltip)
 {
 	Q_UNUSED(state);
 
 	if (text.isEmpty())
 		return;
 
-	painter.drawText(
-		rect, Qt::AlignLeading | Qt::AlignVCenter,
+	painter.drawText(rect, Qt::AlignLeading | Qt::AlignVCenter,
 		qtnElidedText(painter, text, rect, needTooltip));
 }
 
-QLineEdit *QtnPropertyDelegate::createValueEditorLineEdit(
-	QWidget *parent, const QRect &rect,
-	bool readOnly, QtnInplaceInfo *inplaceInfo)
+QLineEdit *QtnPropertyDelegate::createValueEditorLineEdit(QWidget *parent,
+	const QRect &rect, bool readOnly, QtnInplaceInfo *inplaceInfo)
 {
 	QLineEdit *lineEdit = new QLineEdit(parent);
 	lineEdit->setGeometry(rect);

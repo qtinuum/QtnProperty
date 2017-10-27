@@ -46,7 +46,7 @@ enum QtnPropertyViewStyleFlag
 	QtnPropertyViewStyleShowRoot = 0x0001,
 	QtnPropertyViewStyleLiveSplit = 0x0002,
 	QtnPropertyViewStyleDblClickActivation = 0x0004
-		//QtnPropertyViewStyle = 0x0008
+	//QtnPropertyViewStyle = 0x0008
 };
 
 Q_DECLARE_FLAGS(QtnPropertyViewStyle, QtnPropertyViewStyleFlag)
@@ -61,8 +61,7 @@ class QTN_IMPORT_EXPORT QtnPropertyView : public QAbstractScrollArea
 
 public:
 	explicit QtnPropertyView(
-		QWidget *parent = nullptr,
-		QtnPropertySet *propertySet = nullptr);
+		QWidget *parent = nullptr, QtnPropertySet *propertySet = nullptr);
 	~QtnPropertyView();
 
 	inline const QtnPropertySet *propertySet() const;
@@ -105,8 +104,7 @@ Q_SIGNALS:
 
 private slots:
 	void onActivePropertyDestroyed();
-	void onEditedPropertyWillChange(
-		QtnPropertyChangeReason reason,
+	void onEditedPropertyWillChange(QtnPropertyChangeReason reason,
 		QtnPropertyValuePtr newValue, int typeId);
 	void onEditedPropertyDidChange(QtnPropertyChangeReason reason);
 
@@ -130,7 +128,7 @@ private:
 		int level;
 
 		Item *parent;
-		QList<QSharedPointer<Item> > children;
+		QList<QSharedPointer<Item>> children;
 
 		Item();
 
@@ -158,8 +156,7 @@ private:
 
 private:
 	void updateItemsTree();
-	static Item *createItemsTree(
-		QtnPropertyBase *rootProperty,
+	static Item *createItemsTree(QtnPropertyBase *rootProperty,
 		const QtnPropertyDelegateFactory &factory);
 
 	void setActivePropertyInternal(QtnPropertyBase *property);
@@ -266,4 +263,4 @@ bool QtnPropertyView::Item::collapsed() const
 	return property->isCollapsed();
 }
 
-#endif	// QTN_PROPERTYVIEW_H
+#endif // QTN_PROPERTYVIEW_H

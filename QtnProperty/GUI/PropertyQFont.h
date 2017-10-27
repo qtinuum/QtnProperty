@@ -98,4 +98,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFont, QtnPropertyQFontBase)
 };
 
-#endif	// PROPERTYFONT_H
+#endif // PROPERTYFONT_H

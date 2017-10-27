@@ -42,21 +42,15 @@ static QtnProperty *createRealNumberProperty(
 			qtnInitPercentSpinBoxDelegate(delegate);
 			property->setDelegate(delegate);
 
-			property->setCallbackValueGet(
-				[object, metaProperty]() -> qreal
-			{
+			property->setCallbackValueGet([object, metaProperty]() -> qreal {
 				return metaProperty.read(object).toDouble() * 100.0;
 			});
 
-			property->setCallbackValueSet(
-				[object, metaProperty](qreal value)
-			{
+			property->setCallbackValueSet([object, metaProperty](qreal value) {
 				metaProperty.write(object, value / 100.0);
 			});
 
-			property->setCallbackValueAccepted(
-				[property](qreal) -> bool
-			{
+			property->setCallbackValueAccepted([property](qreal) -> bool {
 				return property->isEditableByUser();
 			});
 
@@ -72,23 +66,16 @@ static QtnProperty *createRealNumberProperty(
 		}
 	}
 
-	property->setCallbackValueGet(
-		[object, metaProperty]() -> qreal
-	{
+	property->setCallbackValueGet([object, metaProperty]() -> qreal {
 		return metaProperty.read(object).toDouble();
 	});
 
-	property->setCallbackValueSet(
-		[object, metaProperty](qreal value)
-	{
+	property->setCallbackValueSet([object, metaProperty](qreal value) {
 		metaProperty.write(object, value);
 	});
 
 	property->setCallbackValueAccepted(
-		[property](qreal) -> bool
-	{
-		return property->isEditableByUser();
-	});
+		[property](qreal) -> bool { return property->isEditableByUser(); });
 
 	return property;
 }
@@ -96,33 +83,24 @@ static QtnProperty *createRealNumberProperty(
 bool qtnRegisterDefaultMetaPropertyFactory()
 {
 	qtnRegisterMetaPropertyFactory(
-		QVariant::Bool,
-		qtnCreateFactory<QtnPropertyBoolCallback>());
+		QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
 	qtnRegisterMetaPropertyFactory(
-		QVariant::String,
-		qtnCreateFactory<QtnPropertyQStringCallback>());
+		QVariant::String, qtnCreateFactory<QtnPropertyQStringCallback>());
 	qtnRegisterMetaPropertyFactory(QVariant::Double, createRealNumberProperty);
 	qtnRegisterMetaPropertyFactory(
-		QVariant::Int,
-		qtnCreateFactory<QtnPropertyIntCallback>());
+		QVariant::Int, qtnCreateFactory<QtnPropertyIntCallback>());
 	qtnRegisterMetaPropertyFactory(
-		QVariant::UInt,
-		qtnCreateFactory<QtnPropertyUIntCallback>());
+		QVariant::UInt, qtnCreateFactory<QtnPropertyUIntCallback>());
 	qtnRegisterMetaPropertyFactory(
-		QVariant::Point,
-		qtnCreateFactory<QtnPropertyQPointCallback>());
+		QVariant::Point, qtnCreateFactory<QtnPropertyQPointCallback>());
 	qtnRegisterMetaPropertyFactory(
-		QVariant::Rect,
-		qtnCreateFactory<QtnPropertyQRectCallback>());
+		QVariant::Rect, qtnCreateFactory<QtnPropertyQRectCallback>());
 	qtnRegisterMetaPropertyFactory(
-		QVariant::Size,
-		qtnCreateFactory<QtnPropertyQSizeCallback>());
+		QVariant::Size, qtnCreateFactory<QtnPropertyQSizeCallback>());
 	qtnRegisterMetaPropertyFactory(
-		QVariant::Color,
-		qtnCreateFactory<QtnPropertyQColorCallback>());
+		QVariant::Color, qtnCreateFactory<QtnPropertyQColorCallback>());
 	qtnRegisterMetaPropertyFactory(
-		QVariant::Font,
-		qtnCreateFactory<QtnPropertyQFontCallback>());
+		QVariant::Font, qtnCreateFactory<QtnPropertyQFontCallback>());
 	return true;
 }
 
@@ -130,8 +108,7 @@ static QMap<int, QtnMetaPropertyFactory_t> qtnFactoryMap;
 static bool success = qtnRegisterDefaultMetaPropertyFactory();
 
 bool qtnRegisterMetaPropertyFactory(
-	int metaPropertyType, const
-	QtnMetaPropertyFactory_t &factory, bool force)
+	int metaPropertyType, const QtnMetaPropertyFactory_t &factory, bool force)
 {
 	Q_ASSERT(factory);
 
@@ -149,8 +126,8 @@ QtnPropertyState qtnPropertyStateToAdd(const QMetaProperty &metaProperty)
 	if (!metaProperty.isDesignable())
 		toAdd |= QtnPropertyStateInvisible;
 
-	if (metaProperty.isConstant()
-		|| (!metaProperty.isWritable() && !metaProperty.isResettable()))
+	if (metaProperty.isConstant() ||
+		(!metaProperty.isWritable() && !metaProperty.isResettable()))
 	{
 		toAdd |= QtnPropertyStateImmutable;
 	}
@@ -164,9 +141,8 @@ void qtnUpdatePropertyState(
 	property->addState(qtnPropertyStateToAdd(metaProperty));
 }
 
-QtnProperty *qtnCreateQObjectProperty(
-	QObject *object, const QMetaProperty &metaProperty,
-	bool connect, const char *className)
+QtnProperty *qtnCreateQObjectProperty(QObject *object,
+	const QMetaProperty &metaProperty, bool connect, const char *className)
 {
 	if (!object)
 		return nullptr;
@@ -182,15 +158,14 @@ QtnProperty *qtnCreateQObjectProperty(
 	if (!metaProperty.isDesignable(object) || !metaProperty.isReadable())
 		return nullptr;
 
-	QtnProperty *property = it.value() (object, metaProperty);
+	QtnProperty *property = it.value()(object, metaProperty);
 
 	if (!property)
 		return property;
 
-	property->setName(
-		(nullptr != className)
-		? QCoreApplication::translate(className, metaProperty.name())
-		: metaProperty.name());
+	property->setName((nullptr != className)
+			? QCoreApplication::translate(className, metaProperty.name())
+			: metaProperty.name());
 
 	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
 
@@ -238,9 +213,8 @@ QtnProperty *qtnCreateQObjectProperty(
 
 	Q_ASSERT(propertyIndex >= 0 && propertyIndex < metaObject->propertyCount());
 
-	return qtnCreateQObjectProperty(
-		object, metaObject->property(propertyIndex), connect,
-		metaObject->className());
+	return qtnCreateQObjectProperty(object, metaObject->property(propertyIndex),
+		connect, metaObject->className());
 }
 
 QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
@@ -261,12 +235,12 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 			QList<QtnProperty *> properties;
 
 			for (int propertyIndex = metaObject->propertyOffset(),
-				 n = metaObject->propertyCount();
+					 n = metaObject->propertyCount();
 				 propertyIndex < n; ++propertyIndex)
 			{
 				auto metaProperty = metaObject->property(propertyIndex);
 				auto property = qtnCreateQObjectProperty(
-						object, metaProperty, true, metaObject->className());
+					object, metaProperty, true, metaObject->className());
 
 				if (nullptr != property)
 					properties.append(property);
@@ -275,8 +249,7 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 			if (!properties.isEmpty())
 			{
 				auto className = QCoreApplication::translate(
-						"ClassName",
-						metaObject->className());
+					"ClassName", metaObject->className());
 				auto it = propertySetsByClass.find(className);
 
 				QtnPropertySet *propertySetByClass;
@@ -334,20 +307,17 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 		if (nullptr == propertySet)
 			continue;
 
-		for (int i = propertySet->childProperties().count() - 1;
-			 i >= 0; i--)
+		for (int i = propertySet->childProperties().count() - 1; i >= 0; i--)
 		{
 			auto property = propertySet->childProperties().at(i);
 
 			auto subSet = dynamic_cast<QtnPropertySet *>(property);
 			Q_ASSERT(nullptr != subSet);
 
-			auto it = std::find_if(
-					subSets.begin(), subSets.end(),
-					[subSet](const QtnPropertyBase *set) -> bool
-			{
-				return (subSet->name() == set->name());
-			});
+			auto it = std::find_if(subSets.begin(), subSets.end(),
+				[subSet](const QtnPropertyBase *set) -> bool {
+					return (subSet->name() == set->name());
+				});
 
 			QtnPropertySet *multiSet;
 
@@ -369,12 +339,10 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 
 			for (auto subProp : subSet->childProperties())
 			{
-				auto propIt = std::find_if(
-						ncp.begin(), ncp.end(),
-						[subProp](QtnPropertyBase *p) -> bool
-				{
-					return p->name() == subProp->name();
-				});
+				auto propIt = std::find_if(ncp.begin(), ncp.end(),
+					[subProp](QtnPropertyBase *p) -> bool {
+						return p->name() == subProp->name();
+					});
 
 				QtnMultiProperty *multiProperty;
 

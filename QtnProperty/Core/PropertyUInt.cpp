@@ -18,7 +18,7 @@
 #include "PropertyUInt.h"
 
 QtnPropertyUIntBase::QtnPropertyUIntBase(QObject *parent)
-	: QtnNumericPropertyBase<QtnSinglePropertyBase<quint32> >(parent)
+	: QtnNumericPropertyBase<QtnSinglePropertyBase<quint32>>(parent)
 {
 }
 

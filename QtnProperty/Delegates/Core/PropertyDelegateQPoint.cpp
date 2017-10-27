@@ -22,8 +22,8 @@
 #include <QLocale>
 #include <QLineEdit>
 
-static bool regQPointDelegate = QtnPropertyDelegateFactory::staticInstance()
-	.registerDelegateDefault(
+static bool regQPointDelegate =
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyQPointBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>,
 		"XY");
@@ -48,8 +48,7 @@ bool QtnPropertyDelegateQPoint::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-			locale.toString(value.x()),
-			locale.toString(value.y()));
+		locale.toString(value.x()), locale.toString(value.y()));
 
 	return true;
 }

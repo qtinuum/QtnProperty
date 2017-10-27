@@ -79,8 +79,7 @@ class QTN_IMPORT_EXPORT QtnPropertyQPointF
 	Q_OBJECT
 
 private:
-	QtnPropertyQPointF(
-		const QtnPropertyQPointF &other) Q_DECL_EQ_DELETE;
+	QtnPropertyQPointF(const QtnPropertyQPointF &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQPointF(QObject *parent);
@@ -100,8 +99,7 @@ public:
 	QtnPropertyDelegateQPointF(QtnPropertyQPointFBase &owner);
 
 protected:
-	virtual QWidget *createValueEditorImpl(
-		QWidget *parent, const QRect &rect,
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 	virtual bool propertyValueToStr(QString &strValue) const override;
 };

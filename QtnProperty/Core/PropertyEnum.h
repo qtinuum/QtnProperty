@@ -32,9 +32,9 @@ private:
 public:
 	explicit QtnPropertyEnumBase(QObject *parent);
 
-	const QtnEnumInfo *enumInfo() const { return m_enumInfo; }
+	inline const QtnEnumInfo *enumInfo() const;
 
-	void setEnumInfo(const QtnEnumInfo *enumInfo) { m_enumInfo = enumInfo; }
+	inline void setEnumInfo(const QtnEnumInfo *enumInfo);
 
 protected:
 	// string conversion implementation
@@ -48,6 +48,16 @@ private:
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyEnumBase)
 };
+
+const QtnEnumInfo *QtnPropertyEnumBase::enumInfo() const
+{
+	return m_enumInfo;
+}
+
+void QtnPropertyEnumBase::setEnumInfo(const QtnEnumInfo *enumInfo)
+{
+	m_enumInfo = enumInfo;
+}
 
 P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyEnumBase, QtnEnumValueType)
 
@@ -64,8 +74,7 @@ public:
 	Q_INVOKABLE explicit QtnPropertyEnumCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
-		QtnPropertyEnumCallback,
-		QtnPropertyEnumBase)
+		QtnPropertyEnumCallback, QtnPropertyEnumBase)
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyEnum
@@ -79,4 +88,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyEnum, QtnPropertyEnumBase)
 };
 
-#endif	// PROPERTYENUM_H
+#endif // PROPERTYENUM_H

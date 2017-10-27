@@ -40,8 +40,7 @@ class QTN_IMPORT_EXPORT QtnEnumValueInfo
 public:
 	QtnEnumValueInfo();
 
-	QtnEnumValueInfo(
-		QtnEnumValueType value, const QString &name,
+	QtnEnumValueInfo(QtnEnumValueType value, const QString &name,
 		QtnEnumValueState state = QtnEnumValueStateNone);
 
 	inline QtnEnumValueType value() const;
@@ -111,4 +110,4 @@ const QString &QtnEnumInfo::name() const
 	return m_name;
 }
 
-#endif	// QTN_ENUM_H
+#endif // QTN_ENUM_H

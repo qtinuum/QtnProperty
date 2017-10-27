@@ -32,8 +32,7 @@ protected:
 	QtnPropertyDelegateInfoGetter() {}
 };
 
-class QtnPropertyDelegateInfoGetterValue
-	: public QtnPropertyDelegateInfoGetter
+class QtnPropertyDelegateInfoGetterValue : public QtnPropertyDelegateInfoGetter
 {
 public:
 	QtnPropertyDelegateInfoGetterValue(const QtnPropertyDelegateInfo &delegate);
@@ -49,12 +48,12 @@ class QtnPropertyDelegateInfoGetterCallback
 {
 public:
 	QtnPropertyDelegateInfoGetterCallback(
-		const std::function<const QtnPropertyDelegateInfo * ()> &callback);
+		const std::function<const QtnPropertyDelegateInfo *()> &callback);
 
 	virtual const QtnPropertyDelegateInfo *delegate() const override;
 
 private:
-	std::function<const QtnPropertyDelegateInfo * ()> m_callback;
+	std::function<const QtnPropertyDelegateInfo *()> m_callback;
 	mutable QScopedPointer<const QtnPropertyDelegateInfo> m_delegate;
 };
 
@@ -105,7 +104,7 @@ QtnPropertyDelegateInfoGetterValue::QtnPropertyDelegateInfoGetterValue(
 {
 }
 
-const QtnPropertyDelegateInfo *	//
+const QtnPropertyDelegateInfo * //
 QtnPropertyDelegateInfoGetterValue::delegate() const
 {
 	return &m_delegate;
@@ -117,7 +116,7 @@ QtnPropertyDelegateInfoGetterCallback::QtnPropertyDelegateInfoGetterCallback(
 {
 }
 
-const QtnPropertyDelegateInfo *	//
+const QtnPropertyDelegateInfo * //
 QtnPropertyDelegateInfoGetterCallback::delegate() const
 {
 	if (m_delegate.isNull())
