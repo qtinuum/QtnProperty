@@ -203,8 +203,6 @@ void QObjectPropertyWidget::connectObjects()
 			connectObject(object);
 		}
 	}
-
-	hack();
 }
 
 void QObjectPropertyWidget::connectObject(QObject *object)
@@ -221,8 +219,6 @@ void QObjectPropertyWidget::disconnectObjects()
 	setPropertySet(nullptr);
 	delete set;
 
-	hack();
-
 	for (auto object : selectedObjects)
 	{
 		disconnectObject(object);
@@ -235,11 +231,4 @@ void QObjectPropertyWidget::disconnectObject(QObject *object)
 
 	QObject::disconnect(object, &QObject::destroyed, this,
 		&QObjectPropertyWidget::onObjectDestroyed);
-}
-
-void QObjectPropertyWidget::hack()
-{
-	bool enabled = isEnabled();
-	setEnabled(!enabled);
-	setEnabled(enabled);
 }

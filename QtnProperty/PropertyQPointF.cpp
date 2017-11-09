@@ -25,8 +25,6 @@
 
 QtnPropertyQPointFBase::QtnPropertyQPointFBase(QObject *parent)
 	: ParentClass(parent)
-	, point_parser("\\s*\\[\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
-				   "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*\\]\\s*")
 {
 	addState(QtnPropertyStateCollapsed);
 }
@@ -65,6 +63,10 @@ QString QtnPropertyQPointFBase::getYDescriptionFormat()
 
 bool QtnPropertyQPointFBase::fromStrImpl(const QString &str, bool edit)
 {
+	static QRegExp point_parser(QStringLiteral("\
+\\s*\\[\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*\\]\\s*"));
+
 	if (!point_parser.exactMatch(str))
 		return false;
 
@@ -85,7 +87,7 @@ bool QtnPropertyQPointFBase::fromStrImpl(const QString &str, bool edit)
 bool QtnPropertyQPointFBase::toStrImpl(QString &str) const
 {
 	auto v = value();
-	str = QString("[%1, %2]").arg(v.x()).arg(v.y());
+	str = QStringLiteral("[%1, %2]").arg(v.x()).arg(v.y());
 	return true;
 }
 
@@ -99,15 +101,15 @@ QtnPropertyQPointF::QtnPropertyQPointF(QObject *parent)
 {
 }
 
-void QtnPropertyQPointF::Register()
+bool QtnPropertyQPointF::Register()
 {
 	qtnRegisterMetaPropertyFactory(
 		QVariant::PointF, qtnCreateFactory<QtnPropertyQPointFCallback>());
 
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyQPointFBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQPointF, QtnPropertyQPointFBase>,
-		"QPointF");
+		QByteArrayLiteral("QPointF"));
 }
 
 QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(

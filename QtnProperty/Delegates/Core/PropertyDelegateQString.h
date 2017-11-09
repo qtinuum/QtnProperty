@@ -32,6 +32,8 @@ public:
 
 	QtnPropertyDelegateQString(QtnPropertyQStringBase &owner);
 
+	static bool Register();
+
 protected:
 	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;
@@ -78,13 +80,23 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringFile
 public:
 	QtnPropertyDelegateQStringFile(QtnPropertyQStringBase &owner);
 
+	static bool Register();
+
 protected:
 	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;
+	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual QString toolTipImpl() const override;
+	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
+		const QStyle::State &state, bool *needToolTip = nullptr) const override;
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool isPropertyValid() const override;
+	QString defaultDirectory() const;
+	QString absoluteFilePath() const;
+	QString relativeFilePath() const;
+	bool shouldShowRelativePath() const;
 
 private:
 	QtnPropertyDelegateAttributes m_editorAttributes;
@@ -97,6 +109,8 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringList
 
 public:
 	QtnPropertyDelegateQStringList(QtnPropertyQStringBase &owner);
+
+	static bool Register();
 
 protected:
 	virtual void applyAttributesImpl(

@@ -27,9 +27,7 @@ QtnPropertyQRectBase::QtnPropertyQRectBase(QObject *parent)
 bool QtnPropertyQRectBase::fromStrImpl(const QString &str, bool edit)
 {
 	static QRegExp parserRect(
-		"^\\s*QRect\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
-	static QRegExp parserParams("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(\\d+)"
-								"\\s*,\\s*(\\d+)\\s*$",
+		QStringLiteral("^\\s*QRect\\s*\\(([^\\)]+)\\)\\s*$"),
 		Qt::CaseInsensitive);
 
 	if (!parserRect.exactMatch(str))
@@ -39,6 +37,10 @@ bool QtnPropertyQRectBase::fromStrImpl(const QString &str, bool edit)
 
 	if (params.size() != 2)
 		return false;
+
+	static QRegExp parserParams(QStringLiteral("\
+^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$"),
+		Qt::CaseInsensitive);
 
 	if (!parserParams.exactMatch(params[1]))
 		return false;

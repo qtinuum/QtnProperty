@@ -20,8 +20,14 @@
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
 #include "Delegates/PropertyEditorAux.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QColorDialog>
+
+QByteArray qtnShapeAttr()
+{
+	returnQByteArrayLiteral("shape");
+}
 
 class QtnPropertyQColorLineEditBttnHandler
 	: public QtnPropertyEditorBttnHandler<QtnPropertyQColorBase,
@@ -40,12 +46,6 @@ private:
 	void onEditingFinished();
 };
 
-static bool regQColorDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQColorBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>,
-		"LineEditBttn");
-
 QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(
 	QtnPropertyQColorBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner)
@@ -53,10 +53,18 @@ QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(
 {
 }
 
+bool QtnPropertyDelegateQColor::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyQColorBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>,
+		qtnSelectEditDelegate());
+}
+
 void QtnPropertyDelegateQColor::applyAttributesImpl(
 	const QtnPropertyDelegateAttributes &attributes)
 {
-	qtnGetAttribute(attributes, "shape", m_shape);
+	qtnGetAttribute(attributes, qtnShapeAttr(), m_shape);
 }
 
 void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter &painter,

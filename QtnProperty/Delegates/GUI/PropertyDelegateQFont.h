@@ -30,6 +30,8 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQFont
 public:
 	QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner);
 
+	static bool Register();
+
 	static QString fontToStrWithFormat(
 		const QFont &font, const QString &format = QString("[%1]"));
 	static QString fontToStr(const QFont &font);

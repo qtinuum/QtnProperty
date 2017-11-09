@@ -52,7 +52,6 @@ protected:
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQRectFBase)
 
 private:
-	QRegExp rect_parser;
 	bool coordinates;
 };
 
@@ -70,6 +69,9 @@ private:
 public:
 	explicit QtnPropertyQRectFCallback(QObject *parent, bool coordinates);
 
+	static QtnPropertyQRectFCallback *createFrom(
+		QObject *object, const QMetaProperty &metaProperty);
+
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
 		QtnPropertyQRectFCallback, QtnPropertyQRectFBase)
 };
@@ -82,12 +84,15 @@ class QTN_IMPORT_EXPORT QtnPropertyQRectF
 private:
 	QtnPropertyQRectF(const QtnPropertyQRectF &other) Q_DECL_EQ_DELETE;
 
+	static QtnProperty *internalCreateFrom(
+		QObject *object, const QMetaProperty &metaProperty);
+
 public:
 	explicit QtnPropertyQRectF(QObject *parent, bool coordinates);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRectF, QtnPropertyQRectFBase)
 
-	static void Register();
+	static bool Register();
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQRectF

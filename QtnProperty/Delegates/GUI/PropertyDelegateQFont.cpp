@@ -25,6 +25,7 @@
 #include "Delegates/PropertyEditorHandler.h"
 #include "Delegates/PropertyEditorAux.h"
 #include "PropertySet.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QFontDialog>
 #include <QFontDatabase>
@@ -46,17 +47,11 @@ private:
 	void onToolButtonClicked(bool);
 };
 
-static bool regQFontDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQFontBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>,
-		"LineEditBttn");
-
-static QtnEnumInfo *styleStrategyEnum()
+static const QtnEnumInfo *styleStrategyEnum()
 {
-	static QtnEnumInfo *enumInfo = nullptr;
+	static std::unique_ptr<QtnEnumInfo> enumInfo;
 
-	if (!enumInfo)
+	if (nullptr == enumInfo)
 	{
 		QVector<QtnEnumValueInfo> items;
 		items.append(QtnEnumValueInfo(
@@ -65,10 +60,11 @@ static QtnEnumInfo *styleStrategyEnum()
 			QFont::NoAntialias, QtnPropertyQFont::getNoAntialiasStr()));
 		items.append(QtnEnumValueInfo(
 			QFont::PreferAntialias, QtnPropertyQFont::getPreferAntialiasStr()));
-		enumInfo = new QtnEnumInfo("FontStyleStrategy", items);
+		enumInfo.reset(
+			new QtnEnumInfo(QStringLiteral("FontStyleStrategy"), items));
 	}
 
-	return enumInfo;
+	return enumInfo.get();
 }
 
 enum
@@ -77,21 +73,21 @@ enum
 	SizeUnitPoint
 };
 
-static QtnEnumInfo *sizeUnitEnum()
+static const QtnEnumInfo *sizeUnitEnum()
 {
-	static QtnEnumInfo *enumInfo = nullptr;
+	static std::unique_ptr<QtnEnumInfo> enumInfo;
 
-	if (!enumInfo)
+	if (nullptr == enumInfo)
 	{
 		QVector<QtnEnumValueInfo> items;
 		items.append(
 			QtnEnumValueInfo(SizeUnitPixel, QtnPropertyQFont::getPixelStr()));
 		items.append(
 			QtnEnumValueInfo(SizeUnitPoint, QtnPropertyQFont::getPointStr()));
-		enumInfo = new QtnEnumInfo("FontSizeUnit", items);
+		enumInfo.reset(new QtnEnumInfo(QStringLiteral("FontSizeUnit"), items));
 	}
 
-	return enumInfo;
+	return enumInfo.get();
 }
 
 static void applyFontStyle(QFont &font)
@@ -104,7 +100,7 @@ static void applyFontStyle(QFont &font)
 		auto family = font.family();
 		QFontDatabase db;
 
-		for (auto &s : db.styles(family))
+		for (const auto &s : db.styles(family))
 		{
 			if (s == style)
 			{
@@ -141,10 +137,11 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 
 #ifdef Q_OS_MAC
 			QtnPropertyDelegateInfo delegate;
-			delegate.name = "List";
+			delegate.name = qtnComboBoxDelegate();
 			QFontDatabase fDB;
-			delegate.attributes["items"] = QStringList("") + fDB.styles(value);
-			delegate.attributes["editable"] = true;
+			delegate.attributes[qtnItemsAttr()] =
+				QStringList(QString()) + fDB.styles(value);
+			delegate.attributes[qtnEditableAttr()] = true;
 			propertyStyle->setDelegate(delegate);
 
 			owner.postUpdateEvent(QtnPropertyChangeReasonChildren);
@@ -152,9 +149,9 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		});
 
 	QtnPropertyDelegateInfo delegate;
-	delegate.name = "List";
+	delegate.name = qtnComboBoxDelegate();
 	QFontDatabase fDB;
-	delegate.attributes["items"] = fDB.families();
+	delegate.attributes[qtnItemsAttr()] = fDB.families();
 	propertyFamily->setDelegate(delegate);
 
 	propertyStyle->setName(QtnPropertyQFont::getStyleLabel());
@@ -170,13 +167,13 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 	});
 
 #ifdef Q_OS_MAC
-	delegate.name = "List";
-	delegate.attributes["items"] =
-		QStringList("") + fDB.styles(owner.value().family());
-	delegate.attributes["editable"] = true;
+	delegate.name = qtnComboBoxDelegate();
+	delegate.attributes[qtnItemsAttr()] =
+		QStringList(QString()) + fDB.styles(owner.value().family());
+	delegate.attributes[qtnEditableAttr()] = true;
 #else
-	delegate.name = "LineEdit";
-	delegate.attributes["multiline_edit"] = false;
+	delegate.name = qtnLineEditDelegate();
+	delegate.attributes[qtnMultiLineEditAttr()] = false;
 #endif
 	propertyStyle->setDelegate(delegate);
 
@@ -394,6 +391,14 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		font.setStyleStrategy((QFont::StyleStrategy) value);
 		owner.setValue(font);
 	});
+}
+
+bool QtnPropertyDelegateQFont::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyQFontBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>,
+		qtnSelectEditDelegate());
 }
 
 QString QtnPropertyDelegateQFont::fontToStrWithFormat(

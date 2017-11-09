@@ -22,6 +22,7 @@
 #include "MultiProperty.h"
 #include "IQtnPropertyStateProvider.h"
 #include "Config.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QCoreApplication>
 #include <QMetaObject>
@@ -33,6 +34,8 @@ static QtnProperty *createRealNumberProperty(
 	QObject *object, const QMetaProperty &metaProperty)
 {
 	auto property = new QtnPropertyDoubleCallback(nullptr);
+	property->setCallbackValueAccepted(
+		[property](double) -> bool { return property->isEditableByUser(); });
 
 	switch (metaProperty.revision())
 	{
@@ -42,16 +45,12 @@ static QtnProperty *createRealNumberProperty(
 			qtnInitPercentSpinBoxDelegate(delegate);
 			property->setDelegate(delegate);
 
-			property->setCallbackValueGet([object, metaProperty]() -> qreal {
+			property->setCallbackValueGet([object, metaProperty]() -> double {
 				return metaProperty.read(object).toDouble() * 100.0;
 			});
 
-			property->setCallbackValueSet([object, metaProperty](qreal value) {
+			property->setCallbackValueSet([object, metaProperty](double value) {
 				metaProperty.write(object, value / 100.0);
-			});
-
-			property->setCallbackValueAccepted([property](qreal) -> bool {
-				return property->isEditableByUser();
 			});
 
 			return property;
@@ -66,16 +65,13 @@ static QtnProperty *createRealNumberProperty(
 		}
 	}
 
-	property->setCallbackValueGet([object, metaProperty]() -> qreal {
+	property->setCallbackValueGet([object, metaProperty]() -> double {
 		return metaProperty.read(object).toDouble();
 	});
 
-	property->setCallbackValueSet([object, metaProperty](qreal value) {
+	property->setCallbackValueSet([object, metaProperty](double value) {
 		metaProperty.write(object, value);
 	});
-
-	property->setCallbackValueAccepted(
-		[property](qreal) -> bool { return property->isEditableByUser(); });
 
 	return property;
 }
@@ -104,18 +100,22 @@ bool qtnRegisterDefaultMetaPropertyFactory()
 	return true;
 }
 
-static QMap<int, QtnMetaPropertyFactory_t> qtnFactoryMap;
-static bool success = qtnRegisterDefaultMetaPropertyFactory();
+static QMap<int, QtnMetaPropertyFactory_t> &qtnFactoryMap()
+{
+	static QMap<int, QtnMetaPropertyFactory_t> result;
+	return result;
+};
 
 bool qtnRegisterMetaPropertyFactory(
 	int metaPropertyType, const QtnMetaPropertyFactory_t &factory, bool force)
 {
 	Q_ASSERT(factory);
 
-	if (!force && qtnFactoryMap.contains(metaPropertyType))
+	auto &map = qtnFactoryMap();
+	if (!force && map.contains(metaPropertyType))
 		return false;
 
-	qtnFactoryMap.insert(metaPropertyType, factory);
+	map.insert(metaPropertyType, factory);
 	return true;
 }
 
@@ -147,12 +147,14 @@ QtnProperty *qtnCreateQObjectProperty(QObject *object,
 	if (!object)
 		return nullptr;
 
-	auto it = qtnFactoryMap.find(metaProperty.type());
+	auto &map = qtnFactoryMap();
 
-	if (it == qtnFactoryMap.end())
-		it = qtnFactoryMap.find(metaProperty.userType());
+	auto it = map.find(metaProperty.type());
 
-	if (it == qtnFactoryMap.end())
+	if (it == map.end())
+		it = map.find(metaProperty.userType());
+
+	if (it == map.end())
 		return nullptr;
 
 	if (!metaProperty.isDesignable(object) || !metaProperty.isReadable())
@@ -255,8 +257,9 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 				QtnPropertySet *propertySetByClass;
 
 				if (it != propertySetsByClass.end())
+				{
 					propertySetByClass = it->second;
-				else
+				} else
 				{
 					propertySetByClass = new QtnPropertySet(nullptr);
 					propertySetByClass->setName(className);
@@ -372,12 +375,12 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 
 void qtnInitPercentSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
 {
-	delegate.name = "SpinBox";
-	delegate.attributes["suffix"] = QLocale().percent();
+	delegate.name = qtnSpinBoxDelegate();
+	delegate.attributes[qtnSuffixAttr()] = QLocale().percent();
 }
 
 void qtnInitDegreeSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
 {
-	delegate.name = "SpinBox";
-	delegate.attributes["suffix"] = QString::fromUtf8("º");
+	delegate.name = qtnSpinBoxDelegate();
+	delegate.attributes[qtnSuffixAttr()] = QString::fromUtf8("º");
 }

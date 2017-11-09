@@ -22,18 +22,20 @@
 #include <QLocale>
 #include <QLineEdit>
 
-static bool regQPointDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQPointBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>,
-		"XY");
-
 QtnPropertyDelegateQPoint::QtnPropertyDelegateQPoint(
 	QtnPropertyQPointBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointBase>(owner)
 {
 	addSubProperty(qtnCreateXProperty(0, &owner));
 	addSubProperty(qtnCreateYProperty(0, &owner));
+}
+
+bool QtnPropertyDelegateQPoint::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyQPointBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>,
+		QByteArrayLiteral("XY"));
 }
 
 QWidget *QtnPropertyDelegateQPoint::createValueEditorImpl(

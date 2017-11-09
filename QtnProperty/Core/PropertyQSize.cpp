@@ -27,9 +27,8 @@ QtnPropertyQSizeBase::QtnPropertyQSizeBase(QObject *parent)
 bool QtnPropertyQSizeBase::fromStrImpl(const QString &str, bool edit)
 {
 	static QRegExp parserSize(
-		"^\\s*QSize\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
-	static QRegExp parserParams(
-		"^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
+		QStringLiteral("^\\s*QSize\\s*\\(([^\\)]+)\\)\\s*$"),
+		Qt::CaseInsensitive);
 
 	if (!parserSize.exactMatch(str))
 		return false;
@@ -38,6 +37,10 @@ bool QtnPropertyQSizeBase::fromStrImpl(const QString &str, bool edit)
 
 	if (params.size() != 2)
 		return false;
+
+	static QRegExp parserParams(
+		QStringLiteral("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$"),
+		Qt::CaseInsensitive);
 
 	if (!parserParams.exactMatch(params[1]))
 		return false;

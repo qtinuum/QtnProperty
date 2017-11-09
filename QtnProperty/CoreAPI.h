@@ -15,10 +15,8 @@
    limitations under the License.
 */
 
-#ifndef QTN_COREAPI_H
-#define QTN_COREAPI_H
-
-#include <qcompilerdetection.h>
+#pragma once
+#include <qglobal.h>
 
 #if defined(QTN_DYNAMIC_LIBRARY)
 #define QTN_IMPORT_EXPORT Q_DECL_EXPORT
@@ -26,4 +24,13 @@
 #define QTN_IMPORT_EXPORT Q_DECL_IMPORT
 #endif
 
-#endif // QTN_COREAPI_H
+#define returnQByteArrayLiteral(str) \
+	enum \
+	{ \
+		Size = sizeof(str) - 1 \
+	}; \
+	static const QStaticByteArrayData<Size> qbytearray_literal = { \
+		Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER(Size), str \
+	}; \
+	QByteArrayDataPtr holder = { qbytearray_literal.data_ptr() }; \
+	return QByteArray(holder)

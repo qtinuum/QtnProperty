@@ -50,9 +50,6 @@ protected:
 	virtual bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQPointFBase)
-
-private:
-	QRegExp point_parser;
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQPointFBase, QPointF)
@@ -87,7 +84,7 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
 		QtnPropertyQPointF, QtnPropertyQPointFBase)
 
-	static void Register();
+	static bool Register();
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQPointF

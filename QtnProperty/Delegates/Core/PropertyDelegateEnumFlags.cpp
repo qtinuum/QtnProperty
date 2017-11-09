@@ -66,13 +66,6 @@ protected:
 	virtual void updateEditor() override;
 };
 
-static bool regEnumFlagsDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyEnumFlagsBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateEnumFlags,
-			QtnPropertyEnumFlagsBase>,
-		"FlagsList");
-
 QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(
 	QtnPropertyEnumFlagsBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyEnumFlagsBase>(owner)
@@ -114,6 +107,15 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(
 				return true;
 			});
 	}
+}
+
+bool QtnPropertyDelegateEnumFlags::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyEnumFlagsBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateEnumFlags,
+			QtnPropertyEnumFlagsBase>,
+		QByteArrayLiteral("FlagsList"));
 }
 
 QWidget *QtnPropertyDelegateEnumFlags::createValueEditorImpl(

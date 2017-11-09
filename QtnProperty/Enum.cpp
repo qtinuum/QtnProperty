@@ -32,6 +32,14 @@ QtnEnumInfo::QtnEnumInfo(
 	m_values.swap(staticValues);
 }
 
+QtnEnumInfo::QtnEnumInfo(
+	const QString &name, const QVector<QtnEnumValueInfo> &staticValues)
+	: m_case_sensitivity(Qt::CaseSensitive)
+	, m_name(name)
+	, m_values(staticValues)
+{
+}
+
 const QtnEnumValueInfo *QtnEnumInfo::findByValue(QtnEnumValueType value) const
 {
 	const QtnEnumValueInfo *result = nullptr;
@@ -74,7 +82,7 @@ const QtnEnumValueInfo *QtnEnumInfo::findByName(const QString &name) const
 const QtnEnumValueInfo *QtnEnumInfo::fromStr(const QString &str) const
 {
 	static QRegExp parserEnum(
-		"^\\s*([^:\\s]+)::([^:\\s]+)\\s*$", m_case_sensitivity);
+		QStringLiteral("^\\s*([^:\\s]+)::([^:\\s]+)\\s*$"), m_case_sensitivity);
 
 	QString enumStr = str.trimmed();
 
@@ -101,11 +109,6 @@ bool QtnEnumInfo::toStr(QString &str, const QtnEnumValueInfo *value) const
 
 	str = QString("%1::%2").arg(name(), value->name());
 	return true;
-}
-
-QVector<QtnEnumValueInfo> &QtnEnumInfo::getVector()
-{
-	return m_values;
 }
 
 QtnEnumValueInfo::QtnEnumValueInfo()

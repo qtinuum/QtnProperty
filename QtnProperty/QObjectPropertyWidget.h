@@ -51,7 +51,6 @@ protected:
 
 	QtnMultiProperty *getMultiProperty() const;
 	QtnPropertyConnector *getPropertyConnector() const;
-	void hack();
 
 	void connectObjects();
 	void disconnectObjects();

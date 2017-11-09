@@ -21,10 +21,21 @@
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
 #include "MultiProperty.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QCoreApplication>
 #include <QSpinBox>
 #include <QLocale>
+
+QByteArray qtnSpinBoxDelegate()
+{
+	returnQByteArrayLiteral("SpinBox");
+}
+
+QByteArray qtnSuffixAttr()
+{
+	returnQByteArrayLiteral("suffix");
+}
 
 class QtnPropertyIntSpinBoxHandler
 	: public QtnPropertyEditorHandlerVT<QtnPropertyIntBase, QSpinBox>
@@ -37,21 +48,24 @@ protected:
 	virtual void updateEditor() override;
 };
 
-static bool regIntDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyIntBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>,
-		"SpinBox");
-
 QtnPropertyDelegateInt::QtnPropertyDelegateInt(QtnPropertyIntBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyIntBase>(owner)
 {
+}
+
+bool QtnPropertyDelegateInt::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyIntBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>,
+		qtnSpinBoxDelegate());
 }
 
 QWidget *QtnPropertyDelegateInt::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QSpinBox(parent);
+	spinBox->setSuffix(suffix);
 	spinBox->setGeometry(rect);
 
 	new QtnPropertyIntSpinBoxHandler(owner(), *spinBox);
@@ -74,6 +88,12 @@ bool QtnPropertyDelegateInt::acceptKeyPressedForInplaceEditImpl(
 	}
 
 	return qtnAcceptForNumEdit(keyEvent, NUM_SIGNED_INT);
+}
+
+void QtnPropertyDelegateInt::applyAttributesImpl(
+	const QtnPropertyDelegateAttributes &attributes)
+{
+	qtnGetAttribute(attributes, qtnSuffixAttr(), suffix);
 }
 
 bool QtnPropertyDelegateInt::propertyValueToStr(QString &strValue) const

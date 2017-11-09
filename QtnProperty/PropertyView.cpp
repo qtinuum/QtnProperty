@@ -134,6 +134,7 @@ void QtnPropertyView::setPropertySet(QtnPropertySet *newPropertySet)
 	}
 
 	updateItemsTree();
+	viewport()->update();
 }
 
 QtnPropertyBase *QtnPropertyView::getPropertyParent(
@@ -147,12 +148,16 @@ QtnPropertyBase *QtnPropertyView::getPropertyParent(
 	return nullptr;
 }
 
-bool QtnPropertyView::setActiveProperty(QtnPropertyBase *newActiveProperty)
+bool QtnPropertyView::setActiveProperty(
+	QtnPropertyBase *newActiveProperty, bool ensureVisible)
 {
 	if (m_activeProperty == newActiveProperty)
 		return false;
 
 	qtnStopInplaceEdit();
+
+	if (ensureVisible)
+		this->ensureVisible(newActiveProperty);
 
 	if (!newActiveProperty)
 	{
@@ -167,6 +172,24 @@ bool QtnPropertyView::setActiveProperty(QtnPropertyBase *newActiveProperty)
 
 	setActivePropertyInternal(newActiveProperty);
 	return true;
+}
+
+bool QtnPropertyView::setActiveProperty(int index, bool ensureVisible)
+{
+	if (index < 0)
+		index = 0;
+
+	if (nullptr == m_propertySet)
+		return false;
+
+	auto &cp = m_propertySet->childProperties();
+	if (cp.isEmpty())
+		return false;
+
+	if (index >= cp.size())
+		index = cp.size() - 1;
+
+	return setActiveProperty(cp.at(index), ensureVisible);
 }
 
 bool QtnPropertyView::ensureVisible(const QtnPropertyBase *property)
@@ -813,8 +836,7 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 				} else if (vItem.item->parent)
 				{
 					// activate parent property
-					setActiveProperty(vItem.item->parent->property);
-					ensureVisible(activeProperty());
+					setActiveProperty(vItem.item->parent->property, true);
 				}
 			}
 
@@ -840,8 +862,8 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 				} else if (vItem.hasChildren)
 				{
 					// activate child property
-					setActiveProperty(vItem.item->children.first()->property);
-					ensureVisible(activeProperty());
+					setActiveProperty(
+						vItem.item->children.first()->property, true);
 				}
 			}
 

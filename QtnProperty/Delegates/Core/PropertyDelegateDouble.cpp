@@ -22,6 +22,7 @@
 #include "Delegates/PropertyEditorHandler.h"
 #include "Utils/DoubleSpinBox.h"
 #include "MultiProperty.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QCoreApplication>
 #include <QLocale>
@@ -37,16 +38,18 @@ protected:
 	virtual void updateEditor() override;
 };
 
-static bool regDoubleDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyDoubleBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>,
-		"SpinBox");
-
 QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(
 	QtnPropertyDoubleBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyDoubleBase>(owner)
 {
+}
+
+bool QtnPropertyDelegateDouble::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyDoubleBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>,
+		qtnSpinBoxDelegate());
 }
 
 QWidget *QtnPropertyDelegateDouble::createValueEditorImpl(
@@ -90,7 +93,7 @@ bool QtnPropertyDelegateDouble::propertyValueToStr(QString &strValue) const
 void QtnPropertyDelegateDouble::applyAttributesImpl(
 	const QtnPropertyDelegateAttributes &attributes)
 {
-	qtnGetAttribute(attributes, "suffix", suffix);
+	qtnGetAttribute(attributes, qtnSuffixAttr(), suffix);
 }
 
 QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(

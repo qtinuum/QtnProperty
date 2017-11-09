@@ -91,7 +91,7 @@ void QtnPropertyEditorHandlerBase::applyReset()
 	returned = false;
 }
 
-QtnPropertyEditorHandlerBase::DialogContainerPtr //
+QtnPropertyEditorHandlerBase::DialogContainerPtr
 QtnPropertyEditorHandlerBase::connectDialog(QDialog *dialog)
 {
 	DialogContainerPtr result(new DialogContainer(dialog));

@@ -25,8 +25,6 @@
 
 QtnPropertyQSizeFBase::QtnPropertyQSizeFBase(QObject *parent)
 	: ParentClass(parent)
-	, sizeParser("\\s*\\[\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*x"
-				 "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*\\]\\s*")
 {
 	addState(QtnPropertyStateCollapsed);
 }
@@ -47,6 +45,10 @@ QtnProperty *QtnPropertyQSizeFBase::createHeightProperty()
 
 bool QtnPropertyQSizeFBase::fromStrImpl(const QString &str, bool edit)
 {
+	static QRegExp sizeParser(QStringLiteral("\
+\\s*\\[\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*x\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*\\]\\s*"));
+
 	if (!sizeParser.exactMatch(str))
 		return false;
 
@@ -67,7 +69,7 @@ bool QtnPropertyQSizeFBase::fromStrImpl(const QString &str, bool edit)
 bool QtnPropertyQSizeFBase::toStrImpl(QString &str) const
 {
 	auto v = value();
-	str = QString("[%1 x %2]").arg(v.width()).arg(v.height());
+	str = QStringLiteral("[%1 x %2]").arg(v.width()).arg(v.height());
 	return true;
 }
 
@@ -81,15 +83,15 @@ QtnPropertyQSizeF::QtnPropertyQSizeF(QObject *parent)
 {
 }
 
-void QtnPropertyQSizeF::Register()
+bool QtnPropertyQSizeF::Register()
 {
 	qtnRegisterMetaPropertyFactory(
 		QVariant::SizeF, qtnCreateFactory<QtnPropertyQSizeFCallback>());
 
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyQSizeFBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQSizeF, QtnPropertyQSizeFBase>,
-		"QSizeF");
+		QByteArrayLiteral("QSizeF"));
 }
 
 QtnPropertyDelegateQSizeF::QtnPropertyDelegateQSizeF(

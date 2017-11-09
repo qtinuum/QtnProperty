@@ -40,7 +40,7 @@ public:
 	bool hasResettableValues() const;
 	bool hasMultipleValues() const;
 
-	static void Register();
+	static bool Register();
 	static QString getMultiValuePlaceholder();
 
 	inline std::vector<QtnProperty *> getProperties() const;

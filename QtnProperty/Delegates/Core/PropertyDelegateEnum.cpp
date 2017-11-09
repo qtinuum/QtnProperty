@@ -19,6 +19,7 @@
 #include "Core/PropertyEnum.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/PropertyEditorHandler.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QComboBox>
 #include <QLineEdit>
@@ -39,11 +40,13 @@ private:
 	unsigned updating;
 };
 
-static bool regEnumDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+bool QtnPropertyDelegateEnum::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyEnumBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>,
-		"ComboBox");
+		qtnComboBoxDelegate());
+}
 
 QtnPropertyDelegateEnum::QtnPropertyDelegateEnum(QtnPropertyEnumBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyEnumBase>(owner)

@@ -123,14 +123,14 @@ bool QtnMultiProperty::hasResettableValues() const
 	return false;
 }
 
-void QtnMultiProperty::Register()
+bool QtnMultiProperty::Register()
 {
 	qRegisterMetaType<QtnMultiVariant>();
 
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnMultiProperty::staticMetaObject,
 		&qtnCreateDelegate<QtnMultiPropertyDelegate, QtnMultiProperty>,
-		"MultiProperty");
+		QByteArrayLiteral("MultiProperty"));
 }
 
 QString QtnMultiProperty::getMultiValuePlaceholder()

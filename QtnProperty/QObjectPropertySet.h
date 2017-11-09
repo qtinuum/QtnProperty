@@ -32,6 +32,8 @@ class QtnProperty;
 class QtnPropertySet;
 struct QtnPropertyDelegateInfo;
 
+QTN_IMPORT_EXPORT bool qtnRegisterDefaultMetaPropertyFactory();
+
 typedef std::function<QtnProperty *(QObject *, const QMetaProperty &)>
 	QtnMetaPropertyFactory_t;
 QTN_IMPORT_EXPORT bool qtnRegisterMetaPropertyFactory(int metaPropertyType,
@@ -59,9 +61,9 @@ template <typename PropertyCallbackType,
 	typename ValueType = typename PropertyCallbackType::ValueTypeStore>
 QtnMetaPropertyFactory_t qtnCreateFactory()
 {
-	typedef typename PropertyCallbackType::ValueType CallbackValueType;
-	typedef
-		typename PropertyCallbackType::ValueTypeStore CallbackValueTypeStore;
+	using CallbackValueType = typename PropertyCallbackType::ValueType;
+	using CallbackValueTypeStore =
+		typename PropertyCallbackType::ValueTypeStore;
 
 	auto result = [](QObject *object,
 					  const QMetaProperty &metaProperty) -> QtnProperty * {

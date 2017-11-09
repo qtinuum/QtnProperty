@@ -44,9 +44,6 @@ protected:
 	virtual bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQSizeFBase)
-
-private:
-	QRegExp sizeParser;
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQSizeFBase, QSizeF)
@@ -80,7 +77,7 @@ public:
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSizeF, QtnPropertyQSizeFBase)
 
-	static void Register();
+	static bool Register();
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQSizeF

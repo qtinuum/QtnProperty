@@ -43,6 +43,8 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 	QtnPropertyWidgetEx::addShortcutForAction(
 		QKeySequence(Qt::Key_Backspace), ui->actionPropertyDelete, this);
 #endif
+	QtnPropertyWidgetEx::addShortcutForAction(
+		QKeySequence(Qt::Key_Delete), ui->actionPropertyDelete, this);
 
 #ifdef Q_OS_WIN
 	QtnPropertyWidgetEx::addShortcutForAction(
@@ -51,6 +53,18 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 		QKeySequence(Qt::SHIFT | Qt::Key_Insert), ui->actionPropertyPaste,
 		this);
 #endif
+
+	QtnPropertyWidgetEx::addShortcutForAction(
+		ui->actionPropertyCut->shortcut(), ui->actionPropertyCut, this);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		ui->actionPropertyCopy->shortcut(), ui->actionPropertyCopy, this);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		ui->actionPropertyPaste->shortcut(), ui->actionPropertyPaste, this);
+
+	QtnPropertyWidgetEx::addShortcutForAction(
+		ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions, this);
+	QtnPropertyWidgetEx::addShortcutForAction(
+		ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd, this);
 
 	ui->propertyWidget->connectDeleteAction(ui->actionPropertyDelete, true);
 	ui->propertyWidget->connectCutAction(ui->actionPropertyCut, true);

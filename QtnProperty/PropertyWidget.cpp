@@ -37,6 +37,10 @@ QtnPropertyWidget::QtnPropertyWidget(QWidget *parent)
 	, m_descriptionSplitter(0)
 	, m_descriptionPanel(0)
 {
+	m_layout->setContentsMargins(0, 0, 0, 0);
+	m_layout->setMargin(0);
+	m_layout->setSpacing(0);
+
 	m_layout->addWidget(m_propertyView);
 
 	QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged,
@@ -115,10 +119,10 @@ void QtnPropertyWidget::setActiveProperty(const QtnPropertyBase *activeProperty)
 	{
 		if (!activeProperty)
 		{
-			m_descriptionPanel->setText("");
+			m_descriptionPanel->setText(QString());
 		} else
 		{
-			m_descriptionPanel->setText(QString("<b>%1</b><br>%2")
+			m_descriptionPanel->setText(QStringLiteral("<b>%1</b><br>%2")
 											.arg(activeProperty->name(),
 												activeProperty->description()));
 		}

@@ -30,6 +30,8 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQColor
 public:
 	QtnPropertyDelegateQColor(QtnPropertyQColorBase &owner);
 
+	static bool Register();
+
 protected:
 	virtual void applyAttributesImpl(
 		const QtnPropertyDelegateAttributes &attributes) override;

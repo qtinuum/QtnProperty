@@ -108,7 +108,7 @@ QtnPropertyQVariant::QtnPropertyQVariant(QObject *parent)
 {
 }
 
-void QtnPropertyQVariant::Register()
+bool QtnPropertyQVariant::Register()
 {
 	qtnRegisterMetaPropertyFactory(QMetaType::QVariant,
 		[](QObject *object,
@@ -116,11 +116,11 @@ void QtnPropertyQVariant::Register()
 			return new QtnPropertyQVariantCallback(object, metaProperty);
 		});
 
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyQVariantBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQVariant,
 			QtnPropertyQVariantBase>,
-		"QVariant");
+		QByteArrayLiteral("QVariant"));
 }
 
 QString QtnPropertyQVariant::valueToString(const QVariant &value)

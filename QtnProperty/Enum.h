@@ -73,6 +73,8 @@ class QTN_IMPORT_EXPORT QtnEnumInfo
 public:
 	QtnEnumInfo();
 	QtnEnumInfo(const QString &name, QVector<QtnEnumValueInfo> &staticValues);
+	QtnEnumInfo(
+		const QString &name, const QVector<QtnEnumValueInfo> &staticValues);
 
 	inline const QString &name() const;
 
@@ -97,7 +99,8 @@ public:
 	Qt::CaseSensitivity getCaseSensitivity() const;
 	void setCaseSensitivity(Qt::CaseSensitivity value);
 
-	QVector<QtnEnumValueInfo> &getVector();
+	inline QVector<QtnEnumValueInfo> &getVector();
+	inline const QVector<QtnEnumValueInfo> &getVector() const;
 
 private:
 	Qt::CaseSensitivity m_case_sensitivity;
@@ -108,6 +111,16 @@ private:
 const QString &QtnEnumInfo::name() const
 {
 	return m_name;
+}
+
+QVector<QtnEnumValueInfo> &QtnEnumInfo::getVector()
+{
+	return m_values;
+}
+
+const QVector<QtnEnumValueInfo> &QtnEnumInfo::getVector() const
+{
+	return m_values;
 }
 
 #endif // QTN_ENUM_H

@@ -29,6 +29,7 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateEnum
 
 public:
 	QtnPropertyDelegateEnum(QtnPropertyEnumBase &owner);
+	static bool Register();
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,

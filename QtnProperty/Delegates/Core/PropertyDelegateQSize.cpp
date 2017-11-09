@@ -22,17 +22,19 @@
 #include <QLineEdit>
 #include <QLocale>
 
-static bool regQSizeDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQSizeBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQSize, QtnPropertyQSizeBase>,
-		"WH");
-
 QtnPropertyDelegateQSize::QtnPropertyDelegateQSize(QtnPropertyQSizeBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQSizeBase>(owner)
 {
 	addSubProperty(qtnCreateWidthProperty(0, &owner));
 	addSubProperty(qtnCreateHeightProperty(0, &owner));
+}
+
+bool QtnPropertyDelegateQSize::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyQSizeBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQSize, QtnPropertyQSizeBase>,
+		QByteArrayLiteral("WH"));
 }
 
 QWidget *QtnPropertyDelegateQSize::createValueEditorImpl(

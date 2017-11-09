@@ -27,9 +27,8 @@ QtnPropertyQPointBase::QtnPropertyQPointBase(QObject *parent)
 bool QtnPropertyQPointBase::fromStrImpl(const QString &str, bool edit)
 {
 	static QRegExp parserPoint(
-		"^\\s*QPoint\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
-	static QRegExp parserParams(
-		"^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
+		QStringLiteral("^\\s*QPoint\\s*\\(([^\\)]+)\\)\\s*$"),
+		Qt::CaseInsensitive);
 
 	if (!parserPoint.exactMatch(str))
 		return false;
@@ -38,6 +37,10 @@ bool QtnPropertyQPointBase::fromStrImpl(const QString &str, bool edit)
 
 	if (params.size() != 2)
 		return false;
+
+	static QRegExp parserParams(
+		QStringLiteral("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$"),
+		Qt::CaseInsensitive);
 
 	if (!parserParams.exactMatch(params[1]))
 		return false;
@@ -58,15 +61,13 @@ bool QtnPropertyQPointBase::fromStrImpl(const QString &str, bool edit)
 	if (!ok)
 		return false;
 
-	;
-
 	return setValue(QPoint(x, y), edit);
 }
 
 bool QtnPropertyQPointBase::toStrImpl(QString &str) const
 {
 	QPoint v = value();
-	str = QString("QPoint(%1, %2)").arg(v.x()).arg(v.y());
+	str = QStringLiteral("QPoint(%1, %2)").arg(v.x()).arg(v.y());
 	return true;
 }
 

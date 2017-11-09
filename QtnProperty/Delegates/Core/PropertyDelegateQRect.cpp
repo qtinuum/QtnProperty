@@ -22,12 +22,6 @@
 #include <QLineEdit>
 #include <QLocale>
 
-static bool regQRectDelegate =
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQRectBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQRect, QtnPropertyQRectBase>,
-		"LTWH");
-
 QtnPropertyDelegateQRect::QtnPropertyDelegateQRect(QtnPropertyQRectBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQRectBase>(owner)
 {
@@ -35,6 +29,14 @@ QtnPropertyDelegateQRect::QtnPropertyDelegateQRect(QtnPropertyQRectBase &owner)
 	addSubProperty(qtnCreateTopProperty(0, &owner));
 	addSubProperty(qtnCreateWidthProperty(0, &owner));
 	addSubProperty(qtnCreateHeightProperty(0, &owner));
+}
+
+bool QtnPropertyDelegateQRect::Register()
+{
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyQRectBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQRect, QtnPropertyQRectBase>,
+		QByteArrayLiteral("LTWH"));
 }
 
 QWidget *QtnPropertyDelegateQRect::createValueEditorImpl(

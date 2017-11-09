@@ -71,7 +71,9 @@ public:
 	QtnPropertyBase *getPropertyParent(const QtnPropertyBase *property) const;
 	inline QtnPropertyBase *activeProperty();
 	inline const QtnPropertyBase *activeProperty() const;
-	bool setActiveProperty(QtnPropertyBase *newActiveProperty);
+	bool setActiveProperty(
+		QtnPropertyBase *newActiveProperty, bool ensureVisible = false);
+	bool setActiveProperty(int index, bool ensureVisible = false);
 
 	bool ensureVisible(const QtnPropertyBase *property);
 

@@ -54,7 +54,7 @@ public:
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyInt64, QtnPropertyInt64Base)
 
-	static void Register();
+	static bool Register();
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyInt64Base, qint64)
@@ -81,6 +81,8 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateInt64
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateInt64)
 
+	QString suffix;
+
 public:
 	QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner);
 
@@ -90,6 +92,9 @@ protected:
 
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
+
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateAttributes &attributes) override;
 
 	virtual bool propertyValueToStr(QString &strValue) const override;
 };

@@ -23,6 +23,15 @@
 #include <QLocale>
 #include <QLineEdit>
 
+static QByteArray qtnQRectF_LTRB()
+{
+	returnQByteArrayLiteral("QRectF_LTRB");
+}
+static QByteArray qtnQRectF_LTWH()
+{
+	returnQByteArrayLiteral("QRectF_LTWH");
+}
+
 QtnPropertyQRectFBase::QtnPropertyQRectFBase(QObject *parent)
 	: ParentClass(parent)
 	, coordinates(false)
@@ -33,19 +42,10 @@ QtnPropertyQRectFBase::QtnPropertyQRectFBase(QObject *parent)
 void QtnPropertyQRectFBase::setMode(bool coordinates)
 {
 	this->coordinates = coordinates;
-	rect_parser = QRegExp(coordinates
-			? "\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
-			  "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,"
-			  "\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
-			  "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*\\]\\s*"
-			: "\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
-			  "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,"
-			  "\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*x"
-			  "\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*\\]\\s*");
 
 	setDelegateCallback([coordinates]() -> const QtnPropertyDelegateInfo * {
 		auto result = new QtnPropertyDelegateInfo;
-		result->name = QByteArray(coordinates ? "QRectF_LTRB" : "QRectF_LTWH");
+		result->name = coordinates ? qtnQRectF_LTRB() : qtnQRectF_LTWH();
 		return result;
 	});
 }
@@ -94,28 +94,47 @@ QtnProperty *QtnPropertyQRectFBase::createHeightProperty()
 
 bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
 {
-	if (!rect_parser.exactMatch(str))
+	QRegExp *rect_parser;
+	if (coordinates)
+	{
+		static QRegExp coordRectParser(QStringLiteral("\
+\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,\
+\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*\\]\\s*"));
+		rect_parser = &coordRectParser;
+	} else
+	{
+		static QRegExp simpleRectParser(QStringLiteral("\
+\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,\
+\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*x\
+\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*\\]\\s*"));
+		rect_parser = &simpleRectParser;
+	}
+
+	if (!rect_parser->exactMatch(str))
 		return false;
 
 	bool ok;
-	qreal x = rect_parser.cap(1).toDouble(&ok);
+	qreal x = rect_parser->cap(1).toDouble(&ok);
 
 	if (!ok)
 		return false;
 
-	qreal y = rect_parser.cap(6).toDouble(&ok);
+	qreal y = rect_parser->cap(6).toDouble(&ok);
 
 	if (!ok)
 		return false;
 
 	if (coordinates)
 	{
-		qreal right = rect_parser.cap(11).toDouble(&ok);
+		qreal right = rect_parser->cap(11).toDouble(&ok);
 
 		if (!ok)
 			return false;
 
-		qreal bottom = rect_parser.cap(15).toDouble(&ok);
+		qreal bottom = rect_parser->cap(15).toDouble(&ok);
 
 		if (!ok)
 			return false;
@@ -123,12 +142,12 @@ bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
 		return setValue(QRectF(x, y, right - x, bottom - y));
 	}
 
-	qreal width = rect_parser.cap(11).toDouble(&ok);
+	qreal width = rect_parser->cap(11).toDouble(&ok);
 
 	if (!ok)
 		return false;
 
-	qreal height = rect_parser.cap(15).toDouble(&ok);
+	qreal height = rect_parser->cap(15).toDouble(&ok);
 
 	if (!ok)
 		return false;
@@ -141,17 +160,20 @@ bool QtnPropertyQRectFBase::toStrImpl(QString &str) const
 	auto v = value();
 
 	if (coordinates)
-		str = QString("[(%1, %2), (%3, %4)]")
+	{
+		str = QStringLiteral("[(%1, %2), (%3, %4)]")
 				  .arg(v.left())
 				  .arg(v.top())
 				  .arg(v.right())
 				  .arg(v.bottom());
-	else
-		str = QString("[(%1, %2), %3 x %4]")
+	} else
+	{
+		str = QStringLiteral("[(%1, %2), %3 x %4]")
 				  .arg(v.left())
 				  .arg(v.top())
 				  .arg(v.width())
 				  .arg(v.height());
+	}
 
 	return true;
 }
@@ -163,41 +185,49 @@ QtnPropertyQRectFCallback::QtnPropertyQRectFCallback(
 	setMode(coordinates);
 }
 
+QtnPropertyQRectFCallback *QtnPropertyQRectFCallback::createFrom(
+	QObject *object, const QMetaProperty &metaProperty)
+{
+	auto property =
+		new QtnPropertyQRectFCallback(nullptr, metaProperty.revision() == 1);
+
+	property->setCallbackValueGet([object, metaProperty]() -> QRectF {
+		return metaProperty.read(object).toRectF();
+	});
+
+	property->setCallbackValueSet([object, metaProperty](QRectF value) {
+		metaProperty.write(object, value);
+	});
+
+	property->setCallbackValueAccepted(
+		[property](QRectF) -> bool { return property->isEditableByUser(); });
+
+	return property;
+}
+
+QtnProperty *QtnPropertyQRectF::internalCreateFrom(
+	QObject *object, const QMetaProperty &metaProperty)
+{
+	return QtnPropertyQRectFCallback::createFrom(object, metaProperty);
+}
+
 QtnPropertyQRectF::QtnPropertyQRectF(QObject *parent, bool coordinates)
 	: QtnSinglePropertyValue<QtnPropertyQRectFBase>(parent)
 {
 	setMode(coordinates);
 }
 
-void QtnPropertyQRectF::Register()
+bool QtnPropertyQRectF::Register()
 {
-	qtnRegisterMetaPropertyFactory(QVariant::RectF,
-		[](QObject *object,
-			const QMetaProperty &metaProperty) -> QtnProperty * {
-			auto property = new QtnPropertyQRectFCallback(
-				nullptr, metaProperty.revision() == 1);
+	qtnRegisterMetaPropertyFactory(
+		QVariant::RectF, &QtnPropertyQRectF::internalCreateFrom);
 
-			property->setCallbackValueGet([object, metaProperty]() -> QRectF {
-				return metaProperty.read(object).toRectF();
-			});
-
-			property->setCallbackValueSet([object, metaProperty](QRectF value) {
-				metaProperty.write(object, value);
-			});
-
-			property->setCallbackValueAccepted([property](QRectF) -> bool {
-				return property->isEditableByUser();
-			});
-
-			return property;
-		});
-
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQRectFBase::staticMetaObject,
-		&QtnPropertyDelegateQRectF::createLTWH, "QRectF_LTWH");
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQRectFBase::staticMetaObject,
-		&QtnPropertyDelegateQRectF::createLTRB, "QRectF_LTRB");
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+			   &QtnPropertyQRectFBase::staticMetaObject,
+			   &QtnPropertyDelegateQRectF::createLTWH, qtnQRectF_LTWH()) &&
+		QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+			&QtnPropertyQRectFBase::staticMetaObject,
+			&QtnPropertyDelegateQRectF::createLTRB, qtnQRectF_LTRB());
 }
 
 QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(

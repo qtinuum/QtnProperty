@@ -30,6 +30,8 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQPoint
 public:
 	QtnPropertyDelegateQPoint(QtnPropertyQPointBase &owner);
 
+	static bool Register();
+
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;

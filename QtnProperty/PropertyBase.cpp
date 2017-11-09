@@ -23,10 +23,6 @@
 #include <QScriptEngine>
 #include <QCoreApplication>
 
-static int qtnPropertyChangeReasonMetaId =
-	qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
-static int qtnPropertyPtrId =
-	qRegisterMetaType<QtnPropertyBase *>("QtnPropertyBase*");
 static quint16 qtnPropertyMagicNumber = 0x1984;
 
 // extern declaration

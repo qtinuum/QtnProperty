@@ -72,7 +72,7 @@ public:
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyUInt64, QtnPropertyUInt64Base)
 
-	static void Register();
+	static bool Register();
 };
 
 class QLineEdit;

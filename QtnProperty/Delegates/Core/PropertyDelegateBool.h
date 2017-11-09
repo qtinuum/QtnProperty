@@ -30,6 +30,8 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateBoolCheck
 public:
 	QtnPropertyDelegateBoolCheck(QtnPropertyBoolBase &owner);
 
+	static bool Register();
+
 protected:
 	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
 		const QStyle::State &state, bool *needTooltip = nullptr) const override;
@@ -45,6 +47,8 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateBoolCombobox
 
 public:
 	QtnPropertyDelegateBoolCombobox(QtnPropertyBoolBase &owner);
+
+	static bool Register();
 
 protected:
 	virtual void applyAttributesImpl(

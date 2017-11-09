@@ -27,8 +27,12 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateInt
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateInt)
 
+	QString suffix;
+
 public:
 	QtnPropertyDelegateInt(QtnPropertyIntBase &owner);
+
+	static bool Register();
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
@@ -36,6 +40,9 @@ protected:
 
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
+
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateAttributes &attributes) override;
 
 	virtual bool propertyValueToStr(QString &strValue) const override;
 };

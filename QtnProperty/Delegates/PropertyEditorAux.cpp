@@ -100,27 +100,31 @@ bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type)
 
 	if (text.size() == 1)
 	{
-		auto c = text.at(0);
+		QChar c = text.at(0);
 
 		QLocale locale;
 
 		switch (type)
 		{
 			case NUM_FLOAT:
-
-				if (c == '.' || c == locale.decimalPoint())
+				if (c == QLatin1Char('.') || c == locale.decimalPoint())
+				{
 					return true;
-
+				}
+				// fall through
 			case NUM_SIGNED_INT:
-
-				if (c == '-' || c == '+' || c == locale.negativeSign() ||
-					c == locale.positiveSign())
+				if (c == QLatin1Char('-') || c == QLatin1Char('+') ||
+					c == locale.negativeSign() || c == locale.positiveSign())
+				{
 					return true;
-
+				}
+				// fall through
 			case NUM_UNSIGNED_INT:
-
 				if (c.isNumber())
+				{
 					return true;
+				}
+				break;
 		}
 	}
 

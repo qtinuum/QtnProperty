@@ -19,6 +19,7 @@
 #include "QObjectPropertySet.h"
 #include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QLocale>
 #include <QKeyEvent>
@@ -71,15 +72,15 @@ QtnPropertyUInt64::QtnPropertyUInt64(QObject *parent)
 {
 }
 
-void QtnPropertyUInt64::Register()
+bool QtnPropertyUInt64::Register()
 {
 	qtnRegisterMetaPropertyFactory(
 		QVariant::ULongLong, qtnCreateFactory<QtnPropertyUInt64Callback>());
 
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyUInt64Base::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateUInt64, QtnPropertyUInt64Base>,
-		"LineEdit");
+		qtnLineEditDelegate());
 }
 
 QtnPropertyDelegateUInt64::QtnPropertyDelegateUInt64(

@@ -33,18 +33,6 @@ QtnPropertyWidgetEx::QtnPropertyWidgetEx(QWidget *parent)
 	, dropAction(Qt::IgnoreAction)
 	, canRemove(false)
 {
-	for (auto child : children())
-	{
-		auto vbox = dynamic_cast<QVBoxLayout *>(child);
-
-		if (nullptr != vbox)
-		{
-			vbox->setContentsMargins(0, 0, 0, 0);
-			vbox->setMargin(0);
-			vbox->setSpacing(0);
-		}
-	}
-
 	setAcceptDrops(true);
 	propertyView()->installEventFilter(this);
 
@@ -107,15 +95,16 @@ QtnPropertyBase *QtnPropertyWidgetEx::getActiveProperty() const
 void QtnPropertyWidgetEx::addShortcutForAction(
 	const QKeySequence &seq, QAction *action, QWidget *parent)
 {
+	if (seq.isEmpty())
+		return;
+
 	Q_ASSERT(nullptr != action);
-	if (QKeySequence::ExactMatch != action->shortcut().matches(seq))
-	{
-		Q_ASSERT(nullptr != parent);
-		auto shortcut = new QShortcut(
-			seq, parent, nullptr, nullptr, Qt::ApplicationShortcut);
-		QObject::connect(
-			shortcut, &QShortcut::activated, action, &QAction::trigger);
-	}
+	Q_ASSERT(nullptr != parent);
+
+	auto shortcut =
+		new QShortcut(seq, parent, nullptr, nullptr, Qt::ApplicationShortcut);
+	QObject::connect(
+		shortcut, &QShortcut::activated, action, &QAction::trigger);
 }
 
 void QtnPropertyWidgetEx::onMouseReleased()
@@ -175,6 +164,8 @@ void QtnPropertyWidgetEx::deleteProperty(QtnPropertyBase *)
 QMimeData *QtnPropertyWidgetEx::getPropertyDataForAction(
 	QtnPropertyBase *property, Qt::DropAction)
 {
+	Q_ASSERT(nullptr != property);
+
 	QString str;
 
 	if (property->toStr(str))
@@ -303,34 +294,41 @@ void QtnPropertyWidgetEx::dropEvent(QDropEvent *event)
 			auto view = propertyView();
 			auto pos = view->mapFrom(this, event->pos());
 			QRect rect;
-			auto property = view->getPropertyAt(pos, &rect);
+			auto destination = view->getPropertyAt(pos, &rect);
 
-			if (property == draggedProperty || nullptr == property)
+			if (destination == draggedProperty)
 			{
 				draggedProperty = nullptr;
 				break;
 			}
 
-			int partHeight = view->itemHeight() / 3;
-
 			QtnApplyPosition applyPosition;
 
-			if (QRect(rect.left(), rect.top(), rect.width(), partHeight)
-					.contains(pos))
-				applyPosition = QtnApplyPosition::Before;
-			else if (QRect(rect.left(), rect.bottom() - partHeight,
-						 rect.width(), partHeight)
-						 .contains(pos))
+			if (destination == nullptr)
+			{
 				applyPosition = QtnApplyPosition::After;
-			else
-				applyPosition = QtnApplyPosition::Over;
+			} else
+			{
+				int partHeight = view->itemHeight() / 3;
+
+				if (QRect(rect.left(), rect.top(), rect.width(), partHeight)
+						.contains(pos))
+					applyPosition = QtnApplyPosition::Before;
+				else if (QRect(rect.left(), rect.bottom() - partHeight,
+							 rect.width(), partHeight)
+							 .contains(pos))
+					applyPosition = QtnApplyPosition::After;
+				else
+					applyPosition = QtnApplyPosition::Over;
+			}
 
 			auto data = event->mimeData();
 
 			if (dataHasSupportedFormats(data) &&
-				drop(data, property, applyPosition))
+				drop(data, destination, applyPosition))
+			{
 				event->accept();
-
+			}
 			break;
 		}
 

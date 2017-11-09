@@ -27,9 +27,6 @@ QtnPropertyEnumFlagsBase::QtnPropertyEnumFlagsBase(QObject *parent)
 
 bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString &str, bool edit)
 {
-	static QRegExp parserEnumFlags(
-		"^\\s*([^|\\s]+)\\s*\\|(.+)$", Qt::CaseInsensitive);
-
 	if (!m_enumInfo)
 		return false;
 
@@ -38,6 +35,9 @@ bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString &str, bool edit)
 
 	if (enumStr != "0")
 	{
+		static QRegExp parserEnumFlags(
+			QStringLiteral("^\\s*([^|\\s]+)\\s*\\|(.+)$"), Qt::CaseInsensitive);
+
 		while (parserEnumFlags.exactMatch(enumStr))
 		{
 			QStringList params = parserEnumFlags.capturedTexts();

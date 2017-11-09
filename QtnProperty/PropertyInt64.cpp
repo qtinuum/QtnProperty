@@ -23,6 +23,7 @@
 #include "Delegates/PropertyEditorHandler.h"
 #include "Utils/QtnInt64SpinBox.h"
 #include "MultiProperty.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QLocale>
 #include <QKeyEvent>
@@ -81,15 +82,15 @@ QtnPropertyInt64::QtnPropertyInt64(QObject *parent)
 {
 }
 
-void QtnPropertyInt64::Register()
+bool QtnPropertyInt64::Register()
 {
 	qtnRegisterMetaPropertyFactory(
 		QVariant::LongLong, qtnCreateFactory<QtnPropertyInt64Callback>());
 
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyInt64Base::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateInt64, QtnPropertyInt64Base>,
-		"LineEdit");
+		qtnSpinBoxDelegate());
 }
 
 QtnPropertyDelegateInt64::QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner)
@@ -111,6 +112,7 @@ QWidget *QtnPropertyDelegateInt64::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnInt64SpinBox(parent);
+	spinBox->setSuffix(suffix);
 	spinBox->setGeometry(rect);
 
 	new QtnPropertyInt64SpinBoxHandler(owner(), *spinBox);
@@ -121,6 +123,12 @@ QWidget *QtnPropertyDelegateInt64::createValueEditorImpl(
 		qtnInitNumEdit(spinBox, inplaceInfo, NUM_SIGNED_INT);
 
 	return spinBox;
+}
+
+void QtnPropertyDelegateInt64::applyAttributesImpl(
+	const QtnPropertyDelegateAttributes &attributes)
+{
+	qtnGetAttribute(attributes, qtnSuffixAttr(), suffix);
 }
 
 bool QtnPropertyDelegateInt64::propertyValueToStr(QString &strValue) const

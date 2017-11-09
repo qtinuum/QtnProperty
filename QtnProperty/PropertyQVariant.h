@@ -68,7 +68,7 @@ private:
 public:
 	explicit QtnPropertyQVariant(QObject *parent);
 
-	static void Register();
+	static bool Register();
 	static QString valueToString(const QVariant &value);
 	static bool variantIsObject(QVariant::Type type);
 	static QString getPlaceholderStr(QVariant::Type type);
