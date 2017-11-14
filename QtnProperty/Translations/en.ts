@@ -46,27 +46,27 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Add Element...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="188"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="202"/>
         <source>New...</source>
         <translation>New...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="197"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="211"/>
         <source>New Property...</source>
         <translation>New Property...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="201"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="215"/>
         <source>New Element...</source>
         <translation>New Element...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="234"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="248"/>
         <source>Edit Custom Properties</source>
         <translation>Edit Custom Properties</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.cpp" line="233"/>
+        <location filename="../CustomPropertyEditorDialog.cpp" line="247"/>
         <source>Read-only Properties</source>
         <translation>Read-only Properties</translation>
     </message>
@@ -83,32 +83,32 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Remove</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="75"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="78"/>
         <source>Delete</source>
         <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="86"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="89"/>
         <source>Duplicate...</source>
         <translation>Duplicate...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="94"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="97"/>
         <source>Options...</source>
         <translation>Options...</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="111"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="114"/>
         <source>Cut</source>
         <translation>Cut</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="122"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="125"/>
         <source>Copy</source>
         <translation>Copy</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyEditorDialog.ui" line="133"/>
+        <location filename="../CustomPropertyEditorDialog.ui" line="136"/>
         <source>Paste</source>
         <translation>Paste</translation>
     </message>
@@ -184,48 +184,48 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Add Property</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="130"/>
+        <location filename="../CustomPropertyWidget.cpp" line="132"/>
         <source>New Element</source>
         <translation>New Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="137"/>
+        <location filename="../CustomPropertyWidget.cpp" line="139"/>
         <source>New Property</source>
         <translation>New Property</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="177"/>
+        <location filename="../CustomPropertyWidget.cpp" line="179"/>
         <source>Duplicate Element</source>
         <translation>Duplicate Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="185"/>
+        <location filename="../CustomPropertyWidget.cpp" line="187"/>
         <source>Duplicate Property</source>
         <translation>Duplicate Property</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="217"/>
+        <location filename="../CustomPropertyWidget.cpp" line="219"/>
         <source>Property Options</source>
         <translation>Property Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="228"/>
+        <location filename="../CustomPropertyWidget.cpp" line="230"/>
         <source>Element Options</source>
         <translation>Element Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="482"/>
+        <location filename="../CustomPropertyWidget.cpp" line="480"/>
         <source>Do you want to insert new property from clipboard or to replace the selected one?</source>
         <translation>Do you want to insert new property from clipboard or to replace the selected one?</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="487"/>
+        <location filename="../CustomPropertyWidget.cpp" line="485"/>
         <source>Insert</source>
         <comment>Paste</comment>
         <translation>Insert</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="489"/>
+        <location filename="../CustomPropertyWidget.cpp" line="487"/>
         <source>Replace</source>
         <comment>Paste</comment>
         <translation>Replace</translation>
@@ -442,27 +442,27 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQPoint</name>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="77"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="78"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="78"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="79"/>
         <source>X coordinate of the %1</source>
         <translation>X coordinate of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="95"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="96"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="96"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="97"/>
         <source>Y coordinate of the %1</source>
         <translation>Y coordinate of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="116"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="117"/>
         <source>%1, %2</source>
         <translation>%1, %2</translation>
     </message>
@@ -470,22 +470,22 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQPointF</name>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="48"/>
+        <location filename="../PropertyQPointF.cpp" line="46"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="53"/>
+        <location filename="../PropertyQPointF.cpp" line="51"/>
         <source>X of the %1</source>
         <translation>X of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="58"/>
+        <location filename="../PropertyQPointF.cpp" line="56"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="63"/>
+        <location filename="../PropertyQPointF.cpp" line="61"/>
         <source>Y of the %1</source>
         <translation>Y of the %1</translation>
     </message>
@@ -493,72 +493,72 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQRect</name>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="90"/>
+        <location filename="../Core/PropertyQRect.cpp" line="92"/>
         <source>Left</source>
         <translation>Left</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="92"/>
+        <location filename="../Core/PropertyQRect.cpp" line="94"/>
         <source>Left side of the %1</source>
         <translation>Left offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="108"/>
+        <location filename="../Core/PropertyQRect.cpp" line="110"/>
         <source>Right</source>
         <translation>Right</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="110"/>
+        <location filename="../Core/PropertyQRect.cpp" line="112"/>
         <source>Right side of the %1</source>
         <translation>Right offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="126"/>
+        <location filename="../Core/PropertyQRect.cpp" line="128"/>
         <source>Top</source>
         <translation>Top</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="128"/>
+        <location filename="../Core/PropertyQRect.cpp" line="130"/>
         <source>Top of the %1</source>
         <translation>Top offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="144"/>
+        <location filename="../Core/PropertyQRect.cpp" line="146"/>
         <source>Bottom</source>
         <translation>Bottom</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="146"/>
+        <location filename="../Core/PropertyQRect.cpp" line="148"/>
         <source>Bottom of the %1</source>
         <translation>Bottom offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="162"/>
+        <location filename="../Core/PropertyQRect.cpp" line="164"/>
         <source>Width</source>
         <translation>Width</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="164"/>
+        <location filename="../Core/PropertyQRect.cpp" line="166"/>
         <source>Width of the %1</source>
         <translation>Width of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="180"/>
+        <location filename="../Core/PropertyQRect.cpp" line="182"/>
         <source>Height</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="182"/>
+        <location filename="../Core/PropertyQRect.cpp" line="184"/>
         <source>Height of the %1</source>
         <translation>Height of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="201"/>
+        <location filename="../Core/PropertyQRect.cpp" line="203"/>
         <source>(%1, %2) %3 x %4</source>
         <translation>(%1, %2) %3 x %4</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="201"/>
+        <location filename="../Core/PropertyQRect.cpp" line="203"/>
         <source>(%1, %2), (%3, %4)</source>
         <translation>(%1, %2), (%3, %4)</translation>
     </message>
@@ -633,27 +633,27 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQSize</name>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="75"/>
+        <location filename="../Core/PropertyQSize.cpp" line="78"/>
         <source>Width</source>
         <translation>Width</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="77"/>
+        <location filename="../Core/PropertyQSize.cpp" line="80"/>
         <source>Width of the %1</source>
         <translation>Width of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="93"/>
+        <location filename="../Core/PropertyQSize.cpp" line="96"/>
         <source>Height</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="95"/>
+        <location filename="../Core/PropertyQSize.cpp" line="98"/>
         <source>Height of the %1</source>
         <translation>Height of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="114"/>
+        <location filename="../Core/PropertyQSize.cpp" line="117"/>
         <source>%1 x %2</source>
         <translation>%1 x %2</translation>
     </message>
@@ -661,22 +661,22 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQSizeF</name>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="36"/>
+        <location filename="../PropertyQSizeF.cpp" line="34"/>
         <source>Width</source>
         <translation>Width</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="37"/>
+        <location filename="../PropertyQSizeF.cpp" line="35"/>
         <source>Width of the %1</source>
         <translation>Width of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="43"/>
+        <location filename="../PropertyQSizeF.cpp" line="41"/>
         <source>Height</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="44"/>
+        <location filename="../PropertyQSizeF.cpp" line="42"/>
         <source>Height of the %1</source>
         <translation>Height of the %1</translation>
     </message>

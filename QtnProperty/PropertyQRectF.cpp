@@ -117,24 +117,24 @@ bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
 		return false;
 
 	bool ok;
-	qreal x = rect_parser->cap(1).toDouble(&ok);
+	auto x = qreal(rect_parser->cap(1).toDouble(&ok));
 
 	if (!ok)
 		return false;
 
-	qreal y = rect_parser->cap(6).toDouble(&ok);
+	auto y = qreal(rect_parser->cap(6).toDouble(&ok));
 
 	if (!ok)
 		return false;
 
 	if (coordinates)
 	{
-		qreal right = rect_parser->cap(11).toDouble(&ok);
+		auto right = qreal(rect_parser->cap(11).toDouble(&ok));
 
 		if (!ok)
 			return false;
 
-		qreal bottom = rect_parser->cap(15).toDouble(&ok);
+		auto bottom = qreal(rect_parser->cap(15).toDouble(&ok));
 
 		if (!ok)
 			return false;
@@ -142,12 +142,12 @@ bool QtnPropertyQRectFBase::fromStrImpl(const QString &str, bool edit)
 		return setValue(QRectF(x, y, right - x, bottom - y));
 	}
 
-	qreal width = rect_parser->cap(11).toDouble(&ok);
+	auto width = qreal(rect_parser->cap(11).toDouble(&ok));
 
 	if (!ok)
 		return false;
 
-	qreal height = rect_parser->cap(15).toDouble(&ok);
+	auto height = qreal(rect_parser->cap(15).toDouble(&ok));
 
 	if (!ok)
 		return false;

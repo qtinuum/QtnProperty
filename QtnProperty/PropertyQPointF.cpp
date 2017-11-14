@@ -71,12 +71,12 @@ bool QtnPropertyQPointFBase::fromStrImpl(const QString &str, bool edit)
 		return false;
 
 	bool ok;
-	qreal x = point_parser.cap(1).toDouble(&ok);
+	auto x = qreal(point_parser.cap(1).toDouble(&ok));
 
 	if (!ok)
 		return false;
 
-	qreal y = point_parser.cap(6).toDouble(&ok);
+	auto y = qreal(point_parser.cap(6).toDouble(&ok));
 
 	if (!ok)
 		return false;

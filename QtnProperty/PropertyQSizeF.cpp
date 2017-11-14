@@ -53,12 +53,12 @@ bool QtnPropertyQSizeFBase::fromStrImpl(const QString &str, bool edit)
 		return false;
 
 	bool ok;
-	qreal width = sizeParser.cap(1).toDouble(&ok);
+	auto width = qreal(sizeParser.cap(1).toDouble(&ok));
 
 	if (!ok)
 		return false;
 
-	qreal height = sizeParser.cap(6).toDouble(&ok);
+	auto height = qreal(sizeParser.cap(6).toDouble(&ok));
 
 	if (!ok)
 		return false;
