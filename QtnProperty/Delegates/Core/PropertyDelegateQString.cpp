@@ -563,8 +563,7 @@ QtnPropertyQStringFileLineEditBttnHandler::
 	QObject::connect(editor.toolButton, &QToolButton::clicked, this,
 		&QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClicked);
 	QObject::connect(editor.lineEdit, &QLineEdit::editingFinished, this,
-		&QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished,
-		Qt::QueuedConnection);
+		&QtnPropertyQStringFileLineEditBttnHandler::onEditingFinished);
 }
 
 void QtnPropertyQStringFileLineEditBttnHandler::applyAttributes(
@@ -681,8 +680,7 @@ QtnPropertyQStringMultilineEditBttnHandler::
 		&QtnPropertyQStringMultilineEditBttnHandler::onToolButtonClicked);
 
 	QObject::connect(editor.lineEdit, &QLineEdit::editingFinished, this,
-		&QtnPropertyQStringMultilineEditBttnHandler::onEditingFinished,
-		Qt::QueuedConnection);
+		&QtnPropertyQStringMultilineEditBttnHandler::onEditingFinished);
 }
 
 void QtnPropertyQStringMultilineEditBttnHandler::updateEditor()

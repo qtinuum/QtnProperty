@@ -116,7 +116,6 @@ protected:
 	QtnPropertyEditorHandlerVT(
 		PropertyClass &property, PropertyEditorClass &editor)
 		: Inherited(property, editor)
-		, newValueEvent(nullptr)
 		, updating(0)
 	{
 		newValue = property.value();
@@ -126,35 +125,17 @@ protected:
 	{
 		if (updating > 0)
 			return;
-
 		newValue = value;
-
-		if (newValueEvent == nullptr)
-		{
-			newValueEvent = new QEvent(QEvent::User);
-
-			QCoreApplication::postEvent(this, newValueEvent);
-		}
+		updateValue();
 	}
 
 	virtual void updateValue()
 	{
-		Inherited::property().edit(newValue);
+		auto property = &Inherited::property();
+		if (property)
+			property->edit(newValue);
 	}
 
-	virtual bool event(QEvent *event) override
-	{
-		if (event == newValueEvent)
-		{
-			newValueEvent = nullptr;
-			updateValue();
-			return true;
-		}
-
-		return QtnPropertyEditorHandlerBase::event(event);
-	}
-
-	QEvent *newValueEvent;
 	ValueTypeStore newValue;
 	unsigned updating;
 };

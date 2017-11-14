@@ -137,7 +137,7 @@ QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(
 
 	editor->installEventFilter(this);
 	QObject::connect(editor, &QLineEdit::editingFinished, this,
-		&QtnPropertyDelegateUInt64::onEditingFinished, Qt::QueuedConnection);
+		&QtnPropertyDelegateUInt64::onEditingFinished);
 
 	QObject::connect(editor, &QObject::destroyed, this,
 		&QtnPropertyDelegateUInt64::onEditorDestroyed);
