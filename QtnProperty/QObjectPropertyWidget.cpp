@@ -19,6 +19,7 @@ limitations under the License.
 #include "QObjectPropertySet.h"
 #include "PropertyConnector.h"
 #include "MultiProperty.h"
+#include "Utils/QtnConnections.h"
 
 #include <QMenu>
 #include <QContextMenuEvent>
@@ -97,14 +98,22 @@ void QObjectPropertyWidget::onResetTriggered()
 {
 	auto multiProperty = getMultiProperty();
 
+	QtnConnections connections;
+
 	if (nullptr != multiProperty)
+	{
+		propertyView()->connectPropertyToEdit(multiProperty, connections);
 		multiProperty->resetValues(true);
-	else
+	} else
 	{
 		auto connector = getPropertyConnector();
 
 		if (nullptr != connector)
+		{
+			propertyView()->connectPropertyToEdit(
+				getActiveProperty(), connections);
 			connector->resetPropertyValue(true);
+		}
 	}
 }
 
@@ -169,8 +178,7 @@ QtnPropertyConnector *QObjectPropertyWidget::getPropertyConnector() const
 
 	if (nullptr != property)
 	{
-		return property->findChild<QtnPropertyConnector *>(
-			QString(), Qt::FindDirectChildrenOnly);
+		return property->getConnector();
 	}
 
 	return nullptr;

@@ -25,6 +25,9 @@ QtnPropertyConnector::QtnPropertyConnector(QtnPropertyBase *parent)
 	: QObject(parent)
 	, object(nullptr)
 {
+	Q_ASSERT(nullptr != parent);
+	Q_ASSERT(nullptr == parent->getConnector());
+	parent->setConnector(this);
 }
 
 void QtnPropertyConnector::connectProperty(

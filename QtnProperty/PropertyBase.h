@@ -34,6 +34,8 @@ class QTN_IMPORT_EXPORT QtnPropertyBase : public QObject
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyBase)
 
+	QtnPropertyConnector *mPropertyConnector;
+
 public:
 	virtual ~QtnPropertyBase();
 
@@ -55,7 +57,8 @@ public:
 	inline void expand();
 	inline void collapse();
 
-	QtnPropertyConnector *getConnector() const;
+	inline void setConnector(QtnPropertyConnector *connector);
+	inline QtnPropertyConnector *getConnector() const;
 	inline bool isQObjectProperty() const;
 
 	// states
@@ -196,6 +199,16 @@ void QtnPropertyBase::expand()
 void QtnPropertyBase::collapse()
 {
 	addState(QtnPropertyStateCollapsed);
+}
+
+void QtnPropertyBase::setConnector(QtnPropertyConnector *connector)
+{
+	mPropertyConnector = connector;
+}
+
+QtnPropertyConnector *QtnPropertyBase::getConnector() const
+{
+	return mPropertyConnector;
 }
 
 bool QtnPropertyBase::isQObjectProperty() const

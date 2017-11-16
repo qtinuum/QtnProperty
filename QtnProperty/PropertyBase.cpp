@@ -17,7 +17,6 @@ limitations under the License.
 
 #include "PropertyBase.h"
 
-#include "PropertyConnector.h"
 #include "PropertySet.h"
 
 #include <QScriptEngine>
@@ -139,6 +138,7 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine *engine)
 
 QtnPropertyBase::QtnPropertyBase(QObject *parent)
 	: QObject(parent)
+	, mPropertyConnector(nullptr)
 	, m_masterProperty(nullptr)
 	, m_id(QtnPropertyIDInvalid)
 	, m_stateLocal(QtnPropertyStateNone)
@@ -705,10 +705,4 @@ void QtnPropertyBase::setCollapsed(bool collapsed)
 		collapse();
 	else
 		expand();
-}
-
-QtnPropertyConnector *QtnPropertyBase::getConnector() const
-{
-	return findChild<QtnPropertyConnector *>(
-		QString(), Qt::FindDirectChildrenOnly);
 }
