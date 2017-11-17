@@ -18,7 +18,7 @@ limitations under the License.
 
 #include "Auxiliary/PropertyAux.h"
 
-struct QTN_IMPORT_EXPORT IQtnPropertyStateProvider
+struct IQtnPropertyStateProvider
 {
 	virtual ~IQtnPropertyStateProvider() {}
 
