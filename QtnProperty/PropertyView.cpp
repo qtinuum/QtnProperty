@@ -1,19 +1,19 @@
-/*
-   Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+/*******************************************************************************
+Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #include "PropertyWidget.h"
 
@@ -134,6 +134,7 @@ void QtnPropertyView::setPropertySet(QtnPropertySet *newPropertySet)
 	}
 
 	updateItemsTree();
+	viewport()->update();
 }
 
 QtnPropertyBase *QtnPropertyView::getPropertyParent(
@@ -147,12 +148,16 @@ QtnPropertyBase *QtnPropertyView::getPropertyParent(
 	return nullptr;
 }
 
-bool QtnPropertyView::setActiveProperty(QtnPropertyBase *newActiveProperty)
+bool QtnPropertyView::setActiveProperty(
+	QtnPropertyBase *newActiveProperty, bool ensureVisible)
 {
 	if (m_activeProperty == newActiveProperty)
 		return false;
 
 	qtnStopInplaceEdit();
+
+	if (ensureVisible)
+		this->ensureVisible(newActiveProperty);
 
 	if (!newActiveProperty)
 	{
@@ -167,6 +172,24 @@ bool QtnPropertyView::setActiveProperty(QtnPropertyBase *newActiveProperty)
 
 	setActivePropertyInternal(newActiveProperty);
 	return true;
+}
+
+bool QtnPropertyView::setActiveProperty(int index, bool ensureVisible)
+{
+	if (index < 0)
+		index = 0;
+
+	if (nullptr == m_propertySet)
+		return false;
+
+	auto &cp = m_propertySet->childProperties();
+	if (cp.isEmpty())
+		return false;
+
+	if (index >= cp.size())
+		index = cp.size() - 1;
+
+	return setActiveProperty(cp.at(index), ensureVisible);
 }
 
 bool QtnPropertyView::ensureVisible(const QtnPropertyBase *property)
@@ -813,8 +836,7 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 				} else if (vItem.item->parent)
 				{
 					// activate parent property
-					setActiveProperty(vItem.item->parent->property);
-					ensureVisible(activeProperty());
+					setActiveProperty(vItem.item->parent->property, true);
 				}
 			}
 
@@ -840,8 +862,8 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 				} else if (vItem.hasChildren)
 				{
 					// activate child property
-					setActiveProperty(vItem.item->children.first()->property);
-					ensureVisible(activeProperty());
+					setActiveProperty(
+						vItem.item->children.first()->property, true);
 				}
 			}
 

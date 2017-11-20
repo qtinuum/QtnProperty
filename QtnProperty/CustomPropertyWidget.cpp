@@ -1,18 +1,18 @@
-/*
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+/*******************************************************************************
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #include "CustomPropertyWidget.h"
 
@@ -33,8 +33,10 @@
 #include <QApplication>
 #include <QPushButton>
 
-static const QString kDragDropMimeType = "CustomPropertyDragDrop";
-static const QString kCustomPropertyData = "QtnCustomPropertyData";
+static const QString kFontDefMimeType =
+	QStringLiteral("CustomPropertyDragDrop");
+static const QString kCustomPropertyData =
+	QStringLiteral("QtnCustomPropertyData");
 
 CustomPropertyWidget::CustomPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
@@ -371,8 +373,8 @@ bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
 {
 	if (nullptr != data)
 	{
-		return (QtnPropertyWidgetEx::dataHasSupportedFormats(data) ||
-			data->hasFormat(kCustomPropertyData));
+		return QtnPropertyWidgetEx::dataHasSupportedFormats(data) ||
+			data->hasFormat(kCustomPropertyData);
 	}
 
 	return false;
@@ -426,19 +428,15 @@ QMimeData *CustomPropertyWidget::getPropertyDataForAction(
 				QJsonDocument doc;
 				doc.setObject(jobj);
 
-				if (action == Qt::IgnoreAction)
-				{
-					QByteArray json(doc.toJson());
-					int start = json.indexOf('{') + 1;
-					int end = json.lastIndexOf('}');
+				QByteArray json(doc.toJson());
+				int start = json.indexOf('{') + 1;
+				int end = json.lastIndexOf('}');
 
-					mime->setText(
-						QString::fromUtf8(&json.constData()[start], end - start)
-							.trimmed());
-				} else
-				{
-					mime->setData(kCustomPropertyData, doc.toBinaryData());
-				}
+				mime->setText(
+					QString::fromUtf8(&json.constData()[start], end - start)
+						.trimmed());
+
+				mime->setData(kCustomPropertyData, doc.toBinaryData());
 
 				return mime;
 			}
@@ -693,7 +691,8 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 
 			if (data->hasText())
 			{
-				auto text = data->text().toUtf8();
+				auto srcText = data->text().toUtf8();
+				auto text = srcText;
 				text.prepend('{');
 				text.append('}');
 				QJsonParseError parseResult;
@@ -720,7 +719,7 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 					}
 				} else
 				{
-					text = data->text().toUtf8();
+					text = srcText;
 					text.prepend('[');
 					text.append(']');
 
@@ -748,8 +747,7 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 					}
 				}
 
-				doc = QJsonDocument::fromJson(
-					data->text().toUtf8(), &parseResult);
+				doc = QJsonDocument::fromJson(srcText, &parseResult);
 
 				if (QJsonParseError::NoError == parseResult.error)
 				{
@@ -936,7 +934,8 @@ void CustomPropertyWidget::addProperty(
 	auto it = std::find(children.begin(), children.end(), new_property);
 
 	set->addChildProperty(new_property, true, int(it - children.begin()));
-	propertyView()->setActiveProperty(new_property);
+
+	propertyView()->setActiveProperty(new_property, true);
 
 	if (autoUpdate)
 		updateData();
@@ -992,7 +991,8 @@ void CustomPropertyWidget::updatePropertyOptions(
 			newProperty(nullptr, data.value, prop_name, data.index, var_parent);
 
 		set->addChildProperty(new_property, true, index);
-		propertyView()->setActiveProperty(new_property);
+
+		propertyView()->setActiveProperty(new_property, true);
 
 		if (autoUpdate)
 			updateData();

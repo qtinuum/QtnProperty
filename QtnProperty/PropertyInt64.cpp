@@ -1,18 +1,18 @@
-﻿/*
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+﻿/*******************************************************************************
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #include "PropertyInt64.h"
 
@@ -23,6 +23,7 @@
 #include "Delegates/PropertyEditorHandler.h"
 #include "Utils/QtnInt64SpinBox.h"
 #include "MultiProperty.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QLocale>
 #include <QKeyEvent>
@@ -81,15 +82,15 @@ QtnPropertyInt64::QtnPropertyInt64(QObject *parent)
 {
 }
 
-void QtnPropertyInt64::Register()
+bool QtnPropertyInt64::Register()
 {
 	qtnRegisterMetaPropertyFactory(
 		QVariant::LongLong, qtnCreateFactory<QtnPropertyInt64Callback>());
 
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyInt64Base::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateInt64, QtnPropertyInt64Base>,
-		"LineEdit");
+		qtnSpinBoxDelegate());
 }
 
 QtnPropertyDelegateInt64::QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner)
@@ -111,6 +112,7 @@ QWidget *QtnPropertyDelegateInt64::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnInt64SpinBox(parent);
+	spinBox->setSuffix(suffix);
 	spinBox->setGeometry(rect);
 
 	new QtnPropertyInt64SpinBoxHandler(owner(), *spinBox);
@@ -121,6 +123,12 @@ QWidget *QtnPropertyDelegateInt64::createValueEditorImpl(
 		qtnInitNumEdit(spinBox, inplaceInfo, NUM_SIGNED_INT);
 
 	return spinBox;
+}
+
+void QtnPropertyDelegateInt64::applyAttributesImpl(
+	const QtnPropertyDelegateAttributes &attributes)
+{
+	qtnGetAttribute(attributes, qtnSuffixAttr(), suffix);
 }
 
 bool QtnPropertyDelegateInt64::propertyValueToStr(QString &strValue) const

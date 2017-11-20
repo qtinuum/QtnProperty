@@ -1,24 +1,25 @@
-/*
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+/*******************************************************************************
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #include "QObjectPropertyWidget.h"
 
 #include "QObjectPropertySet.h"
 #include "PropertyConnector.h"
 #include "MultiProperty.h"
+#include "Utils/QtnConnections.h"
 
 #include <QMenu>
 #include <QContextMenuEvent>
@@ -97,14 +98,22 @@ void QObjectPropertyWidget::onResetTriggered()
 {
 	auto multiProperty = getMultiProperty();
 
+	QtnConnections connections;
+
 	if (nullptr != multiProperty)
+	{
+		propertyView()->connectPropertyToEdit(multiProperty, connections);
 		multiProperty->resetValues(true);
-	else
+	} else
 	{
 		auto connector = getPropertyConnector();
 
 		if (nullptr != connector)
+		{
+			propertyView()->connectPropertyToEdit(
+				getActiveProperty(), connections);
 			connector->resetPropertyValue(true);
+		}
 	}
 }
 
@@ -169,8 +178,7 @@ QtnPropertyConnector *QObjectPropertyWidget::getPropertyConnector() const
 
 	if (nullptr != property)
 	{
-		return property->findChild<QtnPropertyConnector *>(
-			QString(), Qt::FindDirectChildrenOnly);
+		return property->getConnector();
 	}
 
 	return nullptr;
@@ -203,8 +211,6 @@ void QObjectPropertyWidget::connectObjects()
 			connectObject(object);
 		}
 	}
-
-	hack();
 }
 
 void QObjectPropertyWidget::connectObject(QObject *object)
@@ -221,8 +227,6 @@ void QObjectPropertyWidget::disconnectObjects()
 	setPropertySet(nullptr);
 	delete set;
 
-	hack();
-
 	for (auto object : selectedObjects)
 	{
 		disconnectObject(object);
@@ -235,11 +239,4 @@ void QObjectPropertyWidget::disconnectObject(QObject *object)
 
 	QObject::disconnect(object, &QObject::destroyed, this,
 		&QObjectPropertyWidget::onObjectDestroyed);
-}
-
-void QObjectPropertyWidget::hack()
-{
-	bool enabled = isEnabled();
-	setEnabled(!enabled);
-	setEnabled(enabled);
 }

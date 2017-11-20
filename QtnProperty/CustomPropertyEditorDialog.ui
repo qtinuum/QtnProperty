@@ -38,7 +38,7 @@
    <item>
     <widget class="CustomPropertyWidget" name="propertyWidget" native="true">
      <property name="focusPolicy">
-      <enum>Qt::WheelFocus</enum>
+      <enum>Qt::StrongFocus</enum>
      </property>
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>
@@ -69,6 +69,9 @@
    <property name="shortcut">
     <string notr="true">Ctrl+=</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionPropertyDelete">
    <property name="text">
@@ -78,7 +81,7 @@
     <string notr="true">Del</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::WindowShortcut</enum>
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionPropertyDuplicate">
@@ -103,7 +106,7 @@
     <string notr="true">F2</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::WindowShortcut</enum>
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionPropertyCut">

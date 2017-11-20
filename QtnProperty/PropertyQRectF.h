@@ -1,18 +1,18 @@
-/*
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+/*******************************************************************************
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #pragma once
 
@@ -52,7 +52,6 @@ protected:
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQRectFBase)
 
 private:
-	QRegExp rect_parser;
 	bool coordinates;
 };
 
@@ -70,6 +69,9 @@ private:
 public:
 	explicit QtnPropertyQRectFCallback(QObject *parent, bool coordinates);
 
+	static QtnPropertyQRectFCallback *createFrom(
+		QObject *object, const QMetaProperty &metaProperty);
+
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
 		QtnPropertyQRectFCallback, QtnPropertyQRectFBase)
 };
@@ -82,12 +84,15 @@ class QTN_IMPORT_EXPORT QtnPropertyQRectF
 private:
 	QtnPropertyQRectF(const QtnPropertyQRectF &other) Q_DECL_EQ_DELETE;
 
+	static QtnProperty *internalCreateFrom(
+		QObject *object, const QMetaProperty &metaProperty);
+
 public:
 	explicit QtnPropertyQRectF(QObject *parent, bool coordinates);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRectF, QtnPropertyQRectFBase)
 
-	static void Register();
+	static bool Register();
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQRectF

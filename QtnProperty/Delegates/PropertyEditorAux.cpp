@@ -1,19 +1,19 @@
-/*
-   Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+/*******************************************************************************
+Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #include "PropertyEditorAux.h"
 #include "PropertyDelegate.h"
@@ -100,27 +100,31 @@ bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type)
 
 	if (text.size() == 1)
 	{
-		auto c = text.at(0);
+		QChar c = text.at(0);
 
 		QLocale locale;
 
 		switch (type)
 		{
 			case NUM_FLOAT:
-
-				if (c == '.' || c == locale.decimalPoint())
+				if (c == QLatin1Char('.') || c == locale.decimalPoint())
+				{
 					return true;
-
+				}
+				// fall through
 			case NUM_SIGNED_INT:
-
-				if (c == '-' || c == '+' || c == locale.negativeSign() ||
-					c == locale.positiveSign())
+				if (c == QLatin1Char('-') || c == QLatin1Char('+') ||
+					c == locale.negativeSign() || c == locale.positiveSign())
+				{
 					return true;
-
+				}
+				// fall through
 			case NUM_UNSIGNED_INT:
-
 				if (c.isNumber())
+				{
 					return true;
+				}
+				break;
 		}
 	}
 

@@ -1,18 +1,18 @@
-/*
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+/*******************************************************************************
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #include "Config.h"
 
@@ -22,7 +22,21 @@
 #include "PropertyQSizeF.h"
 #include "PropertyQRectF.h"
 #include "PropertyQVariant.h"
+#include "Delegates/Core/PropertyDelegateBool.h"
+#include "Delegates/Core/PropertyDelegateDouble.h"
+#include "Delegates/Core/PropertyDelegateInt.h"
+#include "Delegates/Core/PropertyDelegateUInt.h"
+#include "Delegates/Core/PropertyDelegateEnum.h"
+#include "Delegates/Core/PropertyDelegateEnumFlags.h"
+#include "Delegates/Core/PropertyDelegateQPoint.h"
+#include "Delegates/Core/PropertyDelegateQRect.h"
+#include "Delegates/Core/PropertyDelegateQSize.h"
+#include "Delegates/Core/PropertyDelegateQString.h"
+#include "Delegates/GUI/PropertyDelegateQColor.h"
+#include "Delegates/GUI/PropertyDelegateQFont.h"
 #include "MultiProperty.h"
+#include "QObjectPropertySet.h"
+#include "Utils/AccessibilityProxy.h"
 
 #include <QCoreApplication>
 #include <QTranslator>
@@ -30,22 +44,44 @@
 
 #include <map>
 
-int Register()
+static bool Register()
 {
 	Q_INIT_RESOURCE(QtnProperty);
 
-	QtnPropertyInt64::Register();
-	QtnPropertyUInt64::Register();
-	QtnPropertyQPointF::Register();
-	QtnPropertyQSizeF::Register();
-	QtnPropertyQRectF::Register();
-	QtnPropertyQVariant::Register();
-	QtnMultiProperty::Register();
+	qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
+	qRegisterMetaType<QtnPropertyBase *>("QtnPropertyBase*");
+	qRegisterMetaType<QtnPropertySet *>("QtnPropertySet*");
+	qRegisterMetaType<QtnAccessibilityProxy *>("QtnAccessibilityProxy*");
 
-	return 0;
+	bool ok = qtnRegisterDefaultMetaPropertyFactory() && //
+		QtnPropertyDelegateBoolCheck::Register() && //
+		QtnPropertyDelegateBoolCombobox::Register() && //
+		QtnPropertyDelegateDouble::Register() && //
+		QtnPropertyDelegateInt::Register() && //
+		QtnPropertyDelegateUInt::Register() && //
+		QtnPropertyDelegateEnum::Register() && //
+		QtnPropertyDelegateEnumFlags::Register() && //
+		QtnPropertyDelegateQPoint::Register() && //
+		QtnPropertyDelegateQRect::Register() && //
+		QtnPropertyDelegateQSize::Register() && //
+		QtnPropertyDelegateQString::Register() && //
+		QtnPropertyDelegateQStringFile::Register() && //
+		QtnPropertyDelegateQStringList::Register() && //
+		QtnPropertyDelegateQColor::Register() && //
+		QtnPropertyDelegateQFont::Register() && //
+		QtnPropertyInt64::Register() && //
+		QtnPropertyUInt64::Register() && //
+		QtnPropertyQPointF::Register() && //
+		QtnPropertyQSizeF::Register() && //
+		QtnPropertyQRectF::Register() && //
+		QtnPropertyQVariant::Register() && //
+		QtnMultiProperty::Register();
+
+	Q_ASSERT(ok);
+	return ok;
 }
 
-static const int qtnReg = Register();
+static const bool qtnReg = Register();
 
 void qtnInstallTranslations(const QLocale &locale)
 {

@@ -1,32 +1,27 @@
-/*
-   Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+/*******************************************************************************
+Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #include "PropertyBase.h"
 
-#include "PropertyConnector.h"
 #include "PropertySet.h"
 
 #include <QScriptEngine>
 #include <QCoreApplication>
 
-static int qtnPropertyChangeReasonMetaId =
-	qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
-static int qtnPropertyPtrId =
-	qRegisterMetaType<QtnPropertyBase *>("QtnPropertyBase*");
 static quint16 qtnPropertyMagicNumber = 0x1984;
 
 // extern declaration
@@ -143,6 +138,7 @@ void qtnScriptRegisterPropertyTypes(QScriptEngine *engine)
 
 QtnPropertyBase::QtnPropertyBase(QObject *parent)
 	: QObject(parent)
+	, mPropertyConnector(nullptr)
 	, m_masterProperty(nullptr)
 	, m_id(QtnPropertyIDInvalid)
 	, m_stateLocal(QtnPropertyStateNone)
@@ -709,10 +705,4 @@ void QtnPropertyBase::setCollapsed(bool collapsed)
 		collapse();
 	else
 		expand();
-}
-
-QtnPropertyConnector *QtnPropertyBase::getConnector() const
-{
-	return findChild<QtnPropertyConnector *>(
-		QString(), Qt::FindDirectChildrenOnly);
 }

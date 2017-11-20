@@ -1,18 +1,18 @@
-/*
-   Copyright 2015-2016 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+/*******************************************************************************
+Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #include "PropertyQPointF.h"
 
@@ -25,8 +25,6 @@
 
 QtnPropertyQPointFBase::QtnPropertyQPointFBase(QObject *parent)
 	: ParentClass(parent)
-	, point_parser("\\s*\\[\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,"
-				   "\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*\\]\\s*")
 {
 	addState(QtnPropertyStateCollapsed);
 }
@@ -65,16 +63,20 @@ QString QtnPropertyQPointFBase::getYDescriptionFormat()
 
 bool QtnPropertyQPointFBase::fromStrImpl(const QString &str, bool edit)
 {
+	static QRegExp point_parser(QStringLiteral("\
+\\s*\\[\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*\\]\\s*"));
+
 	if (!point_parser.exactMatch(str))
 		return false;
 
 	bool ok;
-	qreal x = point_parser.cap(1).toDouble(&ok);
+	auto x = qreal(point_parser.cap(1).toDouble(&ok));
 
 	if (!ok)
 		return false;
 
-	qreal y = point_parser.cap(6).toDouble(&ok);
+	auto y = qreal(point_parser.cap(6).toDouble(&ok));
 
 	if (!ok)
 		return false;
@@ -85,7 +87,7 @@ bool QtnPropertyQPointFBase::fromStrImpl(const QString &str, bool edit)
 bool QtnPropertyQPointFBase::toStrImpl(QString &str) const
 {
 	auto v = value();
-	str = QString("[%1, %2]").arg(v.x()).arg(v.y());
+	str = QStringLiteral("[%1, %2]").arg(v.x()).arg(v.y());
 	return true;
 }
 
@@ -99,15 +101,15 @@ QtnPropertyQPointF::QtnPropertyQPointF(QObject *parent)
 {
 }
 
-void QtnPropertyQPointF::Register()
+bool QtnPropertyQPointF::Register()
 {
 	qtnRegisterMetaPropertyFactory(
 		QVariant::PointF, qtnCreateFactory<QtnPropertyQPointFCallback>());
 
-	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 		&QtnPropertyQPointFBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQPointF, QtnPropertyQPointFBase>,
-		"QPointF");
+		QByteArrayLiteral("QPointF"));
 }
 
 QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
