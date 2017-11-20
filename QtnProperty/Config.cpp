@@ -85,16 +85,14 @@ static const bool qtnReg = Register();
 
 void qtnInstallTranslations(const QLocale &locale)
 {
-	static std::unique_ptr<QTranslator> translator;
-
-	if (nullptr == translator)
+	static QTranslator translator;
+	if (translator.load(locale, "QtnProperty.qm", "", ":/Translations"))
 	{
-		translator.reset(new QTranslator);
-	} else
-	{
-		QCoreApplication::removeTranslator(translator.get());
+		static bool installOnce = false;
+		if (not installOnce)
+		{
+			installOnce = true;
+			QCoreApplication::installTranslator(&translator);
+		}
 	}
-
-	if (translator->load(locale, "QtnProperty.qm", "", ":/Translations"))
-		QCoreApplication::installTranslator(translator.get());
 }
