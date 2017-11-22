@@ -152,7 +152,7 @@ void QtnPropertyWidgetEx::pasteFromClipboard()
 
 	if (dataHasSupportedFormats(data))
 	{
-		applyPropertyData(data, getActiveProperty(), QtnApplyPosition::Over);
+		applyPropertyData(data, getActiveProperty(), QtnApplyPosition::None);
 	}
 }
 

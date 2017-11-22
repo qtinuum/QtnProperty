@@ -23,6 +23,7 @@ class QShortcut;
 
 enum class QtnApplyPosition
 {
+	None,
 	Before,
 	Over,
 	After

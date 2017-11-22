@@ -485,7 +485,7 @@ bool CustomPropertyWidget::insertReplaceOrCancel(
 			mb.addButton(tr("Insert", "Paste"), QMessageBox::AcceptRole);
 		auto replaceButton =
 			mb.addButton(tr("Replace", "Paste"), QMessageBox::AcceptRole);
-		mb.setDefaultButton(QMessageBox::Cancel);
+		mb.setDefaultButton(replaceButton);
 
 		mb.show();
 		mb.raise();
@@ -559,15 +559,15 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 			{
 				auto obj = doc.object();
 
+				bool ok = false;
+
+				int insertIndex = varProperty->GetIndex();
+
 				if (QtnApplyPosition::Over == position &&
 					varProperty->GetType() == VarProperty::Value)
 				{
 					position = QtnApplyPosition::After;
 				}
-
-				bool ok = false;
-
-				int insertIndex = varProperty->GetIndex();
 
 				for (auto it = obj.begin(); it != obj.end(); ++it)
 				{
@@ -644,6 +644,14 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 									break;
 							}
 
+							break;
+						}
+
+						case QtnApplyPosition::None:
+						{
+							customData.index = varProperty->GetIndex();
+							customData.name = it.key();
+							ok = insertReplaceOrCancel(destination, customData);
 							break;
 						}
 					}
