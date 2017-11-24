@@ -22,6 +22,7 @@ limitations under the License.
 #include "PropertyQSizeF.h"
 #include "PropertyQRectF.h"
 #include "PropertyQVariant.h"
+#include "PropertyQKeySequence.h"
 #include "Delegates/Core/PropertyDelegateBool.h"
 #include "Delegates/Core/PropertyDelegateDouble.h"
 #include "Delegates/Core/PropertyDelegateInt.h"
@@ -75,6 +76,7 @@ static bool Register()
 		QtnPropertyQSizeF::Register() && //
 		QtnPropertyQRectF::Register() && //
 		QtnPropertyQVariant::Register() && //
+		QtnPropertyQKeySequence::Register() && //
 		QtnMultiProperty::Register();
 
 	Q_ASSERT(ok);

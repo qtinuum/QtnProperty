@@ -79,6 +79,11 @@ bool QtnPropertyQString::isMultilineText(const QString &text)
 	return text.contains('\n') || text.contains('\r');
 }
 
+QString QtnPropertyQString::getEmptyPlaceholderStr()
+{
+	return tr("(Empty)");
+}
+
 QString QtnPropertyQString::getPlaceholderStr(
 	const QString &text, bool checkMultiline)
 {
@@ -86,7 +91,7 @@ QString QtnPropertyQString::getPlaceholderStr(
 		return tr("(Multiline Text)");
 
 	if (text.isEmpty())
-		return tr("(Empty)");
+		return getEmptyPlaceholderStr();
 
 	return QString();
 }

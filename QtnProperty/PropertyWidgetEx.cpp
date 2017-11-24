@@ -102,7 +102,7 @@ void QtnPropertyWidgetEx::addShortcutForAction(
 	Q_ASSERT(nullptr != parent);
 
 	auto shortcut =
-		new QShortcut(seq, parent, nullptr, nullptr, Qt::ApplicationShortcut);
+		new QShortcut(seq, parent, nullptr, nullptr, Qt::WindowShortcut);
 	QObject::connect(
 		shortcut, &QShortcut::activated, action, &QAction::trigger);
 }

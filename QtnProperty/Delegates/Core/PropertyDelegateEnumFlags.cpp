@@ -28,29 +28,26 @@ static QString enumFlagsProperty2Str(const QtnPropertyEnumFlagsBase &property)
 {
 	QString text;
 
-	const QtnEnumInfo *enumInfo = property.enumInfo();
+	auto enumInfo = property.enumInfo();
 
-	if (!enumInfo)
+	if (nullptr == enumInfo)
 		return text;
 
-	QtnEnumFlagsValueType value = property.value();
+	auto value = property.value();
 
 	if (value == 0)
 		return text;
 
-	enumInfo->forEachEnumValue(
-		[&text, value](const QtnEnumValueInfo &e) -> bool //
+	for (const QtnEnumValueInfo &e : enumInfo->getVector())
+	{
+		if (value & e.value())
 		{
-			if (value & e.value())
-			{
-				if (!text.isEmpty())
-					text += "|";
+			if (!text.isEmpty())
+				text += "|";
 
-				text += e.name();
-			}
-
-			return true;
-		});
+			text += e.name();
+		}
+	}
 
 	return text;
 }
@@ -74,38 +71,33 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(
 
 	if (enumInfo)
 	{
-		QtnEnumFlagsValueType value = owner;
-		enumInfo->forEachEnumValue(
-			[this, &owner, value](const QtnEnumValueInfo &e) -> bool {
-				if (e.state() == QtnEnumValueStateNone)
-				{
-					QtnEnumValueType enum_value = e.value();
-					QtnPropertyEnumFlagsBase &_owner = owner;
+		for (const QtnEnumValueInfo &e : enumInfo->getVector())
+		{
+			if (e.state() == QtnEnumValueStateNone)
+			{
+				QtnEnumValueType enumValue = e.value();
 
-					QtnPropertyBoolCallback *flagProperty =
-						new QtnPropertyBoolCallback(0);
-					flagProperty->setName(e.name());
-					flagProperty->setDescription(
-						QtnPropertyEnumFlags::getFlagLabelDescription(
-							e.name(), owner.name()));
+				auto flagProperty = new QtnPropertyBoolCallback;
+				flagProperty->setName(e.name());
+				flagProperty->setDescription(
+					QtnPropertyEnumFlags::getFlagLabelDescription(
+						e.name(), owner.name()));
 
-					flagProperty->setCallbackValueGet(
-						[&_owner, enum_value]() -> bool {
-							return _owner.value() & enum_value;
-						});
-					flagProperty->setCallbackValueSet(
-						[&_owner, enum_value](bool value) {
-							if (value)
-								_owner.setValue(_owner.value() | enum_value);
-							else
-								_owner.setValue(_owner.value() & ~enum_value);
-						});
+				flagProperty->setCallbackValueGet(
+					[&owner, enumValue]() -> bool {
+						return owner.value() & enumValue;
+					});
+				flagProperty->setCallbackValueSet(
+					[&owner, enumValue](bool value) {
+						if (value)
+							owner.setValue(owner.value() | enumValue);
+						else
+							owner.setValue(owner.value() & ~enumValue);
+					});
 
-					this->addSubProperty(flagProperty);
-				}
-
-				return true;
-			});
+				addSubProperty(flagProperty);
+			}
+		}
 	}
 }
 

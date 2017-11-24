@@ -44,6 +44,7 @@ public:
 		QtnEnumValueState state = QtnEnumValueStateNone);
 
 	inline QtnEnumValueType value() const;
+	inline void setValue(QtnEnumValueType value);
 	inline const QString &name() const;
 	inline QtnEnumValueState state() const;
 
@@ -56,6 +57,11 @@ private:
 QtnEnumValueType QtnEnumValueInfo::value() const
 {
 	return m_value;
+}
+
+void QtnEnumValueInfo::setValue(QtnEnumValueType value)
+{
+	m_value = value;
 }
 
 const QString &QtnEnumValueInfo::name() const
