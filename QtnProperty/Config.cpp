@@ -91,7 +91,7 @@ void qtnInstallTranslations(const QLocale &locale)
 	if (translator.load(locale, "QtnProperty.qm", "", ":/Translations"))
 	{
 		static bool installOnce = false;
-		if (not installOnce)
+		if (!installOnce)
 		{
 			installOnce = true;
 			QCoreApplication::installTranslator(&translator);

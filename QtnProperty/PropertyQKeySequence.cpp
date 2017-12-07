@@ -111,7 +111,7 @@ QtnPropertyDelegateQKeySequence::QtnPropertyDelegateQKeySequence(
 QWidget *QtnPropertyDelegateQKeySequence::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *)
 {
-	if (not owner().isEditableByUser())
+	if (!owner().isEditableByUser())
 	{
 		auto lineEdit = new QLineEdit(parent);
 		lineEdit->setGeometry(rect);
