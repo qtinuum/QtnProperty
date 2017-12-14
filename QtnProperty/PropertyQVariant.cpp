@@ -21,6 +21,7 @@ limitations under the License.
 #include "Delegates/PropertyEditorAux.h"
 #include "Delegates/PropertyEditorHandler.h"
 #include "MultiProperty.h"
+#include "Core/PropertyQString.h"
 
 #include "CustomPropertyEditorDialog.h"
 
@@ -51,7 +52,7 @@ private:
 };
 
 QtnPropertyQVariantBase::QtnPropertyQVariantBase(QObject *parent)
-	: QtnSinglePropertyBase<const QVariant &>(parent)
+	: QtnSinglePropertyBase(parent)
 {
 }
 
@@ -68,7 +69,7 @@ bool QtnPropertyQVariantBase::toStrImpl(QString &str) const
 
 bool QtnPropertyQVariantBase::fromVariantImpl(const QVariant &var, bool edit)
 {
-	return edit ? this->edit(var) : setValue(var);
+	return setValue(var, edit);
 }
 
 bool QtnPropertyQVariantBase::toVariantImpl(QVariant &var) const
@@ -78,29 +79,31 @@ bool QtnPropertyQVariantBase::toVariantImpl(QVariant &var) const
 }
 
 QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(
-	QObject *object, const QMetaProperty &meta_property)
-	: QtnSinglePropertyCallback<QtnPropertyQVariantBase>(nullptr)
+	QObject *object, const QMetaProperty &metaProperty, QObject *parent)
+	: QtnSinglePropertyCallback(parent)
 {
-	setCallbackValueGet([this, object, meta_property]() -> const QVariant & {
-		value = meta_property.read(object);
-		return value;
+	setCallbackValueGet([object, metaProperty]() -> QVariant {
+		return metaProperty.read(object);
 	});
 
-	setCallbackValueSet([this, object, meta_property](const QVariant &value) {
-		this->value = value;
-		meta_property.write(object, value);
+	setCallbackValueSet([object, metaProperty](QVariant value) {
+		metaProperty.write(object, value);
 	});
 
 	setCallbackValueAccepted(
-		[this](const QVariant &) -> bool { return isEditableByUser(); });
+		[this](QVariant) -> bool { return isEditableByUser(); });
 
-	setCallbackValueEqual(
-		[this, object, meta_property](const QVariant &value) -> bool {
-			this->value = meta_property.read(object);
+	setCallbackValueEqual([object, metaProperty](QVariant value) -> bool {
+		auto thisValue = metaProperty.read(object);
 
-			return (this->value.isValid() == value.isValid() &&
-				value.type() == this->value.type() && value == this->value);
-		});
+		return thisValue.type() == value.type() &&
+			thisValue.userType() == value.userType() && thisValue == value;
+	});
+}
+
+QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(QObject *parent)
+	: QtnSinglePropertyCallback<QtnPropertyQVariantBase>(parent)
+{
 }
 
 QtnPropertyQVariant::QtnPropertyQVariant(QObject *parent)
@@ -157,7 +160,7 @@ QString QtnPropertyQVariant::getPlaceholderStr(QVariant::Type type)
 			break;
 	}
 
-	return tr("(Empty)");
+	return QtnPropertyQString::getEmptyPlaceholderStr();
 }
 
 QtnPropertyDelegateQVariant::QtnPropertyDelegateQVariant(
@@ -191,7 +194,7 @@ QWidget *QtnPropertyDelegateQVariant::createValueEditorImpl(
 
 bool QtnPropertyDelegateQVariant::propertyValueToStr(QString &strValue) const
 {
-	auto &value = owner().value();
+	auto value = owner().value();
 	strValue = QtnPropertyQVariant::valueToString(value);
 
 	if (strValue.isEmpty())
@@ -297,7 +300,7 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 	auto text = editor().lineEdit->text();
 
 	auto property = &this->property();
-	auto &value = property->value();
+	auto value = property->value();
 
 	if (!is_object && text != value.toString())
 	{

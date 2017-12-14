@@ -84,6 +84,7 @@ public:
 	QtnPropertyQString &operator=(const char *newValue);
 
 	static bool isMultilineText(const QString &text);
+	static QString getEmptyPlaceholderStr();
 	static QString getPlaceholderStr(const QString &text, bool checkMultiline);
 	static QString getReadOnlyPropertyTitleFormat();
 

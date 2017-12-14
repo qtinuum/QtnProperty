@@ -70,7 +70,7 @@
     <string notr="true">Ctrl+=</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionPropertyDelete">
@@ -81,7 +81,7 @@
     <string notr="true">Del</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionPropertyDuplicate">
@@ -106,7 +106,7 @@
     <string notr="true">F2</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionPropertyCut">
@@ -117,7 +117,7 @@
     <string notr="true">Ctrl+X</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionPropertyCopy">
@@ -128,7 +128,7 @@
     <string notr="true">Ctrl+C</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionPropertyPaste">
@@ -139,7 +139,7 @@
     <string notr="true">Ctrl+V</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
  </widget>

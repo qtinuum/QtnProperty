@@ -684,17 +684,17 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQString</name>
     <message>
-        <location filename="../Core/PropertyQString.cpp" line="86"/>
+        <location filename="../Core/PropertyQString.cpp" line="91"/>
         <source>(Multiline Text)</source>
         <translation>(Multiline Text)</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQString.cpp" line="89"/>
+        <location filename="../Core/PropertyQString.cpp" line="84"/>
         <source>(Empty)</source>
         <translation>(Empty)</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQString.cpp" line="96"/>
+        <location filename="../Core/PropertyQString.cpp" line="101"/>
         <source>%1 (Read only)</source>
         <translation>%1 (Read only)</translation>
     </message>
@@ -702,19 +702,18 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="151"/>
+        <location filename="../PropertyQVariant.cpp" line="154"/>
         <source>(Dictionary)</source>
         <translation>(Dictionary)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="154"/>
+        <location filename="../PropertyQVariant.cpp" line="157"/>
         <source>(List)</source>
         <translation>(List)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="160"/>
         <source>(Empty)</source>
-        <translation>(Empty)</translation>
+        <translation type="vanished">(Empty)</translation>
     </message>
 </context>
 </TS>

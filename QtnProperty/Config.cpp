@@ -22,6 +22,7 @@ limitations under the License.
 #include "PropertyQSizeF.h"
 #include "PropertyQRectF.h"
 #include "PropertyQVariant.h"
+#include "PropertyQKeySequence.h"
 #include "Delegates/Core/PropertyDelegateBool.h"
 #include "Delegates/Core/PropertyDelegateDouble.h"
 #include "Delegates/Core/PropertyDelegateInt.h"
@@ -75,6 +76,7 @@ static bool Register()
 		QtnPropertyQSizeF::Register() && //
 		QtnPropertyQRectF::Register() && //
 		QtnPropertyQVariant::Register() && //
+		QtnPropertyQKeySequence::Register() && //
 		QtnMultiProperty::Register();
 
 	Q_ASSERT(ok);
@@ -85,16 +87,14 @@ static const bool qtnReg = Register();
 
 void qtnInstallTranslations(const QLocale &locale)
 {
-	static std::unique_ptr<QTranslator> translator;
-
-	if (nullptr == translator)
+	static QTranslator translator;
+	if (translator.load(locale, "QtnProperty.qm", "", ":/Translations"))
 	{
-		translator.reset(new QTranslator);
-	} else
-	{
-		QCoreApplication::removeTranslator(translator.get());
+		static bool installOnce = false;
+		if (!installOnce)
+		{
+			installOnce = true;
+			QCoreApplication::installTranslator(&translator);
+		}
 	}
-
-	if (translator->load(locale, "QtnProperty.qm", "", ":/Translations"))
-		QCoreApplication::installTranslator(translator.get());
 }

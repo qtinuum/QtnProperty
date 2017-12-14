@@ -22,7 +22,7 @@ limitations under the License.
 #include <QVariant>
 
 class QTN_IMPORT_EXPORT QtnPropertyQVariantBase
-	: public QtnSinglePropertyBase<const QVariant &>
+	: public QtnSinglePropertyBase<QVariant>
 {
 	Q_OBJECT
 
@@ -50,11 +50,9 @@ private:
 		const QtnPropertyQVariantCallback &other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQVariantCallback(
-		QObject *object, const QMetaProperty &meta_property);
-
-private:
-	QVariant value;
+	explicit QtnPropertyQVariantCallback(QObject *object,
+		const QMetaProperty &metaProperty, QObject *parent = nullptr);
+	explicit QtnPropertyQVariantCallback(QObject *parent = nullptr);
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyQVariant
