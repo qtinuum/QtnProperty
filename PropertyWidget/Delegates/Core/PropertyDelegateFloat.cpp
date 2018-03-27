@@ -22,15 +22,13 @@
 
 #include <QKeyEvent>
 
-void regFloatDelegates()
+void regFloatDelegates(QtnPropertyDelegateFactory &factory)
 {
-    QtnPropertyDelegateFactory::staticInstance()
-        .registerDelegateDefault(&QtnPropertyFloatBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyFloatBase::staticMetaObject
                                 , &qtnCreateDelegate<QtnPropertyDelegateFloat, QtnPropertyFloatBase>
                                 , "SpinBox");
 
-    QtnPropertyDelegateFactory::staticInstance()
-        .registerDelegate(&QtnPropertyFloatBase::staticMetaObject
+    factory.registerDelegate(&QtnPropertyFloatBase::staticMetaObject
                                 , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyFloatBase>, QtnPropertyFloatBase>
                                 , "SliderBox");
 }

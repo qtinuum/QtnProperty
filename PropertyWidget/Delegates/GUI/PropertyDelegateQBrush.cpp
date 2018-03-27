@@ -28,10 +28,9 @@
 
 #include <GUI/PropertyQColor.h>
 
-void regQBrushStyleDelegates()
+void regQBrushStyleDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyQBrushStyleBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyQBrushStyleBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateQBrushStyle, QtnPropertyQBrushStyleBase>
                  , "ComboBox");
 }

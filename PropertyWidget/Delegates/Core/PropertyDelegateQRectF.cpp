@@ -20,10 +20,9 @@
 
 #include <QLineEdit>
 
-void regQRectFDelegates()
+void regQRectFDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyQRectFBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyQRectFBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateQRectF, QtnPropertyQRectFBase>
 			     , "LTWH");
 }

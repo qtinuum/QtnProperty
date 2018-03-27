@@ -22,15 +22,13 @@
 
 #include <QColorDialog>
 
-void regQColorDelegates()
+void regQColorDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>
                  , "LineEditBttn");
 
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegate(&QtnPropertyQColorBase::staticMetaObject
+    factory.registerDelegate(&QtnPropertyQColorBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateQColorSolid, QtnPropertyQColorBase>
                  , "Solid");
 }

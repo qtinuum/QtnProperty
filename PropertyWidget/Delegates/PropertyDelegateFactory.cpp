@@ -17,11 +17,14 @@
 #include "PropertyDelegateFactory.h"
 #include <QDebug>
 
+void regPropertySetDelegates(QtnPropertyDelegateFactory& factory);
 QtnPropertyDelegate* qtnCreateDelegateError(QtnPropertyBase& owner, QString error);
 
 QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(const QtnPropertyDelegateFactory* superFactory)
     : m_superFactory(superFactory)
 {
+    // default delegate for property set
+    regPropertySetDelegates(*this);
 }
 
 QtnPropertyDelegate* QtnPropertyDelegateFactory::createDelegate(QtnPropertyBase &owner) const
@@ -113,71 +116,58 @@ bool QtnPropertyDelegateFactory::registerDelegate(const QMetaObject* propertyMet
     return true;
 }
 
+//extern QIcon qtnResetIcon;
+void regBoolDelegates(QtnPropertyDelegateFactory& factory);
+void regDoubleDelegates(QtnPropertyDelegateFactory& factory);
+void regEnumDelegates(QtnPropertyDelegateFactory& factory);
+void regEnumFlagsDelegates(QtnPropertyDelegateFactory& factory);
+void regFloatDelegates(QtnPropertyDelegateFactory& factory);
+void regIntDelegates(QtnPropertyDelegateFactory& factory);
+void regQPointDelegates(QtnPropertyDelegateFactory& factory);
+void regQPointFDelegates(QtnPropertyDelegateFactory& factory);
+void regQRectDelegates(QtnPropertyDelegateFactory& factory);
+void regQRectFDelegates(QtnPropertyDelegateFactory& factory);
+void regQSizeDelegates(QtnPropertyDelegateFactory& factory);
+void regQSizeFDelegates(QtnPropertyDelegateFactory& factory);
+void regQStringDelegates(QtnPropertyDelegateFactory& factory);
+void regUIntDelegates(QtnPropertyDelegateFactory& factory);
+void regQColorDelegates(QtnPropertyDelegateFactory& factory);
+void regQFontDelegates(QtnPropertyDelegateFactory& factory);
+void regButtonDelegates(QtnPropertyDelegateFactory& factory);
+void regQPenStyleDelegates(QtnPropertyDelegateFactory& factory);
+void regQPenDelegates(QtnPropertyDelegateFactory& factory);
+void regQBrushStyleDelegates(QtnPropertyDelegateFactory& factory);
+
+class QtnPropertyDelegateFactoryDefault : public QtnPropertyDelegateFactory
+{
+public:
+    QtnPropertyDelegateFactoryDefault()
+    {
+        regBoolDelegates(*this);
+        regDoubleDelegates(*this);
+        regEnumDelegates(*this);
+        regEnumFlagsDelegates(*this);
+        regFloatDelegates(*this);
+        regIntDelegates(*this);
+        regQPointDelegates(*this);
+        regQPointFDelegates(*this);
+        regQRectDelegates(*this);
+        regQRectFDelegates(*this);
+        regQSizeDelegates(*this);
+        regQSizeFDelegates(*this);
+        regQStringDelegates(*this);
+        regUIntDelegates(*this);
+        regQColorDelegates(*this);
+        regQFontDelegates(*this);
+        regButtonDelegates(*this);
+        regQPenStyleDelegates(*this);
+        regQPenDelegates(*this);
+        regQBrushStyleDelegates(*this);
+    }
+};
 
 QtnPropertyDelegateFactory& QtnPropertyDelegateFactory::staticInstance()
 {
-    static QtnPropertyDelegateFactory factory;
+    static QtnPropertyDelegateFactoryDefault factory;
     return factory;
 }
-
-extern QIcon qtnResetIcon;
-void regPropertySetDelegates();
-void regBoolDelegates();
-void regDoubleDelegates();
-void regEnumDelegates();
-void regEnumFlagsDelegates();
-void regFloatDelegates();
-void regIntDelegates();
-void regQPointDelegates();
-void regQPointFDelegates();
-void regQRectDelegates();
-void regQRectFDelegates();
-void regQSizeDelegates();
-void regQSizeFDelegates();
-void regQStringDelegates();
-void regUIntDelegates();
-void regQColorDelegates();
-void regQFontDelegates();
-void regButtonDelegates();
-void regQPenStyleDelegates();
-void regQPenDelegates();
-void regQBrushStyleDelegates();
-
-bool initQtnPropertyWidgetLibrary(QIcon *resetIcon)
-{
-    static bool initialized = false;
-
-    if (resetIcon)
-        qtnResetIcon = *resetIcon;
-
-    if (initialized)
-        return false;
-
-    regPropertySetDelegates();
-    regBoolDelegates();
-    regDoubleDelegates();
-    regEnumDelegates();
-    regEnumFlagsDelegates();
-    regFloatDelegates();
-    regIntDelegates();
-    regQPointDelegates();
-    regQPointFDelegates();
-    regQRectDelegates();
-    regQRectFDelegates();
-    regQSizeDelegates();
-    regQSizeFDelegates();
-    regQStringDelegates();
-    regUIntDelegates();
-    regQColorDelegates();
-    regQFontDelegates();
-    regButtonDelegates();
-    regQPenStyleDelegates();
-    regQPenDelegates();
-    regQBrushStyleDelegates();
-
-    initialized = true;
-    return true;
-}
-
-static bool initializeQtnPropertyWidgetLibrary = initQtnPropertyWidgetLibrary();
-

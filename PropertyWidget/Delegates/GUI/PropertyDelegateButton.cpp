@@ -22,15 +22,13 @@
 #include <QStyleOptionButton>
 #include <QKeyEvent>
 
-void regButtonDelegates()
+void regButtonDelegates(QtnPropertyDelegateFactory &factory)
 {
-    QtnPropertyDelegateFactory::staticInstance()
-      .registerDelegateDefault(&QtnPropertyButton::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyButton::staticMetaObject
                    , &qtnCreateDelegate<QtnPropertyDelegateButton, QtnPropertyButton>
                    , "Button");
 
-    QtnPropertyDelegateFactory::staticInstance()
-      .registerDelegate(&QtnPropertyButton::staticMetaObject
+    factory.registerDelegate(&QtnPropertyButton::staticMetaObject
                    , &qtnCreateDelegate<QtnPropertyDelegateButtonLink, QtnPropertyButton>
                    , "Link");
 }

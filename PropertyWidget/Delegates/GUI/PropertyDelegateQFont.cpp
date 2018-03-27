@@ -27,10 +27,9 @@
 #include <QFontDialog>
 #include <QFontDatabase>
 
-void regQFontDelegates()
+void regQFontDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyQFontBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyQFontBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>
                  , "LineEditBttn");
 }

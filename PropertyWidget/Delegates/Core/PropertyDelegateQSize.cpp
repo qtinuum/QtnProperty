@@ -20,10 +20,9 @@
 
 #include <QLineEdit>
 
-void regQSizeDelegates()
+void regQSizeDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyQSizeBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyQSizeBase::staticMetaObject
 			     , &qtnCreateDelegate<QtnPropertyDelegateQSize, QtnPropertyQSizeBase>
 			     , "WH");
 }

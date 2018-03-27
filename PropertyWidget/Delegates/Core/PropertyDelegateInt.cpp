@@ -22,15 +22,13 @@
 
 #include <QSpinBox>
 
-void regIntDelegates()
+void regIntDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyIntBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyIntBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateInt, QtnPropertyIntBase>
                  , "SpinBox");
 
-  QtnPropertyDelegateFactory::staticInstance()
-      .registerDelegate(&QtnPropertyIntBase::staticMetaObject
+    factory.registerDelegate(&QtnPropertyIntBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyIntBase>, QtnPropertyIntBase>
                  , "SliderBox");
 }

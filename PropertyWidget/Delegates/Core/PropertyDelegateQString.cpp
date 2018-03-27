@@ -27,20 +27,17 @@
 #include <QComboBox>
 #include <QDebug>
 
-void regQStringDelegates()
+void regQStringDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyQStringBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyQStringBase::staticMetaObject
               , &qtnCreateDelegate<QtnPropertyDelegateQString, QtnPropertyQStringBase>
               , "LineEdit");
 
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegate(&QtnPropertyQStringBase::staticMetaObject
+    factory.registerDelegate(&QtnPropertyQStringBase::staticMetaObject
 		      , &qtnCreateDelegate<QtnPropertyDelegateQStringFile, QtnPropertyQStringBase>
 		      , "File");
 
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegate(&QtnPropertyQStringBase::staticMetaObject
+    factory.registerDelegate(&QtnPropertyQStringBase::staticMetaObject
 		      , &qtnCreateDelegate<QtnPropertyDelegateQStringList, QtnPropertyQStringBase>
 		      , "List");
 }

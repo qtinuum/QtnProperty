@@ -18,12 +18,11 @@
 #include "../PropertyDelegateFactory.h"
 #include "../../../Core/PropertySet.h"
 
-void regPropertySetDelegates()
+void regPropertySetDelegates(QtnPropertyDelegateFactory& factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertySet::staticMetaObject
-                 , &qtnCreateDelegate<QtnPropertyDelegatePropertySet, QtnPropertySet>
-                 , "Default");
+    factory.registerDelegateDefault(&QtnPropertySet::staticMetaObject
+         , &qtnCreateDelegate<QtnPropertyDelegatePropertySet, QtnPropertySet>
+         , "Default");
 }
 
 QtnPropertyBase* QtnPropertyDelegatePropertySet::propertyImpl()

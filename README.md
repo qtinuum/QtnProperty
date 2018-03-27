@@ -99,15 +99,6 @@ This example will show you something like this:
 
 ![Example_screenshot_windows](Docs/img/Example1.png)
 
-NOTE:
-
-**bool initQtnPropertyWidgetLibrary(QIcon *resetIcon = nullptr)** function must be called before using QtnPropertyWidget or QtnPropertyView widgets. This function is called automatically in the QtnProperty\PropertyWidget\Delegates\PropertyDelegateFactory.cpp file
-```C++
-    bool initializeQtnPropertyWidgetLibrary = initQtnPropertyWidgetLibrary();
-```
-
-If the function isn't called for some reason you will see an empty property widget and some warnings in application output. You should call it manually (for example somewhere in the main function). Pass **resetIcon**  parameter if you want to override default reset icon for resettable properties.
-
 ## Step 3.
 If you want to use *.pef files to generate properties C++ code you need to build QtnPEG executable.
 

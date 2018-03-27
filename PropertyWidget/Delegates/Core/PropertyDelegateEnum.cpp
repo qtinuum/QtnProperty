@@ -22,10 +22,9 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-void regEnumDelegates()
+void regEnumDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyEnumBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyEnumBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>
                  , "ComboBox");
 }

@@ -22,10 +22,9 @@
 #include "../../../Core/Core/PropertyBool.h"
 #include <QLineEdit>
 
-void regEnumFlagsDelegates()
+void regEnumFlagsDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyEnumFlagsBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyEnumFlagsBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateEnumFlags, QtnPropertyEnumFlagsBase>
                  , "FlagsList");
 }

@@ -23,15 +23,13 @@
 #include <QDoubleSpinBox>
 
 
-void regDoubleDelegates()
+void regDoubleDelegates(QtnPropertyDelegateFactory &factory)
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyDoubleBase::staticMetaObject
+    factory.registerDelegateDefault(&QtnPropertyDoubleBase::staticMetaObject
                  , &qtnCreateDelegate<QtnPropertyDelegateDouble, QtnPropertyDoubleBase>
                  , "SpinBox");
 
-  QtnPropertyDelegateFactory::staticInstance()
-      .registerDelegate(&QtnPropertyDoubleBase::staticMetaObject
+    factory.registerDelegate(&QtnPropertyDoubleBase::staticMetaObject
                   , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyDoubleBase>, QtnPropertyDoubleBase>
                   , "SliderBox");
 }
