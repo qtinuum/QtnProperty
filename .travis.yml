@@ -14,7 +14,7 @@ before_install:
 install:
   - sudo apt-get install flex bison
   - sudo apt-get install qt59base qt59declarative qt59script
-  - source /opt/qt56/bin/qt59-env.sh
+  - source /opt/qt59/bin/qt59-env.sh
   - sudo apt-get install -qq g++-4.8
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
 
