@@ -85,7 +85,7 @@ private:
 private:
     QList<QtnPropertyBase*> m_childProperties;
 
-    bool m_ignoreChildPropertyChanges;
+    bool m_ignoreChildPropertyChanges = false;
 
     friend void qtnConnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty);
     friend void qtnDisconnectChildProperty(QtnPropertySet* masterProperty, QtnPropertyBase* childProperty);
