@@ -128,25 +128,24 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QtnPropertyQFont::getFamilyDescription(owner.name()));
 	propertyFamily->setCallbackValueGet(
 		[&owner]() -> QString { return owner.value().family(); });
-	propertyFamily->setCallbackValueSet(
-		[&owner, propertyStyle, propertyFamily](QString value) {
-			QFont font = owner.value();
-			font.setFamily(value);
-			applyFontStyle(font);
-			owner.setValue(font);
+	propertyFamily->setCallbackValueSet([&owner, propertyStyle](QString value) {
+		QFont font = owner.value();
+		font.setFamily(value);
+		applyFontStyle(font);
+		owner.setValue(font);
 
 #ifdef Q_OS_MAC
-			QtnPropertyDelegateInfo delegate;
-			delegate.name = qtnComboBoxDelegate();
-			QFontDatabase fDB;
-			delegate.attributes[qtnItemsAttr()] =
-				QStringList(QString()) + fDB.styles(value);
-			delegate.attributes[qtnEditableAttr()] = true;
-			propertyStyle->setDelegate(delegate);
+		QtnPropertyDelegateInfo delegate;
+		delegate.name = qtnComboBoxDelegate();
+		QFontDatabase fDB;
+		delegate.attributes[qtnItemsAttr()] =
+			QStringList(QString()) + fDB.styles(value);
+		delegate.attributes[qtnEditableAttr()] = true;
+		propertyStyle->setDelegate(delegate);
 
-			owner.postUpdateEvent(QtnPropertyChangeReasonChildren);
+		owner.postUpdateEvent(QtnPropertyChangeReasonChildren);
 #endif
-		});
+	});
 
 	QtnPropertyDelegateInfo delegate;
 	delegate.name = qtnComboBoxDelegate();
@@ -233,34 +232,33 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		return SizeUnitPoint;
 	});
 
-	propertySizeUnit->setCallbackValueSet(
-		[&owner, propertySize](QtnEnumValueType value) {
-			QFont font = owner.value();
+	propertySizeUnit->setCallbackValueSet([&owner](QtnEnumValueType value) {
+		QFont font = owner.value();
 
-			int size = std::max(font.pointSize(), font.pixelSize());
+		int size = std::max(font.pointSize(), font.pixelSize());
 
-			if (size <= 0)
-				size = 1;
+		if (size <= 0)
+			size = 1;
 
-			if (size > 256)
-				size = 256;
+		if (size > 256)
+			size = 256;
 
-			switch (value)
-			{
-				case SizeUnitPixel:
-					font.setPixelSize(size);
-					break;
+		switch (value)
+		{
+			case SizeUnitPixel:
+				font.setPixelSize(size);
+				break;
 
-				case SizeUnitPoint:
-					font.setPointSize(size);
-					break;
+			case SizeUnitPoint:
+				font.setPointSize(size);
+				break;
 
-				default:
-					break;
-			}
+			default:
+				break;
+		}
 
-			owner.setValue(font);
-		});
+		owner.setValue(font);
+	});
 
 	QtnPropertyBoolCallback *propertyBold = new QtnPropertyBoolCallback(0);
 	addSubProperty(propertyBold);
