@@ -201,7 +201,7 @@ void CustomPropertyEditorDialog::updateActions(QtnPropertyBase *property)
 
 	auto add_text = tr("New...");
 
-	auto var_property = CustomPropertyWidget::getVarProperty(property);
+	auto var_property = QtnCustomPropertyWidget::getVarProperty(property);
 
 	if (nullptr != var_property)
 	{

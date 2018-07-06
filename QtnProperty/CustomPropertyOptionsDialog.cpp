@@ -148,7 +148,7 @@ void CustomPropertyOptionsDialog::executeReadOnly()
 	BasePropertyDialog::execute();
 }
 
-bool CustomPropertyOptionsDialog::execute(CustomPropertyData &result)
+bool CustomPropertyOptionsDialog::execute(QtnCustomPropertyData &result)
 {
 	setReadOnly(false);
 

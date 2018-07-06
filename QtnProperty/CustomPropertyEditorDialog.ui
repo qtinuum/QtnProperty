@@ -36,7 +36,7 @@
     <number>6</number>
    </property>
    <item>
-    <widget class="CustomPropertyWidget" name="propertyWidget" native="true">
+    <widget class="QtnCustomPropertyWidget" name="propertyWidget" native="true">
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
@@ -145,7 +145,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CustomPropertyWidget</class>
+   <class>QtnCustomPropertyWidget</class>
    <extends>QWidget</extends>
    <header>CustomPropertyWidget.h</header>
    <container>1</container>

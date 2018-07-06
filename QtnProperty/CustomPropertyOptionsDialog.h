@@ -68,7 +68,7 @@ namespace Ui
 class CustomPropertyOptionsDialog;
 }
 
-struct QTN_IMPORT_EXPORT CustomPropertyData
+struct QTN_IMPORT_EXPORT QtnCustomPropertyData
 {
 	int index;
 	QString name;
@@ -84,7 +84,7 @@ public:
 	virtual ~CustomPropertyOptionsDialog();
 
 	void executeReadOnly();
-	bool execute(CustomPropertyData &result);
+	bool execute(QtnCustomPropertyData &result);
 
 	void setType(QVariant::Type type);
 	void setTypeBoxEnabled(bool value);

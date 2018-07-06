@@ -38,7 +38,7 @@ static const QString kFontDefMimeType =
 static const QString kCustomPropertyData =
 	QStringLiteral("QtnCustomPropertyData");
 
-CustomPropertyWidget::CustomPropertyWidget(QWidget *parent)
+QtnCustomPropertyWidget::QtnCustomPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
 	, dataPtr(nullptr)
 	, lastAddType(QVariant::Invalid)
@@ -49,7 +49,7 @@ CustomPropertyWidget::CustomPropertyWidget(QWidget *parent)
 {
 }
 
-void CustomPropertyWidget::setReadOnly(bool value)
+void QtnCustomPropertyWidget::setReadOnly(bool value)
 {
 	if (!readOnly)
 	{
@@ -65,7 +65,7 @@ void CustomPropertyWidget::setReadOnly(bool value)
 	}
 }
 
-void CustomPropertyWidget::setData(
+void QtnCustomPropertyWidget::setData(
 	QVariant *dataPtr, const QString &title, bool force)
 {
 	if (force || this->dataPtr != dataPtr)
@@ -89,7 +89,7 @@ void CustomPropertyWidget::setData(
 	}
 }
 
-bool CustomPropertyWidget::canDeleteProperty(QtnPropertyBase *property)
+bool QtnCustomPropertyWidget::canDeleteProperty(QtnPropertyBase *property)
 {
 	if (!readOnly)
 	{
@@ -102,17 +102,17 @@ bool CustomPropertyWidget::canDeleteProperty(QtnPropertyBase *property)
 	return false;
 }
 
-bool CustomPropertyWidget::canCutToClipboard()
+bool QtnCustomPropertyWidget::canCutToClipboard()
 {
 	return !readOnly && canDeleteProperty(propertyView()->activeProperty());
 }
 
-bool CustomPropertyWidget::canPasteFromClipboard()
+bool QtnCustomPropertyWidget::canPasteFromClipboard()
 {
 	return !readOnly && QtnPropertyWidgetEx::canPasteFromClipboard();
 }
 
-void CustomPropertyWidget::addProperty()
+void QtnCustomPropertyWidget::addProperty()
 {
 	if (readOnly)
 		return;
@@ -123,7 +123,7 @@ void CustomPropertyWidget::addProperty()
 	if (getActiveVarProperty(property, var_property))
 	{
 		CustomPropertyOptionsDialog dialog(this);
-		CustomPropertyData result_data;
+		QtnCustomPropertyData result_data;
 
 		switch (var_property->GetType())
 		{
@@ -157,7 +157,7 @@ void CustomPropertyWidget::addProperty()
 	}
 }
 
-void CustomPropertyWidget::duplicateProperty()
+void QtnCustomPropertyWidget::duplicateProperty()
 {
 	if (readOnly)
 		return;
@@ -168,7 +168,7 @@ void CustomPropertyWidget::duplicateProperty()
 	if (getActiveVarProperty(property, var_property))
 	{
 		CustomPropertyOptionsDialog dialog(this);
-		CustomPropertyData result_data;
+		QtnCustomPropertyData result_data;
 
 		auto var_parent = var_property->VarParent();
 
@@ -204,7 +204,7 @@ void CustomPropertyWidget::duplicateProperty()
 	}
 }
 
-void CustomPropertyWidget::propertyOptions()
+void QtnCustomPropertyWidget::propertyOptions()
 {
 	QtnPropertyBase *property;
 	VarProperty *var_property;
@@ -212,7 +212,7 @@ void CustomPropertyWidget::propertyOptions()
 	if (getActiveVarProperty(property, var_property))
 	{
 		CustomPropertyOptionsDialog dialog(this);
-		CustomPropertyData result_data;
+		QtnCustomPropertyData result_data;
 
 		auto var_parent = var_property->VarParent();
 
@@ -337,7 +337,7 @@ void CustomPropertyWidget::propertyOptions()
 	}
 }
 
-void CustomPropertyWidget::setAutoUpdate(bool yes)
+void QtnCustomPropertyWidget::setAutoUpdate(bool yes)
 {
 	if (autoUpdate != yes)
 	{
@@ -348,7 +348,7 @@ void CustomPropertyWidget::setAutoUpdate(bool yes)
 	}
 }
 
-void CustomPropertyWidget::onPropertyValueAccept(
+void QtnCustomPropertyWidget::onPropertyValueAccept(
 	void *valueToAccept, bool *accept)
 {
 	if (nullptr != accept)
@@ -364,12 +364,12 @@ void CustomPropertyWidget::onPropertyValueAccept(
 	}
 }
 
-void CustomPropertyWidget::editData(const QVariant &oldValue)
+void QtnCustomPropertyWidget::editData(const QVariant &oldValue)
 {
 	emit dataEdited(oldValue);
 }
 
-bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
+bool QtnCustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
 {
 	if (nullptr != data)
 	{
@@ -380,7 +380,7 @@ bool CustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
 	return false;
 }
 
-void CustomPropertyWidget::deleteProperty(QtnPropertyBase *property)
+void QtnCustomPropertyWidget::deleteProperty(QtnPropertyBase *property)
 {
 	if (readOnly)
 		return;
@@ -404,7 +404,7 @@ void CustomPropertyWidget::deleteProperty(QtnPropertyBase *property)
 	}
 }
 
-QMimeData *CustomPropertyWidget::getPropertyDataForAction(
+QMimeData *QtnCustomPropertyWidget::getPropertyDataForAction(
 	QtnPropertyBase *property, Qt::DropAction action)
 {
 	auto varProperty = getVarProperty(property);
@@ -449,8 +449,8 @@ QMimeData *CustomPropertyWidget::getPropertyDataForAction(
 	return nullptr;
 }
 
-bool CustomPropertyWidget::insertReplaceOrCancel(
-	QtnPropertyBase *destination, CustomPropertyData &customData)
+bool QtnCustomPropertyWidget::insertReplaceOrCancel(
+	QtnPropertyBase *destination, QtnCustomPropertyData &customData)
 {
 	auto varProperty = getVarProperty(destination);
 	Q_ASSERT(nullptr != varProperty);
@@ -538,7 +538,7 @@ bool CustomPropertyWidget::insertReplaceOrCancel(
 	return true;
 }
 
-bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
+bool QtnCustomPropertyWidget::applyPropertyData(const QMimeData *data,
 	QtnPropertyBase *destination, QtnApplyPosition position)
 {
 	if (readOnly)
@@ -548,7 +548,7 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 
 	if (nullptr != varProperty)
 	{
-		CustomPropertyData customData;
+		QtnCustomPropertyData customData;
 
 		if (data->hasFormat(kCustomPropertyData))
 		{
@@ -773,7 +773,7 @@ bool CustomPropertyWidget::applyPropertyData(const QMimeData *data,
 	return false;
 }
 
-void CustomPropertyWidget::dropEvent(QDropEvent *event)
+void QtnCustomPropertyWidget::dropEvent(QDropEvent *event)
 {
 	if (readOnly)
 	{
@@ -786,7 +786,7 @@ void CustomPropertyWidget::dropEvent(QDropEvent *event)
 	QtnPropertyWidgetEx::dropEvent(event);
 }
 
-void CustomPropertyWidget::dropEnd()
+void QtnCustomPropertyWidget::dropEnd()
 {
 	if (readOnly)
 		return;
@@ -798,7 +798,7 @@ void CustomPropertyWidget::dropEnd()
 		updateData();
 }
 
-void CustomPropertyWidget::updateData()
+void QtnCustomPropertyWidget::updateData()
 {
 	if (!readOnly && nullptr != dataPtr && nullptr != rootSet)
 	{
@@ -809,7 +809,7 @@ void CustomPropertyWidget::updateData()
 	}
 }
 
-void CustomPropertyWidget::updateSet(
+void QtnCustomPropertyWidget::updateSet(
 	QtnPropertyBase *setProperty, int childIndex)
 {
 	Q_ASSERT(nullptr != setProperty);
@@ -858,7 +858,7 @@ void CustomPropertyWidget::updateSet(
 		updateData();
 }
 
-bool CustomPropertyWidget::getActiveVarProperty(
+bool QtnCustomPropertyWidget::getActiveVarProperty(
 	QtnPropertyBase *&property, VarProperty *&varProperty)
 {
 	property = propertyView()->activeProperty();
@@ -868,7 +868,7 @@ bool CustomPropertyWidget::getActiveVarProperty(
 	return varProperty != nullptr;
 }
 
-VarProperty *CustomPropertyWidget::getVarProperty(QtnPropertyBase *source)
+VarProperty *QtnCustomPropertyWidget::getVarProperty(QtnPropertyBase *source)
 {
 	VarProperty *varProperty = nullptr;
 
@@ -881,19 +881,19 @@ VarProperty *CustomPropertyWidget::getVarProperty(QtnPropertyBase *source)
 	return varProperty;
 }
 
-QtnPropertyBase *CustomPropertyWidget::newProperty(QtnPropertySet *parent,
+QtnPropertyBase *QtnCustomPropertyWidget::newProperty(QtnPropertySet *parent,
 	const QVariant &value, const QString &key, int index,
 	VarProperty *mapParent)
 {
 	return VarProperty::NewExtraProperty(
 		parent, value, key, index, mapParent, [this](QtnProperty *property) {
 			QObject::connect(property, &QtnProperty::propertyValueAccept, this,
-				&CustomPropertyWidget::onPropertyValueAccept);
+				&QtnCustomPropertyWidget::onPropertyValueAccept);
 		});
 }
 
-void CustomPropertyWidget::addProperty(
-	QtnPropertyBase *source, const CustomPropertyData &data)
+void QtnCustomPropertyWidget::addProperty(
+	QtnPropertyBase *source, const QtnCustomPropertyData &data)
 {
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
@@ -949,8 +949,8 @@ void CustomPropertyWidget::addProperty(
 		updateData();
 }
 
-void CustomPropertyWidget::duplicateProperty(
-	QtnPropertyBase *source, const CustomPropertyData &data)
+void QtnCustomPropertyWidget::duplicateProperty(
+	QtnPropertyBase *source, const QtnCustomPropertyData &data)
 {
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
@@ -961,8 +961,8 @@ void CustomPropertyWidget::duplicateProperty(
 	addProperty(set, { data.index, data.name, varProperty->CreateVariant() });
 }
 
-void CustomPropertyWidget::updatePropertyOptions(
-	QtnPropertyBase *source, const CustomPropertyData &data)
+void QtnCustomPropertyWidget::updatePropertyOptions(
+	QtnPropertyBase *source, const QtnCustomPropertyData &data)
 {
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
