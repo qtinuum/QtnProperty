@@ -202,6 +202,26 @@ public:
 	typedef std::function<bool(ValueType)> CallbackValueAccepted;
 	typedef std::function<bool(ValueType)> CallbackValueEqual;
 
+	inline const CallbackValueGet &callbackValueGet() const
+	{
+		return m_callbackValueGet;
+	}
+
+	inline const CallbackValueSet &callbackValueSet() const
+	{
+		return m_callbackValueSet;
+	}
+
+	inline const CallbackValueAccepted &callbackValueAccepted() const
+	{
+		return m_callbackValueAccepted;
+	}
+
+	inline const CallbackValueEqual &callbackValueEqual() const
+	{
+		return m_callbackValueEqual;
+	}
+
 	inline void setCallbackValueGet(const CallbackValueGet &callback)
 	{
 		m_callbackValueGet = callback;
