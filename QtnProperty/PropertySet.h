@@ -29,6 +29,13 @@ public:
 	explicit QtnPropertySet(QObject *parent);
 	virtual ~QtnPropertySet() override;
 
+	enum SortOrder
+	{
+		NoSort,
+		Ascend,
+		Descend,
+	};
+
 public slots:
 	// sub properties
 	inline bool hasChildProperties() const;
@@ -43,7 +50,7 @@ public slots:
 	QtnPropertyBase *findChildProperty(QtnPropertyID id);
 	void clearChildProperties();
 	bool addChildProperty(QtnPropertyBase *childProperty,
-		bool moveOwnership = true, int index = -1);
+		bool moveOwnership = true, int index = -1, SortOrder sort = NoSort);
 	bool removeChildProperty(QtnPropertyBase *childProperty);
 
 	// cloning

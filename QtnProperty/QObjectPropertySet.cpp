@@ -312,7 +312,7 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 		if (nullptr == propertySet)
 			continue;
 
-		qtnPropertiesToMultiSet(result, propertySet);
+		qtnPropertiesToMultiSet(result, propertySet, false);
 
 		delete propertySet;
 	}
@@ -332,7 +332,8 @@ void qtnInitDegreeSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
 	delegate.attributes[qtnSuffixAttr()] = QString::fromUtf8("º");
 }
 
-void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
+void qtnPropertiesToMultiSet(
+	QtnPropertySet *target, QtnPropertySet *source, bool sorted)
 {
 	Q_ASSERT(target);
 	Q_ASSERT(source);
@@ -366,13 +367,14 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 				multiSet->setId(subSet->id());
 				multiSet->setState(subSet->stateLocal());
 
-				target->addChildProperty(multiSet);
+				target->addChildProperty(
+					multiSet, true, -1, QtnPropertySet::Ascend);
 			} else
 			{
 				multiSet = qobject_cast<QtnPropertySet *>(*it);
 			}
 
-			qtnPropertiesToMultiSet(multiSet, subSet);
+			qtnPropertiesToMultiSet(multiSet, subSet, sorted);
 		} else
 		{
 			QtnMultiProperty *multiProperty;
@@ -384,7 +386,8 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 				multiProperty->setDescription(property->description());
 				multiProperty->setId(property->id());
 
-				target->addChildProperty(multiProperty);
+				target->addChildProperty(
+					multiProperty, true, -1, QtnPropertySet::Ascend);
 			} else
 			{
 				multiProperty = qobject_cast<QtnMultiProperty *>(*it);

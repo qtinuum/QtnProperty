@@ -174,18 +174,47 @@ void QtnPropertySet::clearChildProperties()
 	emit propertyDidChange(QtnPropertyChangeReasonChildPropertyRemove);
 }
 
-bool QtnPropertySet::addChildProperty(
-	QtnPropertyBase *childProperty, bool moveOwnership, int index)
+bool QtnPropertySet::addChildProperty(QtnPropertyBase *childProperty,
+	bool moveOwnership, int index, SortOrder sort)
 {
 	Q_CHECK_PTR(childProperty);
 
 	emit propertyWillChange(QtnPropertyChangeReasonChildPropertyAdd,
 		QtnPropertyValuePtr(childProperty), qMetaTypeId<QtnPropertyBase *>());
 
-	if (index < 0)
-		m_childProperties.append(childProperty);
-	else
-		m_childProperties.insert(index, childProperty);
+	switch (sort)
+	{
+		case NoSort:
+			if (index < 0)
+				m_childProperties.append(childProperty);
+			else
+				m_childProperties.insert(index, childProperty);
+			break;
+
+		case Ascend:
+			for (int i = m_childProperties.size() - 1; i >= 0; --i)
+			{
+				auto p = m_childProperties.at(i);
+				int compare = QString::localeAwareCompare(
+					p->name(), childProperty->name());
+
+				if (compare >= 0)
+				{
+					m_childProperties.insert(i + 1, childProperty);
+					break;
+				}
+			}
+			break;
+
+		case Descend:
+			for (int i = 0, count = m_childProperties.size(); i < count; ++i)
+			{
+				auto p = m_childProperties.at(i);
+				int compare = QString::localeAwareCompare(
+					p->name(), childProperty->name());
+			}
+			break;
+	}
 
 	qtnConnectChildProperty(this, childProperty);
 
