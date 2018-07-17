@@ -17,6 +17,7 @@ limitations under the License.
 #include "PropertyQPointF.h"
 
 #include "Delegates/PropertyDelegateFactory.h"
+#include "PropertyDelegateAttrs.h"
 #include "Core/PropertyQPoint.h"
 #include "QObjectPropertySet.h"
 
@@ -116,8 +117,25 @@ QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
 	QtnPropertyQPointFBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointFBase>(owner)
 {
-	addSubProperty(owner.createXProperty());
-	addSubProperty(owner.createYProperty());
+	auto delegateCallback = [this]() -> const QtnPropertyDelegateInfo * {
+		auto result = new QtnPropertyDelegateInfo;
+		result->name = qtnSpinBoxDelegate();
+		result->attributes = mAttributes;
+		return result;
+	};
+	mPropertyX = owner.createXProperty();
+	mPropertyY = owner.createYProperty();
+	mPropertyX->setDelegateCallback(delegateCallback);
+	mPropertyY->setDelegateCallback(delegateCallback);
+	addSubProperty(mPropertyX);
+	addSubProperty(mPropertyY);
+}
+
+void QtnPropertyDelegateQPointF::applyAttributesImpl(
+	const QtnPropertyDelegateAttributes &attributes)
+{
+	mAttributes = attributes;
+	qtnGetAttribute(mAttributes, qtnSuffixAttr(), mSuffix);
 }
 
 QWidget *QtnPropertyDelegateQPointF::createValueEditorImpl(
@@ -132,7 +150,8 @@ bool QtnPropertyDelegateQPointF::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-		locale.toString(value.x(), 'g', 6), locale.toString(value.y(), 'g', 6));
+		locale.toString(value.x(), 'g', 6) + mSuffix,
+		locale.toString(value.y(), 'g', 6) + mSuffix);
 
 	return true;
 }

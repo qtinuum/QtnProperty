@@ -32,7 +32,7 @@ class QTN_IMPORT_EXPORT QtnMultiProperty : public QtnProperty
 public:
 	explicit QtnMultiProperty(
 		const QMetaObject *propertyMetaObject, QObject *parent = nullptr);
-	virtual ~QtnMultiProperty();
+	virtual ~QtnMultiProperty() override;
 
 	void addProperty(QtnProperty *property, bool own = true);
 	void resetValues(bool edit);

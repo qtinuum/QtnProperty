@@ -189,7 +189,7 @@ void QObjectPropertyWidget::connectObjects()
 	if (selectedObjects.size() == 1)
 	{
 		auto object = *selectedObjects.begin();
-		auto set = qtnCreateQObjectPropertySet(object);
+		auto set = qtnCreateQObjectPropertySet(object, true);
 
 		if (nullptr != set)
 			set->setParent(this);
@@ -199,7 +199,7 @@ void QObjectPropertyWidget::connectObjects()
 		connectObject(object);
 	} else if (selectedObjects.size() > 1)
 	{
-		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects);
+		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects, true);
 
 		if (nullptr != set)
 			set->setParent(this);
