@@ -342,7 +342,14 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 	{
 		auto it = std::find_if(targetProperties.begin(), targetProperties.end(),
 			[property](const QtnPropertyBase *targetProperty) -> bool {
-				return targetProperty->metaObject() == property->metaObject() &&
+				auto multiProperty =
+					qobject_cast<const QtnMultiProperty *>(targetProperty);
+
+				auto targetMetaObject = multiProperty
+					? multiProperty->propertyMetaObject()
+					: targetProperty->metaObject();
+
+				return property->metaObject() == targetMetaObject &&
 					property->name() == targetProperty->name();
 			});
 

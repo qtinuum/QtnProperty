@@ -34,6 +34,8 @@ public:
 		const QMetaObject *propertyMetaObject, QObject *parent = nullptr);
 	virtual ~QtnMultiProperty() override;
 
+	inline const QMetaObject *propertyMetaObject() const;
+
 	void addProperty(QtnProperty *property, bool own = true);
 	void resetValues(bool edit);
 
@@ -71,7 +73,7 @@ private:
 	void updateMutablePropertyIndex();
 
 	std::vector<QtnProperty *> properties;
-	const QMetaObject *propertyMetaObject;
+	const QMetaObject *mPropertyMetaObject;
 	int mutablePropertyIndex;
 
 	bool calculateMultipleValues;
@@ -79,6 +81,11 @@ private:
 
 	friend class QtnMultiPropertyDelegate;
 };
+
+const QMetaObject *QtnMultiProperty::propertyMetaObject() const
+{
+	return mPropertyMetaObject;
+}
 
 std::vector<QtnProperty *> QtnMultiProperty::getProperties() const
 {

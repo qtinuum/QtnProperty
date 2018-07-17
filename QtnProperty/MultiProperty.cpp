@@ -28,7 +28,7 @@ limitations under the License.
 QtnMultiProperty::QtnMultiProperty(
 	const QMetaObject *propertyMetaObject, QObject *parent)
 	: QtnProperty(parent)
-	, propertyMetaObject(propertyMetaObject)
+	, mPropertyMetaObject(propertyMetaObject)
 	, mutablePropertyIndex(-1)
 	, calculateMultipleValues(true)
 	, multipleValues(false)
@@ -51,7 +51,7 @@ QtnMultiProperty::~QtnMultiProperty()
 void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 {
 	Q_ASSERT(nullptr != property);
-	Q_ASSERT(nullptr != propertyMetaObject->cast(property));
+	Q_ASSERT(nullptr != mPropertyMetaObject->cast(property));
 
 	if (own)
 		property->setParent(this);
