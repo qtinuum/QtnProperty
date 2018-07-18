@@ -53,7 +53,7 @@ QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectPropertySet(
 QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 	const std::set<QObject *> &objects, bool backwards);
 QTN_IMPORT_EXPORT void qtnPropertiesToMultiSet(
-	QtnPropertySet *target, QtnPropertySet *source, bool sorted);
+	QtnPropertySet *target, QtnPropertySet *source);
 
 QTN_IMPORT_EXPORT QtnPropertyState qtnPropertyStateToAdd(
 	const QMetaProperty &metaProperty);

@@ -95,7 +95,6 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQPointF
 	QtnProperty *mPropertyX;
 	QtnProperty *mPropertyY;
 
-	QtnPropertyDelegateAttributes mAttributes;
 	QString mSuffix;
 
 public:

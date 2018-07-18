@@ -114,7 +114,7 @@ QtnPropertyQSize::QtnPropertyQSize(QObject *parent)
 
 QString QtnPropertyQSize::getToStringFormat()
 {
-	return tr("%1 x %2");
+	return tr("[%1 x %2]");
 }
 
 QtnPropertyQSizeCallback::QtnPropertyQSizeCallback(QObject *parent)

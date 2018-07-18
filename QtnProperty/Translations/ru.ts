@@ -184,6 +184,66 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation type="vanished">Добавить свойство</translation>
     </message>
     <message>
+        <source>New Element</source>
+        <translation type="vanished">Новый элемент</translation>
+    </message>
+    <message>
+        <source>New Property</source>
+        <translation type="vanished">Новое свойство</translation>
+    </message>
+    <message>
+        <source>Duplicate Element</source>
+        <translation type="vanished">Дублировать элемент</translation>
+    </message>
+    <message>
+        <source>Duplicate Property</source>
+        <translation type="vanished">Дублировать свойство</translation>
+    </message>
+    <message>
+        <source>Property Options</source>
+        <translation type="vanished">Настройки свойства</translation>
+    </message>
+    <message>
+        <source>Element Options</source>
+        <translation type="vanished">Настройки элемента</translation>
+    </message>
+    <message>
+        <source>Do you want to insert new property from clipboard or to replace the selected one?</source>
+        <translation type="vanished">Хотите вставить новое свойство или заменить выбранное?</translation>
+    </message>
+    <message>
+        <source>Insert</source>
+        <comment>Paste</comment>
+        <translation type="vanished">Вставить</translation>
+    </message>
+    <message>
+        <source>Replace</source>
+        <comment>Paste</comment>
+        <translation type="vanished">Заменить</translation>
+    </message>
+    <message>
+        <source>Do you want to insert new property from clipboard?
+If you press &apos;No&apos;, selected property will be replaced.</source>
+        <translation type="vanished">Хотите вставить новое свойство из буфера обмена?
+Если вы нажмёте &quot;Нет&quot;, то выбранное свойство будет заменено.</translation>
+    </message>
+</context>
+<context>
+    <name>QObjectPropertyWidget</name>
+    <message>
+        <location filename="../QObjectPropertyWidget.cpp" line="150"/>
+        <source>Reset to default</source>
+        <translation>Сбросить значение</translation>
+    </message>
+    <message>
+        <location filename="../QObjectPropertyWidget.cpp" line="152"/>
+        <source>Reset value of %1 to default</source>
+        <translation>%1: Установить значение по умолчанию</translation>
+    </message>
+</context>
+<context>
+    <name>QtnCustomPropertyWidget</name>
+    <message>
         <location filename="../CustomPropertyWidget.cpp" line="132"/>
         <source>New Element</source>
         <translation>Новый элемент</translation>
@@ -229,25 +289,6 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <source>Replace</source>
         <comment>Paste</comment>
         <translation>Заменить</translation>
-    </message>
-    <message>
-        <source>Do you want to insert new property from clipboard?
-If you press &apos;No&apos;, selected property will be replaced.</source>
-        <translation type="vanished">Хотите вставить новое свойство из буфера обмена?
-Если вы нажмёте &quot;Нет&quot;, то выбранное свойство будет заменено.</translation>
-    </message>
-</context>
-<context>
-    <name>QObjectPropertyWidget</name>
-    <message>
-        <location filename="../QObjectPropertyWidget.cpp" line="150"/>
-        <source>Reset to default</source>
-        <translation>Сбросить значение</translation>
-    </message>
-    <message>
-        <location filename="../QObjectPropertyWidget.cpp" line="152"/>
-        <source>Reset value of %1 to default</source>
-        <translation>%1: Установить значение по умолчанию</translation>
     </message>
 </context>
 <context>
@@ -463,29 +504,33 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     </message>
     <message>
         <location filename="../Core/PropertyQPoint.cpp" line="117"/>
+        <source>[%1, %2]</source>
+        <translation>[%1;  %2]</translation>
+    </message>
+    <message>
         <source>%1, %2</source>
-        <translation>%1; %2</translation>
+        <translation type="vanished">%1; %2</translation>
     </message>
 </context>
 <context>
     <name>QtnPropertyQPointF</name>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="46"/>
+        <location filename="../PropertyQPointF.cpp" line="47"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="51"/>
+        <location filename="../PropertyQPointF.cpp" line="52"/>
         <source>X of the %1</source>
         <translation>Координата X точки &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="56"/>
+        <location filename="../PropertyQPointF.cpp" line="57"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="61"/>
+        <location filename="../PropertyQPointF.cpp" line="62"/>
         <source>Y of the %1</source>
         <translation>Координата Y точки &quot;%1&quot;</translation>
     </message>
@@ -554,13 +599,21 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     </message>
     <message>
         <location filename="../Core/PropertyQRect.cpp" line="203"/>
-        <source>(%1, %2) %3 x %4</source>
-        <translation>(%1; %2) %3 x %4</translation>
+        <source>[(%1, %2), (%3, %4)]</source>
+        <translation>[(%1; %2), (%3; %4)]</translation>
     </message>
     <message>
         <location filename="../Core/PropertyQRect.cpp" line="203"/>
+        <source>[(%1, %2) %3 x %4]</source>
+        <translation>[(%1; %2) %3 x %4]</translation>
+    </message>
+    <message>
+        <source>(%1, %2) %3 x %4</source>
+        <translation type="vanished">(%1; %2) %3 x %4</translation>
+    </message>
+    <message>
         <source>(%1, %2), (%3, %4)</source>
-        <translation>(%1; %2), (%3; %4)</translation>
+        <translation type="vanished">(%1; %2), (%3; %4)</translation>
     </message>
     <message>
         <source>(%1, %2), %3 x %4</source>
@@ -654,8 +707,12 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     </message>
     <message>
         <location filename="../Core/PropertyQSize.cpp" line="117"/>
+        <source>[%1 x %2]</source>
+        <translation>[%1 x %2]</translation>
+    </message>
+    <message>
         <source>%1 x %2</source>
-        <translation>%1 x %2</translation>
+        <translation type="vanished">%1 x %2</translation>
     </message>
 </context>
 <context>

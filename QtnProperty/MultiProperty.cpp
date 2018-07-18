@@ -17,6 +17,7 @@ limitations under the License.
 #include "MultiProperty.h"
 
 #include "Config.h"
+#include "Property.h"
 #include "PropertyConnector.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/Core/PropertyDelegateBool.h"
@@ -179,7 +180,7 @@ void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 		(reason &
 			(QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue)))
 	{
-		auto property = dynamic_cast<QtnProperty *>(sender());
+		auto property = qobject_cast<QtnProperty *>(sender());
 		Q_ASSERT(nullptr != property);
 		updateStateFrom(property);
 		updateMultipleState(true);
@@ -409,7 +410,7 @@ QtnMultiPropertyDelegate::QtnMultiPropertyDelegate(QtnMultiProperty &owner)
 		for (auto &delegate : superDelegates)
 		{
 			subMultiProperty->addProperty(
-				dynamic_cast<QtnProperty *>(delegate->subProperty(i)), false);
+				qobject_cast<QtnProperty *>(delegate->subProperty(i)), false);
 		}
 
 		addSubProperty(subMultiProperty);

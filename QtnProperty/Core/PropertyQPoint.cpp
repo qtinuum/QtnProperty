@@ -114,7 +114,7 @@ QtnPropertyQPoint::QtnPropertyQPoint(QObject *parent)
 
 QString QtnPropertyQPoint::getToStringFormat()
 {
-	return tr("%1, %2");
+	return tr("[%1, %2]");
 }
 
 QtnPropertyQPointCallback::QtnPropertyQPointCallback(QObject *parent)

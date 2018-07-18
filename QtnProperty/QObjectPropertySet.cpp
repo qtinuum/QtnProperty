@@ -261,7 +261,7 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object, bool backwards)
 					propertySetByClass = it->second;
 				} else
 				{
-					propertySetByClass = new QtnPropertySet(nullptr);
+					propertySetByClass = new QtnPropertySet;
 					propertySetByClass->setName(className);
 					propertySetsByClass[className] = propertySetByClass;
 
@@ -312,7 +312,7 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 		if (nullptr == propertySet)
 			continue;
 
-		qtnPropertiesToMultiSet(result, propertySet, false);
+		qtnPropertiesToMultiSet(result, propertySet);
 
 		delete propertySet;
 	}
@@ -332,8 +332,7 @@ void qtnInitDegreeSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
 	delegate.attributes[qtnSuffixAttr()] = QString::fromUtf8("º");
 }
 
-void qtnPropertiesToMultiSet(
-	QtnPropertySet *target, QtnPropertySet *source, bool sorted)
+void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 {
 	Q_ASSERT(target);
 	Q_ASSERT(source);
@@ -361,20 +360,20 @@ void qtnPropertiesToMultiSet(
 
 			if (it == targetProperties.end())
 			{
-				multiSet = new QtnPropertySet(nullptr);
+				multiSet = new QtnPropertySet(
+					subSet->childrenOrder(), subSet->compareFunc());
 				multiSet->setName(subSet->name());
 				multiSet->setDescription(subSet->description());
 				multiSet->setId(subSet->id());
 				multiSet->setState(subSet->stateLocal());
 
-				target->addChildProperty(
-					multiSet, true, -1, QtnPropertySet::Ascend);
+				target->addChildProperty(multiSet, true);
 			} else
 			{
 				multiSet = qobject_cast<QtnPropertySet *>(*it);
 			}
 
-			qtnPropertiesToMultiSet(multiSet, subSet, sorted);
+			qtnPropertiesToMultiSet(multiSet, subSet);
 		} else
 		{
 			QtnMultiProperty *multiProperty;
@@ -386,8 +385,7 @@ void qtnPropertiesToMultiSet(
 				multiProperty->setDescription(property->description());
 				multiProperty->setId(property->id());
 
-				target->addChildProperty(
-					multiProperty, true, -1, QtnPropertySet::Ascend);
+				target->addChildProperty(multiProperty, true);
 			} else
 			{
 				multiProperty = qobject_cast<QtnMultiProperty *>(*it);

@@ -118,9 +118,16 @@ QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointFBase>(owner)
 {
 	auto delegateCallback = [this]() -> const QtnPropertyDelegateInfo * {
-		auto result = new QtnPropertyDelegateInfo;
+		auto baseDelegate = this->owner().delegate();
+		QtnPropertyDelegateInfo *result;
+		if (baseDelegate)
+		{
+			result = new QtnPropertyDelegateInfo(*baseDelegate);
+		} else
+		{
+			result = new QtnPropertyDelegateInfo();
+		}
 		result->name = qtnSpinBoxDelegate();
-		result->attributes = mAttributes;
 		return result;
 	};
 	mPropertyX = owner.createXProperty();
@@ -134,8 +141,7 @@ QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
 void QtnPropertyDelegateQPointF::applyAttributesImpl(
 	const QtnPropertyDelegateAttributes &attributes)
 {
-	mAttributes = attributes;
-	qtnGetAttribute(mAttributes, qtnSuffixAttr(), mSuffix);
+	qtnGetAttribute(attributes, qtnSuffixAttr(), mSuffix);
 }
 
 QWidget *QtnPropertyDelegateQPointF::createValueEditorImpl(
