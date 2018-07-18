@@ -35,7 +35,8 @@ enum QtnPropertyStateFlag
 	QtnPropertyStateCollapsed = 0x0008,
 	QtnPropertyStateNonSerialized = 0x0010,
 	QtnPropertyStateHiddenValue = 0x0020,
-	QtnPropertyStateModifiedValue = 0x0040
+	QtnPropertyStateModifiedValue = 0x0040,
+	QtnPropertyStateIgnoreDirectParentState = 0x80
 };
 
 Q_DECLARE_FLAGS(QtnPropertyState, QtnPropertyStateFlag)
@@ -56,9 +57,6 @@ enum QtnPropertyChangeReasonFlag
 	QtnPropertyChangeReasonChildPropertyRemove = 0x0100,
 	QtnPropertyChangeReasonEditValue = 0x0200,
 	QtnPropertyChangeReasonResetValue = 0x0400,
-	QtnPropertyChangeReasonRefresh = 0x800,
-	QtnPropertyChangeReasonInvalidate = 0x1000,
-	QtnPropertyChangeReasonRepaint = 0x2000,
 	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd |
 		QtnPropertyChangeReasonChildPropertyRemove,
 	QtnPropertyChangeReasonValue = QtnPropertyChangeReasonNewValue |
@@ -73,9 +71,6 @@ enum
 {
 	QtnPropertyIDInvalid = -1
 };
-
-QTN_IMPORT_EXPORT QtnPropertyChangeReason qtnToMasterReason(
-	QtnPropertyChangeReason reason);
 
 typedef void *QtnPropertyValuePtr;
 

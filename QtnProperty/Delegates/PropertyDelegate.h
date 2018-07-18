@@ -21,8 +21,10 @@ limitations under the License.
 #include "QtnProperty/CoreAPI.h"
 #include "QtnProperty/Property.h"
 
-#include <functional>
 #include <QStylePainter>
+
+#include <functional>
+#include <deque>
 
 class QKeyEvent;
 class QtnPropertyDelegateFactory;
@@ -193,12 +195,13 @@ protected:
 
 	virtual int subPropertyCountImpl() const override
 	{
-		return m_subProperties.size();
+		return int(m_subProperties.size());
 	}
 
 	virtual QtnPropertyBase *subPropertyImpl(int index) override
 	{
-		return m_subProperties[index].data();
+		Q_ASSERT(index >= 0);
+		return m_subProperties.at(index).data();
 	}
 
 	void addSubProperty(QtnPropertyBase *subProperty)
@@ -208,13 +211,13 @@ protected:
 		if (!subProperty)
 			return;
 
-		m_subProperties.append(QSharedPointer<QtnPropertyBase>(subProperty));
+		m_subProperties.emplace_back(subProperty);
 
 		subProperty->connectMasterState(
 			QtnPropertyDelegateTyped<PropertyClass>::getOwnerProperty());
 	}
 
-	QList<QSharedPointer<QtnPropertyBase>> m_subProperties;
+	std::deque<QScopedPointer<QtnPropertyBase>> m_subProperties;
 };
 
 #endif // QTN_PROPERTY_DELEGATE_H

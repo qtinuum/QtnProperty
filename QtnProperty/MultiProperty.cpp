@@ -51,6 +51,11 @@ QtnMultiProperty::~QtnMultiProperty()
 	}
 }
 
+const QMetaObject *QtnMultiProperty::propertyMetaObject() const
+{
+	return mPropertyMetaObject;
+}
+
 void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 {
 	Q_ASSERT(nullptr != property);
@@ -405,15 +410,9 @@ void QtnMultiPropertyDelegate::init()
 			auto property = delegate->subProperty(i);
 			auto it = std::find_if(m_subProperties.begin(),
 				m_subProperties.end(),
-				[property](const QSharedPointer<QtnPropertyBase> &a) -> bool {
-					auto multiProperty =
-						qobject_cast<const QtnMultiProperty *>(a.data());
-
-					auto targetMetaObject = multiProperty
-						? multiProperty->propertyMetaObject()
-						: a->metaObject();
-
-					return property->metaObject() == targetMetaObject &&
+				[property](const QScopedPointer<QtnPropertyBase> &a) -> bool {
+					return property->propertyMetaObject() ==
+						a->propertyMetaObject() &&
 						property->name() == a->name();
 				});
 

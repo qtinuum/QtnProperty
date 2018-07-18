@@ -30,7 +30,7 @@ class QTN_IMPORT_EXPORT QtnProperty : public QtnPropertyBase
 	Q_DISABLE_COPY(QtnProperty)
 
 public:
-	virtual ~QtnProperty();
+	virtual ~QtnProperty() override;
 	// delegates
 	const QtnPropertyDelegateInfo *delegate() const;
 	void setDelegate(const QtnPropertyDelegateInfo &delegate);

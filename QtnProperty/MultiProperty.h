@@ -34,7 +34,7 @@ public:
 		const QMetaObject *propertyMetaObject, QObject *parent = nullptr);
 	virtual ~QtnMultiProperty() override;
 
-	inline const QMetaObject *propertyMetaObject() const;
+	virtual const QMetaObject *propertyMetaObject() const override;
 
 	void addProperty(QtnProperty *property, bool own = true);
 	void resetValues(bool edit);
@@ -81,11 +81,6 @@ private:
 
 	friend class QtnMultiPropertyDelegate;
 };
-
-const QMetaObject *QtnMultiProperty::propertyMetaObject() const
-{
-	return mPropertyMetaObject;
-}
 
 std::vector<QtnProperty *> QtnMultiProperty::getProperties() const
 {

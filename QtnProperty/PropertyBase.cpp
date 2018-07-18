@@ -24,30 +24,6 @@ limitations under the License.
 
 static quint16 qtnPropertyMagicNumber = 0x1984;
 
-QtnPropertyChangeReason qtnToMasterReason(QtnPropertyChangeReason reason)
-{
-	QtnPropertyChangeReason masterReason;
-
-	if (reason &
-		(QtnPropertyChangeReasonChildren | QtnPropertyChangeReasonRefresh))
-	{
-		masterReason |= QtnPropertyChangeReasonRefresh;
-	}
-
-	if (reason &
-		(QtnPropertyChangeReasonState | QtnPropertyChangeReasonInvalidate))
-	{
-		masterReason |= QtnPropertyChangeReasonInvalidate;
-	}
-
-	if (reason != 0)
-	{
-		masterReason |= QtnPropertyChangeReasonRepaint;
-	}
-
-	return masterReason;
-}
-
 // extern declaration
 void qtnAddPropertyAsChild(
 	QObject *parent, QtnPropertyBase *child, bool moveOwnership);
@@ -212,6 +188,11 @@ QtnPropertyBase::~QtnPropertyBase()
 	qtnRemovePropertyAsChild(parent(), this);
 }
 
+const QMetaObject *QtnPropertyBase::propertyMetaObject() const
+{
+	return metaObject();
+}
+
 void QtnPropertyBase::setName(const QString &name)
 {
 	emit propertyWillChange(QtnPropertyChangeReasonName,
@@ -240,6 +221,11 @@ void QtnPropertyBase::setId(QtnPropertyID id)
 	m_id = id;
 
 	emit propertyDidChange(QtnPropertyChangeReasonId);
+}
+
+bool QtnPropertyBase::isExpanded() const
+{
+	return (0 == (m_stateLocal & QtnPropertyStateCollapsed));
 }
 
 void QtnPropertyBase::setState(QtnPropertyState stateToSet, bool force)
@@ -300,13 +286,9 @@ void QtnPropertyBase::switchState(
 		removeState(stateToSwitch, force);
 }
 
-void QtnPropertyBase::switchStateAuto(
-	QtnPropertyState stateToSwitch, bool force)
+void QtnPropertyBase::toggleState(QtnPropertyState stateToSwitch, bool force)
 {
-	if (!(stateLocal() & stateToSwitch))
-		addState(stateToSwitch, force);
-	else
-		removeState(stateToSwitch, force);
+	switchState(stateToSwitch, !(stateLocal() & stateToSwitch), force);
 }
 
 bool QtnPropertyBase::isEditableByUser() const
@@ -617,12 +599,8 @@ void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
 
 	m_masterProperty = masterProperty;
 
-	setStateInherited(masterProperty->state());
+	updateStateFromMasterProperty();
 
-	QObject::connect(this, &QtnPropertyBase::propertyWillChange, this,
-		&QtnPropertyBase::sendWillChangeToMaster);
-	QObject::connect(this, &QtnPropertyBase::propertyDidChange, this,
-		&QtnPropertyBase::sendDidChangeToMaster);
 	QObject::connect(masterProperty, &QObject::destroyed, this,
 		&QtnPropertyBase::onMasterPropertyDestroyed);
 	QObject::connect(masterProperty, &QtnPropertyBase::propertyDidChange, this,
@@ -633,10 +611,6 @@ void QtnPropertyBase::disconnectMasterState()
 {
 	if (nullptr != m_masterProperty)
 	{
-		QObject::disconnect(this, &QtnPropertyBase::propertyWillChange, this,
-			&QtnPropertyBase::sendWillChangeToMaster);
-		QObject::disconnect(this, &QtnPropertyBase::propertyDidChange, this,
-			&QtnPropertyBase::sendDidChangeToMaster);
 		QObject::disconnect(m_masterProperty, &QObject::destroyed, this,
 			&QtnPropertyBase::onMasterPropertyDestroyed);
 		QObject::disconnect(m_masterProperty,
@@ -685,10 +659,18 @@ void QtnPropertyBase::masterPropertyStateDidChange(
 {
 	if (reason & QtnPropertyChangeReasonState)
 	{
-		auto changedProperty = qobject_cast<QtnPropertyBase *>(sender());
-		Q_ASSERT(nullptr != changedProperty);
-		setStateInherited(changedProperty->state());
+		Q_ASSERT(sender() == m_masterProperty);
+		updateStateFromMasterProperty();
 	}
+}
+
+void QtnPropertyBase::updateStateFromMasterProperty()
+{
+	Q_ASSERT(m_masterProperty);
+	setStateInherited(
+		0 == (stateLocal() & QtnPropertyStateIgnoreDirectParentState)
+			? m_masterProperty->state()
+			: m_masterProperty->stateInherited());
 }
 
 QVariant QtnPropertyBase::valueAsVariant() const
@@ -729,10 +711,20 @@ void QtnPropertyBase::setExpanded(bool expanded)
 		collapse();
 }
 
+bool QtnPropertyBase::isCollapsed() const
+{
+	return (0 != (m_stateLocal & QtnPropertyStateCollapsed));
+}
+
 void QtnPropertyBase::setCollapsed(bool collapsed)
 {
 	if (collapsed)
 		collapse();
 	else
 		expand();
+}
+
+QtnPropertyState QtnPropertyBase::state() const
+{
+	return m_stateLocal | m_stateInherited;
 }
