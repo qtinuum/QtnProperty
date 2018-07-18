@@ -91,11 +91,10 @@ void QtnPropertyView::onEditedPropertyWillChange(
 {
 	if (0 != (reason & QtnPropertyChangeReasonEditValue))
 	{
-		auto property = dynamic_cast<QtnPropertyBase *>(sender());
+		auto property = qobject_cast<QtnPropertyBase *>(sender());
 		Q_ASSERT(nullptr != property);
 
-		auto rootProperty =
-			dynamic_cast<QtnProperty *>(property->getRootProperty());
+		auto rootProperty = property->getRootProperty()->asProperty();
 		Q_ASSERT(nullptr != rootProperty);
 
 		emit beforePropertyEdited(rootProperty, newValue, typeId);
@@ -106,11 +105,10 @@ void QtnPropertyView::onEditedPropertyDidChange(QtnPropertyChangeReason reason)
 {
 	if (0 != (reason & QtnPropertyChangeReasonEditValue))
 	{
-		auto property = dynamic_cast<QtnPropertyBase *>(sender());
+		auto property = qobject_cast<QtnPropertyBase *>(sender());
 		Q_ASSERT(nullptr != property);
 
-		auto rootProperty =
-			dynamic_cast<QtnProperty *>(property->getRootProperty());
+		auto rootProperty = property->getRootProperty()->asProperty();
 		Q_ASSERT(nullptr != rootProperty);
 
 		emit propertyEdited(rootProperty);
@@ -959,44 +957,44 @@ QtnPropertyView::Item::Item()
 
 void QtnPropertyView::updateItemsTree()
 {
-	m_itemsTree.reset(createItemsTree(m_propertySet, m_delegateFactory));
+	m_itemsTree.reset(createItemsTree(m_propertySet));
 	invalidateVisibleItems();
 }
 
 QtnPropertyView::Item *QtnPropertyView::createItemsTree(
-	QtnPropertyBase *rootProperty, const QtnPropertyDelegateFactory &factory)
+	QtnPropertyBase *rootProperty)
 {
 	if (!rootProperty)
 		return nullptr;
 
-	Item *item(new Item());
+	auto item = new Item;
 	item->property = rootProperty;
 
 	QtnProperty *asProperty = rootProperty->asProperty();
 
 	if (asProperty)
 	{
-		item->delegate.reset(factory.createDelegate(*asProperty));
+		auto &delegate = item->delegate;
+		delegate.reset(m_delegateFactory.createDelegate(*asProperty));
 
-		if (item->delegate)
+		if (delegate)
 		{
 			// apply attributes
 			auto delegateInfo = asProperty->delegate();
 
 			if (delegateInfo)
 			{
-				item->delegate->applyAttributes(delegateInfo->attributes);
+				delegate->applyAttributes(delegateInfo->attributes);
 			}
 
 			// process delegate subproperties
-			for (int i = 0, n = item->delegate->subPropertyCount(); i < n; ++i)
+			for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
 			{
-				QtnPropertyBase *child = item->delegate->subProperty(i);
+				QtnPropertyBase *child = delegate->subProperty(i);
 
 				if (child)
 				{
-					QSharedPointer<Item> childItem(
-						createItemsTree(child, factory));
+					QSharedPointer<Item> childItem(createItemsTree(child));
 					childItem->parent = item;
 					item->children.append(childItem);
 				}
@@ -1011,7 +1009,7 @@ QtnPropertyView::Item *QtnPropertyView::createItemsTree(
 			// process property set subproperties
 			for (auto child : asPropertySet->childProperties())
 			{
-				QSharedPointer<Item> childItem(createItemsTree(child, factory));
+				QSharedPointer<Item> childItem(createItemsTree(child));
 				childItem->parent = item;
 				item->children.append(childItem);
 			}
@@ -1253,16 +1251,16 @@ void QtnPropertyView::disconnectActiveProperty()
 
 void QtnPropertyView::onPropertySetDidChange(QtnPropertyChangeReason reason)
 {
-	if (reason & QtnPropertyChangeReasonChildren)
+	if (reason & QtnPropertyChangeReasonRefresh)
 	{
 		// regrow tree
 		updateItemsTree();
 		viewport()->update();
-	} else if (reason & QtnPropertyChangeReasonState)
+	} else if (reason & QtnPropertyChangeReasonInvalidate)
 	{
 		invalidateVisibleItems();
 		viewport()->update();
-	} else if (reason & QtnPropertyChangeReasonValue)
+	} else if (reason & QtnPropertyChangeReasonRepaint)
 	{
 		viewport()->update();
 	}

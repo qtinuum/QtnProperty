@@ -47,6 +47,9 @@ public:
 	inline SortOrder childrenOrder() const;
 	inline const CompareFunc &compareFunc() const;
 
+	virtual void connectMasterState(QtnPropertyBase *masterProperty) override;
+	virtual void disconnectMasterState() override;
+
 public slots:
 	// sub properties
 	inline bool hasChildProperties() const;
@@ -96,6 +99,10 @@ protected:
 	virtual bool saveImpl(QDataStream &stream) const override;
 
 private:
+	void connectChildProperty(QtnPropertyBase *childProperty);
+	void disconnectChildProperty(QtnPropertyBase *childProperty);
+
+	void sendToMasterProperty(QtnPropertyChangeReason reason);
 	void findChildPropertiesRecursive(
 		const QString &name, QList<QtnPropertyBase *> &result);
 	void findChildPropertiesRecursive(
@@ -112,11 +119,6 @@ private:
 
 	SortOrder m_childrenOrder;
 	bool m_ignoreChildPropertyChanges;
-
-	friend void qtnConnectChildProperty(
-		QtnPropertySet *masterProperty, QtnPropertyBase *childProperty);
-	friend void qtnDisconnectChildProperty(
-		QtnPropertySet *masterProperty, QtnPropertyBase *childProperty);
 };
 
 QtnPropertySet::SortOrder QtnPropertySet::childrenOrder() const

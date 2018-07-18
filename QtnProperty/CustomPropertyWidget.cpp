@@ -354,7 +354,7 @@ void QtnCustomPropertyWidget::onPropertyValueAccept(
 	if (nullptr != accept)
 	{
 		bool ok = VarProperty::PropertyValueAccept(
-			dynamic_cast<QtnProperty *>(sender()), valueToAccept);
+			qobject_cast<QtnProperty *>(sender()), valueToAccept);
 		Q_ASSERT(ok);
 
 		*accept = ok;
@@ -393,7 +393,7 @@ void QtnCustomPropertyWidget::deleteProperty(QtnPropertyBase *property)
 		{
 			var_property->RemoveFromParent();
 
-			auto set = dynamic_cast<QtnPropertySet *>(property->parent());
+			auto set = qobject_cast<QtnPropertySet *>(property->parent());
 			auto &set_properties = set->childProperties();
 			auto active_property_index =
 				set_properties.indexOf(propertyView()->activeProperty());
@@ -464,13 +464,13 @@ bool QtnCustomPropertyWidget::insertReplaceOrCancel(
 
 	int choice = REPLACE;
 
-	auto insertDestination = dynamic_cast<QtnPropertySet *>(destination);
+	auto insertDestination = qobject_cast<QtnPropertySet *>(destination);
 
 	if (nullptr == insertDestination)
 	{
 		if (varProperty != varProperty->TopParent())
 			insertDestination =
-				dynamic_cast<QtnPropertySet *>(destination->parent());
+				qobject_cast<QtnPropertySet *>(destination->parent());
 	}
 
 	if (nullptr != insertDestination)
@@ -581,7 +581,7 @@ bool QtnCustomPropertyWidget::applyPropertyData(const QMimeData *data,
 							if (varProperty != varProperty->TopParent())
 							{
 								auto parent_prop =
-									dynamic_cast<QtnPropertyBase *>(
+									qobject_cast<QtnPropertyBase *>(
 										destination->parent());
 
 								switch (getVarProperty(parent_prop)->GetType())
@@ -823,13 +823,14 @@ void QtnCustomPropertyWidget::updateSet(
 
 	varProperty->RemoveFromParent();
 
-	auto new_set = dynamic_cast<QtnPropertySet *>(newProperty(nullptr, data,
-		varProperty->GetName(), varProperty->GetIndex(), var_parent));
+	auto new_set = newProperty(nullptr, data, varProperty->GetName(),
+		varProperty->GetIndex(), var_parent)
+					   ->asPropertySet();
 
 	Q_ASSERT(nullptr != new_set);
 
 	auto property_parent =
-		dynamic_cast<QtnPropertySet *>(setProperty->parent());
+		qobject_cast<QtnPropertySet *>(setProperty->parent());
 	Q_ASSERT(nullptr != property_parent);
 
 	int property_index =
@@ -895,9 +896,10 @@ QtnPropertyBase *QtnCustomPropertyWidget::newProperty(QtnPropertySet *parent,
 void QtnCustomPropertyWidget::addProperty(
 	QtnPropertyBase *source, const QtnCustomPropertyData &data)
 {
+	Q_ASSERT(nullptr != source);
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
-	auto set = dynamic_cast<QtnPropertySet *>(source);
+	auto set = source->asPropertySet();
 	Q_ASSERT(nullptr != set);
 
 	if (data.index >= 0)
@@ -955,7 +957,7 @@ void QtnCustomPropertyWidget::duplicateProperty(
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
 
-	auto set = dynamic_cast<QtnPropertySet *>(source->parent());
+	auto set = qobject_cast<QtnPropertySet *>(source->parent());
 	Q_ASSERT(nullptr != set);
 
 	addProperty(set, { data.index, data.name, varProperty->CreateVariant() });
@@ -967,7 +969,7 @@ void QtnCustomPropertyWidget::updatePropertyOptions(
 	auto varProperty = getVarProperty(source);
 	Q_ASSERT(nullptr != varProperty);
 
-	auto set = dynamic_cast<QtnPropertySet *>(source->parent());
+	auto set = qobject_cast<QtnPropertySet *>(source->parent());
 	Q_ASSERT(nullptr != set);
 
 	bool refresh_siblings = false;

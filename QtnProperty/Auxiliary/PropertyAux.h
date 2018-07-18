@@ -56,6 +56,9 @@ enum QtnPropertyChangeReasonFlag
 	QtnPropertyChangeReasonChildPropertyRemove = 0x0100,
 	QtnPropertyChangeReasonEditValue = 0x0200,
 	QtnPropertyChangeReasonResetValue = 0x0400,
+	QtnPropertyChangeReasonRefresh = 0x800,
+	QtnPropertyChangeReasonInvalidate = 0x1000,
+	QtnPropertyChangeReasonRepaint = 0x2000,
 	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd |
 		QtnPropertyChangeReasonChildPropertyRemove,
 	QtnPropertyChangeReasonValue = QtnPropertyChangeReasonNewValue |
@@ -70,6 +73,9 @@ enum
 {
 	QtnPropertyIDInvalid = -1
 };
+
+QTN_IMPORT_EXPORT QtnPropertyChangeReason qtnToMasterReason(
+	QtnPropertyChangeReason reason);
 
 typedef void *QtnPropertyValuePtr;
 

@@ -36,6 +36,8 @@ public:
 	QtnInplaceInfo();
 };
 
+class QtnPropertyDelegateFactory;
+
 QTN_IMPORT_EXPORT QString qtnElidedText(const QPainter &painter,
 	const QString &text, const QRect &rect, bool *elided = 0);
 
@@ -43,8 +45,14 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegate
 {
 	Q_DISABLE_COPY(QtnPropertyDelegate)
 
+	QtnPropertyDelegateFactory *m_factory = nullptr;
+
 public:
 	virtual ~QtnPropertyDelegate();
+	virtual void init();
+
+	inline QtnPropertyDelegateFactory *factory() const;
+	inline void setFactory(QtnPropertyDelegateFactory *factory);
 
 	// for complex properties like PropertyQFont
 	inline int subPropertyCount() const;
@@ -95,6 +103,16 @@ protected:
 
 	QtnProperty *ownerProperty;
 };
+
+QtnPropertyDelegateFactory *QtnPropertyDelegate::factory() const
+{
+	return m_factory;
+}
+
+void QtnPropertyDelegate::setFactory(QtnPropertyDelegateFactory *factory)
+{
+	m_factory = factory;
+}
 
 int QtnPropertyDelegate::subPropertyCount() const
 {

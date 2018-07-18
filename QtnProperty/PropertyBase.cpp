@@ -24,6 +24,30 @@ limitations under the License.
 
 static quint16 qtnPropertyMagicNumber = 0x1984;
 
+QtnPropertyChangeReason qtnToMasterReason(QtnPropertyChangeReason reason)
+{
+	QtnPropertyChangeReason masterReason;
+
+	if (reason &
+		(QtnPropertyChangeReasonChildren | QtnPropertyChangeReasonRefresh))
+	{
+		masterReason |= QtnPropertyChangeReasonRefresh;
+	}
+
+	if (reason &
+		(QtnPropertyChangeReasonState | QtnPropertyChangeReasonInvalidate))
+	{
+		masterReason |= QtnPropertyChangeReasonInvalidate;
+	}
+
+	if (reason != 0)
+	{
+		masterReason |= QtnPropertyChangeReasonRepaint;
+	}
+
+	return masterReason;
+}
+
 // extern declaration
 void qtnAddPropertyAsChild(
 	QObject *parent, QtnPropertyBase *child, bool moveOwnership);
@@ -538,12 +562,12 @@ QtnPropertySet *QtnPropertyBase::getRootPropertySet()
 
 	while (p != nullptr)
 	{
-		auto set = dynamic_cast<QtnPropertySet *>(p);
+		auto set = p->asPropertySet();
 
 		auto mp = p->getRootProperty();
 
 		if (set && mp == p &&
-			dynamic_cast<QtnPropertySet *>(set->parent()) == nullptr)
+			qobject_cast<QtnPropertySet *>(set->parent()) == nullptr)
 		{
 			return set;
 		}
@@ -553,7 +577,7 @@ QtnPropertySet *QtnPropertyBase::getRootPropertySet()
 			p = mp;
 		} else
 		{
-			p = dynamic_cast<QtnPropertyBase *>(p->parent());
+			p = qobject_cast<QtnPropertyBase *>(p->parent());
 		}
 	}
 
@@ -595,16 +619,24 @@ void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
 
 	setStateInherited(masterProperty->state());
 
+	QObject::connect(this, &QtnPropertyBase::propertyWillChange, this,
+		&QtnPropertyBase::sendWillChangeToMaster);
+	QObject::connect(this, &QtnPropertyBase::propertyDidChange, this,
+		&QtnPropertyBase::sendDidChangeToMaster);
 	QObject::connect(masterProperty, &QObject::destroyed, this,
 		&QtnPropertyBase::onMasterPropertyDestroyed);
 	QObject::connect(masterProperty, &QtnPropertyBase::propertyDidChange, this,
-		&QtnPropertyBase::masterPropertyStateDidChange, Qt::QueuedConnection);
+		&QtnPropertyBase::masterPropertyStateDidChange);
 }
 
 void QtnPropertyBase::disconnectMasterState()
 {
 	if (nullptr != m_masterProperty)
 	{
+		QObject::disconnect(this, &QtnPropertyBase::propertyWillChange, this,
+			&QtnPropertyBase::sendWillChangeToMaster);
+		QObject::disconnect(this, &QtnPropertyBase::propertyDidChange, this,
+			&QtnPropertyBase::sendDidChangeToMaster);
 		QObject::disconnect(m_masterProperty, &QObject::destroyed, this,
 			&QtnPropertyBase::onMasterPropertyDestroyed);
 		QObject::disconnect(m_masterProperty,
@@ -653,12 +685,10 @@ void QtnPropertyBase::masterPropertyStateDidChange(
 {
 	if (reason & QtnPropertyChangeReasonState)
 	{
-		auto changedProperty = dynamic_cast<QtnPropertyBase *>(sender());
+		auto changedProperty = qobject_cast<QtnPropertyBase *>(sender());
 		Q_ASSERT(nullptr != changedProperty);
 		setStateInherited(changedProperty->state());
 	}
-
-	emit propertyDidChange(reason & ~QtnPropertyChangeReasonEditValue);
 }
 
 QVariant QtnPropertyBase::valueAsVariant() const

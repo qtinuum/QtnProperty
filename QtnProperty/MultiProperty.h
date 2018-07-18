@@ -101,9 +101,11 @@ class QtnMultiPropertyDelegate
 
 public:
 	QtnMultiPropertyDelegate(QtnMultiProperty &owner);
-	virtual ~QtnMultiPropertyDelegate();
+	virtual ~QtnMultiPropertyDelegate() override;
 
 private:
+	virtual void init() override;
+
 	struct PropertyToEdit
 	{
 		QtnMultiProperty *owner;

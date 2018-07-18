@@ -353,7 +353,7 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 					property->name() == targetProperty->name();
 			});
 
-		auto subSet = qobject_cast<QtnPropertySet *>(property);
+		auto subSet = property->asPropertySet();
 		if (subSet)
 		{
 			QtnPropertySet *multiSet;
@@ -370,7 +370,7 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 				target->addChildProperty(multiSet, true);
 			} else
 			{
-				multiSet = qobject_cast<QtnPropertySet *>(*it);
+				multiSet = (*it)->asPropertySet();
 			}
 
 			qtnPropertiesToMultiSet(multiSet, subSet);
@@ -394,4 +394,5 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 			multiProperty->addProperty(property->asProperty());
 		}
 	}
+	source->clearChildProperties();
 }

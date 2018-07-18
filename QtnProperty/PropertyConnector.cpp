@@ -63,7 +63,7 @@ void QtnPropertyConnector::resetPropertyValue(bool edit)
 {
 	if (nullptr != object && metaProperty.isResettable())
 	{
-		auto property = dynamic_cast<QtnPropertyBase *>(parent());
+		auto property = qobject_cast<QtnPropertyBase *>(parent());
 		Q_ASSERT(nullptr != property);
 
 		if (!property->valueIsDefault() && property->isEditableByUser())
@@ -83,7 +83,7 @@ void QtnPropertyConnector::resetPropertyValue(bool edit)
 
 void QtnPropertyConnector::onValueChanged()
 {
-	auto property = dynamic_cast<QtnPropertyBase *>(parent());
+	auto property = qobject_cast<QtnPropertyBase *>(parent());
 
 	if (nullptr != property)
 	{
@@ -93,7 +93,7 @@ void QtnPropertyConnector::onValueChanged()
 
 void QtnPropertyConnector::onModifiedSetChanged()
 {
-	auto property = dynamic_cast<QtnPropertyBase *>(parent());
+	auto property = qobject_cast<QtnPropertyBase *>(parent());
 
 	if (nullptr != property)
 	{

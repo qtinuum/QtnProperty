@@ -35,22 +35,20 @@ void qtnRemovePropertyAsChild(QObject *parent, QtnPropertyBase *child)
 		propertySet->removeChildProperty(child);
 }
 
-void qtnConnectChildProperty(
-	QtnPropertySet *masterProperty, QtnPropertyBase *childProperty)
+void QtnPropertySet::connectChildProperty(QtnPropertyBase *childProperty)
 {
-	QObject::connect(childProperty, &QtnPropertyBase::propertyWillChange,
-		masterProperty, &QtnPropertySet::childPropertyWillChange);
-	QObject::connect(childProperty, &QtnPropertyBase::propertyDidChange,
-		masterProperty, &QtnPropertySet::childPropertyDidChange);
+	QObject::connect(childProperty, &QtnPropertyBase::propertyWillChange, this,
+		&QtnPropertySet::childPropertyWillChange);
+	QObject::connect(childProperty, &QtnPropertyBase::propertyDidChange, this,
+		&QtnPropertySet::childPropertyDidChange);
 }
 
-void qtnDisconnectChildProperty(
-	QtnPropertySet *masterProperty, QtnPropertyBase *childProperty)
+void QtnPropertySet::disconnectChildProperty(QtnPropertyBase *childProperty)
 {
 	QObject::disconnect(childProperty, &QtnPropertyBase::propertyWillChange,
-		masterProperty, &QtnPropertySet::childPropertyWillChange);
+		this, &QtnPropertySet::childPropertyWillChange);
 	QObject::disconnect(childProperty, &QtnPropertyBase::propertyDidChange,
-		masterProperty, &QtnPropertySet::childPropertyDidChange);
+		this, &QtnPropertySet::childPropertyDidChange);
 }
 
 QtnPropertySet::QtnPropertySet(QObject *parent)
@@ -70,6 +68,33 @@ QtnPropertySet::QtnPropertySet(
 QtnPropertySet::~QtnPropertySet()
 {
 	clearChildProperties();
+}
+
+void QtnPropertySet::connectMasterState(QtnPropertyBase *masterProperty)
+{
+	Q_ASSERT(nullptr != masterProperty);
+
+	disconnectMasterState();
+
+	m_masterProperty = masterProperty;
+
+	QObject::connect(this, &QtnPropertyBase::propertyWillChange,
+		m_masterProperty, &QtnPropertyBase::propertyWillChange);
+	QObject::connect(this, &QtnPropertyBase::propertyDidChange, this,
+		&QtnPropertySet::sendToMasterProperty);
+}
+
+void QtnPropertySet::disconnectMasterState()
+{
+	if (nullptr != m_masterProperty)
+	{
+		QObject::disconnect(this, &QtnPropertyBase::propertyWillChange,
+			m_masterProperty, &QtnPropertyBase::propertyWillChange);
+		QObject::disconnect(this, &QtnPropertyBase::propertyDidChange, this,
+			&QtnPropertySet::sendToMasterProperty);
+
+		m_masterProperty = nullptr;
+	}
 }
 
 int QtnPropertySet::compareByName(
@@ -178,7 +203,7 @@ void QtnPropertySet::clearChildProperties()
 
 	for (auto childProperty : m_childProperties)
 	{
-		qtnDisconnectChildProperty(this, childProperty);
+		disconnectChildProperty(childProperty);
 	}
 
 	emit propertyWillChange(
@@ -225,7 +250,7 @@ bool QtnPropertySet::addChildProperty(
 	else
 		m_childProperties.insert(index, childProperty);
 
-	qtnConnectChildProperty(this, childProperty);
+	connectChildProperty(childProperty);
 
 	if (moveOwnership)
 		childProperty->setParent(this);
@@ -253,7 +278,7 @@ bool QtnPropertySet::removeChildProperty(QtnPropertyBase *childProperty)
 	emit propertyWillChange(QtnPropertyChangeReasonChildPropertyRemove,
 		QtnPropertyValuePtr(childProperty), qMetaTypeId<QtnPropertyBase *>());
 
-	qtnDisconnectChildProperty(this, childProperty);
+	disconnectChildProperty(childProperty);
 	m_childProperties.erase(m_childProperties.begin() + childPropertyIndex);
 
 	if (childProperty->parent() == this)
@@ -453,6 +478,17 @@ bool QtnPropertySet::saveImpl(QDataStream &stream) const
 	return stream.status() == QDataStream::Ok;
 }
 
+void QtnPropertySet::sendToMasterProperty(QtnPropertyChangeReason reason)
+{
+	if (!m_masterProperty)
+		return;
+
+	reason &=
+		~(QtnPropertyChangeReasonState | QtnPropertyChangeReasonEditValue);
+	if (reason)
+		m_masterProperty->propertyDidChange(reason);
+}
+
 void QtnPropertySet::findChildPropertiesRecursive(
 	const QString &name, QList<QtnPropertyBase *> &result)
 {
@@ -488,12 +524,20 @@ void QtnPropertySet::childPropertyWillChange(QtnPropertyChangeReason reason)
 	if (m_ignoreChildPropertyChanges)
 		return;
 
+	reason = qtnToMasterReason(reason);
+	if (!reason)
+		return;
+
 	emit propertyWillChange(reason, nullptr, 0);
 }
 
 void QtnPropertySet::childPropertyDidChange(QtnPropertyChangeReason reason)
 {
 	if (m_ignoreChildPropertyChanges)
+		return;
+
+	reason = qtnToMasterReason(reason);
+	if (!reason)
 		return;
 
 	emit propertyDidChange(reason);

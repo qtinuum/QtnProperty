@@ -101,8 +101,8 @@ public:
 	inline QtnPropertyBase *getMasterProperty() const;
 	QtnPropertyBase *getRootProperty();
 	QtnPropertySet *getRootPropertySet();
-	virtual void connectMasterState(QtnPropertyBase *masterProperty);
-	virtual void disconnectMasterState();
+	void connectMasterState(QtnPropertyBase *masterProperty);
+	void disconnectMasterState();
 
 	void postUpdateEvent(QtnPropertyChangeReason reason, int afterMS = 0);
 
@@ -124,13 +124,8 @@ Q_SIGNALS:
 		QtnPropertyValuePtr newValue, int typeId);
 	void propertyDidChange(QtnPropertyChangeReason reason);
 
-private slots:
-	void onMasterPropertyDestroyed(QObject *object);
-
 protected:
 	QtnPropertyBase(QObject *parent);
-
-	virtual void masterPropertyStateDidChange(QtnPropertyChangeReason reason);
 
 	virtual bool event(QEvent *e) override;
 
@@ -149,6 +144,12 @@ protected:
 	// inherited states support
 	virtual void updateStateInherited(bool force);
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
+
+private:
+	void onMasterPropertyDestroyed(QObject *object);
+	void sendWillChangeToMaster(QtnPropertyChangeReason reason);
+	void sendDidChangeToMaster(QtnPropertyChangeReason reason);
+	void masterPropertyStateDidChange(QtnPropertyChangeReason reason);
 
 private:
 	QtnPropertyBase *m_masterProperty;

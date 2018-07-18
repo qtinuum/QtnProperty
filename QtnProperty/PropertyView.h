@@ -62,7 +62,9 @@ class QTN_IMPORT_EXPORT QtnPropertyView : public QAbstractScrollArea
 public:
 	explicit QtnPropertyView(
 		QWidget *parent = nullptr, QtnPropertySet *propertySet = nullptr);
-	~QtnPropertyView();
+	virtual ~QtnPropertyView() override;
+
+	inline QtnPropertyDelegateFactory *delegateFactory();
 
 	inline const QtnPropertySet *propertySet() const;
 	inline QtnPropertySet *propertySet();
@@ -158,8 +160,7 @@ private:
 
 private:
 	void updateItemsTree();
-	static Item *createItemsTree(QtnPropertyBase *rootProperty,
-		const QtnPropertyDelegateFactory &factory);
+	Item *createItemsTree(QtnPropertyBase *rootProperty);
 
 	void setActivePropertyInternal(QtnPropertyBase *property);
 	bool startPropertyEdit(
@@ -224,6 +225,11 @@ private:
 	friend class QtnAccessibilityProxy;
 	QtnAccessibilityProxy *m_accessibilityProxy;
 };
+
+QtnPropertyDelegateFactory *QtnPropertyView::delegateFactory()
+{
+	return &m_delegateFactory;
+}
 
 const QtnPropertySet *QtnPropertyView::propertySet() const
 {
