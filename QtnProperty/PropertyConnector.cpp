@@ -21,18 +21,21 @@ limitations under the License.
 #include "QObjectPropertySet.h"
 #include "IQtnPropertyStateProvider.h"
 
-QtnPropertyConnector::QtnPropertyConnector(QtnPropertyBase *parent)
-	: QObject(parent)
+QtnPropertyConnector::QtnPropertyConnector(QtnPropertyBase *property)
+	: QObject(property)
+	, property(property)
 	, object(nullptr)
 {
-	Q_ASSERT(nullptr != parent);
-	Q_ASSERT(nullptr == parent->getConnector());
-	parent->setConnector(this);
+	Q_ASSERT(nullptr != property);
+	Q_ASSERT(nullptr == property->getConnector());
+	property->setConnector(this);
 }
 
 void QtnPropertyConnector::connectProperty(
 	QObject *object, const QMetaProperty &metaProperty)
 {
+	property->switchState(
+		QtnPropertyStateResettable, metaProperty.isResettable());
 	this->object = object;
 	this->metaProperty = metaProperty;
 	auto metaObject = this->metaObject();

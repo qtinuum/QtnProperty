@@ -18,6 +18,7 @@ limitations under the License.
 #include "PropertyBase.h"
 
 #include "PropertySet.h"
+#include "PropertyConnector.h"
 
 #include <QScriptEngine>
 #include <QCoreApplication>
@@ -709,6 +710,27 @@ void QtnPropertyBase::setExpanded(bool expanded)
 		expand();
 	else
 		collapse();
+}
+
+bool QtnPropertyBase::isResettable() const
+{
+	return isWritable() && 0 != (stateLocal() & QtnPropertyStateResettable);
+}
+
+void QtnPropertyBase::reset(bool edit)
+{
+	Q_ASSERT(isResettable());
+
+	auto connector = getConnector();
+	if (connector)
+	{
+		connector->resetPropertyValue(edit);
+	}
+}
+
+bool QtnPropertyBase::isWritable() const
+{
+	return (0 == (state() & QtnPropertyStateImmutable));
 }
 
 bool QtnPropertyBase::isCollapsed() const

@@ -18,15 +18,23 @@ limitations under the License.
 
 #include "Config.h"
 #include "Property.h"
-#include "PropertyConnector.h"
 #include "PropertySet.h"
+#include "PropertyConnector.h"
 #include "QObjectPropertySet.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/Core/PropertyDelegateBool.h"
+#include "Utils/QtnConnections.h"
 
 #include <QStyleOption>
 #include <QKeyEvent>
 #include <QLineEdit>
+
+struct QtnMultiPropertyDelegate::PropertyToEdit
+{
+	QtnMultiProperty *owner;
+	QtnProperty *property;
+	QtnConnections connections;
+};
 
 QtnMultiProperty::QtnMultiProperty(
 	const QMetaObject *propertyMetaObject, QObject *parent)
@@ -92,43 +100,30 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 		&QtnMultiProperty::onPropertyDidChange);
 }
 
-void QtnMultiProperty::resetValues(bool edit)
+void QtnMultiProperty::reset(bool edit)
 {
-	if (!valueIsDefault() && isEditableByUser())
-	{
-		QtnPropertyChangeReason reasons =
-			QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
+	if (valueIsDefault() || !isResettable() || isEditableByUser() != edit)
+		return;
 
-		if (edit)
-			reasons |= QtnPropertyChangeReasonEditValue;
+	QtnPropertyChangeReason reasons =
+		QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
 
-		emit propertyWillChange(reasons, nullptr, 0);
+	if (edit)
+		reasons |= QtnPropertyChangeReasonEditValue;
 
-		for (auto property : properties)
-		{
-			auto connector = property->getConnector();
+	emit propertyWillChange(reasons, nullptr, 0);
 
-			if (nullptr != connector)
-				connector->resetPropertyValue(false);
-		}
-
-		emit propertyDidChange(reasons);
-
-		updateMultipleState(true);
-	}
-}
-
-bool QtnMultiProperty::hasResettableValues() const
-{
 	for (auto property : properties)
 	{
-		auto connector = property->getConnector();
-
-		if (nullptr != connector && connector->isResettablePropertyValue())
-			return true;
+		if (property->isResettable())
+		{
+			property->reset(edit);
+		}
 	}
 
-	return false;
+	emit propertyDidChange(reasons);
+
+	updateMultipleState(true);
 }
 
 bool QtnMultiProperty::Register()
@@ -328,17 +323,28 @@ bool QtnMultiProperty::toVariantImpl(QVariant &var) const
 
 void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 {
-	if (stateLocal() == QtnPropertyStateNone)
-		setState(source->stateLocal());
+	auto state = stateLocal();
 
-	if (source->isEditableByUser())
+	if (state == QtnPropertyStateNone)
 	{
-		removeState(QtnPropertyStateImmutable | QtnPropertyStateInvisible);
-
-		if (mutablePropertyIndex >= 0)
-			return;
+		state = source->stateLocal();
 	}
 
+	if (source->isResettable())
+	{
+		state |= QtnPropertyStateResettable;
+	}
+
+	bool writable = source->isWritable();
+	if (writable)
+	{
+		state &= ~(QtnPropertyStateImmutable | QtnPropertyStateInvisible);
+	}
+
+	setState(state);
+
+	if (writable && mutablePropertyIndex >= 0)
+		return;
 	updateMutablePropertyIndex();
 }
 
@@ -372,13 +378,13 @@ void QtnMultiProperty::updateMultipleState(bool force)
 void QtnMultiProperty::updateMutablePropertyIndex()
 {
 	if (mutablePropertyIndex < 0 ||
-		!properties.at(mutablePropertyIndex)->isEditableByUser())
+		!properties.at(mutablePropertyIndex)->isWritable())
 	{
 		mutablePropertyIndex = 0;
 
 		for (auto property : properties)
 		{
-			if (property->isEditableByUser())
+			if (property->isWritable())
 				return;
 
 			mutablePropertyIndex++;
@@ -516,17 +522,6 @@ void QtnMultiPropertyDelegate::onEditedPropertyDestroyed(PropertyToEdit *data)
 
 void QtnMultiPropertyDelegate::onEditorDestroyed(PropertyToEdit *data)
 {
-	Q_ASSERT(nullptr != data);
-	auto propertyToEdit = data->property;
-
-	if (nullptr != propertyToEdit)
-	{
-		for (auto &connection : data->connections)
-		{
-			QObject::disconnect(connection);
-		}
-	}
-
 	delete data;
 }
 

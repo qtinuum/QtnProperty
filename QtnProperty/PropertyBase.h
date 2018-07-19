@@ -35,6 +35,8 @@ class QTN_IMPORT_EXPORT QtnPropertyBase : public QObject
 	Q_DISABLE_COPY(QtnPropertyBase)
 
 	QtnPropertyConnector *mPropertyConnector;
+	friend class QtnPropertyConnector;
+	inline void setConnector(QtnPropertyConnector *connector);
 
 public:
 	virtual ~QtnPropertyBase() override;
@@ -53,13 +55,17 @@ public:
 	bool isExpanded() const;
 	void setExpanded(bool expanded);
 
+	bool isResettable() const;
+	virtual void reset(bool edit);
+
+	bool isWritable() const;
+
 	bool isCollapsed() const;
 	void setCollapsed(bool collapsed);
 
 	inline void expand();
 	inline void collapse();
 
-	inline void setConnector(QtnPropertyConnector *connector);
 	inline QtnPropertyConnector *getConnector() const;
 	inline bool isQObjectProperty() const;
 

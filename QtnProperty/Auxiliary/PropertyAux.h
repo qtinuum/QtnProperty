@@ -36,7 +36,8 @@ enum QtnPropertyStateFlag
 	QtnPropertyStateNonSerialized = 0x0010,
 	QtnPropertyStateHiddenValue = 0x0020,
 	QtnPropertyStateModifiedValue = 0x0040,
-	QtnPropertyStateIgnoreDirectParentState = 0x80
+	QtnPropertyStateIgnoreDirectParentState = 0x80,
+	QtnPropertyStateResettable = 0x100
 };
 
 Q_DECLARE_FLAGS(QtnPropertyState, QtnPropertyStateFlag)

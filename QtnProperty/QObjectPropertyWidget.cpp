@@ -96,24 +96,12 @@ void QObjectPropertyWidget::deselectObject(QObject *object, bool destroyed)
 
 void QObjectPropertyWidget::onResetTriggered()
 {
-	auto multiProperty = getMultiProperty();
-
-	QtnConnections connections;
-
-	if (nullptr != multiProperty)
+	auto activeProperty = getActiveProperty();
+	if (activeProperty)
 	{
-		propertyView()->connectPropertyToEdit(multiProperty, connections);
-		multiProperty->resetValues(true);
-	} else
-	{
-		auto connector = getPropertyConnector();
-
-		if (nullptr != connector)
-		{
-			propertyView()->connectPropertyToEdit(
-				getActiveProperty(), connections);
-			connector->resetPropertyValue(true);
-		}
+		QtnConnections connections;
+		propertyView()->connectPropertyToEdit(activeProperty, connections);
+		activeProperty->reset(true);
 	}
 }
 
@@ -137,34 +125,19 @@ void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
 	if (nullptr == property)
 		return;
 
-	if (!property->isEditableByUser())
+	if (!property->isResettable() || !property->isEditableByUser())
 		return;
 
-	auto connector = getPropertyConnector();
-	auto multiProperty = getMultiProperty();
+	QMenu menu(this);
 
-	if (nullptr != connector || nullptr != multiProperty)
-	{
-		QMenu menu(this);
+	auto action = menu.addAction(tr("Reset to default"));
+	action->setStatusTip(
+		tr("Reset value of %1 to default").arg(property->name()));
 
-		auto action = menu.addAction(tr("Reset to default"));
-		action->setStatusTip(
-			tr("Reset value of %1 to default").arg(property->name()));
+	QObject::connect(action, &QAction::triggered, this,
+		&QObjectPropertyWidget::onResetTriggered);
 
-		bool resettable = (nullptr != multiProperty)
-			? multiProperty->hasResettableValues()
-			: connector->isResettablePropertyValue();
-
-		action->setEnabled(resettable);
-
-		if (resettable)
-		{
-			QObject::connect(action, &QAction::triggered, this,
-				&QObjectPropertyWidget::onResetTriggered);
-		}
-
-		menu.exec(event->globalPos());
-	}
+	menu.exec(event->globalPos());
 }
 
 QtnMultiProperty *QObjectPropertyWidget::getMultiProperty() const

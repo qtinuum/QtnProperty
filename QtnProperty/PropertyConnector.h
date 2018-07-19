@@ -29,7 +29,7 @@ class QTN_IMPORT_EXPORT QtnPropertyConnector : public QObject
 	Q_OBJECT
 
 public:
-	explicit QtnPropertyConnector(QtnPropertyBase *parent);
+	explicit QtnPropertyConnector(QtnPropertyBase *property);
 
 	void connectProperty(QObject *object, const QMetaProperty &metaProperty);
 
@@ -44,6 +44,7 @@ private slots:
 	void onModifiedSetChanged();
 
 private:
+	QtnPropertyBase *property;
 	QObject *object;
 	QMetaProperty metaProperty;
 };

@@ -25,6 +25,8 @@ limitations under the License.
 #include <memory>
 
 class QtnMultiPropertyDelegate;
+class QtnConnections;
+
 class QTN_IMPORT_EXPORT QtnMultiProperty : public QtnProperty
 {
 	Q_OBJECT
@@ -37,9 +39,8 @@ public:
 	virtual const QMetaObject *propertyMetaObject() const override;
 
 	void addProperty(QtnProperty *property, bool own = true);
-	void resetValues(bool edit);
+	virtual void reset(bool edit) override;
 
-	bool hasResettableValues() const;
 	bool hasMultipleValues() const;
 
 	static bool Register();
@@ -101,12 +102,7 @@ public:
 private:
 	virtual void init() override;
 
-	struct PropertyToEdit
-	{
-		QtnMultiProperty *owner;
-		QtnProperty *property;
-		std::vector<QMetaObject::Connection> connections;
-	};
+	struct PropertyToEdit;
 
 	static void onEditedPropertyWillChange(PropertyToEdit *data,
 		QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue,
