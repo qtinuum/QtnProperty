@@ -24,7 +24,7 @@ class QtnPropertyDelegateInfoGetter
 	Q_DISABLE_COPY(QtnPropertyDelegateInfoGetter)
 
 public:
-	virtual const QtnPropertyDelegateInfo *delegate() const = 0;
+	virtual const QtnPropertyDelegateInfo *delegateInfo() const = 0;
 
 	virtual ~QtnPropertyDelegateInfoGetter() {}
 
@@ -35,12 +35,13 @@ protected:
 class QtnPropertyDelegateInfoGetterValue : public QtnPropertyDelegateInfoGetter
 {
 public:
-	QtnPropertyDelegateInfoGetterValue(const QtnPropertyDelegateInfo &delegate);
+	QtnPropertyDelegateInfoGetterValue(
+		const QtnPropertyDelegateInfo &delegateInfo);
 
-	virtual const QtnPropertyDelegateInfo *delegate() const override;
+	virtual const QtnPropertyDelegateInfo *delegateInfo() const override;
 
 private:
-	QtnPropertyDelegateInfo m_delegate;
+	QtnPropertyDelegateInfo m_delegateInfo;
 };
 
 class QtnPropertyDelegateInfoGetterCallback
@@ -48,13 +49,13 @@ class QtnPropertyDelegateInfoGetterCallback
 {
 public:
 	QtnPropertyDelegateInfoGetterCallback(
-		const std::function<const QtnPropertyDelegateInfo *()> &callback);
+		const QtnProperty::DelegateInfoCallback &callback);
 
-	virtual const QtnPropertyDelegateInfo *delegate() const override;
+	virtual const QtnPropertyDelegateInfo *delegateInfo() const override;
 
 private:
-	std::function<const QtnPropertyDelegateInfo *()> m_callback;
-	mutable QScopedPointer<const QtnPropertyDelegateInfo> m_delegate;
+	QtnProperty::DelegateInfoCallback m_callback;
+	mutable QScopedPointer<QtnPropertyDelegateInfo> m_delegateInfo;
 };
 
 QtnProperty::QtnProperty(QObject *parent)
@@ -67,22 +68,21 @@ QtnProperty::~QtnProperty()
 	// Do not remove! Will be compile errors.
 }
 
-const QtnPropertyDelegateInfo *QtnProperty::delegate() const
+const QtnPropertyDelegateInfo *QtnProperty::delegateInfo() const
 {
 	if (m_delegateInfoGetter.isNull())
 		return 0;
 
-	return m_delegateInfoGetter->delegate();
+	return m_delegateInfoGetter->delegateInfo();
 }
 
-void QtnProperty::setDelegate(const QtnPropertyDelegateInfo &delegate)
+void QtnProperty::setDelegateInfo(const QtnPropertyDelegateInfo &delegate)
 {
 	m_delegateInfoGetter.reset(
 		new QtnPropertyDelegateInfoGetterValue(delegate));
 }
 
-void QtnProperty::setDelegateCallback(
-	const std::function<const QtnPropertyDelegateInfo *()> &callback)
+void QtnProperty::setDelegateInfoCallback(const DelegateInfoCallback &callback)
 {
 	m_delegateInfoGetter.reset(
 		new QtnPropertyDelegateInfoGetterCallback(callback));
@@ -100,29 +100,29 @@ const QtnProperty *QtnProperty::asProperty() const
 
 QtnPropertyDelegateInfoGetterValue::QtnPropertyDelegateInfoGetterValue(
 	const QtnPropertyDelegateInfo &delegate)
-	: m_delegate(delegate)
+	: m_delegateInfo(delegate)
 {
 }
 
-const QtnPropertyDelegateInfo * //
-QtnPropertyDelegateInfoGetterValue::delegate() const
+const QtnPropertyDelegateInfo *
+QtnPropertyDelegateInfoGetterValue::delegateInfo() const
 {
-	return &m_delegate;
+	return &m_delegateInfo;
 }
 
 QtnPropertyDelegateInfoGetterCallback::QtnPropertyDelegateInfoGetterCallback(
-	const std::function<const QtnPropertyDelegateInfo *()> &callback)
+	const QtnProperty::DelegateInfoCallback &callback)
 	: m_callback(callback)
 {
 }
 
-const QtnPropertyDelegateInfo * //
-QtnPropertyDelegateInfoGetterCallback::delegate() const
+const QtnPropertyDelegateInfo *
+QtnPropertyDelegateInfoGetterCallback::delegateInfo() const
 {
-	if (m_delegate.isNull())
+	if (m_delegateInfo.isNull())
 	{
-		m_delegate.reset(m_callback());
+		m_delegateInfo.reset(new QtnPropertyDelegateInfo(m_callback()));
 	}
 
-	return m_delegate.data();
+	return m_delegateInfo.data();
 }

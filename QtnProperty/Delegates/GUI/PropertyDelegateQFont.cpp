@@ -141,7 +141,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		delegate.attributes[qtnItemsAttr()] =
 			QStringList(QString()) + fDB.styles(value);
 		delegate.attributes[qtnEditableAttr()] = true;
-		propertyStyle->setDelegate(delegate);
+		propertyStyle->setDelegateInfo(delegate);
 
 		owner.postUpdateEvent(QtnPropertyChangeReasonChildren);
 #endif
@@ -151,7 +151,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 	delegate.name = qtnComboBoxDelegate();
 	QFontDatabase fDB;
 	delegate.attributes[qtnItemsAttr()] = fDB.families();
-	propertyFamily->setDelegate(delegate);
+	propertyFamily->setDelegateInfo(delegate);
 
 	propertyStyle->setName(QtnPropertyQFont::getStyleLabel());
 	propertyStyle->setDescription(
@@ -174,7 +174,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 	delegate.name = qtnLineEditDelegate();
 	delegate.attributes[qtnMultiLineEditAttr()] = false;
 #endif
-	propertyStyle->setDelegate(delegate);
+	propertyStyle->setDelegateInfo(delegate);
 
 	addSubProperty(propertyStyle);
 

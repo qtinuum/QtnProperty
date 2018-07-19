@@ -83,13 +83,13 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 		return;
 	}
 
-	auto delegate = property->delegate();
+	auto delegate = property->delegateInfo();
 
 	if (delegate)
 	{
 		QtnPropertyDelegateInfo copy;
 		copy.attributes = delegate->attributes;
-		setDelegate(copy);
+		setDelegateInfo(copy);
 	}
 
 	QObject::connect(property, &QtnProperty::propertyValueAccept, this,
@@ -641,11 +641,11 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(
 
 		auto superDelegate = superDelegates.at(superIndex).get();
 
-		auto delegate = propertyToEdit->delegate();
+		auto delegateInfo = propertyToEdit->delegateInfo();
 
-		if (delegate)
+		if (delegateInfo)
 		{
-			superDelegate->applyAttributes(delegate->attributes);
+			superDelegate->applyAttributes(delegateInfo->attributes);
 		}
 
 		auto editor =

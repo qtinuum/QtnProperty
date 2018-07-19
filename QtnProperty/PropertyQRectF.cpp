@@ -43,9 +43,9 @@ void QtnPropertyQRectFBase::setMode(bool coordinates)
 {
 	this->coordinates = coordinates;
 
-	setDelegateCallback([coordinates]() -> const QtnPropertyDelegateInfo * {
-		auto result = new QtnPropertyDelegateInfo;
-		result->name = coordinates ? qtnQRectF_LTRB() : qtnQRectF_LTWH();
+	setDelegateInfoCallback([coordinates]() -> QtnPropertyDelegateInfo {
+		QtnPropertyDelegateInfo result;
+		result.name = coordinates ? qtnQRectF_LTRB() : qtnQRectF_LTWH();
 		return result;
 	});
 }

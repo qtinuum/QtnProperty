@@ -972,7 +972,7 @@ QtnPropertyView::Item *QtnPropertyView::createItemsTree(
 		if (delegate)
 		{
 			// apply attributes
-			auto delegateInfo = asProperty->delegate();
+			auto delegateInfo = asProperty->delegateInfo();
 
 			if (delegateInfo)
 			{

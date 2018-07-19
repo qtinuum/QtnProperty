@@ -43,7 +43,7 @@ static QtnProperty *createRealNumberProperty(
 		{
 			QtnPropertyDelegateInfo delegate;
 			qtnInitPercentSpinBoxDelegate(delegate);
-			property->setDelegate(delegate);
+			property->setDelegateInfo(delegate);
 
 			property->setCallbackValueGet([object, metaProperty]() -> double {
 				return metaProperty.read(object).toDouble() * 100.0;
@@ -60,7 +60,7 @@ static QtnProperty *createRealNumberProperty(
 		{
 			QtnPropertyDelegateInfo delegate;
 			qtnInitDegreeSpinBoxDelegate(delegate);
-			property->setDelegate(delegate);
+			property->setDelegateInfo(delegate);
 			break;
 		}
 	}

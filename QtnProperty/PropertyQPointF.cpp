@@ -117,23 +117,20 @@ QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
 	QtnPropertyQPointFBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointFBase>(owner)
 {
-	auto delegateCallback = [this]() -> const QtnPropertyDelegateInfo * {
-		auto baseDelegate = this->owner().delegate();
-		QtnPropertyDelegateInfo *result;
+	auto delegateCallback = [this]() -> QtnPropertyDelegateInfo {
+		auto baseDelegate = this->owner().delegateInfo();
+		QtnPropertyDelegateInfo result;
 		if (baseDelegate)
 		{
-			result = new QtnPropertyDelegateInfo(*baseDelegate);
-		} else
-		{
-			result = new QtnPropertyDelegateInfo();
+			result.attributes = baseDelegate->attributes;
 		}
-		result->name = qtnSpinBoxDelegate();
+		result.name = qtnSpinBoxDelegate();
 		return result;
 	};
 	mPropertyX = owner.createXProperty();
 	mPropertyY = owner.createYProperty();
-	mPropertyX->setDelegateCallback(delegateCallback);
-	mPropertyY->setDelegateCallback(delegateCallback);
+	mPropertyX->setDelegateInfoCallback(delegateCallback);
+	mPropertyY->setDelegateInfoCallback(delegateCallback);
 	addSubProperty(mPropertyX);
 	addSubProperty(mPropertyY);
 }

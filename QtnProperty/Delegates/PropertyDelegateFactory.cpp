@@ -65,7 +65,7 @@ QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegateInternal(
 		{
 			// try to find delegate factory by name
 			const CreateItem &createItem = it.value();
-			const QtnPropertyDelegateInfo *propertyDelegate = owner.delegate();
+			const QtnPropertyDelegateInfo *propertyDelegate = owner.delegateInfo();
 			QByteArray delegateName;
 
 			if (propertyDelegate)
