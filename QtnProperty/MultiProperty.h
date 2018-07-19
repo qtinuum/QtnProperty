@@ -39,7 +39,6 @@ public:
 	virtual const QMetaObject *propertyMetaObject() const override;
 
 	void addProperty(QtnProperty *property, bool own = true);
-	virtual void reset(bool edit) override;
 
 	bool hasMultipleValues() const;
 
@@ -59,6 +58,7 @@ private slots:
 	void onPropertyDidChange(QtnPropertyChangeReason reason);
 
 protected:
+	virtual void doReset(bool edit) override;
 	virtual bool loadImpl(QDataStream &stream) override;
 	virtual bool saveImpl(QDataStream &stream) const override;
 

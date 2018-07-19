@@ -77,6 +77,7 @@ public slots:
 	virtual const QtnPropertySet *asPropertySet() const override;
 
 protected:
+	virtual void doReset(bool edit) override;
 	virtual void updateStateInherited(bool force) override;
 
 	// cloning implementation

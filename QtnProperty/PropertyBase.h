@@ -33,10 +33,17 @@ class QTN_IMPORT_EXPORT QtnPropertyBase : public QObject
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyBase)
+	Q_PROPERTY(QString name READ name)
+	Q_PROPERTY(QString description READ description)
+	Q_PROPERTY(qint32 id READ id)
+	Q_PROPERTY(bool isEditable READ isEditableByUser)
+	Q_PROPERTY(quint32 state READ state)
+	Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 	QtnPropertyConnector *mPropertyConnector;
 	friend class QtnPropertyConnector;
 	inline void setConnector(QtnPropertyConnector *connector);
+	friend class QtnPropertySet;
 
 public:
 	virtual ~QtnPropertyBase() override;
@@ -56,7 +63,7 @@ public:
 	void setExpanded(bool expanded);
 
 	bool isResettable() const;
-	virtual void reset(bool edit);
+	void reset(bool edit);
 
 	bool isWritable() const;
 
@@ -111,17 +118,7 @@ public:
 	QtnPropertySet *getRootPropertySet();
 	void connectMasterState(QtnPropertyBase *masterProperty);
 	void disconnectMasterState();
-
 	void postUpdateEvent(QtnPropertyChangeReason reason, int afterMS = 0);
-
-public:
-	// properties for scripting
-	Q_PROPERTY(QString name READ name)
-	Q_PROPERTY(QString description READ description)
-	Q_PROPERTY(qint32 id READ id)
-	Q_PROPERTY(bool isEditable READ isEditableByUser)
-	Q_PROPERTY(quint32 state READ state)
-	Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 	// getter/setter for "value" property
 	QVariant valueAsVariant() const;
@@ -135,6 +132,7 @@ Q_SIGNALS:
 protected:
 	QtnPropertyBase(QObject *parent);
 
+	virtual void doReset(bool edit);
 	virtual bool event(QEvent *e) override;
 
 	// serialization implementation
@@ -170,8 +168,6 @@ private:
 	int changeReasons;
 	int timer;
 	QEvent *updateEvent;
-
-	friend class QtnPropertySet;
 };
 
 QString QtnPropertyBase::name() const

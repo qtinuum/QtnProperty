@@ -99,11 +99,31 @@ protected:
 	{
 	}
 
+	virtual void doReset(bool edit) override
+	{
+		ValueTypeStore defaultValue;
+		if (defaultValueImpl(defaultValue))
+		{
+			QtnPropertyChangeReason reason = QtnPropertyChangeReasonResetValue;
+
+			if (edit)
+				reason |= QtnPropertyChangeReasonEditValue;
+
+			setValueWithReason(defaultValue, reason);
+		}
+	}
+
 	virtual ValueType valueImpl() const = 0;
 	virtual void setValueImpl(ValueType newValue) = 0;
 	virtual bool isValueAcceptedImpl(ValueType)
 	{
 		return true;
+	}
+
+	virtual bool defaultValueImpl(ValueTypeStore &to) const
+	{
+		Q_UNUSED(to);
+		return false;
 	}
 
 	virtual bool isValueEqualImpl(ValueType valueToCompare)
@@ -202,6 +222,11 @@ public:
 	typedef std::function<bool(ValueType)> CallbackValueAccepted;
 	typedef std::function<bool(ValueType)> CallbackValueEqual;
 
+	inline const CallbackValueGet &callbackValueDefault() const
+	{
+		return m_callbackValueDefault;
+	}
+
 	inline const CallbackValueGet &callbackValueGet() const
 	{
 		return m_callbackValueGet;
@@ -220,6 +245,11 @@ public:
 	inline const CallbackValueEqual &callbackValueEqual() const
 	{
 		return m_callbackValueEqual;
+	}
+
+	inline void setCallbackValueDefault(const CallbackValueGet &callback)
+	{
+		m_callbackValueDefault = callback;
 	}
 
 	inline void setCallbackValueGet(const CallbackValueGet &callback)
@@ -276,9 +306,21 @@ protected:
 		return QtnSinglePropertyType::isValueEqualImpl(valueToCompare);
 	}
 
+	virtual bool defaultValueImpl(ValueTypeStore &to) const override
+	{
+		if (m_callbackValueDefault)
+		{
+			to = m_callbackValueDefault();
+			return true;
+		}
+
+		return false;
+	}
+
 private:
 	Q_DISABLE_COPY(QtnSinglePropertyCallback)
 
+	CallbackValueGet m_callbackValueDefault;
 	CallbackValueGet m_callbackValueGet;
 	CallbackValueSet m_callbackValueSet;
 	CallbackValueAccepted m_callbackValueAccepted;

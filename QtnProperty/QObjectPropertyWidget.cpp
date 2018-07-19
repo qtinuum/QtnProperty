@@ -21,9 +21,6 @@ limitations under the License.
 #include "MultiProperty.h"
 #include "Utils/QtnConnections.h"
 
-#include <QMenu>
-#include <QContextMenuEvent>
-
 QObjectPropertyWidget::QObjectPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
 {
@@ -94,17 +91,6 @@ void QObjectPropertyWidget::deselectObject(QObject *object, bool destroyed)
 	}
 }
 
-void QObjectPropertyWidget::onResetTriggered()
-{
-	auto activeProperty = getActiveProperty();
-	if (activeProperty)
-	{
-		QtnConnections connections;
-		propertyView()->connectPropertyToEdit(activeProperty, connections);
-		activeProperty->reset(true);
-	}
-}
-
 void QObjectPropertyWidget::onObjectDestroyed(QObject *object)
 {
 	auto it = selectedObjects.find(object);
@@ -116,28 +102,6 @@ void QObjectPropertyWidget::onObjectDestroyed(QObject *object)
 		disconnectObjects();
 		connectObjects();
 	}
-}
-
-void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
-{
-	auto property = getActiveProperty();
-
-	if (nullptr == property)
-		return;
-
-	if (!property->isResettable() || !property->isEditableByUser())
-		return;
-
-	QMenu menu(this);
-
-	auto action = menu.addAction(tr("Reset to default"));
-	action->setStatusTip(
-		tr("Reset value of %1 to default").arg(property->name()));
-
-	QObject::connect(action, &QAction::triggered, this,
-		&QObjectPropertyWidget::onResetTriggered);
-
-	menu.exec(event->globalPos());
 }
 
 QtnMultiProperty *QObjectPropertyWidget::getMultiProperty() const

@@ -100,11 +100,8 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 		&QtnMultiProperty::onPropertyDidChange);
 }
 
-void QtnMultiProperty::reset(bool edit)
+void QtnMultiProperty::doReset(bool edit)
 {
-	if (valueIsDefault() || !isResettable() || isEditableByUser() != edit)
-		return;
-
 	QtnPropertyChangeReason reasons =
 		QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
 
@@ -115,10 +112,7 @@ void QtnMultiProperty::reset(bool edit)
 
 	for (auto property : properties)
 	{
-		if (property->isResettable())
-		{
-			property->reset(edit);
-		}
+		property->reset(edit);
 	}
 
 	emit propertyDidChange(reasons);

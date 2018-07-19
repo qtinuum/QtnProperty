@@ -71,8 +71,9 @@ public:
 	static void addShortcutForAction(
 		const QKeySequence &seq, QAction *action, QWidget *parent);
 
-private slots:
+private:
 	void onMouseReleased();
+	void onResetTriggered();
 
 public slots:
 	void deleteActiveProperty();
@@ -81,6 +82,8 @@ public slots:
 	void pasteFromClipboard();
 
 protected:
+	virtual void contextMenuEvent(QContextMenuEvent *event) override;
+
 	virtual bool dataHasSupportedFormats(const QMimeData *data) override;
 	virtual void deleteProperty(QtnPropertyBase *property) override;
 

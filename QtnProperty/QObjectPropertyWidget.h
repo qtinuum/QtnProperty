@@ -42,13 +42,10 @@ public slots:
 	void selectObjects(const Objects &objects, bool addSelection = true);
 	void deselectObject(QObject *object, bool destroyed = false);
 
-private slots:
-	void onResetTriggered();
+private:
 	void onObjectDestroyed(QObject *object);
 
 protected:
-	virtual void contextMenuEvent(QContextMenuEvent *event) override;
-
 	QtnMultiProperty *getMultiProperty() const;
 	QtnPropertyConnector *getPropertyConnector() const;
 

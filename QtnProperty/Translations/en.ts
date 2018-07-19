@@ -231,14 +231,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QObjectPropertyWidget</name>
     <message>
-        <location filename="../QObjectPropertyWidget.cpp" line="150"/>
         <source>Reset to default</source>
-        <translation>Reset to default</translation>
+        <translation type="vanished">Reset to default</translation>
     </message>
     <message>
-        <location filename="../QObjectPropertyWidget.cpp" line="152"/>
         <source>Reset value of %1 to default</source>
-        <translation>Reset value of %1 to default</translation>
+        <translation type="vanished">Reset value of %1 to default</translation>
     </message>
 </context>
 <context>
@@ -771,6 +769,19 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
     <message>
         <source>(Empty)</source>
         <translation type="vanished">(Empty)</translation>
+    </message>
+</context>
+<context>
+    <name>QtnPropertyWidgetEx</name>
+    <message>
+        <location filename="../PropertyWidgetEx.cpp" line="185"/>
+        <source>Reset to default</source>
+        <translation>Reset to default</translation>
+    </message>
+    <message>
+        <location filename="../PropertyWidgetEx.cpp" line="187"/>
+        <source>Reset value of %1 to default</source>
+        <translation>Reset value of %1 to default</translation>
     </message>
 </context>
 </TS>

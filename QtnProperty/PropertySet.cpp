@@ -259,6 +259,14 @@ const QtnPropertySet *QtnPropertySet::asPropertySet() const
 	return this;
 }
 
+void QtnPropertySet::doReset(bool edit)
+{
+	for (auto &p : childProperties())
+	{
+		p->reset(edit);
+	}
+}
+
 void QtnPropertySet::updateStateInherited(bool force)
 {
 	for (auto childProperty : m_childProperties)

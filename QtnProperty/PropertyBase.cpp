@@ -719,7 +719,16 @@ bool QtnPropertyBase::isResettable() const
 
 void QtnPropertyBase::reset(bool edit)
 {
-	Q_ASSERT(isResettable());
+	if (!isResettable() || isEditableByUser() != edit)
+		return;
+
+	doReset(edit);
+}
+
+void QtnPropertyBase::doReset(bool edit)
+{
+	if (!isResettable())
+		return;
 
 	auto connector = getConnector();
 	if (connector)
