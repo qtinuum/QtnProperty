@@ -24,19 +24,33 @@ limitations under the License.
 
 QtnPropertyDelegateQRect::QtnPropertyDelegateQRect(QtnPropertyQRectBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQRectBase>(owner)
+	, coordinates(owner.coordinateMode())
 {
-	addSubProperty(qtnCreateLeftProperty(0, &owner));
-	addSubProperty(qtnCreateTopProperty(0, &owner));
-	addSubProperty(qtnCreateWidthProperty(0, &owner));
-	addSubProperty(qtnCreateHeightProperty(0, &owner));
+	addSubProperty(owner.createLeftProperty(!coordinates));
+	addSubProperty(owner.createTopProperty(!coordinates));
+
+	if (coordinates)
+	{
+		addSubProperty(owner.createRightProperty(false));
+		addSubProperty(owner.createBottomProperty(false));
+	} else
+	{
+		addSubProperty(owner.createWidthProperty());
+		addSubProperty(owner.createHeightProperty());
+	}
 }
 
 bool QtnPropertyDelegateQRect::Register()
 {
 	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQRectBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQRect, QtnPropertyQRectBase>,
-		QByteArrayLiteral("LTWH"));
+			   &QtnPropertyQRectBase::staticMetaObject,
+			   qtnCreateDelegate<QtnPropertyDelegateQRect,
+				   QtnPropertyQRectBase>,
+			   QtnPropertyQRectBase::qtnQRect_LTWH()) &&
+		QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+			&QtnPropertyQRectBase::staticMetaObject,
+			qtnCreateDelegate<QtnPropertyDelegateQRect, QtnPropertyQRectBase>,
+			QtnPropertyQRectBase::qtnQRect_LTRB());
 }
 
 QWidget *QtnPropertyDelegateQRect::createValueEditorImpl(
@@ -50,9 +64,11 @@ bool QtnPropertyDelegateQRect::propertyValueToStr(QString &strValue) const
 	auto value = owner().value();
 
 	QLocale locale;
-	strValue = QtnPropertyQRect::getToStringFormat().arg(
-		locale.toString(value.left()), locale.toString(value.top()),
-		locale.toString(value.width()), locale.toString(value.height()));
+	strValue =
+		QtnPropertyQRect::getToStringFormat(coordinates)
+			.arg(locale.toString(value.left()), locale.toString(value.top()),
+				locale.toString(coordinates ? value.right() : value.width()),
+				locale.toString(coordinates ? value.bottom() : value.height()));
 
 	return true;
 }

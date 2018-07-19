@@ -727,9 +727,6 @@ void QtnPropertyBase::reset(bool edit)
 
 void QtnPropertyBase::doReset(bool edit)
 {
-	if (!isResettable())
-		return;
-
 	auto connector = getConnector();
 	if (connector)
 	{

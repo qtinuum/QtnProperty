@@ -44,22 +44,22 @@ QtnProperty *QtnPropertyQPointFBase::createYProperty()
 
 QString QtnPropertyQPointFBase::getXLabel()
 {
-	return QtnPropertyQPointF::tr("X");
+	return QtnPropertyQPoint::xString();
 }
 
 QString QtnPropertyQPointFBase::getXDescriptionFormat()
 {
-	return QtnPropertyQPointF::tr("X of the %1");
+	return QtnPropertyQPoint::xDescription();
 }
 
 QString QtnPropertyQPointFBase::getYLabel()
 {
-	return QtnPropertyQPointF::tr("Y");
+	return QtnPropertyQPoint::yString();
 }
 
 QString QtnPropertyQPointFBase::getYDescriptionFormat()
 {
-	return QtnPropertyQPointF::tr("Y of the %1");
+	return QtnPropertyQPoint::yDescription();
 }
 
 bool QtnPropertyQPointFBase::fromStrImpl(const QString &str, bool edit)
@@ -117,22 +117,8 @@ QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
 	QtnPropertyQPointFBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointFBase>(owner)
 {
-	auto delegateCallback = [this]() -> QtnPropertyDelegateInfo {
-		auto baseDelegate = this->owner().delegateInfo();
-		QtnPropertyDelegateInfo result;
-		if (baseDelegate)
-		{
-			result.attributes = baseDelegate->attributes;
-		}
-		result.name = qtnSpinBoxDelegate();
-		return result;
-	};
-	mPropertyX = owner.createXProperty();
-	mPropertyY = owner.createYProperty();
-	mPropertyX->setDelegateInfoCallback(delegateCallback);
-	mPropertyY->setDelegateInfoCallback(delegateCallback);
-	addSubProperty(mPropertyX);
-	addSubProperty(mPropertyY);
+	addSubProperty(owner.createXProperty());
+	addSubProperty(owner.createYProperty());
 }
 
 void QtnPropertyDelegateQPointF::applyAttributesImpl(

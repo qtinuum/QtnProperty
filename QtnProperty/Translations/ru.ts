@@ -292,7 +292,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnMultiProperty</name>
     <message>
-        <location filename="../MultiProperty.cpp" line="138"/>
+        <location filename="../MultiProperty.cpp" line="135"/>
         <source>(Multiple Values)</source>
         <translation>(Несколько значений)</translation>
     </message>
@@ -481,27 +481,35 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnPropertyQPoint</name>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="78"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="98"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="79"/>
-        <source>X coordinate of the %1</source>
+        <location filename="../Core/PropertyQPoint.cpp" line="103"/>
+        <source>X of the %1</source>
         <translation>Координата X точки &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="96"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="113"/>
+        <source>Y of the %1</source>
+        <translation>Координата Y точки &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>X coordinate of the %1</source>
+        <translation type="vanished">Координата X точки &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQPoint.cpp" line="108"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="97"/>
         <source>Y coordinate of the %1</source>
-        <translation>Координата Y точки &quot;%1&quot;</translation>
+        <translation type="vanished">Координата Y точки &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="117"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="93"/>
         <source>[%1, %2]</source>
         <translation>[%1;  %2]</translation>
     </message>
@@ -513,97 +521,105 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnPropertyQPointF</name>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="47"/>
         <source>X</source>
-        <translation>X</translation>
+        <translation type="vanished">X</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="52"/>
         <source>X of the %1</source>
-        <translation>Координата X точки &quot;%1&quot;</translation>
+        <translation type="vanished">Координата X точки &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="57"/>
         <source>Y</source>
-        <translation>Y</translation>
+        <translation type="vanished">Y</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="62"/>
         <source>Y of the %1</source>
-        <translation>Координата Y точки &quot;%1&quot;</translation>
+        <translation type="vanished">Координата Y точки &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
     <name>QtnPropertyQRect</name>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="92"/>
+        <location filename="../Core/PropertyQRect.cpp" line="198"/>
         <source>Left</source>
         <translation>Отступ слева</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="94"/>
         <source>Left side of the %1</source>
-        <translation>Отступ слева для прямоугольника &quot;%1&quot;</translation>
+        <translation type="vanished">Отступ слева для прямоугольника &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="110"/>
+        <location filename="../Core/PropertyQRect.cpp" line="218"/>
         <source>Right</source>
         <translation>Отступ справа</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="112"/>
         <source>Right side of the %1</source>
-        <translation>Отступ справа для прямоугольника &quot;%1&quot;</translation>
+        <translation type="vanished">Отступ справа для прямоугольника &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="128"/>
+        <location filename="../Core/PropertyQRect.cpp" line="208"/>
         <source>Top</source>
         <translation>Отступ сверху</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="130"/>
         <source>Top of the %1</source>
-        <translation>Отступ сверху для прямоугольника &quot;%1&quot;</translation>
+        <translation type="vanished">Отступ сверху для прямоугольника &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="146"/>
+        <location filename="../Core/PropertyQRect.cpp" line="228"/>
         <source>Bottom</source>
         <translation>Отступ снизу</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="148"/>
         <source>Bottom of the %1</source>
-        <translation>Отступ снизу для прямоугольника &quot;%1&quot;</translation>
+        <translation type="vanished">Отступ снизу для прямоугольника &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="164"/>
         <source>Width</source>
-        <translation>Ширина</translation>
+        <translation type="vanished">Ширина</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="166"/>
         <source>Width of the %1</source>
-        <translation>Ширина прямоугольника &quot;%1&quot;</translation>
+        <translation type="vanished">Ширина прямоугольника &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="182"/>
         <source>Height</source>
-        <translation>Высота</translation>
+        <translation type="vanished">Высота</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="184"/>
         <source>Height of the %1</source>
-        <translation>Высота прямоугольника &quot;%1&quot;</translation>
+        <translation type="vanished">Высота прямоугольника &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="203"/>
+        <location filename="../Core/PropertyQRect.cpp" line="193"/>
         <source>[(%1, %2), (%3, %4)]</source>
         <translation>[(%1; %2), (%3; %4)]</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="203"/>
+        <location filename="../Core/PropertyQRect.cpp" line="193"/>
         <source>[(%1, %2) %3 x %4]</source>
         <translation>[(%1; %2) %3 x %4]</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQRect.cpp" line="203"/>
+        <source>Left position of the %1</source>
+        <translation>%1: Координата X левой стороны</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQRect.cpp" line="213"/>
+        <source>Top position of the %1</source>
+        <translation>%1: Координата Y верхней стороны</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQRect.cpp" line="223"/>
+        <source>Right position of the %1</source>
+        <translation>%1: Координата X правой стороны</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQRect.cpp" line="233"/>
+        <source>Bottom position of the %1</source>
+        <translation>%1: Координата Y нижней стороны</translation>
     </message>
     <message>
         <source>(%1, %2) %3 x %4</source>
@@ -621,90 +637,78 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnPropertyQRectF</name>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="55"/>
         <source>Left</source>
-        <translation>Слева</translation>
+        <translation type="vanished">Слева</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="56"/>
         <source>Left position of the %1</source>
-        <translation>%1: Координата X левой стороны</translation>
+        <translation type="vanished">%1: Координата X левой стороны</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="62"/>
         <source>Top</source>
-        <translation>Сверху</translation>
+        <translation type="vanished">Сверху</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="63"/>
         <source>Top position of the %1</source>
-        <translation>%1: Координата Y верхней стороны</translation>
+        <translation type="vanished">%1: Координата Y верхней стороны</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="69"/>
         <source>Right</source>
-        <translation>Справа</translation>
+        <translation type="vanished">Справа</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="70"/>
         <source>Right position of the %1</source>
-        <translation>%1: Координата X правой стороны</translation>
+        <translation type="vanished">%1: Координата X правой стороны</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="76"/>
         <source>Bottom</source>
-        <translation>Снизу</translation>
+        <translation type="vanished">Снизу</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="77"/>
         <source>Bottom position of the %1</source>
-        <translation>%1: Координата Y нижней стороны</translation>
+        <translation type="vanished">%1: Координата Y нижней стороны</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="83"/>
         <source>Width</source>
-        <translation>Ширина</translation>
+        <translation type="vanished">Ширина</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="84"/>
         <source>Width of the %1</source>
-        <translation>%1: Ширина</translation>
+        <translation type="vanished">%1: Ширина</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="90"/>
         <source>Height</source>
-        <translation>Высота</translation>
+        <translation type="vanished">Высота</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="91"/>
         <source>Height of the %1</source>
-        <translation>%1: Высота</translation>
+        <translation type="vanished">%1: Высота</translation>
     </message>
 </context>
 <context>
     <name>QtnPropertyQSize</name>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="78"/>
+        <location filename="../Core/PropertyQSize.cpp" line="99"/>
         <source>Width</source>
         <translation>Ширина</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="80"/>
+        <location filename="../Core/PropertyQSize.cpp" line="104"/>
         <source>Width of the %1</source>
         <translation>%1: Ширина</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="96"/>
+        <location filename="../Core/PropertyQSize.cpp" line="109"/>
         <source>Height</source>
         <translation>Высота</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="98"/>
+        <location filename="../Core/PropertyQSize.cpp" line="114"/>
         <source>Height of the %1</source>
         <translation>%1: Высота</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="117"/>
+        <location filename="../Core/PropertyQSize.cpp" line="94"/>
         <source>[%1 x %2]</source>
         <translation>[%1 x %2]</translation>
     </message>
@@ -716,24 +720,20 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnPropertyQSizeF</name>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="34"/>
         <source>Width</source>
-        <translation>Ширина</translation>
+        <translation type="vanished">Ширина</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="35"/>
         <source>Width of the %1</source>
-        <translation>%1: Ширина</translation>
+        <translation type="vanished">%1: Ширина</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="41"/>
         <source>Height</source>
-        <translation>Высота</translation>
+        <translation type="vanished">Высота</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="42"/>
         <source>Height of the %1</source>
-        <translation>%1: Высота</translation>
+        <translation type="vanished">%1: Высота</translation>
     </message>
 </context>
 <context>

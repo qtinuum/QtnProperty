@@ -16,181 +16,171 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyQRect.h"
-#include "PropertyInt.h"
+
+#include "PropertyQSize.h"
+
+static QByteArray qtnQRect_LTRB()
+{
+	returnQByteArrayLiteral("QRect_LTRB");
+}
+static QByteArray qtnQRect_LTWH()
+{
+	returnQByteArrayLiteral("QRect_LTWH");
+}
+
+void QtnPropertyQRectBase::setMode(bool coordinates)
+{
+	this->coordinates = coordinates;
+}
+
+QtnProperty *QtnPropertyQRectBase::createLeftProperty(bool move)
+{
+	return createFieldProperty(QtnPropertyQRect::leftString(),
+		QtnPropertyQRect::leftDescription(), &QRect::left,
+		move ? &QRect::moveLeft : &QRect::setLeft);
+}
+
+QtnProperty *QtnPropertyQRectBase::createTopProperty(bool move)
+{
+	return createFieldProperty(QtnPropertyQRect::topString(),
+		QtnPropertyQRect::topDescription(), &QRect::top,
+		move ? &QRect::moveTop : &QRect::setTop);
+}
+
+QtnProperty *QtnPropertyQRectBase::createRightProperty(bool move)
+{
+	return createFieldProperty(QtnPropertyQRect::rightString(),
+		QtnPropertyQRect::rightDescription(), &QRect::right,
+		move ? &QRect::moveRight : &QRect::setRight);
+}
+
+QtnProperty *QtnPropertyQRectBase::createBottomProperty(bool move)
+{
+	return createFieldProperty(QtnPropertyQRect::bottomString(),
+		QtnPropertyQRect::bottomDescription(), &QRect::bottom,
+		move ? &QRect::moveBottom : &QRect::setBottom);
+}
+
+QtnProperty *QtnPropertyQRectBase::createWidthProperty()
+{
+	return createFieldProperty(QtnPropertyQSize::widthString(),
+		QtnPropertyQSize::widthDescription(), &QRect::width, &QRect::setWidth);
+}
+
+QtnProperty *QtnPropertyQRectBase::createHeightProperty()
+{
+	return createFieldProperty(QtnPropertyQSize::heightString(),
+		QtnPropertyQSize::heightDescription(), &QRect::height,
+		&QRect::setHeight);
+}
+
+QByteArray QtnPropertyQRectBase::qtnQRect_LTRB()
+{
+	returnQByteArrayLiteral("QRect_LTRB");
+}
+
+QByteArray QtnPropertyQRectBase::qtnQRect_LTWH()
+{
+	returnQByteArrayLiteral("QRect_LTWH");
+}
 
 QtnPropertyQRectBase::QtnPropertyQRectBase(QObject *parent)
-	: QtnSinglePropertyBase<QRect>(parent)
+	: ParentClass(parent)
 {
 	addState(QtnPropertyStateCollapsed);
+
+	setMode(false);
+
+	setDelegateInfoCallback([this]() -> QtnPropertyDelegateInfo {
+		QtnPropertyDelegateInfo result;
+		result.name = coordinates ? qtnQRect_LTRB() : qtnQRect_LTWH();
+		return result;
+	});
 }
 
 bool QtnPropertyQRectBase::fromStrImpl(const QString &str, bool edit)
 {
-	static QRegExp parserRect(
-		QStringLiteral("^\\s*QRect\\s*\\(([^\\)]+)\\)\\s*$"),
-		Qt::CaseInsensitive);
+	QRegExp *rect_parser;
+	if (coordinates)
+	{
+		static QRegExp coordRectParser(QStringLiteral("\
+\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,\
+\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*\\]\\s*"));
+		rect_parser = &coordRectParser;
+	} else
+	{
+		static QRegExp simpleRectParser(QStringLiteral("\
+\\s*\\[\\s*\\(\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\s*,\
+\\s*(-?((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+)))\\)\\s*,\
+\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*x\
+\\s*((\\d+\\.\\d*)|(\\d*\\.\\d+)|(\\d+))\\s*\\]\\s*"));
+		rect_parser = &simpleRectParser;
+	}
 
-	if (!parserRect.exactMatch(str))
+	if (!rect_parser->exactMatch(str))
 		return false;
 
-	QStringList params = parserRect.capturedTexts();
-
-	if (params.size() != 2)
-		return false;
-
-	static QRegExp parserParams(QStringLiteral("\
-^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$"),
-		Qt::CaseInsensitive);
-
-	if (!parserParams.exactMatch(params[1]))
-		return false;
-
-	params = parserParams.capturedTexts();
-
-	if (params.size() != 5)
-		return false;
-
-	bool ok = false;
-	int left = params[1].toInt(&ok);
+	bool ok;
+	auto x = rect_parser->cap(1).toInt(&ok);
 
 	if (!ok)
 		return false;
 
-	int top = params[2].toInt(&ok);
+	auto y = rect_parser->cap(6).toInt(&ok);
 
 	if (!ok)
 		return false;
 
-	int width = params[3].toInt(&ok);
+	if (coordinates)
+	{
+		auto right = rect_parser->cap(11).toInt(&ok);
+
+		if (!ok)
+			return false;
+
+		auto bottom = rect_parser->cap(15).toInt(&ok);
+
+		if (!ok)
+			return false;
+
+		return setValue(QRect(x, y, right - x, bottom - y));
+	}
+
+	auto width = rect_parser->cap(11).toInt(&ok);
 
 	if (!ok)
 		return false;
 
-	int height = params[4].toInt(&ok);
+	auto height = rect_parser->cap(15).toInt(&ok);
 
 	if (!ok)
 		return false;
 
-	return setValue(QRect(left, top, width, height), edit);
+	return setValue(QRect(x, y, width, height), edit);
 }
 
 bool QtnPropertyQRectBase::toStrImpl(QString &str) const
 {
-	QRect v = value();
-	str = QString("QRect(%1, %2, %3, %4)")
-			  .arg(v.left())
-			  .arg(v.top())
-			  .arg(v.width())
-			  .arg(v.height());
+	auto v = value();
+
+	if (coordinates)
+	{
+		str = QStringLiteral("[(%1, %2), (%3, %4)]")
+				  .arg(v.left())
+				  .arg(v.top())
+				  .arg(v.right())
+				  .arg(v.bottom());
+	} else
+	{
+		str = QStringLiteral("[(%1, %2), %3 x %4]")
+				  .arg(v.left())
+				  .arg(v.top())
+				  .arg(v.width())
+				  .arg(v.height());
+	}
 	return true;
-}
-
-QtnProperty *qtnCreateLeftProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect)
-{
-	QtnPropertyIntCallback *leftProperty = new QtnPropertyIntCallback(parent);
-	leftProperty->setName(QtnPropertyQRect::tr("Left"));
-	leftProperty->setDescription(
-		QtnPropertyQRect::tr("Left side of the %1").arg(propertyRect->name()));
-	leftProperty->setCallbackValueGet(
-		[propertyRect]() -> int { return propertyRect->value().left(); });
-	leftProperty->setCallbackValueSet([propertyRect](int newLeft) {
-		QRect rect = propertyRect->value();
-		rect.setLeft(newLeft);
-		propertyRect->setValue(rect);
-	});
-
-	return leftProperty;
-}
-
-QtnProperty *qtnCreateRightProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect)
-{
-	QtnPropertyIntCallback *rightProperty = new QtnPropertyIntCallback(parent);
-	rightProperty->setName(QtnPropertyQRect::tr("Right"));
-	rightProperty->setDescription(
-		QtnPropertyQRect::tr("Right side of the %1").arg(propertyRect->name()));
-	rightProperty->setCallbackValueGet(
-		[propertyRect]() -> int { return propertyRect->value().right(); });
-	rightProperty->setCallbackValueSet([propertyRect](int newRight) {
-		QRect rect = propertyRect->value();
-		rect.setRight(newRight);
-		propertyRect->setValue(rect);
-	});
-
-	return rightProperty;
-}
-
-QtnProperty *qtnCreateTopProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect)
-{
-	QtnPropertyIntCallback *topProperty = new QtnPropertyIntCallback(parent);
-	topProperty->setName(QtnPropertyQRect::tr("Top"));
-	topProperty->setDescription(
-		QtnPropertyQRect::tr("Top of the %1").arg(propertyRect->name()));
-	topProperty->setCallbackValueGet(
-		[propertyRect]() -> int { return propertyRect->value().top(); });
-	topProperty->setCallbackValueSet([propertyRect](int newTop) {
-		QRect rect = propertyRect->value();
-		rect.setTop(newTop);
-		propertyRect->setValue(rect);
-	});
-
-	return topProperty;
-}
-
-QtnProperty *qtnCreateBottomProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect)
-{
-	QtnPropertyIntCallback *bottomProperty = new QtnPropertyIntCallback(parent);
-	bottomProperty->setName(QtnPropertyQRect::tr("Bottom"));
-	bottomProperty->setDescription(
-		QtnPropertyQRect::tr("Bottom of the %1").arg(propertyRect->name()));
-	bottomProperty->setCallbackValueGet(
-		[propertyRect]() -> int { return propertyRect->value().bottom(); });
-	bottomProperty->setCallbackValueSet([propertyRect](int newBottom) {
-		QRect rect = propertyRect->value();
-		rect.setBottom(newBottom);
-		propertyRect->setValue(rect);
-	});
-
-	return bottomProperty;
-}
-
-QtnProperty *qtnCreateWidthProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect)
-{
-	QtnPropertyIntCallback *widthProperty = new QtnPropertyIntCallback(parent);
-	widthProperty->setName(QtnPropertyQRect::tr("Width"));
-	widthProperty->setDescription(
-		QtnPropertyQRect::tr("Width of the %1").arg(propertyRect->name()));
-	widthProperty->setCallbackValueGet(
-		[propertyRect]() -> int { return propertyRect->value().width(); });
-	widthProperty->setCallbackValueSet([propertyRect](int newWidth) {
-		QRect rect = propertyRect->value();
-		rect.setWidth(newWidth);
-		propertyRect->setValue(rect);
-	});
-
-	return widthProperty;
-}
-
-QtnProperty *qtnCreateHeightProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect)
-{
-	QtnPropertyIntCallback *heightProperty = new QtnPropertyIntCallback(parent);
-	heightProperty->setName(QtnPropertyQRect::tr("Height"));
-	heightProperty->setDescription(
-		QtnPropertyQRect::tr("Height of the %1").arg(propertyRect->name()));
-	heightProperty->setCallbackValueGet(
-		[propertyRect]() -> int { return propertyRect->value().height(); });
-	heightProperty->setCallbackValueSet([propertyRect](int newHeight) {
-		QRect rect = propertyRect->value();
-		rect.setHeight(newHeight);
-		propertyRect->setValue(rect);
-	});
-
-	return heightProperty;
 }
 
 QtnPropertyQRect::QtnPropertyQRect(QObject *parent)
@@ -201,6 +191,46 @@ QtnPropertyQRect::QtnPropertyQRect(QObject *parent)
 QString QtnPropertyQRect::getToStringFormat(bool coordinates)
 {
 	return coordinates ? tr("[(%1, %2), (%3, %4)]") : tr("[(%1, %2) %3 x %4]");
+}
+
+QString QtnPropertyQRect::leftString()
+{
+	return tr("Left");
+}
+
+QString QtnPropertyQRect::leftDescription()
+{
+	return tr("Left position of the %1");
+}
+
+QString QtnPropertyQRect::topString()
+{
+	return tr("Top");
+}
+
+QString QtnPropertyQRect::topDescription()
+{
+	return tr("Top position of the %1");
+}
+
+QString QtnPropertyQRect::rightString()
+{
+	return tr("Right");
+}
+
+QString QtnPropertyQRect::rightDescription()
+{
+	return tr("Right position of the %1");
+}
+
+QString QtnPropertyQRect::bottomString()
+{
+	return tr("Bottom");
+}
+
+QString QtnPropertyQRect::bottomDescription()
+{
+	return tr("Bottom position of the %1");
 }
 
 QtnPropertyQRectCallback::QtnPropertyQRectCallback(QObject *parent)

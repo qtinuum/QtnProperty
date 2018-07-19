@@ -19,9 +19,21 @@ limitations under the License.
 #include "PropertyInt.h"
 
 QtnPropertyQPointBase::QtnPropertyQPointBase(QObject *parent)
-	: QtnSinglePropertyBase<QPoint>(parent)
+	: ParentClass(parent)
 {
 	addState(QtnPropertyStateCollapsed);
+}
+
+QtnProperty *QtnPropertyQPointBase::createXProperty()
+{
+	return createFieldProperty(QtnPropertyQPoint::xString(),
+		QtnPropertyQPoint::xDescription(), &QPoint::x, &QPoint::setX);
+}
+
+QtnProperty *QtnPropertyQPointBase::createYProperty()
+{
+	return createFieldProperty(QtnPropertyQPoint::yString(),
+		QtnPropertyQPoint::yDescription(), &QPoint::y, &QPoint::setY);
 }
 
 bool QtnPropertyQPointBase::fromStrImpl(const QString &str, bool edit)
@@ -71,42 +83,6 @@ bool QtnPropertyQPointBase::toStrImpl(QString &str) const
 	return true;
 }
 
-QtnProperty *qtnCreateXProperty(
-	QObject *parent, QtnPropertyQPointBase *propertyPoint)
-{
-	QtnPropertyIntCallback *xProperty = new QtnPropertyIntCallback(parent);
-	xProperty->setName(QtnPropertyQPoint::tr("X"));
-	xProperty->setDescription(QtnPropertyQPoint::tr("X coordinate of the %1")
-								  .arg(propertyPoint->name()));
-	xProperty->setCallbackValueGet(
-		[propertyPoint]() -> int { return propertyPoint->value().x(); });
-	xProperty->setCallbackValueSet([propertyPoint](int newX) {
-		QPoint point = propertyPoint->value();
-		point.setX(newX);
-		propertyPoint->setValue(point);
-	});
-
-	return xProperty;
-}
-
-QtnProperty *qtnCreateYProperty(
-	QObject *parent, QtnPropertyQPointBase *propertyPoint)
-{
-	QtnPropertyIntCallback *yProperty = new QtnPropertyIntCallback(parent);
-	yProperty->setName(QtnPropertyQPoint::tr("Y"));
-	yProperty->setDescription(QtnPropertyQPoint::tr("Y coordinate of the %1")
-								  .arg(propertyPoint->name()));
-	yProperty->setCallbackValueGet(
-		[propertyPoint]() -> int { return propertyPoint->value().y(); });
-	yProperty->setCallbackValueSet([propertyPoint](int newY) {
-		QPoint point = propertyPoint->value();
-		point.setY(newY);
-		propertyPoint->setValue(point);
-	});
-
-	return yProperty;
-}
-
 QtnPropertyQPoint::QtnPropertyQPoint(QObject *parent)
 	: QtnSinglePropertyValue<QtnPropertyQPointBase>(parent)
 {
@@ -115,6 +91,26 @@ QtnPropertyQPoint::QtnPropertyQPoint(QObject *parent)
 QString QtnPropertyQPoint::getToStringFormat()
 {
 	return tr("[%1, %2]");
+}
+
+QString QtnPropertyQPoint::xString()
+{
+	return tr("X");
+}
+
+QString QtnPropertyQPoint::xDescription()
+{
+	return tr("X of the %1");
+}
+
+QString QtnPropertyQPoint::yString()
+{
+	return tr("Y");
+}
+
+QString QtnPropertyQPoint::yDescription()
+{
+	return tr("Y of the %1");
 }
 
 QtnPropertyQPointCallback::QtnPropertyQPointCallback(QObject *parent)

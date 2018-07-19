@@ -19,10 +19,12 @@ limitations under the License.
 #define PROPERTYQSIZE_H
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
+#include "Core/PropertyInt.h"
+#include "StructPropertyBase.h"
 #include <QSize>
 
 class QTN_IMPORT_EXPORT QtnPropertyQSizeBase
-	: public QtnSinglePropertyBase<QSize>
+	: public QtnStructPropertyBase<QSize, QtnPropertyIntCallback>
 {
 	Q_OBJECT
 
@@ -31,6 +33,9 @@ private:
 
 public:
 	explicit QtnPropertyQSizeBase(QObject *parent);
+
+	QtnProperty *createWidthProperty();
+	QtnProperty *createHeightProperty();
 
 protected:
 	// string conversion implementation
@@ -41,11 +46,6 @@ protected:
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQSizeBase, QSize)
-
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateWidthProperty(
-	QObject *parent, QtnPropertyQSizeBase *propertySize);
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateHeightProperty(
-	QObject *parent, QtnPropertyQSizeBase *propertySize);
 
 class QTN_IMPORT_EXPORT QtnPropertyQSizeCallback
 	: public QtnSinglePropertyCallback<QtnPropertyQSizeBase>
@@ -75,6 +75,10 @@ public:
 	Q_INVOKABLE explicit QtnPropertyQSize(QObject *parent = nullptr);
 
 	static QString getToStringFormat();
+	static QString widthString();
+	static QString widthDescription();
+	static QString heightString();
+	static QString heightDescription();
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSize, QtnPropertyQSizeBase)
 };

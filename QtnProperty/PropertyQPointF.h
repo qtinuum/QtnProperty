@@ -92,9 +92,6 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQPointF
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQPointF)
 
-	QtnProperty *mPropertyX;
-	QtnProperty *mPropertyY;
-
 	QString mSuffix;
 
 public:

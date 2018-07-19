@@ -25,3 +25,8 @@ QtnPropertyDelegateInfo::QtnPropertyDelegateInfo(
 	, attributes(other.attributes)
 {
 }
+
+QByteArray qtnFieldDelegateName()
+{
+	returnQByteArrayLiteral("fieldDelegateName");
+}

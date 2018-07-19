@@ -292,7 +292,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnMultiProperty</name>
     <message>
-        <location filename="../MultiProperty.cpp" line="138"/>
+        <location filename="../MultiProperty.cpp" line="135"/>
         <source>(Multiple Values)</source>
         <translation>(Multiple Values)</translation>
     </message>
@@ -481,27 +481,35 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQPoint</name>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="78"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="98"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="79"/>
-        <source>X coordinate of the %1</source>
-        <translation>X coordinate of the %1</translation>
+        <location filename="../Core/PropertyQPoint.cpp" line="103"/>
+        <source>X of the %1</source>
+        <translation>X of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="96"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="113"/>
+        <source>Y of the %1</source>
+        <translation>Y of the %1</translation>
+    </message>
+    <message>
+        <source>X coordinate of the %1</source>
+        <translation type="vanished">X coordinate of the %1</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQPoint.cpp" line="108"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="97"/>
         <source>Y coordinate of the %1</source>
-        <translation>Y coordinate of the %1</translation>
+        <translation type="vanished">Y coordinate of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQPoint.cpp" line="117"/>
+        <location filename="../Core/PropertyQPoint.cpp" line="93"/>
         <source>[%1, %2]</source>
         <translation>[%1, %2]</translation>
     </message>
@@ -513,97 +521,105 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQPointF</name>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="47"/>
         <source>X</source>
-        <translation>X</translation>
+        <translation type="vanished">X</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="52"/>
         <source>X of the %1</source>
-        <translation>X of the %1</translation>
+        <translation type="vanished">X of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="57"/>
         <source>Y</source>
-        <translation>Y</translation>
+        <translation type="vanished">Y</translation>
     </message>
     <message>
-        <location filename="../PropertyQPointF.cpp" line="62"/>
         <source>Y of the %1</source>
-        <translation>Y of the %1</translation>
+        <translation type="vanished">Y of the %1</translation>
     </message>
 </context>
 <context>
     <name>QtnPropertyQRect</name>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="92"/>
+        <location filename="../Core/PropertyQRect.cpp" line="198"/>
         <source>Left</source>
         <translation>Left</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="94"/>
         <source>Left side of the %1</source>
-        <translation>Left offset of the %1</translation>
+        <translation type="vanished">Left offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="110"/>
+        <location filename="../Core/PropertyQRect.cpp" line="218"/>
         <source>Right</source>
         <translation>Right</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="112"/>
         <source>Right side of the %1</source>
-        <translation>Right offset of the %1</translation>
+        <translation type="vanished">Right offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="128"/>
+        <location filename="../Core/PropertyQRect.cpp" line="208"/>
         <source>Top</source>
         <translation>Top</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="130"/>
         <source>Top of the %1</source>
-        <translation>Top offset of the %1</translation>
+        <translation type="vanished">Top offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="146"/>
+        <location filename="../Core/PropertyQRect.cpp" line="228"/>
         <source>Bottom</source>
         <translation>Bottom</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="148"/>
         <source>Bottom of the %1</source>
-        <translation>Bottom offset of the %1</translation>
+        <translation type="vanished">Bottom offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="164"/>
         <source>Width</source>
-        <translation>Width</translation>
+        <translation type="vanished">Width</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="166"/>
         <source>Width of the %1</source>
-        <translation>Width of the %1</translation>
+        <translation type="vanished">Width of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="182"/>
         <source>Height</source>
-        <translation>Height</translation>
+        <translation type="vanished">Height</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="184"/>
         <source>Height of the %1</source>
-        <translation>Height of the %1</translation>
+        <translation type="vanished">Height of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="203"/>
+        <location filename="../Core/PropertyQRect.cpp" line="193"/>
         <source>[(%1, %2), (%3, %4)]</source>
         <translation>[(%1, %2), (%3, %4)]</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="203"/>
+        <location filename="../Core/PropertyQRect.cpp" line="193"/>
         <source>[(%1, %2) %3 x %4]</source>
         <translation>[(%1, %2) %3 x %4]</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQRect.cpp" line="203"/>
+        <source>Left position of the %1</source>
+        <translation>Left position of the %1</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQRect.cpp" line="213"/>
+        <source>Top position of the %1</source>
+        <translation>Top position of the %1</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQRect.cpp" line="223"/>
+        <source>Right position of the %1</source>
+        <translation>Right position of the %1</translation>
+    </message>
+    <message>
+        <location filename="../Core/PropertyQRect.cpp" line="233"/>
+        <source>Bottom position of the %1</source>
+        <translation>Bottom position of the %1</translation>
     </message>
     <message>
         <source>(%1, %2) %3 x %4</source>
@@ -621,90 +637,78 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQRectF</name>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="55"/>
         <source>Left</source>
-        <translation>Left</translation>
+        <translation type="vanished">Left</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="56"/>
         <source>Left position of the %1</source>
-        <translation>Left position of the %1</translation>
+        <translation type="vanished">Left position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="62"/>
         <source>Top</source>
-        <translation>Top</translation>
+        <translation type="vanished">Top</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="63"/>
         <source>Top position of the %1</source>
-        <translation>Top position of the %1</translation>
+        <translation type="vanished">Top position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="69"/>
         <source>Right</source>
-        <translation>Right</translation>
+        <translation type="vanished">Right</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="70"/>
         <source>Right position of the %1</source>
-        <translation>Right position of the %1</translation>
+        <translation type="vanished">Right position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="76"/>
         <source>Bottom</source>
-        <translation>Bottom</translation>
+        <translation type="vanished">Bottom</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="77"/>
         <source>Bottom position of the %1</source>
-        <translation>Bottom position of the %1</translation>
+        <translation type="vanished">Bottom position of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="83"/>
         <source>Width</source>
-        <translation>Width</translation>
+        <translation type="vanished">Width</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="84"/>
         <source>Width of the %1</source>
-        <translation>Width of the %1</translation>
+        <translation type="vanished">Width of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="90"/>
         <source>Height</source>
-        <translation>Height</translation>
+        <translation type="vanished">Height</translation>
     </message>
     <message>
-        <location filename="../PropertyQRectF.cpp" line="91"/>
         <source>Height of the %1</source>
-        <translation>Height of the %1</translation>
+        <translation type="vanished">Height of the %1</translation>
     </message>
 </context>
 <context>
     <name>QtnPropertyQSize</name>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="78"/>
+        <location filename="../Core/PropertyQSize.cpp" line="99"/>
         <source>Width</source>
         <translation>Width</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="80"/>
+        <location filename="../Core/PropertyQSize.cpp" line="104"/>
         <source>Width of the %1</source>
         <translation>Width of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="96"/>
+        <location filename="../Core/PropertyQSize.cpp" line="109"/>
         <source>Height</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="98"/>
+        <location filename="../Core/PropertyQSize.cpp" line="114"/>
         <source>Height of the %1</source>
         <translation>Height of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="117"/>
+        <location filename="../Core/PropertyQSize.cpp" line="94"/>
         <source>[%1 x %2]</source>
         <translation>[%1 x %2]</translation>
     </message>
@@ -716,24 +720,20 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQSizeF</name>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="34"/>
         <source>Width</source>
-        <translation>Width</translation>
+        <translation type="vanished">Width</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="35"/>
         <source>Width of the %1</source>
-        <translation>Width of the %1</translation>
+        <translation type="vanished">Width of the %1</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="41"/>
         <source>Height</source>
-        <translation>Height</translation>
+        <translation type="vanished">Height</translation>
     </message>
     <message>
-        <location filename="../PropertyQSizeF.cpp" line="42"/>
         <source>Height of the %1</source>
-        <translation>Height of the %1</translation>
+        <translation type="vanished">Height of the %1</translation>
     </message>
 </context>
 <context>

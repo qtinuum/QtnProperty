@@ -110,6 +110,9 @@ protected:
 				reason |= QtnPropertyChangeReasonEditValue;
 
 			setValueWithReason(defaultValue, reason);
+		} else
+		{
+			QtnProperty::doReset(edit);
 		}
 	}
 

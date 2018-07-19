@@ -31,15 +31,15 @@ QtnPropertyQSizeFBase::QtnPropertyQSizeFBase(QObject *parent)
 
 QtnProperty *QtnPropertyQSizeFBase::createWidthProperty()
 {
-	return createFieldProperty(QtnPropertyQSizeF::tr("Width"),
-		QtnPropertyQSizeF::tr("Width of the %1"), &QSizeF::width,
+	return createFieldProperty(QtnPropertyQSize::widthString(),
+		QtnPropertyQSize::widthDescription(), &QSizeF::width,
 		&QSizeF::setWidth);
 }
 
 QtnProperty *QtnPropertyQSizeFBase::createHeightProperty()
 {
-	return createFieldProperty(QtnPropertyQSizeF::tr("Height"),
-		QtnPropertyQSizeF::tr("Height of the %1"), &QSizeF::height,
+	return createFieldProperty(QtnPropertyQSize::heightString(),
+		QtnPropertyQSize::heightDescription(), &QSizeF::height,
 		&QSizeF::setHeight);
 }
 
