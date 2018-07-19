@@ -16,6 +16,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateInfo.h"
+#include "PropertyDelegateAttrs.h"
 
 QtnPropertyDelegateInfo::QtnPropertyDelegateInfo() {}
 
@@ -29,4 +30,9 @@ QtnPropertyDelegateInfo::QtnPropertyDelegateInfo(
 QByteArray qtnFieldDelegateName()
 {
 	returnQByteArrayLiteral("fieldDelegateName");
+}
+
+double qtnHundredPercent(double value)
+{
+	return std::max(0.0, std::min(100.0, value));
 }

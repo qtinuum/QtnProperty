@@ -38,10 +38,6 @@ typedef std::function<QtnProperty *(QObject *, const QMetaProperty &)>
 	QtnMetaPropertyFactory_t;
 QTN_IMPORT_EXPORT bool qtnRegisterMetaPropertyFactory(int metaPropertyType,
 	const QtnMetaPropertyFactory_t &factory, bool force = false);
-QTN_IMPORT_EXPORT void qtnInitPercentSpinBoxDelegate(
-	QtnPropertyDelegateInfo &delegate);
-QTN_IMPORT_EXPORT void qtnInitDegreeSpinBoxDelegate(
-	QtnPropertyDelegateInfo &delegate);
 
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateQObjectProperty(QObject *object,
 	const QMetaProperty &metaProperty, bool connect = false,

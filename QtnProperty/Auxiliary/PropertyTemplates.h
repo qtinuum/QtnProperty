@@ -20,6 +20,8 @@ limitations under the License.
 
 #include "QtnProperty/Property.h"
 #include "PropertyMacro.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+
 #include <limits>
 #include <functional>
 
@@ -430,6 +432,50 @@ private:
 
 	Q_DISABLE_COPY(QtnNumericPropertyBase)
 };
+
+template <typename T>
+inline void qtnMakePercentProperty(T *dProp,
+	typename T::ValueType (*AfterGet)(typename T::ValueType),
+	const QByteArray &delegateName = QByteArray())
+{
+	using ValueType = typename T::ValueType;
+	auto prevGet = dProp->callbackValueGet();
+	if (prevGet)
+	{
+		dProp->setCallbackValueGet([prevGet, AfterGet]() -> ValueType {
+			return AfterGet(prevGet() * 100.0);
+		});
+	}
+
+	auto prevEqual = dProp->callbackValueEqual();
+	if (prevEqual)
+	{
+		dProp->setCallbackValueEqual([prevEqual](ValueType value) -> bool {
+			return prevEqual(value / 100.0);
+		});
+	}
+
+	auto prevSet = dProp->callbackValueSet();
+	if (prevSet)
+	{
+		dProp->setCallbackValueSet(
+			[prevSet](ValueType value) { prevSet(value / 100.0); });
+	}
+
+	auto prevDefault = dProp->callbackValueDefault();
+	if (prevDefault)
+	{
+		dProp->setCallbackValueDefault([prevDefault, AfterGet]() -> ValueType {
+			return AfterGet(prevDefault() * 100.0);
+		});
+	}
+
+	QtnPropertyDelegateInfo delegate;
+	qtnInitPercentSpinBoxDelegate(delegate);
+	if (!delegateName.isEmpty())
+		delegate.name = delegateName;
+	dProp->setDelegateInfo(delegate);
+}
 
 template <typename QtnSinglePropertyType>
 class QtnNumericPropertyValue

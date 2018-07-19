@@ -320,18 +320,6 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 	return result;
 }
 
-void qtnInitPercentSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
-{
-	delegate.name = qtnSpinBoxDelegate();
-	delegate.attributes[qtnSuffixAttr()] = QLocale().percent();
-}
-
-void qtnInitDegreeSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
-{
-	delegate.name = qtnSpinBoxDelegate();
-	delegate.attributes[qtnSuffixAttr()] = QString::fromUtf8("º");
-}
-
 void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 {
 	Q_ASSERT(target);
