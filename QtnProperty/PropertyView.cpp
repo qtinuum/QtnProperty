@@ -979,17 +979,18 @@ QtnPropertyView::Item *QtnPropertyView::createItemsTree(
 				delegate->applyAttributes(delegateInfo->attributes);
 			}
 
+			int n = delegate->subPropertyCount();
+			item->children.reserve(n);
+
 			// process delegate subproperties
-			for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
+			for (int i = 0; i < n; ++i)
 			{
 				QtnPropertyBase *child = delegate->subProperty(i);
+				Q_ASSERT(child);
 
-				if (child)
-				{
-					auto childItem = createItemsTree(child);
-					childItem->parent = item;
-					item->children.emplace_back(childItem);
-				}
+				auto childItem = createItemsTree(child);
+				childItem->parent = item;
+				item->children.emplace_back(childItem);
 			}
 		}
 	} else
@@ -998,8 +999,11 @@ QtnPropertyView::Item *QtnPropertyView::createItemsTree(
 
 		if (asPropertySet)
 		{
+			auto &childProperties = asPropertySet->childProperties();
+			item->children.reserve(childProperties.size());
+
 			// process property set subproperties
-			for (auto child : asPropertySet->childProperties())
+			for (auto child : childProperties)
 			{
 				auto childItem = createItemsTree(child);
 				childItem->parent = item;
@@ -1098,9 +1102,9 @@ void QtnPropertyView::fillVisibleItems(Item *item, int level) const
 	if (level < 0)
 	{
 		// process children
-		for (int i = 0, n = item->children.size(); i < n; ++i)
+		for (auto &child : item->children)
 		{
-			fillVisibleItems(item->children[i].get(), level + 1);
+			fillVisibleItems(child.get(), level + 1);
 		}
 
 		return;
@@ -1117,9 +1121,9 @@ void QtnPropertyView::fillVisibleItems(Item *item, int level) const
 	if (item->collapsed())
 	{
 		// check if item has any child
-		for (size_t i = 0, n = item->children.size(); i < n; ++i)
+		for (auto &child : item->children)
 		{
-			if (acceptItem(*item->children[i].get()))
+			if (acceptItem(*child.get()))
 			{
 				vItem.hasChildren = true;
 				break;
@@ -1138,9 +1142,9 @@ void QtnPropertyView::fillVisibleItems(Item *item, int level) const
 	int index = m_visibleItems.size() - 1;
 
 	// process children
-	for (int i = 0, n = item->children.size(); i < n; ++i)
+	for (auto &child : item->children)
 	{
-		fillVisibleItems(item->children[i].get(), level + 1);
+		fillVisibleItems(child.get(), level + 1);
 	}
 
 	// if we add something -> current item has children
@@ -1148,7 +1152,7 @@ void QtnPropertyView::fillVisibleItems(Item *item, int level) const
 		m_visibleItems[index].hasChildren = true;
 }
 
-bool QtnPropertyView::acceptItem(Item &item) const
+bool QtnPropertyView::acceptItem(const Item &item) const
 {
 	return item.property->isVisible();
 }

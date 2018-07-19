@@ -171,7 +171,7 @@ private:
 	void invalidateVisibleItems();
 	void validateVisibleItems() const;
 	void fillVisibleItems(Item *item, int level) const;
-	bool acceptItem(Item &item) const;
+	bool acceptItem(const Item &item) const;
 
 	void drawBranchNode(
 		QStylePainter &painter, QRect &rect, const VisibleItem &vItem);
