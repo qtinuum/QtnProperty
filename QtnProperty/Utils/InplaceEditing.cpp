@@ -79,23 +79,26 @@ void onInplaceWidgetDestroyed(QObject *object)
 		parent->setFocus();
 }
 
-bool qtnStopInplaceEdit(bool delete_later)
+bool qtnStopInplaceEdit(bool delete_later, bool noFocus)
 {
 	if (!g_inplaceEditor)
 		return false;
 
 	delete g_inplaceEditorHandler;
-	g_inplaceEditorHandler = 0;
+	g_inplaceEditorHandler = nullptr;
 
-	QObject::connect(
-		g_inplaceEditor, &QObject::destroyed, &onInplaceWidgetDestroyed);
+	if (!noFocus)
+	{
+		QObject::connect(
+			g_inplaceEditor, &QObject::destroyed, &onInplaceWidgetDestroyed);
+	}
 
 	if (delete_later)
 		g_inplaceEditor->deleteLater();
 	else
 		delete g_inplaceEditor;
 
-	g_inplaceEditor = 0;
+	g_inplaceEditor = nullptr;
 
 	return true;
 }
@@ -125,7 +128,7 @@ bool QtnInplaceEditorHandler::eventFilter(QObject *watched, QEvent *event)
 	if (event->type() == QEvent::FocusIn)
 	{
 		if (!hasParent(QApplication::focusObject(), g_inplaceEditor))
-			qtnStopInplaceEdit();
+			qtnStopInplaceEdit(true, true);
 
 		return false;
 	}
