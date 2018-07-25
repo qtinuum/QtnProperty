@@ -180,7 +180,7 @@ void QtnPropertyWidgetEx::contextMenuEvent(QContextMenuEvent *event)
 	if (!property->isResettable() || !property->isEditableByUser())
 		return;
 
-	QMenu menu(this);
+	QMenu menu;
 
 	auto action = menu.addAction(tr("Reset to default"));
 	action->setStatusTip(
