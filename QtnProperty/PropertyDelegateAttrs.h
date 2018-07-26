@@ -41,6 +41,7 @@ QTN_IMPORT_EXPORT QByteArray qtnShapeAttr();
 
 QTN_IMPORT_EXPORT QByteArray qtnLineEditDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnSelectEditDelegate();
+QTN_IMPORT_EXPORT QByteArray qtnSelectFileDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnComboBoxDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnCheckBoxDelegate();
 

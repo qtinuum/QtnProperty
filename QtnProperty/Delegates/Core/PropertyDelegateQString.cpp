@@ -111,6 +111,11 @@ QByteArray qtnSelectEditDelegate()
 	returnQByteArrayLiteral("SelectEdit");
 }
 
+QByteArray qtnSelectFileDelegate()
+{
+	returnQByteArrayLiteral("SelectFile");
+}
+
 QByteArray qtnComboBoxDelegate()
 {
 	returnQByteArrayLiteral("ComboBox");
@@ -300,7 +305,7 @@ bool QtnPropertyDelegateQStringFile::Register()
 		&QtnPropertyQStringBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQStringFile,
 			QtnPropertyQStringBase>,
-		qtnSelectEditDelegate());
+		qtnSelectFileDelegate());
 }
 
 void QtnPropertyDelegateQStringFile::applyAttributesImpl(
