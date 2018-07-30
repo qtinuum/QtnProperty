@@ -99,6 +99,7 @@ public slots:
 	QtnAccessibilityProxy *accessibilityProxy();
 
 Q_SIGNALS:
+	void propertiesChanged(QtnPropertyChangeReason reason);
 	// emits when active property has changed
 	void activePropertyChanged(QtnPropertyBase *activeProperty);
 	void mouseReleased(QMouseEvent *e);

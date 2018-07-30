@@ -1255,6 +1255,8 @@ void QtnPropertyView::onPropertyDidChange(QtnPropertyChangeReason reason)
 		invalidateVisibleItems();
 	}
 	viewport()->update();
+
+	emit propertiesChanged(reason);
 }
 
 QtnPropertyView::Item *QtnPropertyView::findItem(
