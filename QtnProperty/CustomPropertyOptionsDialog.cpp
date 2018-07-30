@@ -190,6 +190,7 @@ void CustomPropertyOptionsDialog::setType(QVariant::Type type)
 
 		case QVariant::String:
 		case QVariant::Char:
+		case QVariant::Color:
 			ui->rbString->setChecked(true);
 			break;
 
