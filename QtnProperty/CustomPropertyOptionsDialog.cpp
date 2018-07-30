@@ -188,8 +188,13 @@ void CustomPropertyOptionsDialog::setType(QVariant::Type type)
 			ui->rbNumeric->setChecked(true);
 			break;
 
-		default:
+		case QVariant::String:
+		case QVariant::Char:
 			ui->rbString->setChecked(true);
+			break;
+
+		default:
+			ui->rbNull->setChecked(true);
 			break;
 	}
 }
@@ -215,7 +220,9 @@ bool CustomPropertyOptionsDialog::ValidateInput()
 {
 	if (BasePropertyDialog::ValidateInput())
 	{
-		if (ui->rbBoolean->isChecked())
+		if (ui->rbNull->isChecked())
+			value_type.clear();
+		else if (ui->rbBoolean->isChecked())
 			value_type = false;
 		else if (ui->rbNumeric->isChecked())
 			value_type = 0.0;
@@ -250,4 +257,17 @@ QSpinBox *CustomPropertyOptionsDialog::GetIndexEdit()
 QDialogButtonBox *CustomPropertyOptionsDialog::GetButtonBox()
 {
 	return ui->buttonBox;
+}
+
+QString QtnCustomPropertyData::displayName() const
+{
+	if (index >= 0)
+		return nameForIndex(index);
+
+	return name;
+}
+
+QString QtnCustomPropertyData::nameForIndex(int index)
+{
+	return QStringLiteral("[%1]").arg(index);
 }

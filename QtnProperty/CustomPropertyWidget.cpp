@@ -33,8 +33,6 @@ limitations under the License.
 #include <QApplication>
 #include <QPushButton>
 
-static const QString kFontDefMimeType =
-	QStringLiteral("CustomPropertyDragDrop");
 static const QString kCustomPropertyData =
 	QStringLiteral("QtnCustomPropertyData");
 
