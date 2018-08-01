@@ -27,6 +27,7 @@ public:
 	void OnEditorDestroyed(QObject *obj);
 };
 
+static unsigned g_inplaceEditorRetainCount = 0;
 static QWidget *g_inplaceEditor = 0;
 static QtnInplaceEditorHandler *g_inplaceEditorHandler = 0;
 
@@ -65,6 +66,17 @@ bool qtnStartInplaceEdit(QWidget *editor)
 	return true;
 }
 
+void qtnRetainInplaceEditor()
+{
+	++g_inplaceEditorRetainCount;
+}
+
+void qtnReleaseInplaceEditor()
+{
+	Q_ASSERT(g_inplaceEditorRetainCount > 0);
+	--g_inplaceEditorRetainCount;
+}
+
 QWidget *qtnGetInplaceEdit()
 {
 	return g_inplaceEditor;
@@ -82,6 +94,9 @@ void onInplaceWidgetDestroyed(QObject *object)
 bool qtnStopInplaceEdit(bool delete_later, bool restoreParentFocus)
 {
 	if (!g_inplaceEditor)
+		return false;
+
+	if (g_inplaceEditorRetainCount > 0)
 		return false;
 
 	delete g_inplaceEditorHandler;
@@ -144,3 +159,5 @@ void QtnInplaceEditorHandler::OnEditorDestroyed(QObject *obj)
 	g_inplaceEditorHandler = 0;
 	g_inplaceEditor = 0;
 }
+
+void releaseInplaceEditor() {}
