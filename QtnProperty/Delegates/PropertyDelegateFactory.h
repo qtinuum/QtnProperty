@@ -21,39 +21,53 @@ limitations under the License.
 #include "PropertyDelegate.h"
 #include <QMap>
 
+#include <functional>
+
 class QTN_IMPORT_EXPORT QtnPropertyDelegateFactory
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateFactory)
 
 public:
-	typedef QtnPropertyDelegate *CreateFunction(QtnProperty &);
+	using CreateFunction = std::function<QtnPropertyDelegate *(QtnProperty &)>;
 
 	explicit QtnPropertyDelegateFactory(
-		const QtnPropertyDelegateFactory *superFactory = nullptr);
+		QtnPropertyDelegateFactory *superFactory = nullptr);
 
-	QtnPropertyDelegate *createDelegate(QtnProperty &owner) const;
+	inline QtnPropertyDelegateFactory *superFactory();
+	void setSuperFactory(QtnPropertyDelegateFactory *superFactory);
+
+	QtnPropertyDelegate *createDelegate(QtnProperty &owner);
 
 	bool registerDelegateDefault(const QMetaObject *propertyMetaObject,
-		CreateFunction *createFunction,
+		const CreateFunction &createFunction,
 		const QByteArray &delegateName = QByteArray());
 	bool registerDelegate(const QMetaObject *propertyMetaObject,
-		CreateFunction *createFunction, const QByteArray &delegateName);
+		const CreateFunction &createFunction, const QByteArray &delegateName);
+
+	bool unregisterDelegate(const QMetaObject *propertyMetaObject);
+	bool unregisterDelegate(
+		const QMetaObject *propertyMetaObject, const QByteArray &delegateName);
 
 	static QtnPropertyDelegateFactory &staticInstance();
 
 private:
-	const QtnPropertyDelegateFactory *m_superFactory;
+	QtnPropertyDelegate *createDelegateInternal(QtnProperty &owner);
+
+	QtnPropertyDelegateFactory *m_superFactory;
 
 	struct CreateItem
 	{
-		CreateItem();
-
-		CreateFunction *defaultCreateFunction;
-		QMap<QByteArray, CreateFunction *> createFunctions;
+		CreateFunction defaultCreateFunction;
+		QMap<QByteArray, CreateFunction> createFunctions;
 	};
 
-	QMap<QByteArray, CreateItem> m_createItems;
+	QMap<const QMetaObject *, CreateItem> m_createItems;
 };
+
+QtnPropertyDelegateFactory *QtnPropertyDelegateFactory::superFactory()
+{
+	return m_superFactory;
+}
 
 template <typename PropertyDelegateClass, typename PropertyClass>
 QtnPropertyDelegate *qtnCreateDelegate(QtnProperty &owner)

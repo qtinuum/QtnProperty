@@ -25,6 +25,8 @@ limitations under the License.
 #include <memory>
 
 class QtnMultiPropertyDelegate;
+class QtnConnections;
+
 class QTN_IMPORT_EXPORT QtnMultiProperty : public QtnProperty
 {
 	Q_OBJECT
@@ -32,12 +34,12 @@ class QTN_IMPORT_EXPORT QtnMultiProperty : public QtnProperty
 public:
 	explicit QtnMultiProperty(
 		const QMetaObject *propertyMetaObject, QObject *parent = nullptr);
-	virtual ~QtnMultiProperty();
+	virtual ~QtnMultiProperty() override;
+
+	virtual const QMetaObject *propertyMetaObject() const override;
 
 	void addProperty(QtnProperty *property, bool own = true);
-	void resetValues(bool edit);
 
-	bool hasResettableValues() const;
 	bool hasMultipleValues() const;
 
 	static bool Register();
@@ -56,6 +58,7 @@ private slots:
 	void onPropertyDidChange(QtnPropertyChangeReason reason);
 
 protected:
+	virtual void doReset(bool edit) override;
 	virtual bool loadImpl(QDataStream &stream) override;
 	virtual bool saveImpl(QDataStream &stream) const override;
 
@@ -71,7 +74,7 @@ private:
 	void updateMutablePropertyIndex();
 
 	std::vector<QtnProperty *> properties;
-	const QMetaObject *propertyMetaObject;
+	const QMetaObject *mPropertyMetaObject;
 	int mutablePropertyIndex;
 
 	bool calculateMultipleValues;
@@ -94,15 +97,12 @@ class QtnMultiPropertyDelegate
 
 public:
 	QtnMultiPropertyDelegate(QtnMultiProperty &owner);
-	virtual ~QtnMultiPropertyDelegate();
+	virtual ~QtnMultiPropertyDelegate() override;
 
 private:
-	struct PropertyToEdit
-	{
-		QtnMultiProperty *owner;
-		QtnProperty *property;
-		std::vector<QMetaObject::Connection> connections;
-	};
+	virtual void init() override;
+
+	struct PropertyToEdit;
 
 	static void onEditedPropertyWillChange(PropertyToEdit *data,
 		QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue,

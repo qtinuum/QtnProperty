@@ -18,6 +18,7 @@ limitations under the License.
 #include "PropertyDelegateQPoint.h"
 #include "Core/PropertyQPoint.h"
 #include "Delegates/PropertyDelegateFactory.h"
+#include "PropertyDelegateAttrs.h"
 
 #include <QLocale>
 #include <QLineEdit>
@@ -26,8 +27,8 @@ QtnPropertyDelegateQPoint::QtnPropertyDelegateQPoint(
 	QtnPropertyQPointBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointBase>(owner)
 {
-	addSubProperty(qtnCreateXProperty(0, &owner));
-	addSubProperty(qtnCreateYProperty(0, &owner));
+	addSubProperty(owner.createXProperty());
+	addSubProperty(owner.createYProperty());
 }
 
 bool QtnPropertyDelegateQPoint::Register()
@@ -36,6 +37,12 @@ bool QtnPropertyDelegateQPoint::Register()
 		&QtnPropertyQPointBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>,
 		QByteArrayLiteral("XY"));
+}
+
+void QtnPropertyDelegateQPoint::applyAttributesImpl(
+	const QtnPropertyDelegateAttributes &attributes)
+{
+	qtnGetAttribute(attributes, qtnSuffixAttr(), mSuffix);
 }
 
 QWidget *QtnPropertyDelegateQPoint::createValueEditorImpl(
@@ -50,7 +57,8 @@ bool QtnPropertyDelegateQPoint::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-		locale.toString(value.x()), locale.toString(value.y()));
+		locale.toString(value.x()) + mSuffix,
+		locale.toString(value.y()) + mSuffix);
 
 	return true;
 }

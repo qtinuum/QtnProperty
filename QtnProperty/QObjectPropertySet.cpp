@@ -43,7 +43,7 @@ static QtnProperty *createRealNumberProperty(
 		{
 			QtnPropertyDelegateInfo delegate;
 			qtnInitPercentSpinBoxDelegate(delegate);
-			property->setDelegate(delegate);
+			property->setDelegateInfo(delegate);
 
 			property->setCallbackValueGet([object, metaProperty]() -> double {
 				return metaProperty.read(object).toDouble() * 100.0;
@@ -60,7 +60,7 @@ static QtnProperty *createRealNumberProperty(
 		{
 			QtnPropertyDelegateInfo delegate;
 			qtnInitDegreeSpinBoxDelegate(delegate);
-			property->setDelegate(delegate);
+			property->setDelegateInfo(delegate);
 			break;
 		}
 	}
@@ -219,7 +219,7 @@ QtnProperty *qtnCreateQObjectProperty(
 		connect, metaObject->className());
 }
 
-QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
+QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object, bool backwards)
 {
 	if (!object)
 		return nullptr;
@@ -261,7 +261,7 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 					propertySetByClass = it->second;
 				} else
 				{
-					propertySetByClass = new QtnPropertySet(nullptr);
+					propertySetByClass = new QtnPropertySet;
 					propertySetByClass->setName(className);
 					propertySetsByClass[className] = propertySetByClass;
 
@@ -286,86 +286,33 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object)
 	auto propertySet = new QtnPropertySet(nullptr);
 	propertySet->setName(object->objectName());
 
+	int addIndex = backwards ? 0 : -1;
+
 	for (auto &class_name : classNames)
 	{
-		propertySet->addChildProperty(propertySetsByClass[class_name]);
+		propertySet->addChildProperty(
+			propertySetsByClass[class_name], true, addIndex);
 	}
 
 	return propertySet;
 }
 
 QtnPropertySet *qtnCreateQObjectMultiPropertySet(
-	const std::set<QObject *> &objects)
+	const std::set<QObject *> &objects, bool backwards)
 {
 	if (objects.empty())
 		return nullptr;
 
 	auto result = new QtnPropertySet(nullptr);
-	auto &subSets = result->childProperties();
 
 	for (auto object : objects)
 	{
-		auto propertySet = qtnCreateQObjectPropertySet(object);
+		auto propertySet = qtnCreateQObjectPropertySet(object, backwards);
 
 		if (nullptr == propertySet)
 			continue;
 
-		for (int i = propertySet->childProperties().count() - 1; i >= 0; i--)
-		{
-			auto property = propertySet->childProperties().at(i);
-
-			auto subSet = dynamic_cast<QtnPropertySet *>(property);
-			Q_ASSERT(nullptr != subSet);
-
-			auto it = std::find_if(subSets.begin(), subSets.end(),
-				[subSet](const QtnPropertyBase *set) -> bool {
-					return (subSet->name() == set->name());
-				});
-
-			QtnPropertySet *multiSet;
-
-			if (it == subSets.end())
-			{
-				multiSet = new QtnPropertySet(nullptr);
-				multiSet->setName(subSet->name());
-				multiSet->setDescription(subSet->description());
-				multiSet->setId(subSet->id());
-				multiSet->setState(subSet->stateLocal());
-
-				result->addChildProperty(multiSet, true, 0);
-			} else
-			{
-				multiSet = dynamic_cast<QtnPropertySet *>(*it);
-			}
-
-			auto &ncp = multiSet->childProperties();
-
-			for (auto subProp : subSet->childProperties())
-			{
-				auto propIt = std::find_if(ncp.begin(), ncp.end(),
-					[subProp](QtnPropertyBase *p) -> bool {
-						return p->name() == subProp->name();
-					});
-
-				QtnMultiProperty *multiProperty;
-
-				if (propIt == ncp.end())
-				{
-					multiProperty = new QtnMultiProperty(subProp->metaObject());
-					multiProperty->setName(subProp->name());
-					multiProperty->setDescription(subProp->description());
-					multiProperty->setId(subProp->id());
-
-					multiSet->addChildProperty(multiProperty);
-				} else
-				{
-					multiProperty = dynamic_cast<QtnMultiProperty *>(*propIt);
-				}
-
-				multiProperty->addProperty(
-					dynamic_cast<QtnProperty *>(subProp));
-			}
-		}
+		qtnPropertiesToMultiSet(result, propertySet);
 
 		delete propertySet;
 	}
@@ -373,14 +320,61 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 	return result;
 }
 
-void qtnInitPercentSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
+void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 {
-	delegate.name = qtnSpinBoxDelegate();
-	delegate.attributes[qtnSuffixAttr()] = QLocale().percent();
-}
+	Q_ASSERT(target);
+	Q_ASSERT(source);
 
-void qtnInitDegreeSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
-{
-	delegate.name = qtnSpinBoxDelegate();
-	delegate.attributes[qtnSuffixAttr()] = QString::fromUtf8("º");
+	auto &targetProperties = target->childProperties();
+	for (auto property : source->childProperties())
+	{
+		auto it = std::find_if(targetProperties.begin(), targetProperties.end(),
+			[property](const QtnPropertyBase *targetProperty) -> bool {
+				return property->propertyMetaObject() ==
+					targetProperty->propertyMetaObject() &&
+					property->name() == targetProperty->name();
+			});
+
+		auto subSet = property->asPropertySet();
+		if (subSet)
+		{
+			QtnPropertySet *multiSet;
+
+			if (it == targetProperties.end())
+			{
+				multiSet = new QtnPropertySet(
+					subSet->childrenOrder(), subSet->compareFunc());
+				multiSet->setName(subSet->name());
+				multiSet->setDescription(subSet->description());
+				multiSet->setId(subSet->id());
+				multiSet->setState(subSet->stateLocal());
+
+				target->addChildProperty(multiSet, true);
+			} else
+			{
+				multiSet = (*it)->asPropertySet();
+			}
+
+			qtnPropertiesToMultiSet(multiSet, subSet);
+		} else
+		{
+			QtnMultiProperty *multiProperty;
+
+			if (it == targetProperties.end())
+			{
+				multiProperty = new QtnMultiProperty(property->metaObject());
+				multiProperty->setName(property->name());
+				multiProperty->setDescription(property->description());
+				multiProperty->setId(property->id());
+
+				target->addChildProperty(multiProperty, true);
+			} else
+			{
+				multiProperty = qobject_cast<QtnMultiProperty *>(*it);
+			}
+
+			multiProperty->addProperty(property->asProperty());
+		}
+	}
+	source->clearChildProperties();
 }

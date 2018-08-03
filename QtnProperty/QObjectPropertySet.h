@@ -38,19 +38,18 @@ typedef std::function<QtnProperty *(QObject *, const QMetaProperty &)>
 	QtnMetaPropertyFactory_t;
 QTN_IMPORT_EXPORT bool qtnRegisterMetaPropertyFactory(int metaPropertyType,
 	const QtnMetaPropertyFactory_t &factory, bool force = false);
-QTN_IMPORT_EXPORT void qtnInitPercentSpinBoxDelegate(
-	QtnPropertyDelegateInfo &delegate);
-QTN_IMPORT_EXPORT void qtnInitDegreeSpinBoxDelegate(
-	QtnPropertyDelegateInfo &delegate);
 
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateQObjectProperty(QObject *object,
 	const QMetaProperty &metaProperty, bool connect = false,
 	const char *className = nullptr);
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateQObjectProperty(
 	QObject *object, const char *propertyName, bool connect = false);
-QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object);
+QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectPropertySet(
+	QObject *object, bool backwards);
 QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectMultiPropertySet(
-	const std::set<QObject *> &objects);
+	const std::set<QObject *> &objects, bool backwards);
+QTN_IMPORT_EXPORT void qtnPropertiesToMultiSet(
+	QtnPropertySet *target, QtnPropertySet *source);
 
 QTN_IMPORT_EXPORT QtnPropertyState qtnPropertyStateToAdd(
 	const QMetaProperty &metaProperty);

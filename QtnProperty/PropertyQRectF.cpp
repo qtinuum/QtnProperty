@@ -18,6 +18,7 @@ limitations under the License.
 
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Core/PropertyQRect.h"
+#include "Core/PropertyQSize.h"
 #include "QObjectPropertySet.h"
 
 #include <QLocale>
@@ -37,58 +38,58 @@ QtnPropertyQRectFBase::QtnPropertyQRectFBase(QObject *parent)
 	, coordinates(false)
 {
 	addState(QtnPropertyStateCollapsed);
+
+	setDelegateInfoCallback([this]() -> QtnPropertyDelegateInfo {
+		QtnPropertyDelegateInfo result;
+		result.name = coordinates ? qtnQRectF_LTRB() : qtnQRectF_LTWH();
+		return result;
+	});
 }
 
 void QtnPropertyQRectFBase::setMode(bool coordinates)
 {
 	this->coordinates = coordinates;
-
-	setDelegateCallback([coordinates]() -> const QtnPropertyDelegateInfo * {
-		auto result = new QtnPropertyDelegateInfo;
-		result->name = coordinates ? qtnQRectF_LTRB() : qtnQRectF_LTWH();
-		return result;
-	});
 }
 
 QtnProperty *QtnPropertyQRectFBase::createLeftProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Left"),
-		QtnPropertyQRectF::tr("Left position of the %1"), &QRectF::left,
+	return createFieldProperty(QtnPropertyQRect::leftString(),
+		QtnPropertyQRect::leftDescription(), &QRectF::left,
 		move ? &QRectF::moveLeft : &QRectF::setLeft);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createTopProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Top"),
-		QtnPropertyQRectF::tr("Top position of the %1"), &QRectF::top,
+	return createFieldProperty(QtnPropertyQRect::topString(),
+		QtnPropertyQRect::topDescription(), &QRectF::top,
 		move ? &QRectF::moveTop : &QRectF::setTop);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createRightProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Right"),
-		QtnPropertyQRectF::tr("Right position of the %1"), &QRectF::right,
+	return createFieldProperty(QtnPropertyQRect::rightString(),
+		QtnPropertyQRect::rightDescription(), &QRectF::right,
 		move ? &QRectF::moveRight : &QRectF::setRight);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createBottomProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Bottom"),
-		QtnPropertyQRectF::tr("Bottom position of the %1"), &QRectF::bottom,
+	return createFieldProperty(QtnPropertyQRect::bottomString(),
+		QtnPropertyQRect::bottomDescription(), &QRectF::bottom,
 		move ? &QRectF::moveBottom : &QRectF::setBottom);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createWidthProperty()
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Width"),
-		QtnPropertyQRectF::tr("Width of the %1"), &QRectF::width,
+	return createFieldProperty(QtnPropertyQSize::widthString(),
+		QtnPropertyQSize::widthDescription(), &QRectF::width,
 		&QRectF::setWidth);
 }
 
 QtnProperty *QtnPropertyQRectFBase::createHeightProperty()
 {
-	return createFieldProperty(QtnPropertyQRectF::tr("Height"),
-		QtnPropertyQRectF::tr("Height of the %1"), &QRectF::height,
+	return createFieldProperty(QtnPropertyQSize::heightString(),
+		QtnPropertyQSize::heightDescription().arg(name()), &QRectF::height,
 		&QRectF::setHeight);
 }
 
@@ -224,16 +225,19 @@ bool QtnPropertyQRectF::Register()
 
 	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 			   &QtnPropertyQRectFBase::staticMetaObject,
-			   &QtnPropertyDelegateQRectF::createLTWH, qtnQRectF_LTWH()) &&
+			   qtnCreateDelegate<QtnPropertyDelegateQRectF,
+				   QtnPropertyQRectFBase>,
+			   qtnQRectF_LTWH()) &&
 		QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
 			&QtnPropertyQRectFBase::staticMetaObject,
-			&QtnPropertyDelegateQRectF::createLTRB, qtnQRectF_LTRB());
+			qtnCreateDelegate<QtnPropertyDelegateQRectF, QtnPropertyQRectFBase>,
+			qtnQRectF_LTRB());
 }
 
 QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(
-	QtnPropertyQRectFBase &owner, bool coordinates)
+	QtnPropertyQRectFBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQRectFBase>(owner)
-	, coordinates(coordinates)
+	, coordinates(owner.coordinateMode())
 {
 	addSubProperty(owner.createLeftProperty(!coordinates));
 	addSubProperty(owner.createTopProperty(!coordinates));
@@ -247,26 +251,6 @@ QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(
 		addSubProperty(owner.createWidthProperty());
 		addSubProperty(owner.createHeightProperty());
 	}
-}
-
-QtnPropertyDelegate *QtnPropertyDelegateQRectF::createLTWH(QtnProperty &owner)
-{
-	auto theOwner = qobject_cast<QtnPropertyQRectFBase *>(&owner);
-
-	if (!theOwner)
-		return nullptr;
-
-	return new QtnPropertyDelegateQRectF(*theOwner, false);
-}
-
-QtnPropertyDelegate *QtnPropertyDelegateQRectF::createLTRB(QtnProperty &owner)
-{
-	auto theOwner = qobject_cast<QtnPropertyQRectFBase *>(&owner);
-
-	if (!theOwner)
-		return nullptr;
-
-	return new QtnPropertyDelegateQRectF(*theOwner, true);
 }
 
 QWidget *QtnPropertyDelegateQRectF::createValueEditorImpl(

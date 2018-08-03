@@ -27,12 +27,17 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQPoint
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQPoint)
 
+	QString mSuffix;
+
 public:
 	QtnPropertyDelegateQPoint(QtnPropertyQPointBase &owner);
 
 	static bool Register();
 
 protected:
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateAttributes &attributes) override;
+
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 

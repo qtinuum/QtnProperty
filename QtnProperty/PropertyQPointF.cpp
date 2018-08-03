@@ -17,6 +17,7 @@ limitations under the License.
 #include "PropertyQPointF.h"
 
 #include "Delegates/PropertyDelegateFactory.h"
+#include "PropertyDelegateAttrs.h"
 #include "Core/PropertyQPoint.h"
 #include "QObjectPropertySet.h"
 
@@ -43,22 +44,22 @@ QtnProperty *QtnPropertyQPointFBase::createYProperty()
 
 QString QtnPropertyQPointFBase::getXLabel()
 {
-	return QtnPropertyQPointF::tr("X");
+	return QtnPropertyQPoint::xString();
 }
 
 QString QtnPropertyQPointFBase::getXDescriptionFormat()
 {
-	return QtnPropertyQPointF::tr("X of the %1");
+	return QtnPropertyQPoint::xDescription();
 }
 
 QString QtnPropertyQPointFBase::getYLabel()
 {
-	return QtnPropertyQPointF::tr("Y");
+	return QtnPropertyQPoint::yString();
 }
 
 QString QtnPropertyQPointFBase::getYDescriptionFormat()
 {
-	return QtnPropertyQPointF::tr("Y of the %1");
+	return QtnPropertyQPoint::yDescription();
 }
 
 bool QtnPropertyQPointFBase::fromStrImpl(const QString &str, bool edit)
@@ -120,6 +121,12 @@ QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
 	addSubProperty(owner.createYProperty());
 }
 
+void QtnPropertyDelegateQPointF::applyAttributesImpl(
+	const QtnPropertyDelegateAttributes &attributes)
+{
+	qtnGetAttribute(attributes, qtnSuffixAttr(), mSuffix);
+}
+
 QWidget *QtnPropertyDelegateQPointF::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
@@ -132,7 +139,8 @@ bool QtnPropertyDelegateQPointF::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-		locale.toString(value.x(), 'g', 6), locale.toString(value.y(), 'g', 6));
+		locale.toString(value.x(), 'g', 6) + mSuffix,
+		locale.toString(value.y(), 'g', 6) + mSuffix);
 
 	return true;
 }

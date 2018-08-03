@@ -22,6 +22,8 @@ limitations under the License.
 #include <QMap>
 #include <QVariant>
 
+QTN_IMPORT_EXPORT QByteArray qtnFieldDelegateName();
+
 typedef QMap<QByteArray, QVariant> QtnPropertyDelegateAttributes;
 
 struct QTN_IMPORT_EXPORT QtnPropertyDelegateInfo

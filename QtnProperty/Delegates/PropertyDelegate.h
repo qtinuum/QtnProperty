@@ -21,8 +21,10 @@ limitations under the License.
 #include "QtnProperty/CoreAPI.h"
 #include "QtnProperty/Property.h"
 
-#include <functional>
 #include <QStylePainter>
+
+#include <functional>
+#include <deque>
 
 class QKeyEvent;
 class QtnPropertyDelegateFactory;
@@ -36,6 +38,8 @@ public:
 	QtnInplaceInfo();
 };
 
+class QtnPropertyDelegateFactory;
+
 QTN_IMPORT_EXPORT QString qtnElidedText(const QPainter &painter,
 	const QString &text, const QRect &rect, bool *elided = 0);
 
@@ -43,8 +47,14 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegate
 {
 	Q_DISABLE_COPY(QtnPropertyDelegate)
 
+	QtnPropertyDelegateFactory *m_factory = nullptr;
+
 public:
 	virtual ~QtnPropertyDelegate();
+	virtual void init();
+
+	inline QtnPropertyDelegateFactory *factory() const;
+	inline void setFactory(QtnPropertyDelegateFactory *factory);
 
 	// for complex properties like PropertyQFont
 	inline int subPropertyCount() const;
@@ -95,6 +105,16 @@ protected:
 
 	QtnProperty *ownerProperty;
 };
+
+QtnPropertyDelegateFactory *QtnPropertyDelegate::factory() const
+{
+	return m_factory;
+}
+
+void QtnPropertyDelegate::setFactory(QtnPropertyDelegateFactory *factory)
+{
+	m_factory = factory;
+}
 
 int QtnPropertyDelegate::subPropertyCount() const
 {
@@ -175,12 +195,13 @@ protected:
 
 	virtual int subPropertyCountImpl() const override
 	{
-		return m_subProperties.size();
+		return int(m_subProperties.size());
 	}
 
 	virtual QtnPropertyBase *subPropertyImpl(int index) override
 	{
-		return m_subProperties[index].data();
+		Q_ASSERT(index >= 0);
+		return m_subProperties.at(index).data();
 	}
 
 	void addSubProperty(QtnPropertyBase *subProperty)
@@ -190,13 +211,13 @@ protected:
 		if (!subProperty)
 			return;
 
-		m_subProperties.append(QSharedPointer<QtnPropertyBase>(subProperty));
+		m_subProperties.emplace_back(subProperty);
 
 		subProperty->connectMasterState(
 			QtnPropertyDelegateTyped<PropertyClass>::getOwnerProperty());
 	}
 
-	QList<QSharedPointer<QtnPropertyBase>> m_subProperties;
+	std::deque<QScopedPointer<QtnPropertyBase>> m_subProperties;
 };
 
 #endif // QTN_PROPERTY_DELEGATE_H

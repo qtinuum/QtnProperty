@@ -92,10 +92,14 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQPointF
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQPointF)
 
+	QString mSuffix;
+
 public:
 	QtnPropertyDelegateQPointF(QtnPropertyQPointFBase &owner);
 
 protected:
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateAttributes &attributes) override;
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 	virtual bool propertyValueToStr(QString &strValue) const override;

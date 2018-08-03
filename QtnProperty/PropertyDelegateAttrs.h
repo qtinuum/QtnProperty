@@ -41,6 +41,23 @@ QTN_IMPORT_EXPORT QByteArray qtnShapeAttr();
 
 QTN_IMPORT_EXPORT QByteArray qtnLineEditDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnSelectEditDelegate();
+QTN_IMPORT_EXPORT QByteArray qtnSelectFileDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnComboBoxDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnCheckBoxDelegate();
+
+struct QtnPropertyDelegateInfo;
+
 QTN_IMPORT_EXPORT QByteArray qtnSpinBoxDelegate();
+
+QTN_IMPORT_EXPORT void qtnInitPercentSpinBoxDelegate(
+	QtnPropertyDelegateInfo &delegate);
+QTN_IMPORT_EXPORT void qtnInitDegreeSpinBoxDelegate(
+	QtnPropertyDelegateInfo &delegate);
+
+QTN_IMPORT_EXPORT double qtnHundredPercent(double value);
+
+template <typename T>
+inline T qtnDefaultGet(T value)
+{
+	return value;
+}

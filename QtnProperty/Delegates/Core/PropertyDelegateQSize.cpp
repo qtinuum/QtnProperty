@@ -25,8 +25,8 @@ limitations under the License.
 QtnPropertyDelegateQSize::QtnPropertyDelegateQSize(QtnPropertyQSizeBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQSizeBase>(owner)
 {
-	addSubProperty(qtnCreateWidthProperty(0, &owner));
-	addSubProperty(qtnCreateHeightProperty(0, &owner));
+	addSubProperty(owner.createWidthProperty());
+	addSubProperty(owner.createHeightProperty());
 }
 
 bool QtnPropertyDelegateQSize::Register()

@@ -30,12 +30,14 @@ class QTN_IMPORT_EXPORT QtnProperty : public QtnPropertyBase
 	Q_DISABLE_COPY(QtnProperty)
 
 public:
-	virtual ~QtnProperty();
+	virtual ~QtnProperty() override;
+
+	using DelegateInfoCallback = std::function<QtnPropertyDelegateInfo()>;
+
 	// delegates
-	const QtnPropertyDelegateInfo *delegate() const;
-	void setDelegate(const QtnPropertyDelegateInfo &delegate);
-	void setDelegateCallback(
-		const std::function<const QtnPropertyDelegateInfo *()> &callback);
+	const QtnPropertyDelegateInfo *delegateInfo() const;
+	void setDelegateInfo(const QtnPropertyDelegateInfo &delegateInfo);
+	void setDelegateInfoCallback(const DelegateInfoCallback &callback);
 
 	// casts
 	virtual QtnProperty *asProperty() override;

@@ -22,8 +22,11 @@ limitations under the License.
 
 #include <QWidget>
 
+QTN_IMPORT_EXPORT void qtnRetainInplaceEditor();
+QTN_IMPORT_EXPORT void qtnReleaseInplaceEditor();
 QTN_IMPORT_EXPORT bool qtnStartInplaceEdit(QWidget *editor);
 QTN_IMPORT_EXPORT QWidget *qtnGetInplaceEdit();
-QTN_IMPORT_EXPORT bool qtnStopInplaceEdit(bool delete_later = true);
+QTN_IMPORT_EXPORT bool qtnStopInplaceEdit(
+	bool delete_later = true, bool restoreParentFocus = true);
 
 #endif // INPLACE_EDITING_H

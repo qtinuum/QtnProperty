@@ -27,6 +27,8 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQRect
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQRect)
 
+	bool coordinates;
+
 public:
 	QtnPropertyDelegateQRect(QtnPropertyQRectBase &owner);
 

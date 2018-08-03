@@ -21,9 +21,6 @@ limitations under the License.
 #include "MultiProperty.h"
 #include "Utils/QtnConnections.h"
 
-#include <QMenu>
-#include <QContextMenuEvent>
-
 QObjectPropertyWidget::QObjectPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
 {
@@ -94,29 +91,6 @@ void QObjectPropertyWidget::deselectObject(QObject *object, bool destroyed)
 	}
 }
 
-void QObjectPropertyWidget::onResetTriggered()
-{
-	auto multiProperty = getMultiProperty();
-
-	QtnConnections connections;
-
-	if (nullptr != multiProperty)
-	{
-		propertyView()->connectPropertyToEdit(multiProperty, connections);
-		multiProperty->resetValues(true);
-	} else
-	{
-		auto connector = getPropertyConnector();
-
-		if (nullptr != connector)
-		{
-			propertyView()->connectPropertyToEdit(
-				getActiveProperty(), connections);
-			connector->resetPropertyValue(true);
-		}
-	}
-}
-
 void QObjectPropertyWidget::onObjectDestroyed(QObject *object)
 {
 	auto it = selectedObjects.find(object);
@@ -127,43 +101,6 @@ void QObjectPropertyWidget::onObjectDestroyed(QObject *object)
 
 		disconnectObjects();
 		connectObjects();
-	}
-}
-
-void QObjectPropertyWidget::contextMenuEvent(QContextMenuEvent *event)
-{
-	auto property = getActiveProperty();
-
-	if (nullptr == property)
-		return;
-
-	if (!property->isEditableByUser())
-		return;
-
-	auto connector = getPropertyConnector();
-	auto multiProperty = getMultiProperty();
-
-	if (nullptr != connector || nullptr != multiProperty)
-	{
-		QMenu menu(this);
-
-		auto action = menu.addAction(tr("Reset to default"));
-		action->setStatusTip(
-			tr("Reset value of %1 to default").arg(property->name()));
-
-		bool resettable = (nullptr != multiProperty)
-			? multiProperty->hasResettableValues()
-			: connector->isResettablePropertyValue();
-
-		action->setEnabled(resettable);
-
-		if (resettable)
-		{
-			QObject::connect(action, &QAction::triggered, this,
-				&QObjectPropertyWidget::onResetTriggered);
-		}
-
-		menu.exec(event->globalPos());
 	}
 }
 
@@ -189,7 +126,7 @@ void QObjectPropertyWidget::connectObjects()
 	if (selectedObjects.size() == 1)
 	{
 		auto object = *selectedObjects.begin();
-		auto set = qtnCreateQObjectPropertySet(object);
+		auto set = qtnCreateQObjectPropertySet(object, true);
 
 		if (nullptr != set)
 			set->setParent(this);
@@ -199,7 +136,7 @@ void QObjectPropertyWidget::connectObjects()
 		connectObject(object);
 	} else if (selectedObjects.size() > 1)
 	{
-		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects);
+		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects, true);
 
 		if (nullptr != set)
 			set->setParent(this);

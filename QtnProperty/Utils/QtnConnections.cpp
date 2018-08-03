@@ -28,6 +28,8 @@ void QtnConnections::disconnect()
 	clear();
 }
 
+QtnConnections::QtnConnections() {}
+
 QtnConnections::~QtnConnections()
 {
 	if (!empty())

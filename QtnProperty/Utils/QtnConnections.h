@@ -25,8 +25,11 @@ limitations under the License.
 class QTN_IMPORT_EXPORT QtnConnections
 	: public std::vector<QMetaObject::Connection>
 {
+	Q_DISABLE_COPY(QtnConnections)
+
 public:
 	void disconnect();
 
+	QtnConnections();
 	~QtnConnections();
 };

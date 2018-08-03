@@ -22,14 +22,15 @@ template <typename VALUE_T, typename FIELD_PROP_T,
 	typename FIELD_T = typename FIELD_PROP_T::ValueType>
 class QtnStructPropertyBase : public QtnSinglePropertyBase<VALUE_T>
 {
+	typedef QtnSinglePropertyBase<VALUE_T> Inherited;
+
 public:
 	typedef FIELD_PROP_T FieldProperty;
 	typedef FIELD_T FieldValueType;
 	typedef typename FIELD_PROP_T::ValueType CallbackValueType;
+	typedef typename FIELD_PROP_T::ValueTypeStore CallbackValueTypeStore;
 	typedef QtnStructPropertyBase ParentClass;
-
-private:
-	typedef QtnSinglePropertyBase<VALUE_T> Inherited;
+	typedef typename Inherited::ValueTypeStore ValueTypeStore;
 
 protected:
 	explicit QtnStructPropertyBase(QObject *parent)
@@ -49,11 +50,36 @@ protected:
 			return (Inherited::value().*get)();
 		});
 		result->setCallbackValueSet([this, set](CallbackValueType new_value) {
-			auto rect = Inherited::value();
-			(rect.*set)(new_value);
-			Inherited::setValue(rect);
+			auto v = Inherited::value();
+			(v.*set)(new_value);
+			Inherited::setValue(v);
 		});
 
+		if (Inherited::isResettable())
+		{
+			result->addState(QtnPropertyStateResettable);
+			result->setCallbackValueDefault([this, get]() -> CallbackValueType {
+				ValueTypeStore value;
+				this->defaultValueImpl(value);
+				return (value.*get)();
+			});
+		}
+
+		auto delegateInfoCallback = [this]() -> QtnPropertyDelegateInfo {
+			auto baseDelegate = Inherited::delegateInfo();
+			QtnPropertyDelegateInfo result;
+			if (baseDelegate)
+			{
+				result.attributes = baseDelegate->attributes;
+			}
+			auto it = result.attributes.find(qtnFieldDelegateName());
+			if (it != result.attributes.end())
+			{
+				result.name = it.value().toByteArray();
+			}
+			return result;
+		};
+		result->setDelegateInfoCallback(delegateInfoCallback);
 		return result;
 	}
 };

@@ -18,6 +18,7 @@ limitations under the License.
 #include "PropertyBase.h"
 
 #include "PropertySet.h"
+#include "PropertyConnector.h"
 
 #include <QScriptEngine>
 #include <QCoreApplication>
@@ -188,6 +189,11 @@ QtnPropertyBase::~QtnPropertyBase()
 	qtnRemovePropertyAsChild(parent(), this);
 }
 
+const QMetaObject *QtnPropertyBase::propertyMetaObject() const
+{
+	return metaObject();
+}
+
 void QtnPropertyBase::setName(const QString &name)
 {
 	emit propertyWillChange(QtnPropertyChangeReasonName,
@@ -216,6 +222,11 @@ void QtnPropertyBase::setId(QtnPropertyID id)
 	m_id = id;
 
 	emit propertyDidChange(QtnPropertyChangeReasonId);
+}
+
+bool QtnPropertyBase::isExpanded() const
+{
+	return (0 == (m_stateLocal & QtnPropertyStateCollapsed));
 }
 
 void QtnPropertyBase::setState(QtnPropertyState stateToSet, bool force)
@@ -276,13 +287,9 @@ void QtnPropertyBase::switchState(
 		removeState(stateToSwitch, force);
 }
 
-void QtnPropertyBase::switchStateAuto(
-	QtnPropertyState stateToSwitch, bool force)
+void QtnPropertyBase::toggleState(QtnPropertyState stateToSwitch, bool force)
 {
-	if (!(stateLocal() & stateToSwitch))
-		addState(stateToSwitch, force);
-	else
-		removeState(stateToSwitch, force);
+	switchState(stateToSwitch, !(stateLocal() & stateToSwitch), force);
 }
 
 bool QtnPropertyBase::isEditableByUser() const
@@ -538,12 +545,12 @@ QtnPropertySet *QtnPropertyBase::getRootPropertySet()
 
 	while (p != nullptr)
 	{
-		auto set = dynamic_cast<QtnPropertySet *>(p);
+		auto set = p->asPropertySet();
 
 		auto mp = p->getRootProperty();
 
 		if (set && mp == p &&
-			dynamic_cast<QtnPropertySet *>(set->parent()) == nullptr)
+			qobject_cast<QtnPropertySet *>(set->parent()) == nullptr)
 		{
 			return set;
 		}
@@ -553,7 +560,7 @@ QtnPropertySet *QtnPropertyBase::getRootPropertySet()
 			p = mp;
 		} else
 		{
-			p = dynamic_cast<QtnPropertyBase *>(p->parent());
+			p = qobject_cast<QtnPropertyBase *>(p->parent());
 		}
 	}
 
@@ -593,12 +600,12 @@ void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
 
 	m_masterProperty = masterProperty;
 
-	setStateInherited(masterProperty->state());
+	updateStateFromMasterProperty();
 
 	QObject::connect(masterProperty, &QObject::destroyed, this,
 		&QtnPropertyBase::onMasterPropertyDestroyed);
 	QObject::connect(masterProperty, &QtnPropertyBase::propertyDidChange, this,
-		&QtnPropertyBase::masterPropertyStateDidChange, Qt::QueuedConnection);
+		&QtnPropertyBase::masterPropertyStateDidChange);
 }
 
 void QtnPropertyBase::disconnectMasterState()
@@ -653,12 +660,18 @@ void QtnPropertyBase::masterPropertyStateDidChange(
 {
 	if (reason & QtnPropertyChangeReasonState)
 	{
-		auto changedProperty = dynamic_cast<QtnPropertyBase *>(sender());
-		Q_ASSERT(nullptr != changedProperty);
-		setStateInherited(changedProperty->state());
+		Q_ASSERT(sender() == m_masterProperty);
+		updateStateFromMasterProperty();
 	}
+}
 
-	emit propertyDidChange(reason & ~QtnPropertyChangeReasonEditValue);
+void QtnPropertyBase::updateStateFromMasterProperty()
+{
+	Q_ASSERT(m_masterProperty);
+	setStateInherited(
+		0 == (stateLocal() & QtnPropertyStateIgnoreDirectParentState)
+			? m_masterProperty->state()
+			: m_masterProperty->stateInherited());
 }
 
 QVariant QtnPropertyBase::valueAsVariant() const
@@ -699,10 +712,47 @@ void QtnPropertyBase::setExpanded(bool expanded)
 		collapse();
 }
 
+bool QtnPropertyBase::isResettable() const
+{
+	return isWritable() && 0 != (stateLocal() & QtnPropertyStateResettable);
+}
+
+void QtnPropertyBase::reset(bool edit)
+{
+	if (!isResettable() || isEditableByUser() != edit)
+		return;
+
+	doReset(edit);
+}
+
+void QtnPropertyBase::doReset(bool edit)
+{
+	auto connector = getConnector();
+	if (connector)
+	{
+		connector->resetPropertyValue(edit);
+	}
+}
+
+bool QtnPropertyBase::isWritable() const
+{
+	return (0 == (state() & QtnPropertyStateImmutable));
+}
+
+bool QtnPropertyBase::isCollapsed() const
+{
+	return (0 != (m_stateLocal & QtnPropertyStateCollapsed));
+}
+
 void QtnPropertyBase::setCollapsed(bool collapsed)
 {
 	if (collapsed)
 		collapse();
 	else
 		expand();
+}
+
+QtnPropertyState QtnPropertyBase::state() const
+{
+	return m_stateLocal | m_stateInherited;
 }

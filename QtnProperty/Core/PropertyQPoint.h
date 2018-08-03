@@ -19,10 +19,12 @@ limitations under the License.
 #define PROPERTYQPOINT_H
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
+#include "Core/PropertyInt.h"
+#include "StructPropertyBase.h"
 #include <QPoint>
 
 class QTN_IMPORT_EXPORT QtnPropertyQPointBase
-	: public QtnSinglePropertyBase<QPoint>
+	: public QtnStructPropertyBase<QPoint, QtnPropertyIntCallback>
 {
 	Q_OBJECT
 
@@ -31,6 +33,9 @@ private:
 
 public:
 	explicit QtnPropertyQPointBase(QObject *parent);
+
+	QtnProperty *createXProperty();
+	QtnProperty *createYProperty();
 
 protected:
 	// string conversion implementation
@@ -41,11 +46,6 @@ protected:
 };
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQPointBase, QPoint)
-
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateXProperty(
-	QObject *parent, QtnPropertyQPointBase *propertyPoint);
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateYProperty(
-	QObject *parent, QtnPropertyQPointBase *propertyPoint);
 
 class QTN_IMPORT_EXPORT QtnPropertyQPointCallback
 	: public QtnSinglePropertyCallback<QtnPropertyQPointBase>
@@ -75,6 +75,11 @@ public:
 	Q_INVOKABLE explicit QtnPropertyQPoint(QObject *parent = nullptr);
 
 	static QString getToStringFormat();
+
+	static QString xString();
+	static QString xDescription();
+	static QString yString();
+	static QString yDescription();
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQPoint, QtnPropertyQPointBase)
 };

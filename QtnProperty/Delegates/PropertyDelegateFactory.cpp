@@ -18,32 +18,60 @@ limitations under the License.
 #include "PropertyDelegateFactory.h"
 
 QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(
-	const QtnPropertyDelegateFactory *superFactory)
-	: m_superFactory(superFactory)
+	QtnPropertyDelegateFactory *superFactory)
 {
+	setSuperFactory(superFactory);
+}
+
+void QtnPropertyDelegateFactory::setSuperFactory(
+	QtnPropertyDelegateFactory *superFactory)
+{
+	Q_ASSERT(m_superFactory != this);
+	m_superFactory = superFactory;
 }
 
 QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegate(
-	QtnProperty &owner) const
+	QtnProperty &owner)
+{
+	auto factory = this;
+
+	while (factory)
+	{
+		auto result = factory->createDelegateInternal(owner);
+		if (result)
+		{
+			result->setFactory(this);
+			result->init();
+			return result;
+		}
+
+		factory = factory->m_superFactory;
+	}
+
+	return nullptr;
+}
+
+QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegateInternal(
+	QtnProperty &owner)
 {
 	const QMetaObject *metaObject = owner.metaObject();
 
 	while (metaObject)
 	{
 		// try to find delegate factory by class name
-		auto it = m_createItems.find(metaObject->className());
+		auto it = m_createItems.find(metaObject);
 
 		if (it != m_createItems.end())
 		{
 			// try to find delegate factory by name
 			const CreateItem &createItem = it.value();
-			const QtnPropertyDelegateInfo *propertyDelegate = owner.delegate();
+			const QtnPropertyDelegateInfo *propertyDelegate = owner.delegateInfo();
 			QByteArray delegateName;
 
 			if (propertyDelegate)
 				delegateName = propertyDelegate->name;
 
-			CreateFunction *createFunction = 0;
+			CreateFunction createFunction = nullptr;
 
 			if (delegateName.isEmpty())
 			{
@@ -51,37 +79,32 @@ QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegate(
 			} else
 			{
 				auto jt = createItem.createFunctions.find(delegateName);
-				Q_ASSERT(jt != createItem.createFunctions.end());
-
 				if (jt != createItem.createFunctions.end())
 					createFunction = jt.value();
 			}
 
 			if (!createFunction)
-				return 0;
+				return nullptr;
 
 			// call factory function
-			return (*createFunction)(owner);
+			return createFunction(owner);
 		}
 
 		metaObject = metaObject->superClass();
 	}
 
-	if (m_superFactory)
-		return m_superFactory->createDelegate(owner);
-
 	return nullptr;
 }
 
 bool QtnPropertyDelegateFactory::registerDelegateDefault(
-	const QMetaObject *propertyMetaObject, CreateFunction *createFunction,
+	const QMetaObject *propertyMetaObject, const CreateFunction &createFunction,
 	const QByteArray &delegateName)
 {
 	Q_ASSERT(propertyMetaObject);
 	Q_ASSERT(createFunction);
 
 	// find or create creation record
-	CreateItem &createItem = m_createItems[propertyMetaObject->className()];
+	CreateItem &createItem = m_createItems[propertyMetaObject];
 	// register default create function
 	createItem.defaultCreateFunction = createFunction;
 
@@ -95,7 +118,7 @@ bool QtnPropertyDelegateFactory::registerDelegateDefault(
 }
 
 bool QtnPropertyDelegateFactory::registerDelegate(
-	const QMetaObject *propertyMetaObject, CreateFunction *createFunction,
+	const QMetaObject *propertyMetaObject, const CreateFunction &createFunction,
 	const QByteArray &delegateName)
 {
 	Q_ASSERT(propertyMetaObject);
@@ -103,10 +126,42 @@ bool QtnPropertyDelegateFactory::registerDelegate(
 	Q_ASSERT(!delegateName.isEmpty());
 
 	// find or create creation record
-	CreateItem &createItem = m_createItems[propertyMetaObject->className()];
+	CreateItem &createItem = m_createItems[propertyMetaObject];
 	// register create function
 	createItem.createFunctions[delegateName] = createFunction;
 
+	return true;
+}
+
+bool QtnPropertyDelegateFactory::unregisterDelegate(
+	const QMetaObject *propertyMetaObject)
+{
+	Q_ASSERT(propertyMetaObject);
+
+	auto it = m_createItems.find(propertyMetaObject);
+	if (it == m_createItems.end())
+		return false;
+
+	m_createItems.erase(it);
+	return true;
+}
+
+bool QtnPropertyDelegateFactory::unregisterDelegate(
+	const QMetaObject *propertyMetaObject, const QByteArray &delegateName)
+{
+	Q_ASSERT(propertyMetaObject);
+	Q_ASSERT(!delegateName.isEmpty());
+
+	auto it = m_createItems.find(propertyMetaObject);
+	if (it == m_createItems.end())
+		return false;
+
+	auto &createFunctions = it->createFunctions;
+	auto it2 = createFunctions.find(delegateName);
+	if (it2 == createFunctions.end())
+		return false;
+
+	createFunctions.erase(it2);
 	return true;
 }
 
@@ -114,9 +169,4 @@ QtnPropertyDelegateFactory &QtnPropertyDelegateFactory::staticInstance()
 {
 	static QtnPropertyDelegateFactory factory;
 	return factory;
-}
-
-QtnPropertyDelegateFactory::CreateItem::CreateItem()
-	: defaultCreateFunction(0)
-{
 }

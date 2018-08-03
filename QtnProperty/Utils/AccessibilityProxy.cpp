@@ -145,8 +145,8 @@ QString QtnAccessibilityProxy::propertyDelegateName(QtnPropertyBase *property)
 	if (!theProperty)
 		return QString();
 
-	if (!theProperty->delegate())
+	if (!theProperty->delegateInfo())
 		return QString("default");
 
-	return theProperty->delegate()->name;
+	return theProperty->delegateInfo()->name;
 }

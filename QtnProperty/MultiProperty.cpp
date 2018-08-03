@@ -17,18 +17,29 @@ limitations under the License.
 #include "MultiProperty.h"
 
 #include "Config.h"
+#include "Property.h"
+#include "PropertySet.h"
 #include "PropertyConnector.h"
+#include "QObjectPropertySet.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/Core/PropertyDelegateBool.h"
+#include "Utils/QtnConnections.h"
 
 #include <QStyleOption>
 #include <QKeyEvent>
 #include <QLineEdit>
 
+struct QtnMultiPropertyDelegate::PropertyToEdit
+{
+	QtnMultiProperty *owner;
+	QtnProperty *property;
+	QtnConnections connections;
+};
+
 QtnMultiProperty::QtnMultiProperty(
 	const QMetaObject *propertyMetaObject, QObject *parent)
 	: QtnProperty(parent)
-	, propertyMetaObject(propertyMetaObject)
+	, mPropertyMetaObject(propertyMetaObject)
 	, mutablePropertyIndex(-1)
 	, calculateMultipleValues(true)
 	, multipleValues(false)
@@ -48,10 +59,15 @@ QtnMultiProperty::~QtnMultiProperty()
 	}
 }
 
+const QMetaObject *QtnMultiProperty::propertyMetaObject() const
+{
+	return mPropertyMetaObject;
+}
+
 void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 {
 	Q_ASSERT(nullptr != property);
-	Q_ASSERT(nullptr != propertyMetaObject->cast(property));
+	Q_ASSERT(nullptr != mPropertyMetaObject->cast(property));
 
 	if (own)
 		property->setParent(this);
@@ -67,13 +83,13 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 		return;
 	}
 
-	auto delegate = property->delegate();
+	auto delegate = property->delegateInfo();
 
 	if (delegate)
 	{
 		QtnPropertyDelegateInfo copy;
 		copy.attributes = delegate->attributes;
-		setDelegate(copy);
+		setDelegateInfo(copy);
 	}
 
 	QObject::connect(property, &QtnProperty::propertyValueAccept, this,
@@ -84,43 +100,24 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 		&QtnMultiProperty::onPropertyDidChange);
 }
 
-void QtnMultiProperty::resetValues(bool edit)
+void QtnMultiProperty::doReset(bool edit)
 {
-	if (!valueIsDefault() && isEditableByUser())
-	{
-		QtnPropertyChangeReason reasons =
-			QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
+	QtnPropertyChangeReason reasons =
+		QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
 
-		if (edit)
-			reasons |= QtnPropertyChangeReasonEditValue;
+	if (edit)
+		reasons |= QtnPropertyChangeReasonEditValue;
 
-		emit propertyWillChange(reasons, nullptr, 0);
+	emit propertyWillChange(reasons, nullptr, 0);
 
-		for (auto property : properties)
-		{
-			auto connector = property->getConnector();
-
-			if (nullptr != connector)
-				connector->resetPropertyValue(false);
-		}
-
-		emit propertyDidChange(reasons);
-
-		updateMultipleState(true);
-	}
-}
-
-bool QtnMultiProperty::hasResettableValues() const
-{
 	for (auto property : properties)
 	{
-		auto connector = property->getConnector();
-
-		if (nullptr != connector && connector->isResettablePropertyValue())
-			return true;
+		property->reset(edit);
 	}
 
-	return false;
+	emit propertyDidChange(reasons);
+
+	updateMultipleState(true);
 }
 
 bool QtnMultiProperty::Register()
@@ -179,7 +176,7 @@ void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 		(reason &
 			(QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue)))
 	{
-		auto property = dynamic_cast<QtnProperty *>(sender());
+		auto property = qobject_cast<QtnProperty *>(sender());
 		Q_ASSERT(nullptr != property);
 		updateStateFrom(property);
 		updateMultipleState(true);
@@ -320,17 +317,28 @@ bool QtnMultiProperty::toVariantImpl(QVariant &var) const
 
 void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 {
-	if (stateLocal() == QtnPropertyStateNone)
-		setState(source->stateLocal());
+	auto state = stateLocal();
 
-	if (source->isEditableByUser())
+	if (state == QtnPropertyStateNone)
 	{
-		removeState(QtnPropertyStateImmutable | QtnPropertyStateInvisible);
-
-		if (mutablePropertyIndex >= 0)
-			return;
+		state = source->stateLocal();
 	}
 
+	if (source->isResettable())
+	{
+		state |= QtnPropertyStateResettable;
+	}
+
+	bool writable = source->isWritable();
+	if (writable)
+	{
+		state &= ~(QtnPropertyStateImmutable | QtnPropertyStateInvisible);
+	}
+
+	setState(state);
+
+	if (writable && mutablePropertyIndex >= 0)
+		return;
 	updateMutablePropertyIndex();
 }
 
@@ -364,13 +372,13 @@ void QtnMultiProperty::updateMultipleState(bool force)
 void QtnMultiProperty::updateMutablePropertyIndex()
 {
 	if (mutablePropertyIndex < 0 ||
-		!properties.at(mutablePropertyIndex)->isEditableByUser())
+		!properties.at(mutablePropertyIndex)->isWritable())
 	{
 		mutablePropertyIndex = 0;
 
 		for (auto property : properties)
 		{
-			if (property->isEditableByUser())
+			if (property->isWritable())
 				return;
 
 			mutablePropertyIndex++;
@@ -384,35 +392,73 @@ QtnMultiPropertyDelegate::QtnMultiPropertyDelegate(QtnMultiProperty &owner)
 	: Inherited(owner)
 {
 	owner.updateMultipleState(true);
+}
 
-	int subPropertyCount = 0;
+void QtnMultiPropertyDelegate::init()
+{
+	Q_ASSERT(superDelegates.empty());
 
-	for (auto property : owner.properties)
+	auto &properties = owner().properties;
+	superDelegates.reserve(properties.size());
+	for (auto property : properties)
 	{
-		auto delegate =
-			QtnPropertyDelegateFactory::staticInstance().createDelegate(
-				*property);
+		auto delegate = factory()->createDelegate(*property);
 		superDelegates.emplace_back(delegate);
-		subPropertyCount = delegate->subPropertyCount();
-	}
 
-	for (int i = 0; i < subPropertyCount; i++)
-	{
-		auto delegate = superDelegates.at(0).get();
-		auto subProperty = delegate->subProperty(i);
-
-		auto subMultiProperty = new QtnMultiProperty(subProperty->metaObject());
-		subMultiProperty->setName(subProperty->name());
-		subMultiProperty->setDescription(subProperty->description());
-		subMultiProperty->setId(subProperty->id());
-
-		for (auto &delegate : superDelegates)
+		for (int i = 0, count = delegate->subPropertyCount(); i < count; ++i)
 		{
-			subMultiProperty->addProperty(
-				dynamic_cast<QtnProperty *>(delegate->subProperty(i)), false);
-		}
+			auto property = delegate->subProperty(i);
+			auto it = std::find_if(m_subProperties.begin(),
+				m_subProperties.end(),
+				[property](const QScopedPointer<QtnPropertyBase> &a) -> bool {
+					return property->propertyMetaObject() ==
+						a->propertyMetaObject() &&
+						property->name() == a->name();
+				});
 
-		addSubProperty(subMultiProperty);
+			auto subSet = property->asPropertySet();
+			if (subSet)
+			{
+				QtnPropertySet *multiSet;
+
+				if (it == m_subProperties.end())
+				{
+					multiSet = new QtnPropertySet(
+						subSet->childrenOrder(), subSet->compareFunc());
+					multiSet->setName(subSet->name());
+					multiSet->setDescription(subSet->description());
+					multiSet->setId(subSet->id());
+					multiSet->setState(subSet->stateLocal());
+
+					addSubProperty(multiSet);
+				} else
+				{
+					multiSet = it->data()->asPropertySet();
+				}
+
+				qtnPropertiesToMultiSet(multiSet, subSet);
+			} else
+			{
+				QtnMultiProperty *multiProperty;
+
+				if (it == m_subProperties.end())
+				{
+					multiProperty =
+						new QtnMultiProperty(property->metaObject());
+					multiProperty->setName(property->name());
+					multiProperty->setDescription(property->description());
+					multiProperty->setId(property->id());
+
+					addSubProperty(multiProperty);
+				} else
+				{
+					multiProperty =
+						qobject_cast<QtnMultiProperty *>(it->data());
+				}
+
+				multiProperty->addProperty(property->asProperty(), false);
+			}
+		}
 	}
 }
 
@@ -470,17 +516,6 @@ void QtnMultiPropertyDelegate::onEditedPropertyDestroyed(PropertyToEdit *data)
 
 void QtnMultiPropertyDelegate::onEditorDestroyed(PropertyToEdit *data)
 {
-	Q_ASSERT(nullptr != data);
-	auto propertyToEdit = data->property;
-
-	if (nullptr != propertyToEdit)
-	{
-		for (auto &connection : data->connections)
-		{
-			QObject::disconnect(connection);
-		}
-	}
-
 	delete data;
 }
 
@@ -600,11 +635,11 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(
 
 		auto superDelegate = superDelegates.at(superIndex).get();
 
-		auto delegate = propertyToEdit->delegate();
+		auto delegateInfo = propertyToEdit->delegateInfo();
 
-		if (delegate)
+		if (delegateInfo)
 		{
-			superDelegate->applyAttributes(delegate->attributes);
+			superDelegate->applyAttributes(delegateInfo->attributes);
 		}
 
 		auto editor =

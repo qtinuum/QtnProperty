@@ -20,24 +20,27 @@ limitations under the License.
 
 #include "CoreAPI.h"
 #include "Delegates/PropertyDelegateFactory.h"
-#include "PropertySet.h"
 #include "Utils/AccessibilityProxy.h"
+#include "Utils/QtnConnections.h"
 
 #include <QAbstractScrollArea>
-#include <QScopedPointer>
+
+#include <memory>
 
 class QRubberBand;
 class QHelpEvent;
 
 class QTN_IMPORT_EXPORT QtnPropertyViewFilter
 {
+	Q_DISABLE_COPY(QtnPropertyViewFilter)
+
 public:
 	virtual bool accept(const QtnPropertyBase *property) const = 0;
 
-	virtual ~QtnPropertyViewFilter() {}
+	virtual ~QtnPropertyViewFilter();
 
 protected:
-	QtnPropertyViewFilter() {}
+	QtnPropertyViewFilter();
 };
 
 enum QtnPropertyViewStyleFlag
@@ -46,13 +49,10 @@ enum QtnPropertyViewStyleFlag
 	QtnPropertyViewStyleShowRoot = 0x0001,
 	QtnPropertyViewStyleLiveSplit = 0x0002,
 	QtnPropertyViewStyleDblClickActivation = 0x0004
-	//QtnPropertyViewStyle = 0x0008
 };
 
 Q_DECLARE_FLAGS(QtnPropertyViewStyle, QtnPropertyViewStyleFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyViewStyle)
-
-class QtnConnections;
 
 class QTN_IMPORT_EXPORT QtnPropertyView : public QAbstractScrollArea
 {
@@ -62,7 +62,9 @@ class QTN_IMPORT_EXPORT QtnPropertyView : public QAbstractScrollArea
 public:
 	explicit QtnPropertyView(
 		QWidget *parent = nullptr, QtnPropertySet *propertySet = nullptr);
-	~QtnPropertyView();
+	virtual ~QtnPropertyView() override;
+
+	inline QtnPropertyDelegateFactory *delegateFactory();
 
 	inline const QtnPropertySet *propertySet() const;
 	inline QtnPropertySet *propertySet();
@@ -97,6 +99,7 @@ public slots:
 	QtnAccessibilityProxy *accessibilityProxy();
 
 Q_SIGNALS:
+	void propertiesChanged(QtnPropertyChangeReason reason);
 	// emits when active property has changed
 	void activePropertyChanged(QtnPropertyBase *activeProperty);
 	void mouseReleased(QMouseEvent *e);
@@ -126,15 +129,17 @@ private:
 	struct Item
 	{
 		QtnPropertyBase *property;
-		QScopedPointer<QtnPropertyDelegate> delegate;
+		std::unique_ptr<QtnPropertyDelegate> delegate;
 		int level;
 
 		Item *parent;
-		QList<QSharedPointer<Item>> children;
+		std::vector<std::unique_ptr<Item>> children;
+		QtnConnections connections;
 
 		Item();
+		~Item();
 
-		inline bool collapsed() const;
+		bool collapsed() const;
 	};
 
 	struct Action
@@ -158,8 +163,7 @@ private:
 
 private:
 	void updateItemsTree();
-	static Item *createItemsTree(QtnPropertyBase *rootProperty,
-		const QtnPropertyDelegateFactory &factory);
+	Item *createItemsTree(QtnPropertyBase *rootProperty);
 
 	void setActivePropertyInternal(QtnPropertyBase *property);
 	bool startPropertyEdit(
@@ -168,7 +172,7 @@ private:
 	void invalidateVisibleItems();
 	void validateVisibleItems() const;
 	void fillVisibleItems(Item *item, int level) const;
-	bool acceptItem(Item &item) const;
+	bool acceptItem(const Item &item) const;
 
 	void drawBranchNode(
 		QStylePainter &painter, QRect &rect, const VisibleItem &vItem);
@@ -196,7 +200,7 @@ private:
 	void connectActiveProperty();
 	void disconnectActiveProperty();
 
-	void onPropertySetDidChange(QtnPropertyChangeReason reason);
+	void onPropertyDidChange(QtnPropertyChangeReason reason);
 
 private:
 	Item *findItem(Item *currentItem, const QtnPropertyBase *property) const;
@@ -206,7 +210,7 @@ private:
 
 	QtnPropertyDelegateFactory m_delegateFactory;
 
-	QScopedPointer<Item> m_itemsTree;
+	std::unique_ptr<Item> m_itemsTree;
 
 	mutable QList<VisibleItem> m_visibleItems;
 	mutable bool m_visibleItemsValid;
@@ -224,6 +228,11 @@ private:
 	friend class QtnAccessibilityProxy;
 	QtnAccessibilityProxy *m_accessibilityProxy;
 };
+
+QtnPropertyDelegateFactory *QtnPropertyView::delegateFactory()
+{
+	return &m_delegateFactory;
+}
 
 const QtnPropertySet *QtnPropertyView::propertySet() const
 {
@@ -258,11 +267,6 @@ quint32 QtnPropertyView::itemHeightSpacing() const
 QtnPropertyViewStyle QtnPropertyView::propertyViewStyle() const
 {
 	return m_style;
-}
-
-bool QtnPropertyView::Item::collapsed() const
-{
-	return property->isCollapsed();
 }
 
 #endif // QTN_PROPERTYVIEW_H

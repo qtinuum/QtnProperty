@@ -36,6 +36,11 @@ QString qtnElidedText(const QPainter &painter, const QString &text,
 
 QtnPropertyDelegate::~QtnPropertyDelegate() {}
 
+void QtnPropertyDelegate::init()
+{
+	// do nothing
+}
+
 QWidget *QtnPropertyDelegate::createValueEditor(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {

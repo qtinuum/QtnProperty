@@ -19,9 +19,22 @@ limitations under the License.
 #include "PropertyInt.h"
 
 QtnPropertyQSizeBase::QtnPropertyQSizeBase(QObject *parent)
-	: QtnSinglePropertyBase<QSize>(parent)
+	: ParentClass(parent)
 {
 	addState(QtnPropertyStateCollapsed);
+}
+
+QtnProperty *QtnPropertyQSizeBase::createWidthProperty()
+{
+	return createFieldProperty(QtnPropertyQSize::widthString(),
+		QtnPropertyQSize::widthDescription(), &QSize::width, &QSize::setWidth);
+}
+
+QtnProperty *QtnPropertyQSizeBase::createHeightProperty()
+{
+	return createFieldProperty(QtnPropertyQSize::heightString(),
+		QtnPropertyQSize::heightDescription(), &QSize::height,
+		&QSize::setHeight);
 }
 
 bool QtnPropertyQSizeBase::fromStrImpl(const QString &str, bool edit)
@@ -71,42 +84,6 @@ bool QtnPropertyQSizeBase::toStrImpl(QString &str) const
 	return true;
 }
 
-QtnProperty *qtnCreateWidthProperty(
-	QObject *parent, QtnPropertyQSizeBase *propertySize)
-{
-	QtnPropertyIntCallback *widthProperty = new QtnPropertyIntCallback(parent);
-	widthProperty->setName(QtnPropertyQSize::tr("Width"));
-	widthProperty->setDescription(
-		QtnPropertyQSize::tr("Width of the %1").arg(propertySize->name()));
-	widthProperty->setCallbackValueGet(
-		[propertySize]() -> int { return propertySize->value().width(); });
-	widthProperty->setCallbackValueSet([propertySize](int newWidth) {
-		QSize size = propertySize->value();
-		size.setWidth(newWidth);
-		propertySize->setValue(size);
-	});
-
-	return widthProperty;
-}
-
-QtnProperty *qtnCreateHeightProperty(
-	QObject *parent, QtnPropertyQSizeBase *propertySize)
-{
-	QtnPropertyIntCallback *heightProperty = new QtnPropertyIntCallback(parent);
-	heightProperty->setName(QtnPropertyQSize::tr("Height"));
-	heightProperty->setDescription(
-		QtnPropertyQSize::tr("Height of the %1").arg(propertySize->name()));
-	heightProperty->setCallbackValueGet(
-		[propertySize]() -> int { return propertySize->value().height(); });
-	heightProperty->setCallbackValueSet([propertySize](int newHeight) {
-		QSize size = propertySize->value();
-		size.setHeight(newHeight);
-		propertySize->setValue(size);
-	});
-
-	return heightProperty;
-}
-
 QtnPropertyQSize::QtnPropertyQSize(QObject *parent)
 	: QtnSinglePropertyValue<QtnPropertyQSizeBase>(parent)
 {
@@ -114,7 +91,27 @@ QtnPropertyQSize::QtnPropertyQSize(QObject *parent)
 
 QString QtnPropertyQSize::getToStringFormat()
 {
-	return tr("%1 x %2");
+	return tr("[%1 x %2]");
+}
+
+QString QtnPropertyQSize::widthString()
+{
+	return tr("Width");
+}
+
+QString QtnPropertyQSize::widthDescription()
+{
+	return tr("Width of the %1");
+}
+
+QString QtnPropertyQSize::heightString()
+{
+	return tr("Height");
+}
+
+QString QtnPropertyQSize::heightDescription()
+{
+	return tr("Height of the %1");
 }
 
 QtnPropertyQSizeCallback::QtnPropertyQSizeCallback(QObject *parent)

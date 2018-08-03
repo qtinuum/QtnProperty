@@ -26,8 +26,26 @@ class QTN_IMPORT_EXPORT QtnPropertySet : public QtnPropertyBase
 	Q_DISABLE_COPY(QtnPropertySet)
 
 public:
-	explicit QtnPropertySet(QObject *parent);
+	enum SortOrder
+	{
+		NoSort,
+		Ascend,
+		Descend,
+	};
+
+	static int compareByName(
+		const QtnPropertyBase *a, const QtnPropertyBase *b);
+
+	using CompareFunc =
+		std::function<int(const QtnPropertyBase *, const QtnPropertyBase *)>;
+
+	explicit QtnPropertySet(QObject *parent = nullptr);
+	explicit QtnPropertySet(SortOrder childrenOrder,
+		const CompareFunc &compareFunc = compareByName);
 	virtual ~QtnPropertySet() override;
+
+	inline SortOrder childrenOrder() const;
+	inline const CompareFunc &compareFunc() const;
 
 public slots:
 	// sub properties
@@ -59,6 +77,7 @@ public slots:
 	virtual const QtnPropertySet *asPropertySet() const override;
 
 protected:
+	virtual void doReset(bool edit) override;
 	virtual void updateStateInherited(bool force) override;
 
 	// cloning implementation
@@ -83,21 +102,24 @@ private:
 	void findChildPropertiesRecursive(
 		const QRegularExpression &re, QList<QtnPropertyBase *> &result);
 
-	void childPropertyWillChange(QtnPropertyChangeReason reason);
-	void childPropertyDidChange(QtnPropertyChangeReason reason);
-
 	bool toStrWithPrefix(QString &str, const QString &prefix) const;
 
 private:
+	CompareFunc m_compareFunc;
 	QList<QtnPropertyBase *> m_childProperties;
 
-	bool m_ignoreChildPropertyChanges;
-
-	friend void qtnConnectChildProperty(
-		QtnPropertySet *masterProperty, QtnPropertyBase *childProperty);
-	friend void qtnDisconnectChildProperty(
-		QtnPropertySet *masterProperty, QtnPropertyBase *childProperty);
+	SortOrder m_childrenOrder;
 };
+
+QtnPropertySet::SortOrder QtnPropertySet::childrenOrder() const
+{
+	return m_childrenOrder;
+}
+
+const QtnPropertySet::CompareFunc &QtnPropertySet::compareFunc() const
+{
+	return m_compareFunc;
+}
 
 bool QtnPropertySet::hasChildProperties() const
 {

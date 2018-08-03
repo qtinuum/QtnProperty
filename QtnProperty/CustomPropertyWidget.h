@@ -20,14 +20,14 @@ limitations under the License.
 
 class VarProperty;
 
-struct CustomPropertyData;
+struct QtnCustomPropertyData;
 
-class QTN_IMPORT_EXPORT CustomPropertyWidget : public QtnPropertyWidgetEx
+class QTN_IMPORT_EXPORT QtnCustomPropertyWidget : public QtnPropertyWidgetEx
 {
 	Q_OBJECT
 
 public:
-	explicit CustomPropertyWidget(QWidget *parent = nullptr);
+	explicit QtnCustomPropertyWidget(QWidget *parent = nullptr);
 
 	inline bool isReadOnly() const;
 	void setReadOnly(bool value);
@@ -74,13 +74,14 @@ private:
 	QtnPropertyBase *newProperty(QtnPropertySet *parent, const QVariant &value,
 		const QString &key, int index, VarProperty *mapParent);
 
-	void addProperty(QtnPropertyBase *source, const CustomPropertyData &data);
+	void addProperty(
+		QtnPropertyBase *source, const QtnCustomPropertyData &data);
 	void duplicateProperty(
-		QtnPropertyBase *source, const CustomPropertyData &data);
+		QtnPropertyBase *source, const QtnCustomPropertyData &data);
 	void updatePropertyOptions(
-		QtnPropertyBase *source, const CustomPropertyData &data);
+		QtnPropertyBase *source, const QtnCustomPropertyData &data);
 	bool insertReplaceOrCancel(
-		QtnPropertyBase *destination, CustomPropertyData &customData);
+		QtnPropertyBase *destination, QtnCustomPropertyData &customData);
 
 	QVariant *dataPtr;
 	QVariant::Type lastAddType;
@@ -92,17 +93,17 @@ protected:
 	QtnPropertySet *rootSet;
 };
 
-bool CustomPropertyWidget::isReadOnly() const
+bool QtnCustomPropertyWidget::isReadOnly() const
 {
 	return readOnly;
 }
 
-QVariant *CustomPropertyWidget::getData() const
+QVariant *QtnCustomPropertyWidget::getData() const
 {
 	return dataPtr;
 }
 
-bool CustomPropertyWidget::isAutoUpdate() const
+bool QtnCustomPropertyWidget::isAutoUpdate() const
 {
 	return autoUpdate;
 }

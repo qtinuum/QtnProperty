@@ -33,11 +33,22 @@ class QTN_IMPORT_EXPORT QtnPropertyBase : public QObject
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyBase)
+	Q_PROPERTY(QString name READ name)
+	Q_PROPERTY(QString description READ description)
+	Q_PROPERTY(qint32 id READ id)
+	Q_PROPERTY(bool isEditable READ isEditableByUser)
+	Q_PROPERTY(quint32 state READ state)
+	Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 	QtnPropertyConnector *mPropertyConnector;
+	friend class QtnPropertyConnector;
+	inline void setConnector(QtnPropertyConnector *connector);
+	friend class QtnPropertySet;
 
 public:
-	virtual ~QtnPropertyBase();
+	virtual ~QtnPropertyBase() override;
+
+	virtual const QMetaObject *propertyMetaObject() const;
 
 	inline QString name() const;
 	void setName(const QString &name);
@@ -48,21 +59,25 @@ public:
 	inline QtnPropertyID id() const;
 	void setId(QtnPropertyID id);
 
-	inline bool isExpanded() const;
+	bool isExpanded() const;
 	void setExpanded(bool expanded);
 
-	inline bool isCollapsed() const;
+	bool isResettable() const;
+	void reset(bool edit);
+
+	bool isWritable() const;
+
+	bool isCollapsed() const;
 	void setCollapsed(bool collapsed);
 
 	inline void expand();
 	inline void collapse();
 
-	inline void setConnector(QtnPropertyConnector *connector);
 	inline QtnPropertyConnector *getConnector() const;
 	inline bool isQObjectProperty() const;
 
 	// states
-	inline QtnPropertyState state() const;
+	QtnPropertyState state() const;
 	inline QtnPropertyState stateLocal() const;
 	inline QtnPropertyState stateInherited() const;
 
@@ -71,7 +86,7 @@ public:
 	void removeState(QtnPropertyState stateToRemove, bool force = false);
 	void switchState(
 		QtnPropertyState stateToSwitch, bool switchOn, bool force = false);
-	void switchStateAuto(QtnPropertyState stateToSwitch, bool force = false);
+	void toggleState(QtnPropertyState stateToSwitch, bool force = false);
 
 	bool isEditableByUser() const;
 	bool isVisible() const;
@@ -101,19 +116,9 @@ public:
 	inline QtnPropertyBase *getMasterProperty() const;
 	QtnPropertyBase *getRootProperty();
 	QtnPropertySet *getRootPropertySet();
-	virtual void connectMasterState(QtnPropertyBase *masterProperty);
-	virtual void disconnectMasterState();
-
+	void connectMasterState(QtnPropertyBase *masterProperty);
+	void disconnectMasterState();
 	void postUpdateEvent(QtnPropertyChangeReason reason, int afterMS = 0);
-
-public:
-	// properties for scripting
-	Q_PROPERTY(QString name READ name)
-	Q_PROPERTY(QString description READ description)
-	Q_PROPERTY(qint32 id READ id)
-	Q_PROPERTY(bool isEditable READ isEditableByUser)
-	Q_PROPERTY(quint32 state READ state)
-	Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
 
 	// getter/setter for "value" property
 	QVariant valueAsVariant() const;
@@ -124,14 +129,10 @@ Q_SIGNALS:
 		QtnPropertyValuePtr newValue, int typeId);
 	void propertyDidChange(QtnPropertyChangeReason reason);
 
-private slots:
-	void onMasterPropertyDestroyed(QObject *object);
-
 protected:
 	QtnPropertyBase(QObject *parent);
 
-	virtual void masterPropertyStateDidChange(QtnPropertyChangeReason reason);
-
+	virtual void doReset(bool edit);
 	virtual bool event(QEvent *e) override;
 
 	// serialization implementation
@@ -151,6 +152,11 @@ protected:
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
 private:
+	void onMasterPropertyDestroyed(QObject *object);
+	void masterPropertyStateDidChange(QtnPropertyChangeReason reason);
+	void updateStateFromMasterProperty();
+
+private:
 	QtnPropertyBase *m_masterProperty;
 
 	QString m_description;
@@ -162,8 +168,6 @@ private:
 	int changeReasons;
 	int timer;
 	QEvent *updateEvent;
-
-	friend class QtnPropertySet;
 };
 
 QString QtnPropertyBase::name() const
@@ -179,16 +183,6 @@ QString QtnPropertyBase::description() const
 QtnPropertyID QtnPropertyBase::id() const
 {
 	return m_id;
-}
-
-bool QtnPropertyBase::isExpanded() const
-{
-	return (0 == (m_stateLocal & QtnPropertyStateCollapsed));
-}
-
-bool QtnPropertyBase::isCollapsed() const
-{
-	return (0 != (m_stateLocal & QtnPropertyStateCollapsed));
 }
 
 void QtnPropertyBase::expand()
@@ -214,11 +208,6 @@ QtnPropertyConnector *QtnPropertyBase::getConnector() const
 bool QtnPropertyBase::isQObjectProperty() const
 {
 	return (nullptr != getConnector());
-}
-
-QtnPropertyState QtnPropertyBase::state() const
-{
-	return m_stateLocal | m_stateInherited;
 }
 
 QtnPropertyState QtnPropertyBase::stateLocal() const

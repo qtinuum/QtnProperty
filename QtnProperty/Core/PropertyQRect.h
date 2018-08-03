@@ -19,18 +19,35 @@ limitations under the License.
 #define PROPERTYQRECT_H
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
+#include "Core/PropertyInt.h"
+#include "StructPropertyBase.h"
 #include <QRect>
 
 class QTN_IMPORT_EXPORT QtnPropertyQRectBase
-	: public QtnSinglePropertyBase<QRect>
+	: public QtnStructPropertyBase<QRect, QtnPropertyIntCallback>
 {
 	Q_OBJECT
+
+	bool coordinates;
 
 private:
 	QtnPropertyQRectBase(const QtnPropertyQRectBase &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQRectBase(QObject *parent);
+
+	inline bool coordinateMode() const;
+	void setMode(bool coordinates);
+
+	QtnProperty *createLeftProperty(bool move);
+	QtnProperty *createTopProperty(bool move);
+	QtnProperty *createRightProperty(bool move);
+	QtnProperty *createBottomProperty(bool move);
+	QtnProperty *createWidthProperty();
+	QtnProperty *createHeightProperty();
+
+	static QByteArray qtnQRect_LTRB();
+	static QByteArray qtnQRect_LTWH();
 
 protected:
 	// string conversion implementation
@@ -40,20 +57,12 @@ protected:
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQRectBase)
 };
 
-P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQRectBase, QRect)
+bool QtnPropertyQRectBase::coordinateMode() const
+{
+	return coordinates;
+}
 
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateLeftProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect);
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateRightProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect);
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateTopProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect);
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateBottomProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect);
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateWidthProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect);
-QTN_IMPORT_EXPORT QtnProperty *qtnCreateHeightProperty(
-	QObject *parent, QtnPropertyQRectBase *propertyRect);
+P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQRectBase, QRect)
 
 class QTN_IMPORT_EXPORT QtnPropertyQRectCallback
 	: public QtnSinglePropertyCallback<QtnPropertyQRectBase>
@@ -82,7 +91,15 @@ private:
 public:
 	Q_INVOKABLE explicit QtnPropertyQRect(QObject *parent = nullptr);
 
-	static QString getToStringFormat(bool coordinates = false);
+	static QString getToStringFormat(bool coordinates);
+	static QString leftString();
+	static QString leftDescription();
+	static QString topString();
+	static QString topDescription();
+	static QString rightString();
+	static QString rightDescription();
+	static QString bottomString();
+	static QString bottomDescription();
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRect, QtnPropertyQRectBase)
 };

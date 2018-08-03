@@ -68,11 +68,14 @@ namespace Ui
 class CustomPropertyOptionsDialog;
 }
 
-struct QTN_IMPORT_EXPORT CustomPropertyData
+struct QTN_IMPORT_EXPORT QtnCustomPropertyData
 {
 	int index;
 	QString name;
 	QVariant value;
+
+	QString displayName() const;
+	static QString nameForIndex(int index);
 };
 
 class QTN_IMPORT_EXPORT CustomPropertyOptionsDialog : public BasePropertyDialog
@@ -81,10 +84,10 @@ class QTN_IMPORT_EXPORT CustomPropertyOptionsDialog : public BasePropertyDialog
 
 public:
 	explicit CustomPropertyOptionsDialog(QWidget *parent = nullptr);
-	virtual ~CustomPropertyOptionsDialog();
+	virtual ~CustomPropertyOptionsDialog() override;
 
 	void executeReadOnly();
-	bool execute(CustomPropertyData &result);
+	bool execute(QtnCustomPropertyData &result);
 
 	void setType(QVariant::Type type);
 	void setTypeBoxEnabled(bool value);

@@ -35,6 +35,7 @@ private:
 public:
 	explicit QtnPropertyQRectFBase(QObject *parent);
 
+	inline bool coordinateMode() const;
 	void setMode(bool coordinates);
 
 	QtnProperty *createLeftProperty(bool move);
@@ -54,6 +55,11 @@ protected:
 private:
 	bool coordinates;
 };
+
+bool QtnPropertyQRectFBase::coordinateMode() const
+{
+	return coordinates;
+}
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQRectFBase, QRectF)
 
@@ -101,10 +107,7 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQRectF
 	Q_DISABLE_COPY(QtnPropertyDelegateQRectF)
 
 public:
-	QtnPropertyDelegateQRectF(QtnPropertyQRectFBase &owner, bool coordinates);
-
-	static QtnPropertyDelegate *createLTWH(QtnProperty &owner);
-	static QtnPropertyDelegate *createLTRB(QtnProperty &owner);
+	QtnPropertyDelegateQRectF(QtnPropertyQRectFBase &owner);
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,

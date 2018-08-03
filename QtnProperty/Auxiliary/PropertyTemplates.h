@@ -20,6 +20,8 @@ limitations under the License.
 
 #include "QtnProperty/Property.h"
 #include "PropertyMacro.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+
 #include <limits>
 #include <functional>
 
@@ -99,11 +101,34 @@ protected:
 	{
 	}
 
+	virtual void doReset(bool edit) override
+	{
+		ValueTypeStore defaultValue;
+		if (defaultValueImpl(defaultValue))
+		{
+			QtnPropertyChangeReason reason = QtnPropertyChangeReasonResetValue;
+
+			if (edit)
+				reason |= QtnPropertyChangeReasonEditValue;
+
+			setValueWithReason(defaultValue, reason);
+		} else
+		{
+			QtnProperty::doReset(edit);
+		}
+	}
+
 	virtual ValueType valueImpl() const = 0;
 	virtual void setValueImpl(ValueType newValue) = 0;
 	virtual bool isValueAcceptedImpl(ValueType)
 	{
 		return true;
+	}
+
+	virtual bool defaultValueImpl(ValueTypeStore &to) const
+	{
+		Q_UNUSED(to);
+		return false;
 	}
 
 	virtual bool isValueEqualImpl(ValueType valueToCompare)
@@ -202,6 +227,36 @@ public:
 	typedef std::function<bool(ValueType)> CallbackValueAccepted;
 	typedef std::function<bool(ValueType)> CallbackValueEqual;
 
+	inline const CallbackValueGet &callbackValueDefault() const
+	{
+		return m_callbackValueDefault;
+	}
+
+	inline const CallbackValueGet &callbackValueGet() const
+	{
+		return m_callbackValueGet;
+	}
+
+	inline const CallbackValueSet &callbackValueSet() const
+	{
+		return m_callbackValueSet;
+	}
+
+	inline const CallbackValueAccepted &callbackValueAccepted() const
+	{
+		return m_callbackValueAccepted;
+	}
+
+	inline const CallbackValueEqual &callbackValueEqual() const
+	{
+		return m_callbackValueEqual;
+	}
+
+	inline void setCallbackValueDefault(const CallbackValueGet &callback)
+	{
+		m_callbackValueDefault = callback;
+	}
+
 	inline void setCallbackValueGet(const CallbackValueGet &callback)
 	{
 		m_callbackValueGet = callback;
@@ -256,9 +311,21 @@ protected:
 		return QtnSinglePropertyType::isValueEqualImpl(valueToCompare);
 	}
 
+	virtual bool defaultValueImpl(ValueTypeStore &to) const override
+	{
+		if (m_callbackValueDefault)
+		{
+			to = m_callbackValueDefault();
+			return true;
+		}
+
+		return false;
+	}
+
 private:
 	Q_DISABLE_COPY(QtnSinglePropertyCallback)
 
+	CallbackValueGet m_callbackValueDefault;
 	CallbackValueGet m_callbackValueGet;
 	CallbackValueSet m_callbackValueSet;
 	CallbackValueAccepted m_callbackValueAccepted;
@@ -365,6 +432,50 @@ private:
 
 	Q_DISABLE_COPY(QtnNumericPropertyBase)
 };
+
+template <typename T>
+inline void qtnMakePercentProperty(T *dProp,
+	typename T::ValueType (*AfterGet)(typename T::ValueType),
+	const QByteArray &delegateName = QByteArray())
+{
+	using ValueType = typename T::ValueType;
+	auto prevGet = dProp->callbackValueGet();
+	if (prevGet)
+	{
+		dProp->setCallbackValueGet([prevGet, AfterGet]() -> ValueType {
+			return AfterGet(prevGet() * 100.0);
+		});
+	}
+
+	auto prevEqual = dProp->callbackValueEqual();
+	if (prevEqual)
+	{
+		dProp->setCallbackValueEqual([prevEqual](ValueType value) -> bool {
+			return prevEqual(value / 100.0);
+		});
+	}
+
+	auto prevSet = dProp->callbackValueSet();
+	if (prevSet)
+	{
+		dProp->setCallbackValueSet(
+			[prevSet](ValueType value) { prevSet(value / 100.0); });
+	}
+
+	auto prevDefault = dProp->callbackValueDefault();
+	if (prevDefault)
+	{
+		dProp->setCallbackValueDefault([prevDefault, AfterGet]() -> ValueType {
+			return AfterGet(prevDefault() * 100.0);
+		});
+	}
+
+	QtnPropertyDelegateInfo delegate;
+	qtnInitPercentSpinBoxDelegate(delegate);
+	if (!delegateName.isEmpty())
+		delegate.name = delegateName;
+	dProp->setDelegateInfo(delegate);
+}
 
 template <typename QtnSinglePropertyType>
 class QtnNumericPropertyValue
