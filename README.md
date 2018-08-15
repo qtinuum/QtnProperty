@@ -1,7 +1,8 @@
 [![Build Status](https://travis-ci.org/lexxmark/QtnProperty.svg?branch=master)](https://travis-ci.org/lexxmark/QtnProperty)
 
 # QtnProperty
-This is user and programmist friendly properties for Qt framework
+This is user and programmist friendly properties for Qt framework.
+See [wiki](https://github.com/lexxmark/QtnProperty/wiki) for some details.
 # Overview
 There are some limitations of standard Qt property system.
 This project is an attempt to make better properties.
