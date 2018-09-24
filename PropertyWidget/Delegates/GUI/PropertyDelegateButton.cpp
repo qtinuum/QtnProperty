@@ -36,7 +36,7 @@ void regButtonDelegates(QtnPropertyDelegateFactory &factory)
 QtnPropertyDelegateButton::QtnPropertyDelegateButton(QtnPropertyButton& owner)
     : QtnPropertyDelegateTyped<QtnPropertyButton, QtnPropertyDelegate>(owner)
 {
-    m_title = owner.name();
+    m_title = owner.displayName();
 }
 
 void QtnPropertyDelegateButton::applyAttributesImpl(const QtnPropertyDelegateAttributes& attributes)
