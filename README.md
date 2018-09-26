@@ -3,6 +3,7 @@
 # QtnProperty
 This is user and programmist friendly properties for Qt framework.
 See [wiki](https://github.com/lexxmark/QtnProperty/wiki) for some details.
+
 # Overview
 There are some limitations of standard Qt property system.
 This project is an attempt to make better properties.
@@ -164,4 +165,17 @@ Now you can use QtnPropertySetTextEditor class (defined in generated files) in y
 ```
 
 Video of GUI testing using Froglogic (c) Squish test framework is [here](https://www.youtube.com/watch?v=lCmM13vPWBU).
+
+# Useful links
+The following fork [https://github.com/kusharami/QtnProperty](https://github.com/kusharami/QtnProperty) has some advanced features:
+
+* **Multi-properties with QtnMultipleProperty.** It is useful when you want to show properties of multiple objects at once. When values of objects's properties differ it shows grayed (**Multiple properties**). When you set a new property value, it will be changed in every dependent object. Multi-property set can be created with qtnCreateQObjectMultiPropertySet function defined in [QObjectPropertySet.h](https://github.com/kusharami/QtnProperty/blob/master/QtnProperty/QObjectPropertySet.h) or from custom property sets in a loop with qtnPropertiesToMultiSet function where target argument is a multi-property set, and source argument is a source property set you want to join.
+* **QVariant properties with QtnCustomPropertyWidget.** You can edit QVariant as property set / add/remove subproperties in QVariantMap or QVariantList, copy/paste variant properties.
+* **Integer 64 properties** QtnPropertyInt64 QtnPropertyUInt64
+* **Floating point variants of QPoint, QSize, QRect properties**
+* **Overriding QtnPropertyDelegateFactory for QtnPropertySet**
+* **Improvements to sync objects values and property editors**
+* **Translations EN_RU**
+
+
 
