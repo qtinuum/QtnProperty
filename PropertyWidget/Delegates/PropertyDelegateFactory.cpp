@@ -125,6 +125,8 @@ void regFloatDelegates(QtnPropertyDelegateFactory& factory);
 void regIntDelegates(QtnPropertyDelegateFactory& factory);
 void regQPointDelegates(QtnPropertyDelegateFactory& factory);
 void regQPointFDelegates(QtnPropertyDelegateFactory& factory);
+void regGeoPointDelegates(QtnPropertyDelegateFactory& factory);
+void regGeoCoordDelegates(QtnPropertyDelegateFactory& factory);
 void regQRectDelegates(QtnPropertyDelegateFactory& factory);
 void regQRectFDelegates(QtnPropertyDelegateFactory& factory);
 void regQSizeDelegates(QtnPropertyDelegateFactory& factory);
@@ -151,6 +153,8 @@ public:
         regIntDelegates(*this);
         regQPointDelegates(*this);
         regQPointFDelegates(*this);
+        regGeoPointDelegates(*this);
+        regGeoCoordDelegates(*this);
         regQRectDelegates(*this);
         regQRectFDelegates(*this);
         regQSizeDelegates(*this);
