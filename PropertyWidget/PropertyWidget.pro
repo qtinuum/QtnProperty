@@ -39,7 +39,9 @@ else: SOURCES += PropertyWidget.cpp \
     Delegates/GUI/PropertyDelegateQPen.cpp \
     Delegates/GUI/PropertyDelegateQBrush.cpp \
     Delegates/GUI/PropertyDelegateButton.cpp \
-    Utils/AccessibilityProxy.cpp
+    Utils/AccessibilityProxy.cpp \
+    Delegates/Utils/PropertyDelegateGeoCoord.cpp \
+    Delegates/Utils/PropertyDelegateGeoPoint.cpp
 
 HEADERS += PropertyWidgetAPI.h \
     PropertyWidget.h \
@@ -72,7 +74,10 @@ HEADERS += PropertyWidgetAPI.h \
     Delegates/GUI/PropertyDelegateQBrush.h \
     Delegates/GUI/PropertyDelegateQColor.h \
     Delegates/GUI/PropertyDelegateButton.h \
-    Utils/AccessibilityProxy.h
+    Utils/AccessibilityProxy.h \
+    Delegates/Utils/PropertyDelegateGeoCoord.h \
+    Delegates/Utils/PropertyDelegateGeoPoint.h
 
 LIBS += -L$$BIN_DIR -lQtnPropertyCore
 INCLUDEPATH += $$TOP_SRC_DIR/Core
+
