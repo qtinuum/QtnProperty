@@ -85,7 +85,7 @@ bool QtnPropertyDelegateDouble::acceptKeyPressedForInplaceEditImpl(
 bool QtnPropertyDelegateDouble::propertyValueToStr(QString &strValue) const
 {
 	QLocale locale;
-	strValue = locale.toString(owner().value(), 'g', 10);
+	strValue = locale.toString(owner().value(), 'g', 20);
 	strValue.append(suffix);
 	return true;
 }

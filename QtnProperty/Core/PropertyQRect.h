@@ -19,8 +19,8 @@ limitations under the License.
 #define PROPERTYQRECT_H
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
-#include "Core/PropertyInt.h"
-#include "StructPropertyBase.h"
+#include "PropertyInt.h"
+#include "QtnProperty/StructPropertyBase.h"
 #include <QRect>
 
 class QTN_IMPORT_EXPORT QtnPropertyQRectBase

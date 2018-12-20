@@ -19,10 +19,10 @@ unix|win32-g++ {
         -Wno-deprecated-register \
         -Wno-unused-const-variable \
         -Wno-switch-bool
-} else {
-    win32 {
-        QMAKE_CXXFLAGS_WARN_OFF -= -W0
-        QMAKE_CXXFLAGS += -W3 /wd4100 /wd4065 /wd4573
-        DEFINES += _CRT_SECURE_NO_WARNINGS
-    }
+}
+
+win32-msvc* {
+    QMAKE_CXXFLAGS_WARN_OFF -= -W0
+    QMAKE_CXXFLAGS += -W3 /wd4100 /wd4065 /wd4573
+    DEFINES += _CRT_SECURE_NO_WARNINGS
 }
