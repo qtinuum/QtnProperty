@@ -139,8 +139,8 @@ bool QtnPropertyDelegateQPointF::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-		locale.toString(value.x(), 'g', 6) + mSuffix,
-		locale.toString(value.y(), 'g', 6) + mSuffix);
+		locale.toString(value.x(), 'g', 15) + mSuffix,
+		locale.toString(value.y(), 'g', 15) + mSuffix);
 
 	return true;
 }
