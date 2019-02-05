@@ -4,7 +4,7 @@ QT += core gui widgets script
 
 TARGET = QtnPropertyAC
 TEMPLATE = lib
-VERSION = 1.5.2
+VERSION = 1.6.0
 
 DEFINES += QTN_DYNAMIC_LIBRARY
 
@@ -69,7 +69,8 @@ SOURCES += PropertyBase.cpp \
     Utils/QtnConnections.cpp \
     Utils/QtnInt64SpinBox.cpp \
     Auxiliary/PropertyDelegateInfo.cpp \
-    PropertyQKeySequence.cpp
+    PropertyQKeySequence.cpp \
+    PropertyDelegateMetaEnum.cpp
 
 HEADERS += CoreAPI.h\
     PropertyBase.h \
@@ -137,7 +138,8 @@ HEADERS += CoreAPI.h\
     Utils/QtnConnections.h \
     Utils/QtnInt64SpinBox.h \
     PropertyDelegateAttrs.h \
-    PropertyQKeySequence.h
+    PropertyQKeySequence.h \
+    PropertyDelegateMetaEnum.h
 
 win32 {
     TARGET_EXT = .dll
