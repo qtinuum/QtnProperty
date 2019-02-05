@@ -1,6 +1,7 @@
 #include "PropertyDelegateMetaEnum.h"
 
 #include "Delegates/PropertyEditorHandler.h"
+#include "Delegates/PropertyDelegateFactory.h"
 #include "Property.h"
 
 #include <QCoreApplication>
@@ -32,6 +33,19 @@ QtnPropertyDelegateMetaEnum::QtnPropertyDelegateMetaEnum(
 	: QtnPropertyDelegate(property)
 	, mMetaEnum(metaEnum)
 {
+}
+
+void QtnPropertyDelegateMetaEnum::Register(
+	QMetaEnum metaEnum, QtnPropertyDelegateFactory *factory)
+{
+	if (!factory)
+		factory = &QtnPropertyDelegateFactory::staticInstance();
+
+	factory->registerDelegate(&QtnProperty::staticMetaObject,
+		[metaEnum](QtnProperty &owner) -> QtnPropertyDelegate * {
+			return new QtnPropertyDelegateMetaEnum(metaEnum, &owner);
+		},
+		metaEnum.name());
 }
 
 int QtnPropertyDelegateMetaEnum::currentValue() const

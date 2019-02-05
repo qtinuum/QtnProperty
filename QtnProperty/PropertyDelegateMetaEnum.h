@@ -17,7 +17,7 @@ public:
 		const QMetaEnum &metaEnum, QtnProperty *property);
 
 	static void Register(
-		const QMetaEnum &metaEnum, QtnPropertyDelegateFactory *factory);
+		QMetaEnum metaEnum, QtnPropertyDelegateFactory *factory);
 
 	int currentValue() const;
 
