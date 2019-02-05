@@ -19,6 +19,20 @@ public:
 	static void Register(
 		QMetaEnum metaEnum, QtnPropertyDelegateFactory *factory);
 
+	static QtnPropertyDelegateInfo delegateInfo(const QMetaEnum &metaEnum);
+	template <typename T>
+	static inline QtnPropertyDelegateInfo delegateInfo()
+	{
+		return delegateInfo(QMetaEnum::fromType<T>());
+	}
+
+	static QByteArray delegateName(const QMetaEnum &metaEnum);
+	template <typename T>
+	static inline QByteArray delegateName()
+	{
+		return delegateName(QMetaEnum::fromType<T>());
+	}
+
 	int currentValue() const;
 
 	virtual bool propertyValueToStr(QString &strValue) const override;

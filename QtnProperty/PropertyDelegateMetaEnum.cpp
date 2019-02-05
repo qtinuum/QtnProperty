@@ -45,7 +45,20 @@ void QtnPropertyDelegateMetaEnum::Register(
 		[metaEnum](QtnProperty &owner) -> QtnPropertyDelegate * {
 			return new QtnPropertyDelegateMetaEnum(metaEnum, &owner);
 		},
-		metaEnum.name());
+		delegateName(metaEnum));
+}
+
+QtnPropertyDelegateInfo QtnPropertyDelegateMetaEnum::delegateInfo(
+	const QMetaEnum &metaEnum)
+{
+	QtnPropertyDelegateInfo result;
+	result.name = delegateName(metaEnum);
+	return result;
+}
+
+QByteArray QtnPropertyDelegateMetaEnum::delegateName(const QMetaEnum &metaEnum)
+{
+	return QByteArray(metaEnum.scope()) + "." + QByteArray(metaEnum.name());
 }
 
 int QtnPropertyDelegateMetaEnum::currentValue() const
