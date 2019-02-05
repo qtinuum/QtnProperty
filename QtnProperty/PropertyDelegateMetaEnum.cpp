@@ -52,14 +52,7 @@ int QtnPropertyDelegateMetaEnum::currentValue() const
 {
 	QVariant v;
 	ownerProperty->toVariant(v);
-	qint64 value = v.toLongLong();
-	if (value < std::numeric_limits<int>::min())
-		return std::numeric_limits<int>::min();
-
-	if (value > std::numeric_limits<int>::max())
-		return std::numeric_limits<int>::max();
-
-	return int(value);
+	return int(v.toLongLong());
 }
 
 bool QtnPropertyDelegateMetaEnum::propertyValueToStr(QString &strValue) const
