@@ -29,22 +29,22 @@ private:
 };
 
 QtnPropertyDelegateMetaEnum::QtnPropertyDelegateMetaEnum(
-	const QMetaEnum &metaEnum, QtnProperty *property)
+	const QMetaEnum &metaEnum, QtnProperty *property, bool translate)
 	: QtnPropertyDelegate(property)
 	, mMetaEnum(metaEnum)
-	, mShouldTranslate(false)
+	, mShouldTranslate(translate)
 {
 }
 
 void QtnPropertyDelegateMetaEnum::Register(
-	QMetaEnum metaEnum, QtnPropertyDelegateFactory *factory)
+	QMetaEnum metaEnum, QtnPropertyDelegateFactory *factory, bool translate)
 {
 	if (!factory)
 		factory = &QtnPropertyDelegateFactory::staticInstance();
 
 	factory->registerDelegate(&QtnProperty::staticMetaObject,
-		[metaEnum](QtnProperty &owner) -> QtnPropertyDelegate * {
-			return new QtnPropertyDelegateMetaEnum(metaEnum, &owner);
+		[metaEnum, translate](QtnProperty &owner) -> QtnPropertyDelegate * {
+			return new QtnPropertyDelegateMetaEnum(metaEnum, &owner, translate);
 		},
 		delegateName(metaEnum));
 }
@@ -128,8 +128,7 @@ QWidget *QtnPropertyDelegateMetaEnum::createValueEditorImpl(
 void QtnPropertyDelegateMetaEnum::applyAttributesImpl(
 	const QtnPropertyDelegateAttributes &attributes)
 {
-	if (!qtnGetAttribute(attributes, translateAttribute(), mShouldTranslate))
-		mShouldTranslate = false;
+	qtnGetAttribute(attributes, translateAttribute(), mShouldTranslate);
 }
 
 QtnPropertyDelegateMetaEnum::EditorHandler::EditorHandler(

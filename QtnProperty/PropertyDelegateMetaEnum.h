@@ -14,16 +14,17 @@ class QtnPropertyDelegateMetaEnum : public QtnPropertyDelegate
 	class EditorHandler;
 
 public:
-	explicit QtnPropertyDelegateMetaEnum(
-		const QMetaEnum &metaEnum, QtnProperty *property);
+	explicit QtnPropertyDelegateMetaEnum(const QMetaEnum &metaEnum,
+		QtnProperty *property, bool translate = false);
 
-	static void Register(
-		QMetaEnum metaEnum, QtnPropertyDelegateFactory *factory);
+	static void Register(QMetaEnum metaEnum,
+		QtnPropertyDelegateFactory *factory, bool translate = false);
 
 	template <typename T>
-	static void Register(QtnPropertyDelegateFactory *factory)
+	static void Register(
+		QtnPropertyDelegateFactory *factory, bool translate = false)
 	{
-		Register(QMetaEnum::fromType<T>(), factory);
+		Register(QMetaEnum::fromType<T>(), factory, translate);
 	}
 
 	static QtnPropertyDelegateInfo delegateInfo(const QMetaEnum &metaEnum);
