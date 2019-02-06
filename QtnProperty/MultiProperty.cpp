@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -72,25 +72,15 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 	if (own)
 		property->setParent(this);
 
-	if (properties.end() ==
+	if (properties.end() !=
 		std::find(properties.begin(), properties.end(), property))
 	{
-		properties.push_back(property);
-		updateStateFrom(property);
-	} else
-	{
-		updateStateFrom(property);
 		return;
 	}
 
-	auto delegate = property->delegateInfo();
+	properties.push_back(property);
 
-	if (delegate)
-	{
-		QtnPropertyDelegateInfo copy;
-		copy.attributes = delegate->attributes;
-		setDelegateInfo(copy);
-	}
+	updateStateFrom(property);
 
 	QObject::connect(property, &QtnProperty::propertyValueAccept, this,
 		&QtnMultiProperty::onPropertyValueAccept);
@@ -337,8 +327,6 @@ void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 
 	setState(state);
 
-	if (writable && mutablePropertyIndex >= 0)
-		return;
 	updateMutablePropertyIndex();
 }
 
@@ -539,7 +527,10 @@ void QtnMultiPropertyDelegate::applyAttributesImpl(
 {
 	for (auto &delegate : superDelegates)
 	{
-		delegate->applyAttributes(attributes);
+		auto delegateInfo = delegate->getOwnerProperty()->delegateInfo();
+		if (delegateInfo)
+			delegate->applyAttributes(delegateInfo->attributes);
+		delegate->applyAttributes(attributes); // override base attributes
 	}
 }
 
@@ -608,11 +599,10 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(
 
 		int superIndex = 0;
 
-		auto propertyToEdit = owner().properties.at(superIndex);
-
 		if (editable)
 		{
 			superIndex = owner().mutablePropertyIndex;
+			auto propertyToEdit = owner().properties.at(superIndex);
 			data = new PropertyToEdit;
 			data->owner = &owner();
 			data->property = propertyToEdit;
@@ -634,13 +624,6 @@ QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(
 		}
 
 		auto superDelegate = superDelegates.at(superIndex).get();
-
-		auto delegateInfo = propertyToEdit->delegateInfo();
-
-		if (delegateInfo)
-		{
-			superDelegate->applyAttributes(delegateInfo->attributes);
-		}
 
 		auto editor =
 			superDelegate->createValueEditor(parent, rect, inplaceInfo);
