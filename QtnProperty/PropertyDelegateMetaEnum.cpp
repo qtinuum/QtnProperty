@@ -32,6 +32,7 @@ QtnPropertyDelegateMetaEnum::QtnPropertyDelegateMetaEnum(
 	const QMetaEnum &metaEnum, QtnProperty *property)
 	: QtnPropertyDelegate(property)
 	, mMetaEnum(metaEnum)
+	, mShouldTranslate(false)
 {
 }
 
@@ -58,7 +59,11 @@ QtnPropertyDelegateInfo QtnPropertyDelegateMetaEnum::delegateInfo(
 
 QByteArray QtnPropertyDelegateMetaEnum::delegateName(const QMetaEnum &metaEnum)
 {
-	return QByteArray(metaEnum.scope()) + "." + QByteArray(metaEnum.name());
+	const char *cscope = metaEnum.scope();
+	const char *cname = metaEnum.name();
+	auto scope = QByteArray::fromRawData(cscope, qstrlen(cscope));
+	auto name = QByteArray::fromRawData(cname, qstrlen(cname));
+	return scope + "." + name;
 }
 
 int QtnPropertyDelegateMetaEnum::currentValue() const
@@ -85,7 +90,14 @@ QString QtnPropertyDelegateMetaEnum::valueToStr(int value) const
 
 QString QtnPropertyDelegateMetaEnum::keyToStr(const char *key) const
 {
-	return QCoreApplication::translate(mMetaEnum.scope(), key);
+	return mShouldTranslate
+		? QCoreApplication::translate(mMetaEnum.scope(), key)
+		: QString(QLatin1String(key));
+}
+
+QByteArray QtnPropertyDelegateMetaEnum::translateAttribute()
+{
+	returnQByteArrayLiteral("translate");
 }
 
 QWidget *QtnPropertyDelegateMetaEnum::createValueEditorImpl(
@@ -111,6 +123,13 @@ QWidget *QtnPropertyDelegateMetaEnum::createValueEditorImpl(
 	}
 
 	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
+}
+
+void QtnPropertyDelegateMetaEnum::applyAttributesImpl(
+	const QtnPropertyDelegateAttributes &attributes)
+{
+	if (!qtnGetAttribute(attributes, translateAttribute(), mShouldTranslate))
+		mShouldTranslate = false;
 }
 
 QtnPropertyDelegateMetaEnum::EditorHandler::EditorHandler(

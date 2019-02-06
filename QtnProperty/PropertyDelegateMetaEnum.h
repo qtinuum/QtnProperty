@@ -10,6 +10,7 @@ class QtnPropertyDelegateMetaEnum : public QtnPropertyDelegate
 	Q_DISABLE_COPY(QtnPropertyDelegateMetaEnum)
 
 	QMetaEnum mMetaEnum;
+	bool mShouldTranslate;
 	class EditorHandler;
 
 public:
@@ -40,7 +41,11 @@ public:
 	QString valueToStr(int value) const;
 	QString keyToStr(const char *key) const;
 
+	static QByteArray translateAttribute();
+
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateAttributes &attributes);
 };
