@@ -20,6 +20,12 @@ public:
 	static void Register(
 		QMetaEnum metaEnum, QtnPropertyDelegateFactory *factory);
 
+	template <typename T>
+	static void Register(QtnPropertyDelegateFactory *factory)
+	{
+		Register(QMetaEnum::fromType<T>(), factory);
+	}
+
 	static QtnPropertyDelegateInfo delegateInfo(const QMetaEnum &metaEnum);
 	template <typename T>
 	static inline QtnPropertyDelegateInfo delegateInfo()
