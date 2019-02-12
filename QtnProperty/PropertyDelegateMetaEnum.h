@@ -70,5 +70,5 @@ protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes);
+		const QtnPropertyDelegateAttributes &attributes) override;
 };
