@@ -21,7 +21,7 @@ limitations under the License.
 #include <QMetaEnum>
 
 class QtnPropertyDelegateFactory;
-class QtnPropertyDelegateMetaEnum : public QtnPropertyDelegate
+class QTN_IMPORT_EXPORT QtnPropertyDelegateMetaEnum : public QtnPropertyDelegate
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateMetaEnum)
 
