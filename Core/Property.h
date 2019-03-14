@@ -25,7 +25,7 @@ class QTN_PE_CORE_EXPORT QtnProperty: public QtnPropertyBase
     Q_DISABLE_COPY(QtnProperty)
 
 public:
-    virtual ~QtnProperty();
+    ~QtnProperty() override;
 
     // casts
     QtnProperty* asProperty() override { return this; }

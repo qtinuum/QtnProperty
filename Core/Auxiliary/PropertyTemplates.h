@@ -234,7 +234,7 @@ public:
 
     void incrementValue(int steps = 1)
     {
-        ValueType newValue = this->value() + (stepValue() * (ValueType)steps);
+        ValueType newValue = this->value() + (stepValue() * static_cast<ValueType>(steps));
 
         if (newValue < minValue())
             newValue = minValue();

@@ -160,7 +160,7 @@ QtnPropertyBase::QtnPropertyBase(QObject *parent)
       m_stateLocal(QtnPropertyStateNone),
       m_stateInherited(QtnPropertyStateNone)
 {
-    qtnAddPropertyAsChild(parent, this, false);
+//    qtnAddPropertyAsChild(parent, this, false);
 }
 
 QtnPropertyBase::~QtnPropertyBase()

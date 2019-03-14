@@ -27,7 +27,7 @@ class QTN_PE_CORE_EXPORT QtnPropertySet: public QtnPropertyBase
 
 public:
     explicit QtnPropertySet(QObject* parent);
-    virtual ~QtnPropertySet();
+    ~QtnPropertySet() override;
 
 public slots:
     // sub properties
@@ -92,5 +92,22 @@ private:
 };
 
 Q_DECLARE_METATYPE(QtnPropertySet*)
+
+template <typename T>
+T* qtnCreateProperty(QtnPropertySet* parent, QString name)
+{
+    auto property = new T(parent);
+    property->setName(name);
+    parent->addChildProperty(property);
+    return property;
+}
+
+template <typename T>
+T* qtnCreateProperty(QtnPropertySet* parent)
+{
+    auto property = new T(parent);
+    parent->addChildProperty(property);
+    return property;
+}
 
 #endif // QTN_PROPERTY_SET_H

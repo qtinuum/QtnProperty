@@ -157,6 +157,7 @@ void TestProperty::state()
 {
     QtnPropertySet ps(0);
     QtnPropertyInt p(&ps);
+    ps.addChildProperty(&p);
 
     QCOMPARE(ps.state(), QtnPropertyStateNone);
     QCOMPARE(p.state(), QtnPropertyStateCollapsed);
@@ -522,9 +523,11 @@ void TestProperty::propertySet()
 
     QtnPropertySet pp(&p);
     pp.setName("pp");
+    p.addChildProperty(&pp);
 
     QtnPropertyBool b(&pp);
     b.setName("b");
+    pp.addChildProperty(&b);
 
     QtnPropertyFloat f(nullptr);
     f.setName("f");
@@ -532,6 +535,7 @@ void TestProperty::propertySet()
 
     QtnPropertyBool bb(&p);
     bb.setName("b");
+    p.addChildProperty(&bb);
 
     QList<QtnPropertyBase*> res = p.findChildProperties("pp");
     QCOMPARE(res.size(), 1);
@@ -595,13 +599,14 @@ void TestProperty::serializationChildren()
 
     QByteArray data;
 
-    QtnProperty* p2(new QtnPropertyInt(&ps));
+    QtnProperty* p2(qtnCreateProperty<QtnPropertyInt>(&ps));
     p2->setId(1);
     p2->setState(QtnPropertyStateImmutable);
 
     QtnPropertyBool p3(&ps);
     p3.setId(2);
     p3.setState(QtnPropertyStateNonSerialized);
+    ps.addChildProperty(&p3);
 
     {
         QDataStream s(&data, QIODevice::WriteOnly);

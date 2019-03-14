@@ -3,7 +3,7 @@
 
 QtnPropertySetA::QtnPropertySetA(QObject* parent)
     : QtnPropertySet(parent)
-    , b(*new QtnPropertyBool(this))
+    , b(*qtnCreateProperty<QtnPropertyBool>(this))
 {
     init();
     connectSlots();

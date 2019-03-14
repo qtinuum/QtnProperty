@@ -428,8 +428,8 @@ void PropertySetCode::generateChildrenInitialization(TextStreamIndent& s) const
     for (auto it = members.cbegin(); it != members.cend(); ++it)
     {
         const PropertySetMemberCode &p = **it;
-        s.newLine() << ", " << p.name << "(*new " << p.selfType
-                    << "(this))";
+        s.newLine() << ", " << p.name << "(*qtnCreateProperty<" << p.selfType
+                    << ">(this))";
     }
 }
 
@@ -485,7 +485,7 @@ void PropertySetCode::generateSlotsDeclaration(TextStreamIndent& s) const
     s.pushWrapperLines("// start slot declarations", "// end slot declarations");
     for (auto it = slots_code.begin(); it != slots_code.end(); ++it)
     {
-        s.newLine() << QString("void %1(%2);").arg(slotName(it.key(), &it.value().member, 0)
+        s.newLine() << QString("void %1(%2);").arg(slotName(it.key(), &it.value().member, nullptr)
                                                    , slotSignature(it.key()));
     }
 
@@ -509,7 +509,7 @@ void PropertySetCode::generateSlotsImplementation(TextStreamIndent& s) const
     {
         s << endl;
         s.newLine() << QString("void %1::%2(%3)").arg(selfType
-                                                      , slotName(it.key(), &it.value().member, 0)
+                                                      , slotName(it.key(), &it.value().member, nullptr)
                                                       , slotSignature(it.key()));
         s.newLine() << "{";
         s.addIndent();
@@ -650,7 +650,7 @@ void PropertySetCode::generateSlotsConnections(TextStreamIndent& s, const QStrin
                                 , slotMember(it.value().member)
                                 , it.key()
                                 , selfType
-                                , slotName(it.key(), &it.value().member, 0));
+                                , slotName(it.key(), &it.value().member, nullptr));
     }
 
     for (auto it = members.begin(); it != members.end(); ++it)
@@ -760,8 +760,8 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
 }
 
 PegContext::PegContext()
-    : currPropertySet(0),
-      currProperty(0)
+    : currPropertySet(nullptr),
+      currProperty(nullptr)
 {}
 
 PropertySetMemberCode *PegContext::current()
@@ -834,7 +834,7 @@ void PegContext::commitPropertySet()
     {
         peg.code.append(propertySet);
         propertySet.reset();
-        currPropertySet = 0;
+        currPropertySet = nullptr;
     }
     else
     {
@@ -851,7 +851,7 @@ void PegContext::startProperty()
 
 void PegContext::commitProperty()
 {
-    currProperty = 0;
+    currProperty = nullptr;
 }
 
 bool PegContext::checkSlotName(const QString& name)

@@ -31,12 +31,14 @@ void QtnPropertyFreqBase::setUnit(FreqUnit unit)
 
 bool QtnPropertyFreqBase::fromStrImpl(const QString& str)
 {
+    Q_UNUSED(str);
     Q_ASSERT(false);
     return false;
 }
 
 bool QtnPropertyFreqBase::toStrImpl(QString& str) const
 {
+    Q_UNUSED(str);
     Q_ASSERT(false);
     return false;
 }

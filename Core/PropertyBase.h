@@ -91,7 +91,7 @@ public:
     void setDelegateAttribute(const QByteArray& attributeName, const QVariant& attributeValue);
 
     // reset callback
-    bool hasResetCallback() const { return (bool)m_resetCallback; }
+    bool hasResetCallback() const { return m_resetCallback != nullptr; }
     void setResetCallback(const std::function<void(QtnPropertyBase&)>& resetCallback);
     bool reset();
 
