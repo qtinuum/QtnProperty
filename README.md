@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_propertySet = new QtnPropertySet(this)
 
-    auto floatValue = new QtnPropertyFloat(m_propertySet);
+    auto floatValue = qtnCreateProperty<QtnPropertyFloat>(m_propertySet);
     floatValue->setName(tr("Value"));
     floatValue->setDescription(tr("Float value"));
     floatValue->setMaxValue(1.f);
@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent) :
     floatValue->setStepValue(0.1f);
     floatValue->setValue(0.3f);
 
-    auto textColor = new QtnPropertyQColor(m_propertySet);
+    auto textColor = qtnCreateProperty<QtnPropertyQColor>(m_propertySet);
     textColor->setName(tr("TextColor"));
     textColor->setDescription(tr("Foreground text color"));
     textColor->setValue(QColor(0, 0, 0));
