@@ -114,8 +114,8 @@ bool QtnPropertyDelegateQSizeF::propertyValueToStr(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQSize::getToStringFormat().arg(
-		locale.toString(value.width(), 'g', 6),
-		locale.toString(value.height(), 'g', 6));
+		locale.toString(value.width(), 'g', 15),
+		locale.toString(value.height(), 'g', 15));
 
 	return true;
 }
