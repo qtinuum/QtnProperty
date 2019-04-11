@@ -266,12 +266,12 @@ bool QtnPropertyDelegateQRectF::propertyValueToStr(QString &strValue) const
 	QLocale locale;
 	strValue =
 		QtnPropertyQRect::getToStringFormat(coordinates)
-			.arg(locale.toString(value.left(), 'g', 6),
-				locale.toString(value.top(), 'g', 6),
+			.arg(locale.toString(value.left(), 'g', 15),
+				locale.toString(value.top(), 'g', 15),
 				locale.toString(
-					coordinates ? value.right() : value.width(), 'g', 6),
+					coordinates ? value.right() : value.width(), 'g', 15),
 				locale.toString(
-					coordinates ? value.bottom() : value.height(), 'g', 6));
+					coordinates ? value.bottom() : value.height(), 'g', 15));
 
 	return true;
 }

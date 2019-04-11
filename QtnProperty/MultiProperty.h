@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public:
 	static bool Register();
 	static QString getMultiValuePlaceholder();
 
-	inline std::vector<QtnProperty *> getProperties() const;
+	inline const std::vector<QtnProperty *> &getProperties() const;
 
 	QMetaProperty getMetaProperty() const;
 
@@ -83,7 +83,7 @@ private:
 	friend class QtnMultiPropertyDelegate;
 };
 
-std::vector<QtnProperty *> QtnMultiProperty::getProperties() const
+const std::vector<QtnProperty *> &QtnMultiProperty::getProperties() const
 {
 	return properties;
 }

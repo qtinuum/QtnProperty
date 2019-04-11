@@ -36,8 +36,6 @@ protected:
 
 private:
 	void onCurrentIndexChanged(int index);
-
-	unsigned updating;
 };
 
 bool QtnPropertyDelegateEnum::Register()
@@ -77,15 +75,14 @@ QWidget *QtnPropertyDelegateEnum::createValueEditorImpl(
 			combo->showPopup();
 
 		return combo;
-	} else
-	{
-		const QtnEnumValueInfo *valueInfo = info->findByValue(owner());
-
-		if (!valueInfo)
-			return nullptr;
-
-		return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 	}
+
+	const QtnEnumValueInfo *valueInfo = info->findByValue(owner());
+
+	if (!valueInfo)
+		return nullptr;
+
+	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
 bool QtnPropertyDelegateEnum::propertyValueToStr(QString &strValue) const
