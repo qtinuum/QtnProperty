@@ -13,7 +13,7 @@ extern void yy_push_state_initialization_list();
 %}
 
 %locations
-%error-verbose
+%define parse.error verbose
 //%define api.pure full
 %lex-param {YYLEX_PARAM}
 
