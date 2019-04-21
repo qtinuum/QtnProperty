@@ -162,6 +162,10 @@ void QtnPropertyWidget::updateParts()
             p.setHorizontalPolicy(QSizePolicy::Ignored);
             m_descriptionPanel->setSizePolicy(p);
 
+            // set desctiption panel fixed size
+            splitter->setStretchFactor(0, 1);
+            splitter->setStretchFactor(1, 0);
+
             // setup DblClick handler
             splitter->handle(1)->installEventFilter(new QtnSplitterEventsHandler(splitter));
 
