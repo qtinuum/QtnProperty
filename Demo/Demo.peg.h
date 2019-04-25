@@ -116,6 +116,7 @@ public:
     QtnPropertyPenWidth& PenWidthProperty;
     QtnPropertyQPenStyle& PenStyleProperty;
     QtnPropertyQPen& PenProperty;
+    QtnPropertyQString& QStringCallbackProperty;
     QtnPropertySetSubPropertySetType& SubPropertySet2;
     // end children declarations
 

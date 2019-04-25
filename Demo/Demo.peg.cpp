@@ -246,6 +246,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , PenWidthProperty(*qtnCreateProperty<QtnPropertyPenWidth>(this))
     , PenStyleProperty(*qtnCreateProperty<QtnPropertyQPenStyle>(this))
     , PenProperty(*qtnCreateProperty<QtnPropertyQPen>(this))
+    , QStringCallbackProperty(*qtnCreateProperty<QtnPropertyQString>(this))
     , SubPropertySet2(*qtnCreateProperty<QtnPropertySetSubPropertySetType>(this))
 {
     init();
@@ -292,6 +293,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     PenWidthProperty = other.PenWidthProperty;
     PenStyleProperty = other.PenStyleProperty;
     PenProperty = other.PenProperty;
+    QStringCallbackProperty = other.QStringCallbackProperty;
     SubPropertySet2 = other.SubPropertySet2;
 
     return *this;
@@ -462,6 +464,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->PenProperty.state() & ignoreMask))
     {
         PenProperty = theCopyFrom->PenProperty;
+    }
+
+    if (!(theCopyFrom->QStringCallbackProperty.state() & ignoreMask))
+    {
+        QStringCallbackProperty = theCopyFrom->QStringCallbackProperty;
     }
 
     SubPropertySet2.copyValues(&theCopyFrom->SubPropertySet2, ignoreMask);
@@ -650,6 +657,10 @@ void QtnPropertySetSamplePS::init()
     PenProperty.setName(PenProperty_name);
     static QString PenProperty_description = "Property to hold QPen values.";
     PenProperty.setDescription(PenProperty_description);
+    static QString QStringCallbackProperty_name = tr("QStringCallbackProperty");
+    QStringCallbackProperty.setName(QStringCallbackProperty_name);
+    static QString QStringCallbackProperty_description = "Property to hold QString values with candidates.";
+    QStringCallbackProperty.setDescription(QStringCallbackProperty_description);
     static QString SubPropertySet2_name = tr("SubPropertySet2");
     SubPropertySet2.setName(SubPropertySet2_name);
     SubPropertySet2.setState(QtnPropertyStateCollapsed);

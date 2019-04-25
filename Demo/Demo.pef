@@ -329,6 +329,11 @@ property_set SamplePS
             editWidth = true;
         }
     }
+	
+	QString QStringCallbackProperty
+	{
+        description = "Property to hold QString values with candidates.";
+	}
 
     extern property_set SubPropertySetType SubPropertySet2
     {

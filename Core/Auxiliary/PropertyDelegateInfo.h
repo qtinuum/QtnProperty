@@ -28,7 +28,8 @@ struct QTN_PE_CORE_EXPORT QtnPropertyDelegateInfo
     QByteArray name;
     QtnPropertyDelegateAttributes attributes;
 
-    QtnPropertyDelegateInfo()
+    QtnPropertyDelegateInfo(const QByteArray& name = {})
+        : name(name)
     {
     }
 

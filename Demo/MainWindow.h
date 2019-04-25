@@ -30,10 +30,15 @@ private slots:
     void on_pushButton_3_clicked();
 
 private:
+    QStringList getCandidates() const { return m_candidates; }
+    QString createCandidate(QWidget* parent);
+
     Ui::MainWindow *ui;
 
     QScriptEngineDebugger dbg;
     QScriptEngine jsEngine;
+
+    QStringList m_candidates = {"one", "two", "three"};
 };
 
 #endif // MAINWINDOW_H
