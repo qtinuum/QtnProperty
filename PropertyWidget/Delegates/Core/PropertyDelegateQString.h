@@ -83,7 +83,7 @@ private:
 };
 
 using QtnGetCandidatesFn = std::function<QStringList()>;
-using QtnCreateCandidateFn = std::function<QString(QWidget*)>;
+using QtnCreateCandidateFn = std::function<QString(QWidget*, QString)>;
 Q_DECLARE_METATYPE(QtnGetCandidatesFn);
 Q_DECLARE_METATYPE(QtnCreateCandidateFn);
 
@@ -99,11 +99,7 @@ protected:
     QWidget* createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo = nullptr) override;
 
 private:
-    QtnGetCandidatesFn m_getCandidatesFn;
-    QtnCreateCandidateFn m_createCandidateFn;
-    QString m_createCandidateLabel;
-
-    friend class QtnPropertyQStringCandidatesComboBoxHandler;
+    QtnPropertyDelegateAttributes m_editorAttributes;
 };
 
 #endif // PROPERTY_DELEGATE_QSTRING_H

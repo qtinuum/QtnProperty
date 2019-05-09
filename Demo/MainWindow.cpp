@@ -29,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ps->QStringCallbackProperty.setDelegateAttribute("GetCandidatesFn", attr);
     attr.setValue(qtnMemFn(this, &MainWindow::createCandidate));
     ps->QStringCallbackProperty.setDelegateAttribute("CreateCandidateFn", attr);
-    ps->QStringCallbackProperty.setDelegateAttribute("CreateCandidateLabel", "<add item...>");
 
     ui->pw->setPropertySet(ps);
 
@@ -131,10 +130,10 @@ void MainWindow::on_pushButton_2_clicked()
     dlg.exec();
 }
 
-QString MainWindow::createCandidate(QWidget* parent)
+QString MainWindow::createCandidate(QWidget* parent, QString candidate)
 {
     bool ok;
-    QString text = QInputDialog::getText(parent, "Create item", "Name:", QLineEdit::Normal, "new", &ok);
+    QString text = QInputDialog::getText(parent, "Create item", "Name:", QLineEdit::Normal, candidate, &ok);
     if (ok && !text.isEmpty())
     {
         if (m_candidates.indexOf(text) < 0)
