@@ -21,6 +21,7 @@
 #include "PropertyDelegateMisc.h"
 
 #include <QLineEdit>
+#include <QComboBox>
 #include <QToolButton>
 
 class QKeyEvent;
@@ -28,10 +29,19 @@ class QKeyEvent;
 class QTN_PW_EXPORT QtnLineEditBttn: public QWidget
 {
 public:
-    QtnLineEditBttn(QWidget *parent);
+    QtnLineEditBttn(QWidget *parent, QString bttnText = "...");
 
-    QLineEdit *lineEdit;
-    QToolButton *toolButton;
+    QLineEdit *lineEdit = nullptr;
+    QToolButton *toolButton = nullptr;
+};
+
+class QTN_PW_EXPORT QtnComboBoxBttn: public QWidget
+{
+public:
+    QtnComboBoxBttn(QWidget *parent, QString bttnText = "...");
+
+    QComboBox *comboBox = nullptr;
+    QToolButton *toolButton = nullptr;
 };
 
 QTN_PW_EXPORT bool qtnAcceptForLineEdit(QKeyEvent *keyEvent);

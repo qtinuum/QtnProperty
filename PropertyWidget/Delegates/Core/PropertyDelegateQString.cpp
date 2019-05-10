@@ -26,6 +26,7 @@
 #include <QFileDialog>
 #include <QComboBox>
 #include <QCompleter>
+#include <QTimer>
 #include <QDebug>
 
 void regQStringDelegates(QtnPropertyDelegateFactory &factory)
@@ -336,7 +337,7 @@ QWidget* QtnPropertyDelegateQStringList::createValueEditorImpl(QWidget* parent, 
 
     return editor;
 }
-
+/*
 class QtnPropertyQStringCallbackLineEditBttnHandler: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QtnLineEditBttn>
 {
 public:
@@ -459,6 +460,144 @@ private:
 
     bool m_stopSync = false;
 };
+*/
+
+class QtnPropertyQStringCandidatesComboBoxHandler: public QtnPropertyEditorHandler<QtnPropertyQStringBase, QtnComboBoxBttn>
+{
+public:
+    QtnPropertyQStringCandidatesComboBoxHandler(QtnPropertyQStringBase& property, QtnComboBoxBttn& editor, const QtnPropertyDelegateAttributes& attributes)
+        : QtnPropertyEditorHandlerType(property, editor)
+    {
+        Q_ASSERT(property.isEditableByUser());
+
+        qtnGetAttribute(attributes, "GetCandidatesFn", m_getCandidatesFn);
+        qtnGetAttribute(attributes, "CreateCandidateFn", m_createCandidateFn);
+
+        {
+            QString createCandidateLabel = "*";
+            qtnGetAttribute(attributes, "CreateCandidateLabel", createCandidateLabel);
+            editor.toolButton->setText(createCandidateLabel);
+        }
+
+        editor.comboBox->setEditable(true);
+        editor.installEventFilter(this);
+
+        updateCandidates();
+        updateEditor();
+
+        QObject::connect(  editor.comboBox->lineEdit(), &QLineEdit::editingFinished
+                         , this, &QtnPropertyQStringCandidatesComboBoxHandler::onEditingFinished);
+
+        if (m_createCandidateFn)
+        {
+            QObject::connect(  editor.toolButton, &QToolButton::clicked
+                             , this, &QtnPropertyQStringCandidatesComboBoxHandler::onToolButtonClicked);
+        }
+        else
+        {
+            editor.toolButton->setEnabled(false);
+        }
+    }
+
+private:
+    void updateCandidates()
+    {
+        m_stopSync = true;
+
+        if (m_getCandidatesFn)
+            m_candidates = m_getCandidatesFn();
+
+        QCompleter* completer = nullptr;
+        if (!m_candidates.isEmpty())
+        {
+            completer = new QCompleter(m_candidates, editor().comboBox);
+            completer->setFilterMode(Qt::MatchContains);
+            completer->setCaseSensitivity(Qt::CaseInsensitive);
+        }
+
+        editor().comboBox->setCompleter(completer);
+        editor().comboBox->clear();
+        editor().comboBox->addItems(m_candidates);
+
+        QTimer::singleShot(0, editor().comboBox, [this](){
+            editor().comboBox->showPopup();
+            //editor().comboBox->lineEdit()->setFocus();
+        });
+
+        m_stopSync = false;
+    }
+
+    void updateEditor() override
+    {
+        if (m_stopSync)
+            return;
+
+        editor().comboBox->setCurrentText(property());
+    }
+
+    void createNewCandidate(QString candidate)
+    {
+        if (!m_createCandidateFn || m_stopSync)
+            return;
+
+        m_stopSync = true;
+
+        candidate = m_createCandidateFn(&editor(), candidate);
+        if (candidate.isEmpty())
+        {
+            m_stopSync = false;
+            updateEditor();
+            return;
+        }
+
+        property() = candidate;
+        updateCandidates();
+
+        m_stopSync = false;
+    }
+
+    void onToolButtonClicked(bool checked)
+    {
+        Q_UNUSED(checked);
+        createNewCandidate("");
+    }
+
+    void onEditingFinished()
+    {
+        if (m_stopSync)
+            return;
+
+        auto text = editor().comboBox->currentText();
+        if (text.isEmpty())
+            return;
+
+        if (m_candidates.indexOf(text) != -1)
+            property() = text;
+        else
+            createNewCandidate(text);
+    }
+
+    bool eventFilter(QObject* obj, QEvent* event) override
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            // revert all changes
+            if (keyEvent->key() == Qt::Key_Escape)
+                updateEditor();
+        }
+
+        return QObject::eventFilter(obj, event);
+    }
+
+    QtnGetCandidatesFn m_getCandidatesFn;
+    QtnCreateCandidateFn m_createCandidateFn;
+
+    QStringList m_candidates;
+
+    bool m_stopSync = false;
+};
+
 
 QtnPropertyDelegateQStringCallback::QtnPropertyDelegateQStringCallback(QtnPropertyQStringBase& owner)
     : QtnPropertyDelegateQString(owner)
@@ -472,12 +611,23 @@ void QtnPropertyDelegateQStringCallback::applyAttributesImpl(const QtnPropertyDe
 
 QWidget* QtnPropertyDelegateQStringCallback::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
 {
-    QtnLineEditBttn* editor = new QtnLineEditBttn(parent);
+    if (!owner().isEditableByUser())
+    {
+        QLineEdit *lineEdit = new QLineEdit(parent);
+        lineEdit->setReadOnly(true);
+        lineEdit->setText(owner().value());
+
+        lineEdit->setGeometry(rect);
+
+        return lineEdit;
+    }
+
+    auto editor = new QtnComboBoxBttn(parent);
     editor->setGeometry(rect);
 
-    new QtnPropertyQStringCallbackLineEditBttnHandler(owner(), *editor, m_editorAttributes);
+    new QtnPropertyQStringCandidatesComboBoxHandler(owner(), *editor, m_editorAttributes);
 
-    qtnInitLineEdit(editor->lineEdit, inplaceInfo);
+    qtnInitLineEdit(editor->comboBox->lineEdit(), inplaceInfo);
 
     return editor;
 }
