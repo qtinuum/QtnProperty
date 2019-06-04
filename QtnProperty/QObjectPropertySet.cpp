@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,76 +30,6 @@ limitations under the License.
 #include <QMap>
 #include <QLocale>
 
-static QtnProperty *createRealNumberProperty(
-	QObject *object, const QMetaProperty &metaProperty)
-{
-	auto property = new QtnPropertyDoubleCallback(nullptr);
-	property->setCallbackValueAccepted(
-		[property](double) -> bool { return property->isEditableByUser(); });
-
-	switch (metaProperty.revision())
-	{
-		case PERCENT_SUFFIX:
-		{
-			QtnPropertyDelegateInfo delegate;
-			qtnInitPercentSpinBoxDelegate(delegate);
-			property->setDelegateInfo(delegate);
-
-			property->setCallbackValueGet([object, metaProperty]() -> double {
-				return metaProperty.read(object).toDouble() * 100.0;
-			});
-
-			property->setCallbackValueSet([object, metaProperty](double value) {
-				metaProperty.write(object, value / 100.0);
-			});
-
-			return property;
-		}
-
-		case DEGREE_SUFFIX:
-		{
-			QtnPropertyDelegateInfo delegate;
-			qtnInitDegreeSpinBoxDelegate(delegate);
-			property->setDelegateInfo(delegate);
-			break;
-		}
-	}
-
-	property->setCallbackValueGet([object, metaProperty]() -> double {
-		return metaProperty.read(object).toDouble();
-	});
-
-	property->setCallbackValueSet([object, metaProperty](double value) {
-		metaProperty.write(object, value);
-	});
-
-	return property;
-}
-
-bool qtnRegisterDefaultMetaPropertyFactory()
-{
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::String, qtnCreateFactory<QtnPropertyQStringCallback>());
-	qtnRegisterMetaPropertyFactory(QVariant::Double, createRealNumberProperty);
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Int, qtnCreateFactory<QtnPropertyIntCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::UInt, qtnCreateFactory<QtnPropertyUIntCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Point, qtnCreateFactory<QtnPropertyQPointCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Rect, qtnCreateFactory<QtnPropertyQRectCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Size, qtnCreateFactory<QtnPropertyQSizeCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Color, qtnCreateFactory<QtnPropertyQColorCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Font, qtnCreateFactory<QtnPropertyQFontCallback>());
-	return true;
-}
-
 static QMap<int, QtnMetaPropertyFactory_t> &qtnFactoryMap()
 {
 	static QMap<int, QtnMetaPropertyFactory_t> result;
@@ -126,8 +56,7 @@ QtnPropertyState qtnPropertyStateToAdd(const QMetaProperty &metaProperty)
 	if (!metaProperty.isDesignable())
 		toAdd |= QtnPropertyStateInvisible;
 
-	if (metaProperty.isConstant() ||
-		(!metaProperty.isWritable() && !metaProperty.isResettable()))
+	if (metaProperty.isConstant() || !metaProperty.isWritable())
 	{
 		toAdd |= QtnPropertyStateImmutable;
 	}
@@ -165,9 +94,12 @@ QtnProperty *qtnCreateQObjectProperty(QObject *object,
 	if (!property)
 		return property;
 
-	property->setName((nullptr != className)
-			? QCoreApplication::translate(className, metaProperty.name())
-			: metaProperty.name());
+	property->setName(metaProperty.name());
+	if (className)
+	{
+		property->setDisplayName(
+			QCoreApplication::translate(className, metaProperty.name()));
+	}
 
 	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
 
@@ -283,7 +215,7 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object, bool backwards)
 		return nullptr;
 
 	// move collected property sets to object's property set
-	auto propertySet = new QtnPropertySet(nullptr);
+	auto propertySet = new QtnPropertySet;
 	propertySet->setName(object->objectName());
 
 	int addIndex = backwards ? 0 : -1;
@@ -332,7 +264,7 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 			[property](const QtnPropertyBase *targetProperty) -> bool {
 				return property->propertyMetaObject() ==
 					targetProperty->propertyMetaObject() &&
-					property->name() == targetProperty->name();
+					property->displayName() == targetProperty->displayName();
 			});
 
 		auto subSet = property->asPropertySet();
@@ -345,6 +277,7 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 				multiSet = new QtnPropertySet(
 					subSet->childrenOrder(), subSet->compareFunc());
 				multiSet->setName(subSet->name());
+				multiSet->setDisplayName(subSet->displayName());
 				multiSet->setDescription(subSet->description());
 				multiSet->setId(subSet->id());
 				multiSet->setState(subSet->stateLocal());
@@ -364,13 +297,15 @@ void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
 			{
 				multiProperty = new QtnMultiProperty(property->metaObject());
 				multiProperty->setName(property->name());
+				multiProperty->setDisplayName(property->displayName());
 				multiProperty->setDescription(property->description());
 				multiProperty->setId(property->id());
 
 				target->addChildProperty(multiProperty, true);
 			} else
 			{
-				multiProperty = qobject_cast<QtnMultiProperty *>(*it);
+				Q_ASSERT(qobject_cast<QtnMultiProperty *>(*it));
+				multiProperty = static_cast<QtnMultiProperty *>(*it);
 			}
 
 			multiProperty->addProperty(property->asProperty());

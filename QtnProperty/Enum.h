@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ limitations under the License.
 #include "CoreAPI.h"
 #include <QVector>
 #include <QSharedPointer>
+#include <QMetaEnum>
 
 typedef qint32 QtnEnumValueType;
 
@@ -43,14 +44,20 @@ public:
 	QtnEnumValueInfo(QtnEnumValueType value, const QString &name,
 		QtnEnumValueState state = QtnEnumValueStateNone);
 
+	QtnEnumValueInfo(QtnEnumValueType value, const QString &name,
+		const QString &displayName,
+		QtnEnumValueState state = QtnEnumValueStateNone);
+
 	inline QtnEnumValueType value() const;
 	inline void setValue(QtnEnumValueType value);
 	inline const QString &name() const;
+	inline const QString &displayName() const;
 	inline QtnEnumValueState state() const;
 
 private:
 	QtnEnumValueType m_value;
 	QString m_name;
+	QString m_displayName;
 	QtnEnumValueState m_state;
 };
 
@@ -69,6 +76,11 @@ const QString &QtnEnumValueInfo::name() const
 	return m_name;
 }
 
+const QString &QtnEnumValueInfo::displayName() const
+{
+	return m_displayName;
+}
+
 QtnEnumValueState QtnEnumValueInfo::state() const
 {
 	return m_state;
@@ -78,11 +90,20 @@ class QTN_IMPORT_EXPORT QtnEnumInfo
 {
 public:
 	QtnEnumInfo();
+	QtnEnumInfo(const QString &name);
 	QtnEnumInfo(const QString &name, QVector<QtnEnumValueInfo> &staticValues);
 	QtnEnumInfo(
 		const QString &name, const QVector<QtnEnumValueInfo> &staticValues);
 
 	inline const QString &name() const;
+
+	static QtnEnumInfo withMetaEnum(
+		const QMetaEnum &metaEnum, bool translate = false);
+	template <typename T>
+	static inline QtnEnumInfo withEnum(bool translate = false)
+	{
+		return withMetaEnum(QMetaEnum::fromType<T>(), translate);
+	}
 
 	template <typename Pred>
 	bool forEachEnumValue(Pred pred) const
@@ -98,9 +119,12 @@ public:
 
 	const QtnEnumValueInfo *findByValue(QtnEnumValueType value) const;
 	const QtnEnumValueInfo *findByName(const QString &name) const;
+	const QtnEnumValueInfo *findByDisplayName(const QString &displayName,
+		Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
 
 	const QtnEnumValueInfo *fromStr(const QString &str) const;
 	bool toStr(QString &str, const QtnEnumValueInfo *value) const;
+	bool toStr(QString &str, QtnEnumValueType value) const;
 
 	Qt::CaseSensitivity getCaseSensitivity() const;
 	void setCaseSensitivity(Qt::CaseSensitivity value);

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ limitations under the License.
 
 #include "VarProperty.h"
 
+#include "PropertySet.h"
+#include "PropertyView.h"
 #include "Utils/InplaceEditing.h"
 #include "CustomPropertyOptionsDialog.h"
 
@@ -55,10 +57,7 @@ void QtnCustomPropertyWidget::setReadOnly(bool value)
 
 		if (nullptr != rootSet)
 		{
-			if (value)
-				rootSet->addState(QtnPropertyStateImmutable, true);
-			else
-				rootSet->removeState(QtnPropertyStateImmutable, true);
+			rootSet->switchState(QtnPropertyStateImmutable, value, true);
 		}
 	}
 }

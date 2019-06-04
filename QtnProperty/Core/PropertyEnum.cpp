@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ QtnPropertyEnumBase::QtnPropertyEnumBase(QObject *parent)
 {
 }
 
-bool QtnPropertyEnumBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyEnumBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	if (!m_enumInfo)
 		return false;
@@ -33,7 +34,7 @@ bool QtnPropertyEnumBase::fromStrImpl(const QString &str, bool edit)
 	if (!enumValue)
 		return false;
 
-	return setValue(enumValue->value(), edit);
+	return setValue(enumValue->value(), reason);
 }
 
 bool QtnPropertyEnumBase::toStrImpl(QString &str) const

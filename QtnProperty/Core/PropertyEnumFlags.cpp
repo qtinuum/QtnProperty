@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ QtnPropertyEnumFlagsBase::QtnPropertyEnumFlagsBase(QObject *parent)
 	: QtnSinglePropertyBase<QtnEnumFlagsValueType>(parent)
 	, m_enumInfo(0)
 {
-	// collapsed by default
-	addState(QtnPropertyStateCollapsed);
 }
 
-bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyEnumFlagsBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	if (!m_enumInfo)
 		return false;
@@ -33,7 +32,7 @@ bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString &str, bool edit)
 	QtnEnumFlagsValueType val = 0;
 	QString enumStr = str.trimmed();
 
-	if (enumStr != "0")
+	if (!enumStr.isEmpty() && enumStr != "0")
 	{
 		static QRegExp parserEnumFlags(
 			QStringLiteral("^\\s*([^|\\s]+)\\s*\\|(.+)$"), Qt::CaseInsensitive);
@@ -63,7 +62,7 @@ bool QtnPropertyEnumFlagsBase::fromStrImpl(const QString &str, bool edit)
 		val = val | enumValue->value();
 	}
 
-	return setValue(val, edit);
+	return setValue(val, reason);
 }
 
 bool QtnPropertyEnumFlagsBase::toStrImpl(QString &str) const

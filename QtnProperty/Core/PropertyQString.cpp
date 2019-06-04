@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,23 +19,7 @@ limitations under the License.
 
 QtnPropertyQStringBase::QtnPropertyQStringBase(QObject *parent)
 	: QtnSinglePropertyBase<QString>(parent)
-	, multiline(false)
 {
-}
-
-bool QtnPropertyQStringBase::isMultilineEnabled() const
-{
-	return multiline;
-}
-
-void QtnPropertyQStringBase::setMultilineEnabled(bool enabled)
-{
-	multiline = enabled;
-}
-
-QString QtnPropertyQStringBase::getPlaceholderText() const
-{
-	return QtnPropertyQString::getPlaceholderStr(value(), multiline);
 }
 
 QtnPropertyQStringBase &QtnPropertyQStringBase::operator=(const char *newValue)
@@ -44,17 +28,10 @@ QtnPropertyQStringBase &QtnPropertyQStringBase::operator=(const char *newValue)
 	return *this;
 }
 
-bool QtnPropertyQStringBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyQStringBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
-	if (!multiline)
-	{
-		int n = str.indexOf('\n');
-		int r = str.indexOf('\r');
-		int len = n < 0 ? r : (r < 0 ? n : qMin(n, r));
-		return setValue(QString(str.data(), len), edit);
-	}
-
-	return setValue(str, edit);
+	return setValue(str, reason);
 }
 
 bool QtnPropertyQStringBase::toStrImpl(QString &str) const

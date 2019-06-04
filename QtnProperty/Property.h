@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,10 +19,6 @@ limitations under the License.
 #define QTN_PROPERTY_H
 
 #include "PropertyBase.h"
-#include "Auxiliary/PropertyDelegateInfo.h"
-#include <functional>
-
-class QtnPropertyDelegateInfoGetter;
 
 class QTN_IMPORT_EXPORT QtnProperty : public QtnPropertyBase
 {
@@ -32,25 +28,15 @@ class QTN_IMPORT_EXPORT QtnProperty : public QtnPropertyBase
 public:
 	virtual ~QtnProperty() override;
 
-	using DelegateInfoCallback = std::function<QtnPropertyDelegateInfo()>;
-
-	// delegates
-	const QtnPropertyDelegateInfo *delegateInfo() const;
-	void setDelegateInfo(const QtnPropertyDelegateInfo &delegateInfo);
-	void setDelegateInfoCallback(const DelegateInfoCallback &callback);
-
 	// casts
 	virtual QtnProperty *asProperty() override;
 	virtual const QtnProperty *asProperty() const override;
 
-Q_SIGNALS:
+signals:
 	void propertyValueAccept(QtnPropertyValuePtr valueToAccept, bool *accept);
 
 protected:
 	explicit QtnProperty(QObject *parent);
-
-private:
-	QScopedPointer<QtnPropertyDelegateInfoGetter> m_delegateInfoGetter;
 };
 
 #endif // QTN_PROPERTY_H

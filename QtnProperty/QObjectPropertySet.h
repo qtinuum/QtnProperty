@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ class QtnPropertyBase;
 class QtnProperty;
 class QtnPropertySet;
 struct QtnPropertyDelegateInfo;
-
-QTN_IMPORT_EXPORT bool qtnRegisterDefaultMetaPropertyFactory();
 
 typedef std::function<QtnProperty *(QObject *, const QMetaProperty &)>
 	QtnMetaPropertyFactory_t;
@@ -69,7 +67,7 @@ QtnMetaPropertyFactory_t qtnCreateFactory()
 		auto property = new PropertyCallbackType(nullptr);
 
 		property->setCallbackValueGet(
-			[object, metaProperty]() -> CallbackValueType {
+			[object, metaProperty]() -> CallbackValueTypeStore {
 				auto variantValue = metaProperty.read(object);
 				return CallbackValueTypeStore(variantValue.value<ValueType>());
 			});
@@ -79,11 +77,6 @@ QtnMetaPropertyFactory_t qtnCreateFactory()
 				auto variantValue =
 					QVariant::fromValue<ValueType>(ValueType(value));
 				metaProperty.write(object, variantValue);
-			});
-
-		property->setCallbackValueAccepted(
-			[property](CallbackValueType) -> bool {
-				return property->isEditableByUser();
 			});
 
 		return property;

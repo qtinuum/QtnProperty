@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,15 +28,18 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateFactory
 	Q_DISABLE_COPY(QtnPropertyDelegateFactory)
 
 public:
-	using CreateFunction = std::function<QtnPropertyDelegate *(QtnProperty &)>;
+	using CreateFunction =
+		std::function<QtnPropertyDelegate *(QtnPropertyBase &)>;
 
 	explicit QtnPropertyDelegateFactory(
 		QtnPropertyDelegateFactory *superFactory = nullptr);
 
+	static void registerDefaultDelegates(QtnPropertyDelegateFactory &factory);
+
 	inline QtnPropertyDelegateFactory *superFactory();
 	void setSuperFactory(QtnPropertyDelegateFactory *superFactory);
 
-	QtnPropertyDelegate *createDelegate(QtnProperty &owner);
+	QtnPropertyDelegate *createDelegate(QtnPropertyBase &owner);
 
 	bool registerDelegateDefault(const QMetaObject *propertyMetaObject,
 		const CreateFunction &createFunction,
@@ -49,9 +52,10 @@ public:
 		const QMetaObject *propertyMetaObject, const QByteArray &delegateName);
 
 	static QtnPropertyDelegateFactory &staticInstance();
+	static void resetDefaultInstance(QtnPropertyDelegateFactory *factory);
 
 private:
-	QtnPropertyDelegate *createDelegateInternal(QtnProperty &owner);
+	QtnPropertyDelegate *createDelegateInternal(QtnPropertyBase &owner);
 
 	QtnPropertyDelegateFactory *m_superFactory;
 
@@ -70,10 +74,9 @@ QtnPropertyDelegateFactory *QtnPropertyDelegateFactory::superFactory()
 }
 
 template <typename PropertyDelegateClass, typename PropertyClass>
-QtnPropertyDelegate *qtnCreateDelegate(QtnProperty &owner)
+QtnPropertyDelegate *qtnCreateDelegate(QtnPropertyBase &owner)
 {
 	PropertyClass *theOwner = qobject_cast<PropertyClass *>(&owner);
-
 	if (!theOwner)
 		return nullptr;
 

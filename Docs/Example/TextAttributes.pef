@@ -1,0 +1,23 @@
+#include "Core/PropertyCore.h"
+
+property_set TextAttributes
+{
+    Bool WordWrap
+    {
+        description = "Text word wrapping";
+        value = true;
+    }
+    Int Height
+    {
+        description = "Text height";
+        value = 16;
+        minValue = 1;
+        maxValue = 100;
+        stepValue = 1;
+    }
+    QColor Color
+    {
+        description = "Foreground text color";
+        value = QColor(0, 0, 0);
+    }
+}

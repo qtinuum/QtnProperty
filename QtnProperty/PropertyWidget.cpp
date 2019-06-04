@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyWidget.h"
+
+#include "PropertyView.h"
+
+#include <QVBoxLayout>
+#include <QLabel>
 #include <QSplitter>
 #include <QMouseEvent>
 
@@ -27,6 +32,24 @@ public:
 protected:
 	virtual bool eventFilter(QObject *obj, QEvent *event) override;
 };
+
+// It's safe to call this function on any platform.
+// It will only have an effect on the Mac.
+void set_smaller_text_osx(QWidget *w)
+{
+	Q_ASSERT(w != 0);
+
+	// By default, none of these size attributes are set.
+	// If any has been set explicitly, we'll leave the widget alone.
+	if (!w->testAttribute(Qt::WA_MacMiniSize) &&
+		!w->testAttribute(Qt::WA_MacSmallSize) &&
+		!w->testAttribute(Qt::WA_MacNormalSize) &&
+		!w->testAttribute(Qt::WA_MacVariableSize))
+	{
+		// make the text the 'normal' size
+		w->setAttribute(Qt::WA_MacSmallSize);
+	}
+}
 
 QtnPropertyWidget::QtnPropertyWidget(QWidget *parent)
 	: QWidget(parent)
@@ -40,14 +63,13 @@ QtnPropertyWidget::QtnPropertyWidget(QWidget *parent)
 	m_layout->setContentsMargins(0, 0, 0, 0);
 	m_layout->setMargin(0);
 	m_layout->setSpacing(0);
-
-	m_layout->addWidget(m_propertyView);
+	set_smaller_text_osx(this);
 
 	QObject::connect(m_propertyView, &QtnPropertyView::activePropertyChanged,
 		this, &QtnPropertyWidget::setActiveProperty);
-}
 
-QtnPropertyWidget::~QtnPropertyWidget() {}
+	updateParts();
+}
 
 void QtnPropertyWidget::setParts(QtnPropertyWidgetParts newParts)
 {
@@ -56,6 +78,21 @@ void QtnPropertyWidget::setParts(QtnPropertyWidgetParts newParts)
 
 	m_parts = newParts;
 	updateParts();
+}
+
+const QtnPropertySet *QtnPropertyWidget::propertySet() const
+{
+	return m_propertyView->propertySet();
+}
+
+QtnPropertySet *QtnPropertyWidget::propertySet()
+{
+	return m_propertyView->propertySet();
+}
+
+void QtnPropertyWidget::setPropertySet(QtnPropertySet *newPropertySet)
+{
+	m_propertyView->setPropertySet(newPropertySet);
 }
 
 void QtnPropertyWidget::updateParts()
@@ -86,11 +123,16 @@ void QtnPropertyWidget::updateParts()
 			m_descriptionPanel->setAlignment(Qt::AlignTop);
 			m_descriptionPanel->setWordWrap(true);
 			m_descriptionPanel->setFrameStyle(QFrame::Box | QFrame::Sunken);
-			m_descriptionPanel->setMinimumSize(0, 0);
+			m_descriptionPanel->setMinimumSize(
+				0, 5 * QFontMetrics(font()).height() / 2);
 			QSizePolicy p = m_descriptionPanel->sizePolicy();
 			p.setVerticalPolicy(QSizePolicy::Ignored);
 			p.setHorizontalPolicy(QSizePolicy::Ignored);
 			m_descriptionPanel->setSizePolicy(p);
+
+			// set desctiption panel fixed size
+			splitter->setStretchFactor(0, 1);
+			splitter->setStretchFactor(1, 0);
 
 			// setup DblClick handler
 			splitter->handle(1)->installEventFilter(
@@ -102,14 +144,14 @@ void QtnPropertyWidget::updateParts()
 		m_layout->addWidget(m_descriptionSplitter);
 	} else
 	{
+		m_layout->addWidget(m_propertyView);
+
 		if (m_descriptionSplitter)
 		{
 			delete m_descriptionSplitter;
 			m_descriptionSplitter = nullptr;
 			m_descriptionPanel = nullptr;
 		}
-
-		m_layout->addWidget(m_propertyView);
 	}
 }
 
@@ -123,7 +165,7 @@ void QtnPropertyWidget::setActiveProperty(const QtnPropertyBase *activeProperty)
 		} else
 		{
 			m_descriptionPanel->setText(QStringLiteral("<b>%1</b><br>%2")
-											.arg(activeProperty->name(),
+											.arg(activeProperty->displayName(),
 												activeProperty->description()));
 		}
 	}

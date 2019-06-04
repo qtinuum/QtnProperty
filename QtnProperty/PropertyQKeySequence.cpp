@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2017-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ limitations under the License.
 #include "PropertyQKeySequence.h"
 
 #include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorAux.h"
-#include "Delegates/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyEditorAux.h"
+#include "Delegates/Utils/PropertyEditorHandler.h"
 
 #include "Core/PropertyQString.h"
 #include "MultiProperty.h"
@@ -32,7 +32,7 @@ class QtnPropertyQKeySequenceEditHandler
 {
 public:
 	QtnPropertyQKeySequenceEditHandler(
-		QtnPropertyQKeySequenceBase &property, QKeySequenceEdit &editor);
+		QtnPropertyDelegate *delegate, QKeySequenceEdit &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -44,10 +44,11 @@ QtnPropertyQKeySequenceBase::QtnPropertyQKeySequenceBase(QObject *parent)
 {
 }
 
-bool QtnPropertyQKeySequenceBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyQKeySequenceBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	return setValue(
-		QKeySequence::fromString(str, QKeySequence::PortableText), edit);
+		QKeySequence::fromString(str, QKeySequence::PortableText), reason);
 }
 
 bool QtnPropertyQKeySequenceBase::toStrImpl(QString &str) const
@@ -57,13 +58,13 @@ bool QtnPropertyQKeySequenceBase::toStrImpl(QString &str) const
 }
 
 bool QtnPropertyQKeySequenceBase::fromVariantImpl(
-	const QVariant &var, bool edit)
+	const QVariant &var, QtnPropertyChangeReason reason)
 {
 	QKeySequence keySequence;
 	switch (var.type())
 	{
 		case QVariant::String:
-			return fromStrImpl(var.toString(), edit);
+			return fromStrImpl(var.toString(), reason);
 
 		case QVariant::KeySequence:
 			keySequence = var.value<QKeySequence>();
@@ -73,7 +74,7 @@ bool QtnPropertyQKeySequenceBase::fromVariantImpl(
 			break;
 	}
 
-	return setValue(keySequence, edit);
+	return setValue(keySequence, reason);
 }
 
 bool QtnPropertyQKeySequenceBase::toVariantImpl(QVariant &var) const
@@ -93,43 +94,45 @@ QtnPropertyQKeySequence::QtnPropertyQKeySequence(QObject *parent)
 {
 }
 
-bool QtnPropertyQKeySequence::Register()
-{
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQKeySequenceBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQKeySequence,
-			QtnPropertyQKeySequenceBase>,
-		QByteArrayLiteral("QKeySequence"));
-}
-
 QtnPropertyDelegateQKeySequence::QtnPropertyDelegateQKeySequence(
 	QtnPropertyQKeySequenceBase &owner)
 	: QtnPropertyDelegateTyped(owner)
 {
 }
 
+void QtnPropertyDelegateQKeySequence::Register(
+	QtnPropertyDelegateFactory &factory)
+{
+	factory.registerDelegateDefault(
+		&QtnPropertyQKeySequenceBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQKeySequence,
+			QtnPropertyQKeySequenceBase>,
+		"QKeySequence");
+}
+
 QWidget *QtnPropertyDelegateQKeySequence::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *)
 {
-	if (!owner().isEditableByUser())
+	if (!stateProperty()->isEditableByUser())
 	{
 		auto lineEdit = new QLineEdit(parent);
 		lineEdit->setGeometry(rect);
 		lineEdit->setReadOnly(true);
-		QString text;
-		if (owner().toStr(text))
-			lineEdit->setText(text);
+		auto text = owner().value().toString(QKeySequence::NativeText);
+		lineEdit->setText(text);
+		lineEdit->setPlaceholderText(
+			QtnPropertyQString::getEmptyPlaceholderStr());
 		lineEdit->selectAll();
 		return lineEdit;
 	}
 
 	auto editor = new QKeySequenceEdit(parent);
 	editor->setGeometry(rect);
-	new QtnPropertyQKeySequenceEditHandler(owner(), *editor);
+	new QtnPropertyQKeySequenceEditHandler(this, *editor);
 	return editor;
 }
 
-bool QtnPropertyDelegateQKeySequence::propertyValueToStr(
+bool QtnPropertyDelegateQKeySequence::propertyValueToStrImpl(
 	QString &strValue) const
 {
 	strValue = owner().value().toString(QKeySequence::NativeText);
@@ -141,8 +144,8 @@ bool QtnPropertyDelegateQKeySequence::propertyValueToStr(
 }
 
 QtnPropertyQKeySequenceEditHandler::QtnPropertyQKeySequenceEditHandler(
-	QtnPropertyQKeySequenceBase &property, QKeySequenceEdit &editor)
-	: QtnPropertyEditorHandler(property, editor)
+	QtnPropertyDelegate *delegate, QKeySequenceEdit &editor)
+	: QtnPropertyEditorHandler(delegate, editor)
 {
 	updateEditor();
 
@@ -152,7 +155,7 @@ QtnPropertyQKeySequenceEditHandler::QtnPropertyQKeySequenceEditHandler(
 
 void QtnPropertyQKeySequenceEditHandler::updateEditor()
 {
-	if (property().valueIsHidden())
+	if (stateProperty()->isMultiValue())
 	{
 		editor().clear();
 	} else
@@ -163,6 +166,6 @@ void QtnPropertyQKeySequenceEditHandler::updateEditor()
 
 void QtnPropertyQKeySequenceEditHandler::updateValue(const QKeySequence &seq)
 {
-	if (m_property)
-		property().edit(seq);
+	if (propertyBase())
+		property().setValue(seq, delegate()->editReason());
 }

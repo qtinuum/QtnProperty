@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2012-1015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,48 +22,6 @@
 #include <QStack>
 
 PEG& peg = PEG::instance();
-/*
-bool isPredefinedPropertyType(QString type)
-{
-    static QSet<QString> qtnPropertyNames;
-    if (qtnPropertyNames.empty())
-    {
-        QSet<QString> names;
-        names.insert("Bool");
-        names.insert("Double");
-        names.insert("Enum");
-        names.insert("EnumFlags");
-        names.insert("Float");
-        names.insert("Int");
-        names.insert("UInt");
-        names.insert("Int64");
-        names.insert("UInt64");
-        names.insert("QRect");
-        names.insert("QPoint");
-        names.insert("QSize");
-        names.insert("QString");
-        names.insert("QColor");
-        names.insert("QFont");
-
-        foreach (QString name, names)
-        {
-            qtnPropertyNames.insert(name + "Callback");
-        }
-
-        qtnPropertyNames += names;
-    }
-
-    return qtnPropertyNames.contains(type);
-}
-*/
-
-static QString decorateStr(QString str, QString prefix, QString postfix = QString())
-{
-    if (str.isEmpty())
-        return str;
-
-    return prefix + str + postfix;
-}
 
 // special values that initialized in constructor
 static Exceptions createSetExceptions()
@@ -77,16 +35,31 @@ static Exceptions setExceptions = createSetExceptions();
 static Signatures createSlotSignatures()
 {
     Signatures _slots;
-    _slots.insert("propertyWillChange",   "const QtnPropertyBase* changedProperty, "
+    _slots.insert("propertyWillChange",  {"const QtnPropertyBase* changedProperty, "
                                           "const QtnPropertyBase* firedProperty, "
                                           "QtnPropertyChangeReason reason, "
-                                          "QtnPropertyValuePtr newValue");
-    _slots.insert("propertyDidChange",      "const QtnPropertyBase* changedProperty, "
-                                            "const QtnPropertyBase* firedProperty, "
-                                            "QtnPropertyChangeReason reason");
-    _slots.insert("propertyValueAccept",  "const QtnProperty *property, "
+                                          "QtnPropertyValuePtr newValue",
+
+                                          "Q_UNUSED(changedProperty); "
+                                          "Q_UNUSED(firedProperty); "
+                                          "Q_UNUSED(reason); "
+                                          "Q_UNUSED(newValue);"});
+
+    _slots.insert("propertyDidChange",   {"const QtnPropertyBase* changedProperty, "
+                                          "const QtnPropertyBase* firedProperty, "
+                                          "QtnPropertyChangeReason reason",
+
+                                          "Q_UNUSED(changedProperty); "
+                                          "Q_UNUSED(firedProperty); "
+                                          "Q_UNUSED(reason);"});
+
+    _slots.insert("propertyValueAccept", {"const QtnProperty *property, "
                                           "QtnPropertyValuePtr valueToAccept, "
-                                          "bool* accept");
+                                          "bool* accept",
+
+                                          "Q_UNUSED(property); "
+                                          "Q_UNUSED(valueToAccept); "
+                                          "Q_UNUSED(accept);"});
     return _slots;
 }
 static Signatures slotsSignatures = createSlotSignatures();
@@ -97,7 +70,16 @@ static QString slotSignature(const QString& name)
     if (it == slotsSignatures.end())
         peg.fatalError("Cannot recognize slot " + name);
 
-    return it.value();
+    return it.value().arguments;
+}
+
+static QString slotUnusedCode(const QString& name)
+{
+    auto it = slotsSignatures.find(name);
+    if (it == slotsSignatures.end())
+        peg.fatalError("Cannot recognize slot " + name);
+
+    return it.value().unusedCode;
 }
 
 static QString valueByName(const Assignments& assignments,
@@ -348,6 +330,7 @@ void PropertySetCode::generateCppFile(TextStreamIndent& s) const
     s.newLine() << QString("%1& %1::operator=(const %1& other)").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
+        s.newLine() << "Q_UNUSED(other);" << endl;
         generateChildrenCopy(s);
         s << endl;
         s.newLine() << "return *this;";
@@ -377,6 +360,7 @@ void PropertySetCode::generateCppFile(TextStreamIndent& s) const
     s.newLine() << QString("bool %1::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)").arg(selfType);
     s.newLine() << "{";
     s.addIndent();
+        s.newLine() << "Q_UNUSED(ignoreMask);" << endl;
         generateCopyValues(s);
     s.delIndent();
     s.newLine() << "}";
@@ -444,8 +428,8 @@ void PropertySetCode::generateChildrenInitialization(TextStreamIndent& s) const
     for (auto it = members.cbegin(); it != members.cend(); ++it)
     {
         const PropertySetMemberCode &p = **it;
-        s.newLine() << ", " << p.name << "(*new " << p.selfType
-                    << "(this))";
+        s.newLine() << ", " << p.name << "(*qtnCreateProperty<" << p.selfType
+                    << ">(this))";
     }
 }
 
@@ -501,7 +485,7 @@ void PropertySetCode::generateSlotsDeclaration(TextStreamIndent& s) const
     s.pushWrapperLines("// start slot declarations", "// end slot declarations");
     for (auto it = slots_code.begin(); it != slots_code.end(); ++it)
     {
-        s.newLine() << QString("void %1(%2);").arg(slotName(it.key(), &it.value().member, 0)
+        s.newLine() << QString("void %1(%2);").arg(slotName(it.key(), &it.value().member, nullptr)
                                                    , slotSignature(it.key()));
     }
 
@@ -525,10 +509,11 @@ void PropertySetCode::generateSlotsImplementation(TextStreamIndent& s) const
     {
         s << endl;
         s.newLine() << QString("void %1::%2(%3)").arg(selfType
-                                                      , slotName(it.key(), &it.value().member, 0)
+                                                      , slotName(it.key(), &it.value().member, nullptr)
                                                       , slotSignature(it.key()));
         s.newLine() << "{";
         s.addIndent();
+            s.newLine() << slotUnusedCode(it.key());
             s.newLine() << it.value().value;
         s.delIndent();
         s.newLine() << "}";
@@ -547,6 +532,7 @@ void PropertySetCode::generateSlotsImplementation(TextStreamIndent& s) const
                                                           , slotSignature(jt.key()));
             s.newLine() << "{";
             s.addIndent();
+                s.newLine() << slotUnusedCode(jt.key());
                 s.newLine() << jt.value().value;
             s.delIndent();
             s.newLine() << "}";
@@ -578,7 +564,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent& s) const
 {
     if (!delegateInfo.isNull())
     {
-        s.newLine() << QString("setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {");
+        s.newLine() << QString("setDelegateCallback([] () -> QtnPropertyDelegateInfo * {");
         s.addIndent();
             delegateInfo->generateCode(s);
         s.delIndent();
@@ -589,7 +575,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent& s) const
     {
         if (!p->delegateInfo.isNull())
         {
-            s.newLine() << QString("%1.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {").arg(p->name);
+            s.newLine() << QString("%1.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {").arg(p->name);
             s.addIndent();
                 p->delegateInfo->generateCode(s);
             s.delIndent();
@@ -664,7 +650,7 @@ void PropertySetCode::generateSlotsConnections(TextStreamIndent& s, const QStrin
                                 , slotMember(it.value().member)
                                 , it.key()
                                 , selfType
-                                , slotName(it.key(), &it.value().member, 0));
+                                , slotName(it.key(), &it.value().member, nullptr));
     }
 
     for (auto it = members.begin(); it != members.end(); ++it)
@@ -714,7 +700,7 @@ void EnumCode::generateHFile(TextStreamIndent& s) const
             s.newLine() << "enum Enum";
             s.newLine() << "{";
             s.addIndent();
-                for (size_t i = 0, n = items.size(); i < n; ++i)
+                for (int i = 0, n = items.size(); i < n; ++i)
                 {
                     const EnumItemCode& enumItem = items[i];
                     s.newLine() << QString("%1 = %2").arg(enumItem.name).arg(enumItem.id);
@@ -743,7 +729,7 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
             if (!enumItem.states.isEmpty())
             {
                 states += ", ";
-                for (size_t i = 0, n = enumItem.states.size(); i < n; ++i)
+                for (int i = 0, n = enumItem.states.size(); i < n; ++i)
                 {
                     const QString& state = enumItem.states[i];
                     if (i != 0)
@@ -752,7 +738,7 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
                     states += capitalize(state);
                 }
             }
-            s.newLine() << QString("staticValues.append(QtnEnumValueInfo(%1::%2, %3%4));").arg(
+            s.newLine() << QString("staticValues.append(QtnEnumValueInfo(%1::%2, \"%2\", %3%4));").arg(
                                name
                                , enumItem.name
                                , enumItem.text
@@ -774,8 +760,8 @@ void EnumCode::generateCppFile(TextStreamIndent& s) const
 }
 
 PegContext::PegContext()
-    : currPropertySet(0),
-      currProperty(0)
+    : currPropertySet(nullptr),
+      currProperty(nullptr)
 {}
 
 PropertySetMemberCode *PegContext::current()
@@ -848,7 +834,7 @@ void PegContext::commitPropertySet()
     {
         peg.code.append(propertySet);
         propertySet.reset();
-        currPropertySet = 0;
+        currPropertySet = nullptr;
     }
     else
     {
@@ -865,7 +851,7 @@ void PegContext::startProperty()
 
 void PegContext::commitProperty()
 {
-    currProperty = 0;
+    currProperty = nullptr;
 }
 
 bool PegContext::checkSlotName(const QString& name)

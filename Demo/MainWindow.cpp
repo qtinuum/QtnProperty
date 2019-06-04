@@ -3,9 +3,13 @@
 #include "mydialog.h"
 #include <QMessageBox>
 #include <QDesktopWidget>
+#include <QInputDialog>
 
 #include "QObjectPropertySet.h"
 #include "Demo.peg.h"
+
+// this is required for QStringCallbackProperty delegate parameters
+#include "Delegates/Core/PropertyDelegateQString.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,7 +19,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->pw->setParts(QtnPropertyWidgetPartsDescriptionPanel);
 
-    QtnPropertySet* ps = new QtnPropertySetSamplePS(this);
+    auto ps = new QtnPropertySetSamplePS(this);
+
+    ps->LayerProperty.setLayers({{"Top", Qt::red, 0}, {"Left", Qt::blue, 1}, {"Right", Qt::green, 2}, {"Bottom", Qt::gray, 3}});
+
+    ps->QStringCallbackProperty.setDelegate({"Callback"});
+    QVariant attr;
+    attr.setValue(qtnMemFn(this, &MainWindow::getCandidates));
+    ps->QStringCallbackProperty.setDelegateAttribute("GetCandidatesFn", attr);
+    attr.setValue(qtnMemFn(this, &MainWindow::createCandidate));
+    ps->QStringCallbackProperty.setDelegateAttribute("CreateCandidateFn", attr);
+    ps->QStringCallbackProperty.setDelegateAttribute("CreateCandidateLabel", "<add item...>");
+
     ui->pw->setPropertySet(ps);
 
     qtnScriptRegisterPropertyTypes(&jsEngine);
@@ -115,3 +130,21 @@ void MainWindow::on_pushButton_2_clicked()
     MyDialog dlg(this, properties);
     dlg.exec();
 }
+
+QString MainWindow::createCandidate(QWidget* parent)
+{
+    bool ok;
+    QString text = QInputDialog::getText(parent, "Create item", "Name:", QLineEdit::Normal, "new", &ok);
+    if (ok && !text.isEmpty())
+    {
+        if (m_candidates.indexOf(text) < 0)
+            m_candidates.append(text);
+        else
+            QMessageBox::warning(parent, "Create item", "Cannot create duplicate.");
+
+        return  text;
+    }
+
+    return {};
+}
+

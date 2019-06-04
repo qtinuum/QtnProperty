@@ -3,6 +3,10 @@
 
 #include "../Core/PropertyCore.h"
 #include "../Core/PropertyGUI.h"
+#include "AB/PropertyABColor.h"
+#include "Layer/PropertyLayer.h"
+#include "PenWidth/PropertyPenWidth.h"
+#include "Freq/PropertyFreq.h"
 
 class COLOR
 {
@@ -83,9 +87,15 @@ public:
     
     // start children declarations
     QtnPropertyBool& BoolProperty;
+    QtnPropertyButton& ButtonProperty;
+    QtnPropertyButton& ButtonLinkProperty;
+    QtnPropertyABColor& RGBColor;
+    QtnPropertyQColor& ColorSolidDelegate;
+    QtnPropertyFloat& FloatPropertySliderBox;
     QtnPropertyDouble& DoubleProperty;
     QtnPropertyFloat& FloatProperty;
     QtnPropertyInt& IntProperty;
+    QtnPropertyInt& IntPropertyComboBox;
     QtnPropertyUInt& UIntProperty;
     QtnPropertyEnum& EnumProperty;
     QtnPropertyEnumFlags& EnumFlagsProperty;
@@ -95,8 +105,18 @@ public:
     QtnPropertyQPoint& QPointProperty;
     QtnPropertyQSize& QSizeProperty;
     QtnPropertyQRect& QRectProperty;
+    QtnPropertyQPointF& QPointFProperty;
+    QtnPropertyQSizeF& QSizeFProperty;
+    QtnPropertyQRectF& QRectFProperty;
     QtnPropertyQColor& QColorProperty;
     QtnPropertyQFont& QFontProperty;
+    QtnPropertyFreq& FreqProperty;
+    QtnPropertyLayer& LayerProperty;
+    QtnPropertyQBrushStyle& BrushStyleProperty;
+    QtnPropertyPenWidth& PenWidthProperty;
+    QtnPropertyQPenStyle& PenStyleProperty;
+    QtnPropertyQPen& PenProperty;
+    QtnPropertyQString& QStringCallbackProperty;
     QtnPropertySetSubPropertySetType& SubPropertySet2;
     // end children declarations
 
@@ -115,6 +135,7 @@ private:
     
     // start slot declarations
     void on_EnableSubPropertySet_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+    void on_QColorProperty_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
     // end slot declarations
 };
 

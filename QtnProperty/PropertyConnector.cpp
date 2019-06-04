@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,32 +62,23 @@ bool QtnPropertyConnector::isResettablePropertyValue() const
 	return metaProperty.isResettable();
 }
 
-void QtnPropertyConnector::resetPropertyValue(bool edit)
+void QtnPropertyConnector::resetPropertyValue(QtnPropertyChangeReason reason)
 {
-	if (nullptr != object && metaProperty.isResettable())
+	if (nullptr != object && nullptr != property && metaProperty.isResettable())
 	{
-		auto property = qobject_cast<QtnPropertyBase *>(parent());
-		Q_ASSERT(nullptr != property);
-
-		if (property->isWritable())
+		if (property->isResettable())
 		{
-			QtnPropertyChangeReason reasons = QtnPropertyChangeReasonNewValue |
-				QtnPropertyChangeReasonResetValue;
+			reason |= QtnPropertyChangeReasonResetValue;
 
-			if (edit)
-				reasons |= QtnPropertyChangeReasonEditValue;
-
-			emit property->propertyWillChange(reasons, nullptr, 0);
+			emit property->propertyWillChange(reason, nullptr, 0);
 			metaProperty.reset(object);
-			emit property->propertyDidChange(reasons);
+			emit property->propertyDidChange(reason);
 		}
 	}
 }
 
 void QtnPropertyConnector::onValueChanged()
 {
-	auto property = qobject_cast<QtnPropertyBase *>(parent());
-
 	if (nullptr != property)
 	{
 		property->postUpdateEvent(QtnPropertyChangeReasonNewValue, 20);
@@ -96,23 +87,18 @@ void QtnPropertyConnector::onValueChanged()
 
 void QtnPropertyConnector::onModifiedSetChanged()
 {
-	auto property = qobject_cast<QtnPropertyBase *>(parent());
-
 	if (nullptr != property)
 	{
-		QtnPropertyState state;
-
 		auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
 
-		if (nullptr != stateProvider)
-			state = stateProvider->getPropertyState(metaProperty);
+		if (nullptr == stateProvider)
+			return;
 
-		if (property->isCollapsed())
-			state |= QtnPropertyStateCollapsed;
-		else
-			state &= ~QtnPropertyStateCollapsed;
-
+		QtnPropertyState state;
+		state = stateProvider->getPropertyState(metaProperty);
 		state |= qtnPropertyStateToAdd(metaProperty);
+		state.setFlag(QtnPropertyStateCollapsed, property->isCollapsed());
+		state.setFlag(QtnPropertyStateResettable, metaProperty.isResettable());
 
 		property->setState(state);
 	}

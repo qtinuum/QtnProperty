@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,11 +19,8 @@ limitations under the License.
 #define QTN_PROPERTYWIDGET_H
 
 #include "CoreAPI.h"
-#include "PropertyView.h"
 
 #include <QWidget>
-#include <QVBoxLayout>
-#include <QLabel>
 
 enum QtnPropertyWidgetPartsFlag
 {
@@ -31,6 +28,12 @@ enum QtnPropertyWidgetPartsFlag
 	QtnPropertyWidgetPartsToolbar = 0x0001,
 	QtnPropertyWidgetPartsDescriptionPanel = 0x0002
 };
+
+class QtnPropertyView;
+class QtnPropertySet;
+class QtnPropertyBase;
+class QVBoxLayout;
+class QLabel;
 
 Q_DECLARE_FLAGS(QtnPropertyWidgetParts, QtnPropertyWidgetPartsFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyWidgetParts)
@@ -42,14 +45,13 @@ class QTN_IMPORT_EXPORT QtnPropertyWidget : public QWidget
 
 public:
 	explicit QtnPropertyWidget(QWidget *parent = 0);
-	virtual ~QtnPropertyWidget();
 
 	inline QtnPropertyWidgetParts parts() const;
 	void setParts(QtnPropertyWidgetParts newParts);
 
-	inline const QtnPropertySet *propertySet() const;
-	inline QtnPropertySet *propertySet();
-	inline void setPropertySet(QtnPropertySet *newPropertySet);
+	const QtnPropertySet *propertySet() const;
+	QtnPropertySet *propertySet();
+	void setPropertySet(QtnPropertySet *newPropertySet);
 
 	inline QtnPropertyView *propertyView() const;
 
@@ -70,21 +72,6 @@ private:
 QtnPropertyWidgetParts QtnPropertyWidget::parts() const
 {
 	return m_parts;
-}
-
-const QtnPropertySet *QtnPropertyWidget::propertySet() const
-{
-	return m_propertyView->propertySet();
-}
-
-QtnPropertySet *QtnPropertyWidget::propertySet()
-{
-	return m_propertyView->propertySet();
-}
-
-void QtnPropertyWidget::setPropertySet(QtnPropertySet *newPropertySet)
-{
-	m_propertyView->setPropertySet(newPropertySet);
 }
 
 QtnPropertyView *QtnPropertyWidget::propertyView() const

@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ limitations under the License.
 #include "QObjectPropertySet.h"
 
 #include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorAux.h"
-#include "Delegates/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyEditorAux.h"
+#include "Delegates/Utils/PropertyEditorHandler.h"
 #include "Utils/QtnInt64SpinBox.h"
 #include "MultiProperty.h"
 #include "PropertyDelegateAttrs.h"
@@ -33,7 +33,7 @@ class QtnPropertyInt64SpinBoxHandler
 {
 public:
 	QtnPropertyInt64SpinBoxHandler(
-		QtnPropertyInt64Base &property, QtnInt64SpinBox &editor);
+		QtnPropertyDelegate *delegate, QtnInt64SpinBox &editor);
 
 private:
 	virtual void updateEditor() override;
@@ -44,20 +44,16 @@ QtnPropertyInt64Base::QtnPropertyInt64Base(QObject *parent)
 {
 }
 
-bool QtnPropertyInt64Base::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyInt64Base::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	bool ok = false;
 	ValueType value = str.toLongLong(&ok);
 
 	if (!ok)
-	{
-		value = QLocale().toLongLong(str, &ok);
+		return false;
 
-		if (!ok)
-			return false;
-	}
-
-	return setValue(value, edit);
+	return setValue(value, reason);
 }
 
 bool QtnPropertyInt64Base::toStrImpl(QString &str) const
@@ -66,7 +62,8 @@ bool QtnPropertyInt64Base::toStrImpl(QString &str) const
 	return true;
 }
 
-bool QtnPropertyInt64Base::fromVariantImpl(const QVariant &var, bool edit)
+bool QtnPropertyInt64Base::fromVariantImpl(
+	const QVariant &var, QtnPropertyChangeReason reason)
 {
 	bool ok = false;
 	ValueType value = var.toLongLong(&ok);
@@ -74,21 +71,17 @@ bool QtnPropertyInt64Base::fromVariantImpl(const QVariant &var, bool edit)
 	if (!ok)
 		return false;
 
-	return setValue(value, edit);
+	return setValue(value, reason);
 }
 
 QtnPropertyInt64::QtnPropertyInt64(QObject *parent)
-	: QtnSinglePropertyValue<QtnPropertyInt64Base>(parent)
+	: QtnNumericPropertyValue<QtnPropertyInt64Base>(parent)
 {
 }
 
-bool QtnPropertyInt64::Register()
+void QtnPropertyDelegateInt64::Register(QtnPropertyDelegateFactory &factory)
 {
-	qtnRegisterMetaPropertyFactory(
-		QVariant::LongLong, qtnCreateFactory<QtnPropertyInt64Callback>());
-
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyInt64Base::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyInt64Base::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateInt64, QtnPropertyInt64Base>,
 		qtnSpinBoxDelegate());
 }
@@ -112,26 +105,26 @@ QWidget *QtnPropertyDelegateInt64::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnInt64SpinBox(parent);
-	spinBox->setSuffix(suffix);
+	spinBox->setSuffix(m_suffix);
 	spinBox->setGeometry(rect);
 
-	new QtnPropertyInt64SpinBoxHandler(owner(), *spinBox);
+	new QtnPropertyInt64SpinBoxHandler(this, *spinBox);
 
 	spinBox->selectAll();
 
-	if (owner().isEditableByUser())
+	if (stateProperty()->isEditableByUser())
 		qtnInitNumEdit(spinBox, inplaceInfo, NUM_SIGNED_INT);
 
 	return spinBox;
 }
 
 void QtnPropertyDelegateInt64::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	qtnGetAttribute(attributes, qtnSuffixAttr(), suffix);
+	info.loadAttribute(qtnSuffixAttr(), m_suffix);
 }
 
-bool QtnPropertyDelegateInt64::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateInt64::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 	strValue = QLocale().toString(value);
@@ -144,14 +137,15 @@ QtnPropertyInt64Callback::QtnPropertyInt64Callback(QObject *parent)
 }
 
 QtnPropertyInt64SpinBoxHandler::QtnPropertyInt64SpinBoxHandler(
-	QtnPropertyInt64Base &property, QtnInt64SpinBox &editor)
-	: QtnPropertyEditorHandlerVT(property, editor)
+	QtnPropertyDelegate *delegate, QtnInt64SpinBox &editor)
+	: QtnPropertyEditorHandlerVT(delegate, editor)
 {
-	if (!property.isEditableByUser())
+	if (!stateProperty()->isEditableByUser())
 		editor.setReadOnly(true);
 
-	editor.setRange(property.minValue(), property.maxValue());
-	editor.setSingleStep(property.stepValue());
+	auto &p = property();
+	editor.setRange(p.minValue(), p.maxValue());
+	editor.setSingleStep(p.stepValue());
 
 	updateEditor();
 
@@ -167,7 +161,7 @@ void QtnPropertyInt64SpinBoxHandler::updateEditor()
 {
 	updating++;
 
-	if (property().valueIsHidden())
+	if (stateProperty()->isMultiValue())
 	{
 		editor().setValue(editor().minimum());
 		editor().setSpecialValueText(

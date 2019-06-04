@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -33,11 +33,9 @@ public:
 
 protected:
 	// string conversion implementation
-	bool fromStrImpl(const QString &str, bool edit) override;
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	bool toStrImpl(QString &str) const override;
-
-	// variant conversion implementation
-	bool fromVariantImpl(const QVariant &var, bool edit) override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyDoubleBase)
 };
@@ -61,7 +59,7 @@ public:
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDouble
-	: public QtnSinglePropertyValue<QtnPropertyDoubleBase>
+	: public QtnNumericPropertyValue<QtnPropertyDoubleBase>
 {
 	Q_OBJECT
 

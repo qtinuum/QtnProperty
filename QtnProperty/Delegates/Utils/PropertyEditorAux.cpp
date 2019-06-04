@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyEditorAux.h"
-#include "PropertyDelegate.h"
+#include "Delegates/PropertyDelegate.h"
+#include "PropertyDelegateMisc.h"
 #include "MultiProperty.h"
 
 #include <QHBoxLayout>
@@ -44,9 +45,9 @@ QtnLineEditBttn::QtnLineEditBttn(QWidget *parent)
 }
 
 void QtnLineEditBttn::setTextForProperty(
-	QtnProperty *property, const QString &text)
+	QtnPropertyBase *property, const QString &text)
 {
-	if (property->valueIsHidden())
+	if (property->isMultiValue())
 	{
 		lineEdit->clear();
 		lineEdit->setPlaceholderText(
@@ -120,7 +121,7 @@ bool qtnAcceptForNumEdit(QKeyEvent *keyEvent, QtnNumType type)
 				}
 				// fall through
 			case NUM_UNSIGNED_INT:
-				if (c.isNumber())
+				if (c.isDigit())
 				{
 					return true;
 				}
@@ -147,4 +148,36 @@ void qtnInitNumEdit(
 			QCoreApplication::postEvent(numEdit, keyEvent);
 		}
 	}
+}
+
+QtnPropertyComboBox::QtnPropertyComboBox(
+	QtnPropertyDelegate *delegate, QWidget *parent)
+	: QComboBox(parent)
+	, m_delegate(delegate)
+{
+}
+
+void QtnPropertyComboBox::paintEvent(QPaintEvent *event)
+{
+	auto rect = event->rect();
+	QComboBox::paintEvent(event);
+
+	if (currentIndex() < 0)
+		return;
+
+	QPainter painter(this);
+	if (stateProperty()->isMultiValue())
+	{
+		painter.setPen(Qt::darkGray);
+		qtnDrawValueText(
+			QtnMultiProperty::getMultiValuePlaceholder(), painter, rect);
+	} else
+	{
+		customPaint(painter, rect);
+	}
+}
+
+void QtnPropertyComboBox::customPaint(QPainter &, const QRect &)
+{
+	// do nothing
 }

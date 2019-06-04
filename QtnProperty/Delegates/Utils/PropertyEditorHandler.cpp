@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,18 +24,29 @@ limitations under the License.
 #include <QDialog>
 
 QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(
-	QtnProperty &property, QWidget &editor)
+	QtnPropertyDelegate *delegate, QWidget &editor)
 	: QObject(&editor)
-	, m_property(&property)
-	, m_editor(&editor)
 	, reverted(false)
 	, returned(false)
+	, m_delegate(delegate)
+	, m_editor(&editor)
 {
-	QObject::connect(m_property, &QtnPropertyBase::propertyDidChange, this,
+	Q_ASSERT(delegate);
+	auto property = delegate->property();
+	Q_ASSERT(property);
+	QObject::connect(property, &QtnPropertyBase::propertyDidChange, this,
 		&QtnPropertyEditorHandlerBase::onPropertyDidChange,
 		Qt::QueuedConnection);
-	QObject::connect(m_property, &QObject::destroyed, this,
+	QObject::connect(property, &QObject::destroyed, this,
 		&QtnPropertyEditorHandlerBase::onPropertyDestroyed);
+
+	auto stateProperty = delegate->stateProperty();
+	if (stateProperty != property)
+	{
+		QObject::connect(stateProperty, &QtnPropertyBase::propertyDidChange,
+			this, &QtnPropertyEditorHandlerBase::onPropertyDidChange,
+			Qt::QueuedConnection);
+	}
 }
 
 void QtnPropertyEditorHandlerBase::revertInput()
@@ -79,8 +90,8 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 
 bool QtnPropertyEditorHandlerBase::canApply() const
 {
-	if (nullptr != m_property)
-		return (!reverted && (returned || !m_property->valueIsHidden()));
+	if (nullptr != stateProperty())
+		return (!reverted && (returned || !stateProperty()->isMultiValue()));
 
 	return false;
 }
@@ -115,7 +126,7 @@ void QtnPropertyEditorHandlerBase::connectDialog(
 
 void QtnPropertyEditorHandlerBase::onPropertyDestroyed()
 {
-	m_property = nullptr;
+	m_delegate = nullptr;
 	qtnStopInplaceEdit();
 }
 
@@ -124,7 +135,7 @@ void QtnPropertyEditorHandlerBase::onPropertyDidChange(
 {
 	if (reason & (QtnPropertyChangeReasonValue | QtnPropertyChangeReasonState))
 	{
-		if (nullptr != m_property && m_property == sender())
+		if (propertyBase() == sender() || stateProperty() == sender())
 			updateEditor();
 	}
 }

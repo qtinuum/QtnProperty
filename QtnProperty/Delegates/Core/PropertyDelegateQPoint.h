@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ limitations under the License.
 #ifndef PROPERTY_DELEGATE_QPOINT_H
 #define PROPERTY_DELEGATE_QPOINT_H
 
-#include "QtnProperty/Delegates/PropertyDelegate.h"
+#include "QtnProperty/Delegates/Utils/PropertyDelegateMisc.h"
+#include "QtnProperty/Core/PropertyQPoint.h"
 
 class QtnPropertyQPointBase;
 
@@ -27,21 +28,21 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQPoint
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQPoint)
 
-	QString mSuffix;
+	QString m_suffix;
 
 public:
 	QtnPropertyDelegateQPoint(QtnPropertyQPointBase &owner);
 
-	static bool Register();
+	static void Register(QtnPropertyDelegateFactory &factory);
 
 protected:
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
+		const QtnPropertyDelegateInfo &info) override;
 
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 };
 
 #endif // PROPERTY_DELEGATE_QPOINT_H

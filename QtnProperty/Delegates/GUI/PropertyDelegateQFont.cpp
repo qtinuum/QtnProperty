@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,28 +16,30 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQFont.h"
-#include "GUI/PropertyQFont.h"
 #include "Core/PropertyQString.h"
 #include "Core/PropertyInt.h"
 #include "Core/PropertyBool.h"
 #include "Core/PropertyEnum.h"
 #include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorHandler.h"
-#include "Delegates/PropertyEditorAux.h"
+#include "Delegates/Utils/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyEditorAux.h"
 #include "PropertySet.h"
 #include "PropertyDelegateAttrs.h"
 
 #include <QFontDialog>
 #include <QFontDatabase>
 
-#include <memory>
+QByteArray qtnSelectFontDelegate()
+{
+	return QByteArrayLiteral("SelectFont");
+}
 
 class QtnPropertyQFontLineEditBttnHandler
 	: public QtnPropertyEditorBttnHandler<QtnPropertyQFontBase, QtnLineEditBttn>
 {
 public:
 	QtnPropertyQFontLineEditBttnHandler(
-		QtnPropertyQFontBase &property, QtnLineEditBttn &editor);
+		QtnPropertyDelegate *delegate, QtnLineEditBttn &editor);
 
 protected:
 	virtual void onToolButtonClick() override;
@@ -49,22 +51,21 @@ private:
 
 static const QtnEnumInfo *styleStrategyEnum()
 {
-	static std::unique_ptr<QtnEnumInfo> enumInfo;
+	static QScopedPointer<QtnEnumInfo> enumInfo;
 
 	if (nullptr == enumInfo)
 	{
 		QVector<QtnEnumValueInfo> items;
-		items.append(QtnEnumValueInfo(
-			QFont::PreferDefault, QtnPropertyQFont::getPreferDefaultStr()));
-		items.append(QtnEnumValueInfo(
-			QFont::NoAntialias, QtnPropertyQFont::getNoAntialiasStr()));
-		items.append(QtnEnumValueInfo(
-			QFont::PreferAntialias, QtnPropertyQFont::getPreferAntialiasStr()));
-		enumInfo.reset(
-			new QtnEnumInfo(QStringLiteral("FontStyleStrategy"), items));
+		items.append(QtnEnumValueInfo(QFont::PreferDefault, "PreferDefault",
+			QtnPropertyQFont::getPreferDefaultStr()));
+		items.append(QtnEnumValueInfo(QFont::NoAntialias, "NoAntialias",
+			QtnPropertyQFont::getNoAntialiasStr()));
+		items.append(QtnEnumValueInfo(QFont::PreferAntialias, "PreferAntialias",
+			QtnPropertyQFont::getPreferAntialiasStr()));
+		enumInfo.reset(new QtnEnumInfo("FontStyleStrategy", items));
 	}
 
-	return enumInfo.get();
+	return enumInfo.data();
 }
 
 enum
@@ -75,19 +76,19 @@ enum
 
 static const QtnEnumInfo *sizeUnitEnum()
 {
-	static std::unique_ptr<QtnEnumInfo> enumInfo;
+	static QScopedPointer<QtnEnumInfo> enumInfo;
 
 	if (nullptr == enumInfo)
 	{
 		QVector<QtnEnumValueInfo> items;
-		items.append(
-			QtnEnumValueInfo(SizeUnitPixel, QtnPropertyQFont::getPixelStr()));
-		items.append(
-			QtnEnumValueInfo(SizeUnitPoint, QtnPropertyQFont::getPointStr()));
-		enumInfo.reset(new QtnEnumInfo(QStringLiteral("FontSizeUnit"), items));
+		items.append(QtnEnumValueInfo(
+			SizeUnitPixel, "Pixel", QtnPropertyQFont::getPixelStr()));
+		items.append(QtnEnumValueInfo(
+			SizeUnitPoint, "Point", QtnPropertyQFont::getPointStr()));
+		enumInfo.reset(new QtnEnumInfo("FontSizeUnit", items));
 	}
 
-	return enumInfo.get();
+	return enumInfo.data();
 }
 
 static void applyFontStyle(QFont &font)
@@ -119,11 +120,12 @@ static void applyFontStyle(QFont &font)
 QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>(owner)
 {
-	auto propertyStyle = new QtnPropertyQStringCallback(0);
-	auto propertyFamily = new QtnPropertyQStringCallback(0);
+	auto propertyStyle = new QtnPropertyQStringCallback;
+	auto propertyFamily = new QtnPropertyQStringCallback;
 	addSubProperty(propertyFamily);
 
-	propertyFamily->setName(QtnPropertyQFont::getFamilyLabel());
+	propertyFamily->setName(QStringLiteral("family"));
+	propertyFamily->setDisplayName(QtnPropertyQFont::getFamilyLabel());
 	propertyFamily->setDescription(
 		QtnPropertyQFont::getFamilyDescription(owner.name()));
 	propertyFamily->setCallbackValueGet(
@@ -144,6 +146,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		propertyStyle->setDelegateInfo(delegate);
 
 		owner.postUpdateEvent(QtnPropertyChangeReasonChildren);
+#else
+		Q_UNUSED(propertyStyle);
 #endif
 	});
 
@@ -153,7 +157,8 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 	delegate.attributes[qtnItemsAttr()] = fDB.families();
 	propertyFamily->setDelegateInfo(delegate);
 
-	propertyStyle->setName(QtnPropertyQFont::getStyleLabel());
+	propertyStyle->setName(QStringLiteral("style"));
+	propertyStyle->setDisplayName(QtnPropertyQFont::getStyleLabel());
 	propertyStyle->setDescription(
 		QtnPropertyQFont::getStyleDescription(owner.name()));
 	propertyStyle->setCallbackValueGet(
@@ -178,9 +183,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 
 	addSubProperty(propertyStyle);
 
-	auto propertySize = new QtnPropertyIntCallback(0);
+	auto propertySize = new QtnPropertyIntCallback;
 	addSubProperty(propertySize);
-	propertySize->setName(QtnPropertyQFont::getSizeLabel());
+	propertySize->setName(QStringLiteral("size"));
+	propertySize->setDisplayName(QtnPropertyQFont::getSizeLabel());
 	propertySize->setDescription(
 		QtnPropertyQFont::getSizeDescription(owner.name()));
 	propertySize->setCallbackValueGet([&owner]() -> qint32 {
@@ -219,9 +225,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 	propertySize->setMinValue(1);
 	propertySize->setMaxValue(256);
 
-	QtnPropertyEnumCallback *propertySizeUnit = new QtnPropertyEnumCallback(0);
+	QtnPropertyEnumCallback *propertySizeUnit = new QtnPropertyEnumCallback;
 	addSubProperty(propertySizeUnit);
-	propertySizeUnit->setName(QtnPropertyQFont::getSizeUnitLabel());
+	propertySizeUnit->setName(QStringLiteral("sizeUnit"));
+	propertySizeUnit->setDisplayName(QtnPropertyQFont::getSizeUnitLabel());
 	propertySizeUnit->setDescription(
 		QtnPropertyQFont::getSizeUnitDescription(owner.name()));
 	propertySizeUnit->setEnumInfo(sizeUnitEnum());
@@ -260,9 +267,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		owner.setValue(font);
 	});
 
-	QtnPropertyBoolCallback *propertyBold = new QtnPropertyBoolCallback(0);
+	QtnPropertyBoolCallback *propertyBold = new QtnPropertyBoolCallback;
 	addSubProperty(propertyBold);
-	propertyBold->setName(QtnPropertyQFont::getBoldLabel());
+	propertyBold->setName(QStringLiteral("bold"));
+	propertyBold->setDisplayName(QtnPropertyQFont::getBoldLabel());
 	propertyBold->setDescription(
 		QtnPropertyQFont::getBoldDescription(owner.name()));
 	propertyBold->setCallbackValueGet(
@@ -298,9 +306,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		}
 	});
 
-	QtnPropertyBoolCallback *propertyItalic = new QtnPropertyBoolCallback(0);
+	QtnPropertyBoolCallback *propertyItalic = new QtnPropertyBoolCallback;
 	addSubProperty(propertyItalic);
-	propertyItalic->setName(QtnPropertyQFont::getItalicLabel());
+	propertyItalic->setName(QStringLiteral("italic"));
+	propertyItalic->setDisplayName(QtnPropertyQFont::getItalicLabel());
 	propertyItalic->setDescription(
 		QtnPropertyQFont::getItalicDescription(owner.name()));
 	propertyItalic->setCallbackValueGet(
@@ -336,9 +345,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		}
 	});
 
-	QtnPropertyBoolCallback *propertyUnderline = new QtnPropertyBoolCallback(0);
+	QtnPropertyBoolCallback *propertyUnderline = new QtnPropertyBoolCallback;
 	addSubProperty(propertyUnderline);
-	propertyUnderline->setName(QtnPropertyQFont::getUnderlineLabel());
+	propertyUnderline->setName(QStringLiteral("underline"));
+	propertyUnderline->setDisplayName(QtnPropertyQFont::getUnderlineLabel());
 	propertyUnderline->setDescription(
 		QtnPropertyQFont::getUnderlineDescription(owner.name()));
 	propertyUnderline->setCallbackValueGet(
@@ -349,9 +359,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		owner.setValue(font);
 	});
 
-	QtnPropertyBoolCallback *propertyStrikeout = new QtnPropertyBoolCallback(0);
+	QtnPropertyBoolCallback *propertyStrikeout = new QtnPropertyBoolCallback;
 	addSubProperty(propertyStrikeout);
-	propertyStrikeout->setName(QtnPropertyQFont::getStrikeoutLabel());
+	propertyStrikeout->setName(QStringLiteral("strikeout"));
+	propertyStrikeout->setDisplayName(QtnPropertyQFont::getStrikeoutLabel());
 	propertyStrikeout->setDescription(
 		QtnPropertyQFont::getStrikeoutDescription(owner.name()));
 	propertyStrikeout->setCallbackValueGet(
@@ -362,9 +373,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		owner.setValue(font);
 	});
 
-	QtnPropertyBoolCallback *propertyKerning = new QtnPropertyBoolCallback(0);
+	QtnPropertyBoolCallback *propertyKerning = new QtnPropertyBoolCallback;
 	addSubProperty(propertyKerning);
-	propertyKerning->setName(QtnPropertyQFont::getKerningLabel());
+	propertyKerning->setName(QStringLiteral("kerning"));
+	propertyKerning->setDisplayName(QtnPropertyQFont::getKerningLabel());
 	propertyKerning->setDescription(
 		QtnPropertyQFont::getKerningDescription(owner.name()));
 	propertyKerning->setCallbackValueGet(
@@ -377,7 +389,9 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 
 	auto propertyAntialiasing = new QtnPropertyEnumCallback(0);
 	addSubProperty(propertyAntialiasing);
-	propertyAntialiasing->setName(QtnPropertyQFont::getAntialiasingLabel());
+	propertyAntialiasing->setName(QStringLiteral("antialiasing"));
+	propertyAntialiasing->setDisplayName(
+		QtnPropertyQFont::getAntialiasingLabel());
 	propertyAntialiasing->setDescription(
 		QtnPropertyQFont::getAntialiasingDescription(owner.name()));
 	propertyAntialiasing->setEnumInfo(styleStrategyEnum());
@@ -391,12 +405,11 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 	});
 }
 
-bool QtnPropertyDelegateQFont::Register()
+void QtnPropertyDelegateQFont::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQFontBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyQFontBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQFont, QtnPropertyQFontBase>,
-		qtnSelectEditDelegate());
+		qtnSelectFontDelegate());
 }
 
 QString QtnPropertyDelegateQFont::fontToStrWithFormat(
@@ -418,9 +431,15 @@ QString QtnPropertyDelegateQFont::fontToStr(const QFont &font)
 			QString(pixels ? "px" : "pt"));
 }
 
-void QtnPropertyDelegateQFont::drawValueImpl(QStylePainter &painter,
-	const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+void QtnPropertyDelegateQFont::drawValueImpl(
+	QStylePainter &painter, const QRect &rect) const
 {
+	if (stateProperty()->isMultiValue())
+	{
+		QtnPropertyDelegateTypedEx::drawValueImpl(painter, rect);
+		return;
+	}
+
 	QFont value = owner().value();
 
 	QRect textRect = rect;
@@ -443,7 +462,7 @@ void QtnPropertyDelegateQFont::drawValueImpl(QStylePainter &painter,
 	if (textRect.isValid())
 	{
 		QtnPropertyDelegateTypedEx<QtnPropertyQFontBase>::drawValueImpl(
-			painter, textRect, state, needTooltip);
+			painter, textRect);
 	}
 }
 
@@ -453,7 +472,7 @@ QWidget *QtnPropertyDelegateQFont::createValueEditorImpl(
 	QtnLineEditBttn *editor = new QtnLineEditBttn(parent);
 	editor->setGeometry(rect);
 
-	new QtnPropertyQFontLineEditBttnHandler(owner(), *editor);
+	new QtnPropertyQFontLineEditBttnHandler(this, *editor);
 
 	if (inplaceInfo)
 	{
@@ -463,19 +482,19 @@ QWidget *QtnPropertyDelegateQFont::createValueEditorImpl(
 	return editor;
 }
 
-bool QtnPropertyDelegateQFont::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateQFont::propertyValueToStrImpl(QString &strValue) const
 {
 	strValue = fontToStrWithFormat(owner().value());
 	return true;
 }
 
 QtnPropertyQFontLineEditBttnHandler::QtnPropertyQFontLineEditBttnHandler(
-	QtnPropertyQFontBase &property, QtnLineEditBttn &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
+	QtnPropertyDelegate *delegate, QtnLineEditBttn &editor)
+	: QtnPropertyEditorHandlerType(delegate, editor)
 {
 	editor.lineEdit->setReadOnly(true);
 
-	if (!property.isEditableByUser())
+	if (!stateProperty()->isEditableByUser())
 	{
 		editor.toolButton->setEnabled(false);
 	}
@@ -493,8 +512,8 @@ void QtnPropertyQFontLineEditBttnHandler::onToolButtonClick()
 
 void QtnPropertyQFontLineEditBttnHandler::updateEditor()
 {
-	editor().setTextForProperty(
-		&property(), QtnPropertyDelegateQFont::fontToStrWithFormat(property()));
+	editor().setTextForProperty(stateProperty(),
+		QtnPropertyDelegateQFont::fontToStrWithFormat(property()));
 	editor().lineEdit->selectAll();
 }
 
@@ -519,8 +538,8 @@ void QtnPropertyQFontLineEditBttnHandler::onToolButtonClicked(bool)
 
 		font.setStyleStrategy(styleStrategy);
 
-		if (property->edit(font))
-			emit property->propertyDidChange(QtnPropertyChangeReasonChildren);
+		property->setValue(
+			font, delegate()->editReason() | QtnPropertyChangeReasonChildren);
 	}
 
 	if (!destroyed)

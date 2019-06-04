@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ QtnAccessibilityProxy::QtnAccessibilityProxy(QtnPropertyView *owner)
 	, m_owner(owner)
 {
 }
-
-QtnAccessibilityProxy::~QtnAccessibilityProxy() {}
 
 QtnPropertyView *QtnAccessibilityProxy::owner()
 {
@@ -59,12 +57,7 @@ QtnPropertyBase *QtnAccessibilityProxy::findProperty(QString nameOrPath)
 
 QtnPropertyBase *QtnAccessibilityProxy::propertyUnderPoint(QPoint point)
 {
-	int index = m_owner->visibleItemIndexByPoint(point);
-
-	if (index < 0)
-		return nullptr;
-
-	return m_owner->m_visibleItems[index].item->property;
+	return m_owner->visiblePropertyAtPoint(point);
 }
 
 void QtnAccessibilityProxy::ensureVisibleProperty(QtnPropertyBase *property)
@@ -72,12 +65,18 @@ void QtnAccessibilityProxy::ensureVisibleProperty(QtnPropertyBase *property)
 	if (!property)
 		return;
 
-	auto propertySet = qobject_cast<QtnPropertySet *>(property->parent());
+	auto currentProperty = property;
 
-	while (propertySet)
+	while (true)
 	{
-		propertySet->removeState(QtnPropertyStateCollapsed);
-		propertySet = qobject_cast<QtnPropertySet *>(propertySet->parent());
+		QtnPropertyBase *propertyParent =
+			qobject_cast<QtnPropertySet *>(currentProperty->parent());
+		if (!propertyParent)
+			propertyParent = currentProperty->getMasterProperty();
+		if (!propertyParent)
+			break;
+		propertyParent->removeState(QtnPropertyStateCollapsed);
+		currentProperty = propertyParent;
 	}
 
 	m_owner->ensureVisible(property);
@@ -116,23 +115,7 @@ QRect QtnAccessibilityProxy::propertyValueRect(QtnPropertyBase *property)
 QRect QtnAccessibilityProxy::propertyActionRect(
 	QtnPropertyBase *property, int actionIndex)
 {
-	if (!property)
-		return QRect();
-
-	int index = m_owner->visibleItemIndexByProperty(property);
-
-	if (index < 0)
-		return QRect();
-
-	const auto &item = m_owner->m_visibleItems[index];
-
-	if (!item.actionsValid)
-		return QRect();
-
-	if (actionIndex < 0 || actionIndex >= item.actions.size())
-		return QRect();
-
-	return item.actions[actionIndex].rect;
+	return m_owner->propertyActionRect(property, actionIndex);
 }
 
 QString QtnAccessibilityProxy::propertyDelegateName(QtnPropertyBase *property)
@@ -140,13 +123,8 @@ QString QtnAccessibilityProxy::propertyDelegateName(QtnPropertyBase *property)
 	if (!property)
 		return QString();
 
-	auto theProperty = property->asProperty();
+	if (!property->delegateInfo())
+		return QString("<default>");
 
-	if (!theProperty)
-		return QString();
-
-	if (!theProperty->delegateInfo())
-		return QString("default");
-
-	return theProperty->delegateInfo()->name;
+	return property->delegateInfo()->name;
 }

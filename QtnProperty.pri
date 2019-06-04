@@ -5,15 +5,14 @@ isEmpty(QTNPROPERTY_LIB) {
 }
 
 macx {
-    DYNAMIC_LIBS.files += $$QTNPROPERTY_LIB/libQtnPropertyAC.1.dylib
+    DYNAMIC_LIBS.files += $$QTNPROPERTY_LIB/libQtnProperty.dylib
 }
 
 win32-msvc* {
-    PRE_TARGETDEPS += $$QTNPROPERTY_LIB/QtnPropertyAC.lib
+    PRE_TARGETDEPS += $$QTNPROPERTY_LIB/QtnProperty.lib
 }
 
 LIBS += -L$$QTNPROPERTY_LIB
-LIBS += -lQtnPropertyAC
+LIBS += -lQtnProperty
 
 INCLUDEPATH += $$QTNPROPERTY_PATH
-

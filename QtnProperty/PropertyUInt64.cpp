@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,32 +17,29 @@ limitations under the License.
 #include "PropertyUInt64.h"
 
 #include "QObjectPropertySet.h"
-#include "Delegates/PropertyEditorAux.h"
+#include "Delegates/Utils/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "PropertyDelegateAttrs.h"
 
 #include <QLocale>
 #include <QKeyEvent>
+#include <QLineEdit>
 
 QtnPropertyUInt64Base::QtnPropertyUInt64Base(QObject *parent)
 	: QtnNumericPropertyBase<QtnSinglePropertyBase<quint64>>(parent)
 {
 }
 
-bool QtnPropertyUInt64Base::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyUInt64Base::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	bool ok = false;
 	ValueType value = str.toULongLong(&ok);
 
 	if (!ok)
-	{
-		value = QLocale().toULongLong(str, &ok);
+		return false;
 
-		if (!ok)
-			return false;
-	}
-
-	return setValue(value, edit);
+	return setValue(value, reason);
 }
 
 bool QtnPropertyUInt64Base::toStrImpl(QString &str) const
@@ -51,7 +48,8 @@ bool QtnPropertyUInt64Base::toStrImpl(QString &str) const
 	return true;
 }
 
-bool QtnPropertyUInt64Base::fromVariantImpl(const QVariant &var, bool edit)
+bool QtnPropertyUInt64Base::fromVariantImpl(
+	const QVariant &var, QtnPropertyChangeReason reason)
 {
 	bool ok = false;
 	ValueType value = var.toULongLong(&ok);
@@ -59,7 +57,7 @@ bool QtnPropertyUInt64Base::fromVariantImpl(const QVariant &var, bool edit)
 	if (!ok)
 		return false;
 
-	return setValue(value, edit);
+	return setValue(value, reason);
 }
 
 QtnPropertyUInt64Callback::QtnPropertyUInt64Callback(QObject *parent)
@@ -68,17 +66,13 @@ QtnPropertyUInt64Callback::QtnPropertyUInt64Callback(QObject *parent)
 }
 
 QtnPropertyUInt64::QtnPropertyUInt64(QObject *parent)
-	: QtnSinglePropertyValue<QtnPropertyUInt64Base>(parent)
+	: QtnNumericPropertyValue<QtnPropertyUInt64Base>(parent)
 {
 }
 
-bool QtnPropertyUInt64::Register()
+void QtnPropertyDelegateUInt64::Register(QtnPropertyDelegateFactory &factory)
 {
-	qtnRegisterMetaPropertyFactory(
-		QVariant::ULongLong, qtnCreateFactory<QtnPropertyUInt64Callback>());
-
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyUInt64Base::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyUInt64Base::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateUInt64, QtnPropertyUInt64Base>,
 		qtnLineEditDelegate());
 }
@@ -133,19 +127,19 @@ QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	editor = createValueEditorLineEdit(
-		parent, rect, !owner().isEditableByUser(), inplaceInfo);
+		parent, rect, !stateProperty()->isEditableByUser(), inplaceInfo);
+
+	reverted = false;
+	applied = false;
 
 	editor->installEventFilter(this);
 	QObject::connect(editor, &QLineEdit::editingFinished, this,
 		&QtnPropertyDelegateUInt64::onEditingFinished);
 
-	QObject::connect(editor, &QObject::destroyed, this,
-		&QtnPropertyDelegateUInt64::onEditorDestroyed);
-
 	return editor;
 }
 
-bool QtnPropertyDelegateUInt64::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateUInt64::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 	strValue = QLocale().toString(value);
@@ -156,13 +150,13 @@ void QtnPropertyDelegateUInt64::onEditingFinished()
 {
 	bool ok = false;
 
-	if (!reverted && (applied || !owner().valueIsHidden()))
+	if (!reverted && (applied || !stateProperty()->isMultiValue()))
 	{
 		auto value = QLocale().toULongLong(editor->text(), &ok);
 		ok = ok && value >= owner().minValue() && value <= owner().maxValue();
 
 		if (ok)
-			owner().edit(value);
+			owner().setValue(value, editReason());
 	}
 
 	if (!ok)
@@ -172,19 +166,15 @@ void QtnPropertyDelegateUInt64::onEditingFinished()
 	applied = false;
 }
 
-void QtnPropertyDelegateUInt64::onEditorDestroyed()
-{
-	editor = nullptr;
-}
-
 void QtnPropertyDelegateUInt64::updateEditor()
 {
-	if (owner().valueIsHidden())
+	if (stateProperty()->isMultiValue())
+	{
 		editor->clear();
-	else
+	} else
 	{
 		QString str;
-		propertyValueToStr(str);
+		propertyValueToStrImpl(str);
 		str.remove(QLocale().groupSeparator());
 		editor->setText(str);
 

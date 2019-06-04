@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -176,7 +176,7 @@ bool VarProperty::SetIndex(int newIndex)
 		index = newIndex;
 
 		if (newIndex >= 0)
-			name = QString("[%1]").arg(QString::number(newIndex));
+			name = QStringLiteral("[%1]").arg(QString::number(newIndex));
 
 		return true;
 	}
@@ -399,6 +399,7 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set,
 
 	if (nullptr != prop)
 	{
+		set->addChildProperty(prop);
 		auto varprop =
 			new VarProperty(prop, VarProperty::Value, name, index, value);
 
@@ -474,11 +475,12 @@ bool VarProperty::PropertyValueAccept(
 	return false;
 }
 
-QtnPropertySet *VarProperty::NewExtraPropertySet(QObject *parent,
+QtnPropertySet *VarProperty::NewExtraPropertySet(QtnPropertySet *parent,
 	const QVariantMap &map, VarProperty *mapParent, const QString &name,
 	int index, const RegisterPropertyCallback &registerProperty)
 {
 	auto set = new QtnPropertySet(parent);
+	parent->addChildProperty(set);
 
 	auto varprop =
 		new VarProperty(set, VarProperty::Map, name, index, QVariant());
@@ -502,11 +504,12 @@ QtnPropertySet *VarProperty::NewExtraPropertySet(QObject *parent,
 	return set;
 }
 
-QtnPropertySet *VarProperty::NewExtraPropertyList(QObject *parent,
+QtnPropertySet *VarProperty::NewExtraPropertyList(QtnPropertySet *parent,
 	const QVariantList &list, VarProperty *mapParent, const QString &name,
 	int index, const RegisterPropertyCallback &registerProperty)
 {
 	auto set = new QtnPropertySet(parent);
+	parent->addChildProperty(set);
 
 	auto varprop =
 		new VarProperty(set, VarProperty::List, name, index, QVariant());

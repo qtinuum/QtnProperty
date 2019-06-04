@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ limitations under the License.
 #pragma once
 
 #include "Auxiliary/PropertyTemplates.h"
-#include "Delegates/PropertyDelegate.h"
+#include "Delegates/Utils/PropertyDelegateMisc.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyInt64Base
 	: public QtnNumericPropertyBase<QtnSinglePropertyBase<qint64>>
@@ -32,17 +32,19 @@ public:
 
 protected:
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString &str, bool edit) override;
+	virtual bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	virtual bool toStrImpl(QString &str) const override;
 
 	// variant conversion implementation
-	virtual bool fromVariantImpl(const QVariant &var, bool edit) override;
+	virtual bool fromVariantImpl(
+		const QVariant &var, QtnPropertyChangeReason reason) override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyInt64Base)
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyInt64
-	: public QtnSinglePropertyValue<QtnPropertyInt64Base>
+	: public QtnNumericPropertyValue<QtnPropertyInt64Base>
 {
 	Q_OBJECT
 
@@ -53,8 +55,6 @@ public:
 	explicit QtnPropertyInt64(QObject *parent);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyInt64, QtnPropertyInt64Base)
-
-	static bool Register();
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyInt64Base, qint64)
@@ -75,16 +75,17 @@ public:
 		QtnPropertyInt64Callback, QtnPropertyInt64Base)
 };
 
-class QLineEdit;
 class QTN_IMPORT_EXPORT QtnPropertyDelegateInt64
 	: public QtnPropertyDelegateTyped<QtnPropertyInt64Base>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateInt64)
 
-	QString suffix;
+	QString m_suffix;
 
 public:
 	QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner);
+
+	static void Register(QtnPropertyDelegateFactory &factory);
 
 protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(
@@ -94,7 +95,7 @@ protected:
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
+		const QtnPropertyDelegateInfo &info) override;
 
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 };

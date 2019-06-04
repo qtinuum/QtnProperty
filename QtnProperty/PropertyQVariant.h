@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ limitations under the License.
 #pragma once
 
 #include "Auxiliary/PropertyTemplates.h"
-#include "Delegates/PropertyDelegate.h"
+#include "Delegates/Utils/PropertyDelegateMisc.h"
 
 #include <QVariant>
 
@@ -34,9 +34,11 @@ public:
 	explicit QtnPropertyQVariantBase(QObject *parent);
 
 protected:
-	virtual bool fromStrImpl(const QString &str, bool edit) override;
+	virtual bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	virtual bool toStrImpl(QString &str) const override;
-	virtual bool fromVariantImpl(const QVariant &var, bool edit) override;
+	virtual bool fromVariantImpl(
+		const QVariant &var, QtnPropertyChangeReason reason) override;
 	virtual bool toVariantImpl(QVariant &var) const override;
 };
 
@@ -66,7 +68,6 @@ private:
 public:
 	explicit QtnPropertyQVariant(QObject *parent);
 
-	static bool Register();
 	static QString valueToString(const QVariant &value);
 	static bool variantIsObject(QVariant::Type type);
 	static QString getPlaceholderStr(QVariant::Type type);
@@ -82,6 +83,8 @@ public:
 
 	QtnPropertyDelegateQVariant(QtnPropertyQVariantBase &owner);
 
+	static void Register(QtnPropertyDelegateFactory &factory);
+
 protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
@@ -89,8 +92,8 @@ protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 
-	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
-		const QStyle::State &state, bool *needTooltip = nullptr) const override;
+	virtual void drawValueImpl(
+		QStylePainter &painter, const QRect &rect) const override;
 };

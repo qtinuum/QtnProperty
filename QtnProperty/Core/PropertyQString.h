@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -32,22 +32,15 @@ private:
 public:
 	explicit QtnPropertyQStringBase(QObject *parent);
 
-	bool isMultilineEnabled() const;
-	void setMultilineEnabled(bool enabled);
-
-	QString getPlaceholderText() const;
-
 	QtnPropertyQStringBase &operator=(const char *newValue);
 
 protected:
 	// string conversion implementation
-	bool fromStrImpl(const QString &str, bool edit) override;
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQStringBase)
-
-private:
-	bool multiline;
 };
 
 P_PROPERTY_DECL_ALL_OPERATORS(QtnPropertyQStringBase, QString)

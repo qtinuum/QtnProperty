@@ -2,8 +2,10 @@
 
 property_set A
 {
+    id = 50;
     Bool b
     {
+        id = 51;
         value = true;
         description = "b property";
         delegate Combobox

@@ -1,5 +1,6 @@
 #include "TestGeneratedProperty.h"
 #include "PEG/test.peg.h"
+#include "PEG/test2.peg.h"
 #include <QtTest/QtTest>
 
 void TestGeneratedProperty::test1()
@@ -65,4 +66,61 @@ void TestGeneratedProperty::testAllPropertyTypes()
     default:
         QFAIL("ep expected as COLOR::RED");
     }
+}
+
+void TestGeneratedProperty::testLoadSave()
+{
+    {
+        QtnPropertySetAllPropertyTypes p;
+        QtnPropertySetA p2;
+
+        {
+            QtnPropertySet allProperties(nullptr);
+            allProperties.addChildProperty(&p, false);
+            allProperties.addChildProperty(&p2, false);
+
+            QByteArray data;
+
+            {
+                QDataStream s(&data, QIODevice::WriteOnly);
+                s.setVersion(16);
+                QVERIFY(allProperties.save(s));
+            }
+
+            //printf(data.toBase64());
+            QCOMPARE(data.toBase64(), QByteArray("GYQBAAAEmgABAAAAAAAAAAABAAAADRmEAQAABFAAAQAAAAAAAAAAAQAAAA4ZhAEAAAALAAEAAAAIAAAAAAAAAAAPGYQBAAAACwABAAAACAAAAAABAAAAEBmEAQAAAA4AAQAAAAgAAAAAAAAAAAAAABEZhAEAAAAOAAEAAAAIAAAAAAAAAAwAAAASGYQBAAAADgABAAAACAAAAAAAAAAAAAAAExmEAQAAAA4AAQAAAAgAAAAAAAAACQAAABQZhAEAAAASAAEAAAAIAAAAAAAAAAAAAAAAAAAAFRmEAQAAABIAAQAAAAgAAAAAP8mZmaAAAAAAAAAWGYQBAAAAEgABAAAACAAAAAAAAAAAAAAAAAAAABcZhAEAAAASAAEAAAAIAAAAAEBAMzMzMzMzAAAAGBmEAQAAAA4AAQAAAAgAAAAA/////wAAABkZhAEAAAAWAAEAAAAIAAAAAAAAAAgAbgBhAG0AZQAAABoZhAEAAAAaAAEAAAAIAAAAAAAAAAAAAAAA//////////8AAAAbGYQBAAAAGgABAAAACAAAAAAAAAAKAAAACgAAABMAAAATAAAAHBmEAQAAABIAAQAAAAgAAAAAAAAAAAAAAAAAAAAdGYQBAAAAEgABAAAACAAAAAAAAAAJAAAAAgAAAB4ZhAEAAAASAAEAAAAIAAAAAP//////////AAAAHxmEAQAAABIAAQAAAAgAAAAAAAAAIQAAABUAAAAgGYQBAAAADgABAAAACAAAAAAAAAAWAAAAIRmEAQAAAA4AAQAAAAgAAAAAAAAACgAAACIZhAEAAAAOAAEAAAAIAAAAAAAAAAUAAAAjGYQBAAAADgABAAAACAAAAAAAAAAFAAAAJBmEAQAAABUAAQAAAAgAAAAAAf//AAAAAP//AAAAAAAlGYQBAAAAFQABAAAACAAAAAAB/////wAAAAAAAAAAACYZhAEAAAA+AAEAAAAIAAAAAAAAAA4AQwBvAHUAcgBpAGUAcv////9AJAAAAAAAAP////8FAAEAMhAAAAEAAAAAAAAAAAAAAAAnGYQBAAAAOgABAAAACAAAAAAAAAAKAEEAcgBpAGEAbP////9AMwAAAAAAAP////8FAAEAMhAAAAEAAAAAAAAAAAAAAAAoGYQBAAAACgABAAAACAAAAAAAAAApGYQBAAAAGgABAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKhmEAQAAABoAAQAAAAgAAAAAQCPMzMzMzM1AAZmZmZmZmgAAACsZhAEAAAAqAAEAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALBmEAQAAACoAAQAAAAgAAAAAQCQzMzMzMzNAJGZmZmZmZkAkmZmZmZmaQCTMzMzMzM0AAAAtGYQBAAAAGgABAAAACAAAAAC/8AAAAAAAAL/wAAAAAAAAAAAALhmEAQAAABoAAQAAAAgAAAAAQECAAAAAAABANeZmZmZmZv////8AAAAyGYQBAAAAJQABAAAAAAAAAAABAAAAMxmEAQAAAAsAAQAAAAgAAAAAAf//////////"));
+            QCOMPARE(data.size(), 1185);
+
+            {
+                QDataStream s(&data, QIODevice::ReadOnly);
+                s.setVersion(16);
+                QVERIFY(allProperties.load(s));
+            }
+
+            QString result;
+            QVERIFY(allProperties.toStr(result));
+
+#ifdef Q_OS_WIN
+            QCOMPARE(result.size(), 1188);
+#else
+            QCOMPARE(result.size(), 1154);
+#endif
+        }
+    }
+}
+
+void TestGeneratedProperty::testJson()
+{
+    QtnPropertySetAllPropertyTypes p;
+
+    QJsonObject o;
+    QVERIFY(p.toJson(o));
+
+    QJsonDocument d(o);
+    auto res = d.toJson();
+    QCOMPARE(res.size(), 1674);
+    res = d.toJson(QJsonDocument::Compact);
+    QCOMPARE(res.size(), 979);
+
+    QVERIFY(p.fromJson(o));
 }

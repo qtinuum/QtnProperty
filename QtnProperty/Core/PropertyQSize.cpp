@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,27 +21,29 @@ limitations under the License.
 QtnPropertyQSizeBase::QtnPropertyQSizeBase(QObject *parent)
 	: ParentClass(parent)
 {
-	addState(QtnPropertyStateCollapsed);
 }
 
 QtnProperty *QtnPropertyQSizeBase::createWidthProperty()
 {
-	return createFieldProperty(QtnPropertyQSize::widthString(),
-		QtnPropertyQSize::widthDescription(), &QSize::width, &QSize::setWidth);
+	return createFieldProperty(QtnPropertyQSize::widthKey(),
+		QtnPropertyQSize::widthDisplayName(),
+		QtnPropertyQSize::widthDescriptionFmt(), &QSize::width,
+		&QSize::setWidth);
 }
 
 QtnProperty *QtnPropertyQSizeBase::createHeightProperty()
 {
-	return createFieldProperty(QtnPropertyQSize::heightString(),
-		QtnPropertyQSize::heightDescription(), &QSize::height,
+	return createFieldProperty(QtnPropertyQSize::heightKey(),
+		QtnPropertyQSize::heightDisplayName(),
+		QtnPropertyQSize::heightDescriptionFmt(), &QSize::height,
 		&QSize::setHeight);
 }
 
-bool QtnPropertyQSizeBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyQSizeBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	static QRegExp parserSize(
-		QStringLiteral("^\\s*QSize\\s*\\(([^\\)]+)\\)\\s*$"),
-		Qt::CaseInsensitive);
+		"^\\s*QSize\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
 
 	if (!parserSize.exactMatch(str))
 		return false;
@@ -52,8 +54,7 @@ bool QtnPropertyQSizeBase::fromStrImpl(const QString &str, bool edit)
 		return false;
 
 	static QRegExp parserParams(
-		QStringLiteral("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$"),
-		Qt::CaseInsensitive);
+		"^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
 
 	if (!parserParams.exactMatch(params[1]))
 		return false;
@@ -74,7 +75,7 @@ bool QtnPropertyQSizeBase::fromStrImpl(const QString &str, bool edit)
 	if (!ok)
 		return false;
 
-	return setValue(QSize(width, height), edit);
+	return setValue(QSize(width, height), reason);
 }
 
 bool QtnPropertyQSizeBase::toStrImpl(QString &str) const
@@ -94,22 +95,32 @@ QString QtnPropertyQSize::getToStringFormat()
 	return tr("[%1 x %2]");
 }
 
-QString QtnPropertyQSize::widthString()
+QString QtnPropertyQSize::widthKey()
+{
+	return QStringLiteral("width");
+}
+
+QString QtnPropertyQSize::widthDisplayName()
 {
 	return tr("Width");
 }
 
-QString QtnPropertyQSize::widthDescription()
+QString QtnPropertyQSize::widthDescriptionFmt()
 {
 	return tr("Width of the %1");
 }
 
-QString QtnPropertyQSize::heightString()
+QString QtnPropertyQSize::heightKey()
+{
+	return QStringLiteral("height");
+}
+
+QString QtnPropertyQSize::heightDisplayName()
 {
 	return tr("Height");
 }
 
-QString QtnPropertyQSize::heightDescription()
+QString QtnPropertyQSize::heightDescriptionFmt()
 {
 	return tr("Height of the %1");
 }

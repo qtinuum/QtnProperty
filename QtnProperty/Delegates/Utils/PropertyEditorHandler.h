@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ limitations under the License.
 
 #include "QtnProperty/CoreAPI.h"
 #include "QtnProperty/Property.h"
+#include "QtnProperty/Delegates/PropertyDelegate.h"
 
 #include <QWidget>
 #include <QEvent>
@@ -32,9 +33,12 @@ class QDialog;
 class QTN_IMPORT_EXPORT QtnPropertyEditorHandlerBase : public QObject
 {
 protected:
-	QtnPropertyEditorHandlerBase(QtnProperty &property, QWidget &editor);
+	QtnPropertyEditorHandlerBase(
+		QtnPropertyDelegate *delegate, QWidget &editor);
 
-	inline QtnProperty *propertyBase() const;
+	inline QtnPropertyDelegate *delegate() const;
+	inline QtnPropertyBase *propertyBase() const;
+	inline QtnPropertyBase *stateProperty() const;
 	inline QWidget *editorBase() const;
 	virtual void updateEditor() = 0;
 	virtual void revertInput();
@@ -58,20 +62,31 @@ protected:
 	static void connectDialog(const DialogContainerPtr &containerPtr);
 
 protected:
-	QtnProperty *m_property;
-	QWidget *m_editor;
-
 	bool reverted : 1;
 	bool returned : 1;
+
+private:
+	QtnPropertyDelegate *m_delegate;
+	QWidget *m_editor;
 
 private:
 	void onPropertyDestroyed();
 	void onPropertyDidChange(QtnPropertyChangeReason reason);
 };
 
-QtnProperty *QtnPropertyEditorHandlerBase::propertyBase() const
+QtnPropertyBase *QtnPropertyEditorHandlerBase::propertyBase() const
 {
-	return m_property;
+	return m_delegate->property();
+}
+
+QtnPropertyDelegate *QtnPropertyEditorHandlerBase::delegate() const
+{
+	return m_delegate;
+}
+
+QtnPropertyBase *QtnPropertyEditorHandlerBase::stateProperty() const
+{
+	return m_delegate->stateProperty();
 }
 
 QWidget *QtnPropertyEditorHandlerBase::editorBase() const
@@ -87,19 +102,19 @@ protected:
 		QtnPropertyEditorHandlerType;
 
 	QtnPropertyEditorHandler(
-		PropertyClass &property, PropertyEditorClass &editor)
-		: QtnPropertyEditorHandlerBase(property, editor)
+		QtnPropertyDelegate *delegate, PropertyEditorClass &editor)
+		: QtnPropertyEditorHandlerBase(delegate, editor)
 	{
 	}
 
 	PropertyClass &property() const
 	{
-		return *static_cast<PropertyClass *>(m_property);
+		return *static_cast<PropertyClass *>(propertyBase());
 	}
 
 	PropertyEditorClass &editor() const
 	{
-		return *static_cast<PropertyEditorClass *>(m_editor);
+		return *static_cast<PropertyEditorClass *>(editorBase());
 	}
 };
 
@@ -114,11 +129,11 @@ protected:
 	using ValueTypeStore = typename PropertyClass::ValueTypeStore;
 
 	QtnPropertyEditorHandlerVT(
-		PropertyClass &property, PropertyEditorClass &editor)
-		: Inherited(property, editor)
+		QtnPropertyDelegate *delegate, PropertyEditorClass &editor)
+		: Inherited(delegate, editor)
 		, updating(0)
 	{
-		newValue = property.value();
+		newValue = this->property().value();
 	}
 
 	void onValueChanged(ValueType value)
@@ -131,9 +146,8 @@ protected:
 
 	virtual void updateValue()
 	{
-		auto property = &Inherited::property();
-		if (property)
-			property->edit(newValue);
+		if (this->propertyBase())
+			this->property().setValue(newValue, this->delegate()->editReason());
 	}
 
 	ValueTypeStore newValue;
@@ -152,8 +166,8 @@ protected:
 	typedef QtnPropertyEditorBttnHandler QtnPropertyEditorHandlerType;
 
 	QtnPropertyEditorBttnHandler(
-		PropertyClass &property, PropertyEditorClass &editor)
-		: Inherited(property, editor)
+		QtnPropertyDelegate *delegate, PropertyEditorClass &editor)
+		: Inherited(delegate, editor)
 		, double_clicked(false)
 	{
 	}
@@ -161,8 +175,8 @@ protected:
 	virtual void onToolButtonClick() = 0;
 	virtual bool eventFilter(QObject *obj, QEvent *event) override
 	{
-		if (nullptr != Inherited::m_property &&
-			Inherited::m_property->isEditableByUser())
+		if (nullptr != this->stateProperty() &&
+			this->stateProperty()->isEditableByUser())
 			switch (event->type())
 			{
 				case QEvent::MouseButtonDblClick:

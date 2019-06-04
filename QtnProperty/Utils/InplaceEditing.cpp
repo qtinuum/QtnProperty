@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -41,13 +41,13 @@ bool qtnStartInplaceEdit(QWidget *editor)
 		qtnStopInplaceEdit(false);
 	}
 
-	QCoreApplication *app = QCoreApplication::instance();
+	Q_ASSERT(QCoreApplication::instance());
 
-	if (!app)
-	{
-		Q_ASSERT(false);
-		return false;
-	}
+	if (editor->objectName().isEmpty())
+		editor->setObjectName("QtnPropertyValueEditor");
+
+	if (!editor->isVisible())
+		editor->show();
 
 	g_inplaceEditor = editor;
 	g_inplaceEditorHandler = new QtnInplaceEditorHandler();
@@ -61,7 +61,7 @@ bool qtnStartInplaceEdit(QWidget *editor)
 		g_inplaceEditorHandler, &QtnInplaceEditorHandler::OnEditorDestroyed);
 
 	// install application event filter
-	app->installEventFilter(g_inplaceEditorHandler);
+	QCoreApplication::instance()->installEventFilter(g_inplaceEditorHandler);
 
 	return true;
 }
@@ -153,11 +153,10 @@ bool QtnInplaceEditorHandler::eventFilter(QObject *watched, QEvent *event)
 
 void QtnInplaceEditorHandler::OnEditorDestroyed(QObject *obj)
 {
+	Q_UNUSED(obj);
 	Q_ASSERT(obj == g_inplaceEditor);
 
 	delete g_inplaceEditorHandler;
 	g_inplaceEditorHandler = 0;
 	g_inplaceEditor = 0;
 }
-
-void releaseInplaceEditor() {}

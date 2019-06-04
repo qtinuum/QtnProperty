@@ -1,16 +1,19 @@
-include($$_PRO_FILE_PWD_/../Common.pri)
+include(../Config.pri)
 
 QT += core gui widgets script
 
-TARGET = QtnPropertyAC
+TARGET = QtnProperty
 TEMPLATE = lib
-VERSION = 1.6.0
+VERSION = 2.0.0
 
 DEFINES += QTN_DYNAMIC_LIBRARY
-
 macx {
     QMAKE_SONAME_PREFIX = @executable_path/../lib
+    TARGET_EXT = .dylib
 }
+
+win32:TARGET_EXT = .dll
+linux:TARGET_EXT = .so
 
 SOURCES += PropertyBase.cpp \
     Property.cpp \
@@ -21,6 +24,7 @@ SOURCES += PropertyBase.cpp \
     Core/PropertyInt.cpp \
     Core/PropertyUInt.cpp \
     Core/PropertyDouble.cpp \
+    Core/PropertyFloat.cpp \
     Core/PropertyQString.cpp \
     Core/PropertyQRect.cpp \
     Core/PropertyEnum.cpp \
@@ -29,33 +33,49 @@ SOURCES += PropertyBase.cpp \
     Core/PropertyQPoint.cpp \
     GUI/PropertyQColor.cpp \
     GUI/PropertyQFont.cpp \
+    GUI/PropertyQBrush.cpp \
+    GUI/PropertyQPen.cpp \
+    GUI/PropertyButton.cpp \
     PropertyWidget.cpp \
     PropertyView.cpp \
     Utils/InplaceEditing.cpp \
+    Delegates/PropertyDelegate.cpp \
+    Delegates/PropertyDelegateAux.cpp \
     Delegates/PropertyDelegateFactory.cpp \
     Delegates/Core/PropertyDelegateBool.cpp \
     Delegates/Core/PropertyDelegateInt.cpp \
     Delegates/Core/PropertyDelegateUInt.cpp \
     Delegates/Core/PropertyDelegateQString.cpp \
     Delegates/Core/PropertyDelegateDouble.cpp \
+    Delegates/Core/PropertyDelegateFloat.cpp \
     Delegates/Core/PropertyDelegateEnum.cpp \
     Delegates/Core/PropertyDelegateQRect.cpp \
-    Delegates/PropertyEditorHandler.cpp \
-    Delegates/GUI/PropertyDelegateQColor.cpp \
+    Delegates/Core/PropertyDelegateQRectF.cpp \
     Delegates/Core/PropertyDelegateEnumFlags.cpp \
-    Delegates/PropertyDelegate.cpp \
-    Delegates/PropertyEditorAux.cpp \
     Delegates/Core/PropertyDelegateQSize.cpp \
+    Delegates/Core/PropertyDelegateQSizeF.cpp \
     Delegates/Core/PropertyDelegateQPoint.cpp \
+    Delegates/Core/PropertyDelegateQPointF.cpp \
+    Delegates/GUI/PropertyDelegateQColor.cpp \
+    Delegates/GUI/PropertyDelegateQBrush.cpp \
+    Delegates/GUI/PropertyDelegateQPen.cpp \
     Delegates/GUI/PropertyDelegateQFont.cpp \
+    Delegates/GUI/PropertyDelegateButton.cpp \
+    Delegates/Utils/PropertyEditorHandler.cpp \
+    Delegates/Utils/PropertyEditorAux.cpp \
+    Delegates/Utils/PropertyDelegateMisc.cpp \
+    Delegates/Utils/PropertyDelegatePropertySet.cpp \
+    Delegates/Utils/PropertyDelegateSliderBox.cpp \
+    Delegates/Utils/PropertyDelegateGeoCoord.cpp \
+    Delegates/Utils/PropertyDelegateGeoPoint.cpp \
     Utils/AccessibilityProxy.cpp \
     Utils/DoubleSpinBox.cpp \
     Utils/MultilineTextDialog.cpp \
     PropertyInt64.cpp \
     PropertyUInt64.cpp \
-    PropertyQRectF.cpp \
-    PropertyQPointF.cpp \
-    PropertyQSizeF.cpp \
+    Core/PropertyQRectF.cpp \
+    Core/PropertyQPointF.cpp \
+    Core/PropertyQSizeF.cpp \
     PropertyWidgetEx.cpp \
     CustomPropertyEditorDialog.cpp \
     CustomPropertyOptionsDialog.cpp \
@@ -88,6 +108,7 @@ HEADERS += CoreAPI.h\
     Core/PropertyInt.h \
     Core/PropertyUInt.h \
     Core/PropertyDouble.h \
+    Core/PropertyFloat.h \
     Core/PropertyQString.h \
     Core/PropertyQRect.h \
     Core/PropertyEnum.h \
@@ -96,33 +117,50 @@ HEADERS += CoreAPI.h\
     Core/PropertyQPoint.h \
     GUI/PropertyQColor.h \
     GUI/PropertyQFont.h \
+    GUI/PropertyQBrush.h \
+    GUI/PropertyQPen.h \
+    GUI/PropertyButton.h \
     PropertyWidget.h \
+    PropertyWidgetAPI.h \
     PropertyView.h \
     Utils/InplaceEditing.h \
     Delegates/PropertyDelegate.h \
+    Delegates/PropertyDelegateAux.h \
     Delegates/PropertyDelegateFactory.h \
     Delegates/Core/PropertyDelegateBool.h \
     Delegates/Core/PropertyDelegateInt.h \
     Delegates/Core/PropertyDelegateUInt.h \
     Delegates/Core/PropertyDelegateQString.h \
     Delegates/Core/PropertyDelegateDouble.h \
+    Delegates/Core/PropertyDelegateFloat.h \
     Delegates/Core/PropertyDelegateEnum.h \
     Delegates/Core/PropertyDelegateQRect.h \
-    Delegates/PropertyEditorHandler.h \
-    Delegates/GUI/PropertyDelegateQColor.h \
+    Delegates/Core/PropertyDelegateQRectF.h \
     Delegates/Core/PropertyDelegateEnumFlags.h \
-    Delegates/PropertyEditorAux.h \
     Delegates/Core/PropertyDelegateQSize.h \
+    Delegates/Core/PropertyDelegateQSizeF.h \
     Delegates/Core/PropertyDelegateQPoint.h \
+    Delegates/Core/PropertyDelegateQPointF.h \
+    Delegates/GUI/PropertyDelegateQColor.h \
     Delegates/GUI/PropertyDelegateQFont.h \
+    Delegates/GUI/PropertyDelegateQBrush.h \
+    Delegates/GUI/PropertyDelegateQPen.h \
+    Delegates/GUI/PropertyDelegateButton.h \
+    Delegates/Utils/PropertyEditorHandler.h \
+    Delegates/Utils/PropertyEditorAux.h \
+    Delegates/Utils/PropertyDelegateMisc.h \
+    Delegates/Utils/PropertyDelegatePropertySet.h \
+    Delegates/Utils/PropertyDelegateSliderBox.h \
+    Delegates/Utils/PropertyDelegateGeoCoord.h \
+    Delegates/Utils/PropertyDelegateGeoPoint.h \
     Utils/AccessibilityProxy.h \
     Utils/DoubleSpinBox.h \
     Utils/MultilineTextDialog.h \
     PropertyInt64.h \
     PropertyUInt64.h \
-    PropertyQRectF.h \
-    PropertyQPointF.h \
-    PropertyQSizeF.h \
+    Core/PropertyQRectF.h \
+    Core/PropertyQPointF.h \
+    Core/PropertyQSizeF.h \
     PropertyWidgetEx.h \
     CustomPropertyEditorDialog.h \
     CustomPropertyOptionsDialog.h \
@@ -141,10 +179,6 @@ HEADERS += CoreAPI.h\
     PropertyQKeySequence.h \
     PropertyDelegateMetaEnum.h
 
-win32 {
-    TARGET_EXT = .dll
-}
-
 TRANSLATIONS = \
     Translations/en.ts \
     Translations/ru.ts
@@ -158,6 +192,4 @@ FORMS += \
     CustomPropertyOptionsDialog.ui \
     Utils/MultilineTextDialog.ui
 
-INCLUDEPATH += \
-    $$_PRO_FILE_PWD_/. \
-    $$_PRO_FILE_PWD_/..
+INCLUDEPATH += $$PWD/..

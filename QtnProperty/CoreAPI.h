@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@ limitations under the License.
 *******************************************************************************/
 
 #pragma once
+
 #include <qglobal.h>
 
 #if defined(QTN_DYNAMIC_LIBRARY)
 #define QTN_IMPORT_EXPORT Q_DECL_EXPORT
-#else
+
+#elif defined(QTN_DYNAMIC_IMPORT)
 #define QTN_IMPORT_EXPORT Q_DECL_IMPORT
+#else
+
+#define QTN_IMPORT_EXPORT
+#ifndef QTN_STATIC_LIBRARY
+#define QTN_STATIC_LIBRARY
+#endif
 #endif
 
-#define returnQByteArrayLiteral(str) \
-	enum \
-	{ \
-		Size = sizeof(str) - 1 \
-	}; \
-	static const QStaticByteArrayData<Size> qbytearray_literal = { \
-		Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER(Size), str \
-	}; \
-	QByteArrayDataPtr holder = { qbytearray_literal.data_ptr() }; \
-	return QByteArray(holder)
+#define PERCENT_SUFFIX 1
+#define DEGREE_SUFFIX 2

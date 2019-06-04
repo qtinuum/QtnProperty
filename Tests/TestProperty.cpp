@@ -25,10 +25,16 @@ static void verifyInitialValues(QtnPropertySetAllPropertyTypes& pp)
     QVERIFY(pp.spc == "name");
     QVERIFY(pp.rp == QRect());
     QVERIFY(pp.rpc == QRect(10, 10, 10, 10));
+    QVERIFY(pp.rpf == QRectF());
+    QVERIFY(pp.rpfc == QRectF(10.1, 10.2, 10.3, 10.4));
     QVERIFY(pp.pp == QPoint());
     QVERIFY(pp.ppc == QPoint(9, 2));
+    QVERIFY(pp.ppf == QPointF());
+    QVERIFY(pp.ppfc == QPointF(9.9, 2.2));
     QVERIFY(pp.szp == QSize());
     QVERIFY(pp.szpc == QSize(33, 21));
+    QVERIFY(pp.szpf == QSizeF());
+    QVERIFY(pp.szpfc == QSizeF(33.0, 21.9));
     QVERIFY(pp.ep == COLOR::BLUE);
     QVERIFY(pp.epc == COLOR::RED);
     QVERIFY(pp.efp == (MASK::ONE|MASK::FOUR));
@@ -55,10 +61,16 @@ static void modify(QtnPropertySetAllPropertyTypes& pp)
     pp.spc = "name#1";
     pp.rp = QRect(12, 10, 16, 17);
     pp.rpc = QRect(4, 3, 1, 0);
+    pp.rpf = QRectF(12.3, 10.4, 16.5, 17.6);
+    pp.rpfc = QRectF(4.1, 3.2, 1.3, 0.0);
     pp.pp = QPoint(21, 9);
     pp.ppc = QPoint(15, 0);
+    pp.ppf = QPointF(21.21, 9.9);
+    pp.ppfc = QPointF(15.15, 0.0);
     pp.szp = QSize(90, 87);
     pp.szpc = QSize(0, 1);
+    pp.szpf = QSizeF(90.9, 87.7);
+    pp.szpfc = QSizeF(0.1, 1.0);
     pp.ep = COLOR::RED;
     pp.epc = COLOR::BLUE;
     pp.efp = (MASK::FOUR);
@@ -71,32 +83,38 @@ static void modify(QtnPropertySetAllPropertyTypes& pp)
 
 static void verifyModified(QtnPropertySetAllPropertyTypes& pp)
 {
-    QVERIFY(pp.bp == true);
-    QVERIFY(pp.bpc == false);
-    QVERIFY(pp.ip == 12);
-    QVERIFY(pp.ipc == 2);
-    QVERIFY(pp.up == 3u);
-    QVERIFY(pp.upc == 32u);
-    QVERIFY(pp.fp == 0.32f);
-    QVERIFY(pp.fpc == 32.2f);
-    QVERIFY(pp.dp == 12.);
-    QVERIFY(pp.dpc == 2.4);
-    QVERIFY(pp.sp == "test");
-    QVERIFY(pp.spc == "name#1");
-    QVERIFY(pp.rp == QRect(12, 10, 16, 17));
-    QVERIFY(pp.rpc == QRect(4, 3, 1, 0));
-    QVERIFY(pp.pp == QPoint(21, 9));
-    QVERIFY(pp.ppc == QPoint(15, 0));
-    QVERIFY(pp.szp == QSize(90, 87));
-    QVERIFY(pp.szpc == QSize(0, 1));
-    QVERIFY(pp.ep == COLOR::RED);
-    QVERIFY(pp.epc == COLOR::BLUE);
-    QVERIFY(pp.efp == (MASK::FOUR));
-    QVERIFY(pp.efpc == (MASK::ONE));
-    QVERIFY(pp.cp == QColor(Qt::red));
-    QVERIFY(pp.cpc == QColor(Qt::blue));
-    QVERIFY(pp.fnp == QFont("Courier New", 11));
-    QVERIFY(pp.fnpc == QFont("Myfont", 0));
+    QCOMPARE(pp.bp.value(), true);
+    QCOMPARE(pp.bpc.value(), false);
+    QCOMPARE(pp.ip.value(), 12);
+    QCOMPARE(pp.ipc.value(), 2);
+    QCOMPARE(pp.up.value(), 3u);
+    QCOMPARE(pp.upc.value(), 32u);
+    QCOMPARE(pp.fp.value(), 0.32f);
+    QCOMPARE(pp.fpc.value(), 32.2f);
+    QCOMPARE(pp.dp.value(), 12.);
+    QCOMPARE(pp.dpc.value(), 2.4);
+    QCOMPARE(pp.sp.value(), QString("test"));
+    QCOMPARE(pp.spc.value(), QString("name#1"));
+    QCOMPARE(pp.rp.value(), QRect(12, 10, 16, 17));
+    QCOMPARE(pp.rpc.value(), QRect(4, 3, 1, 0));
+    QCOMPARE(pp.rpf.value(), QRectF(12.3, 10.4, 16.5, 17.6));
+    QCOMPARE(pp.rpfc.value(), QRectF(4.1, 3.2, 1.3, 0.0));
+    QCOMPARE(pp.pp.value(), QPoint(21, 9));
+    QCOMPARE(pp.ppc.value(), QPoint(15, 0));
+    QCOMPARE(pp.ppf.value(), QPointF(21.21, 9.9));
+    QCOMPARE(pp.ppfc.value(), QPointF(15.15, 0.0));
+    QCOMPARE(pp.szp.value(), QSize(90, 87));
+    QCOMPARE(pp.szpc.value(), QSize(0, 1));
+    QCOMPARE(pp.szpf.value(), QSizeF(90.9, 87.7));
+    QCOMPARE(pp.szpfc.value(), QSizeF(0.1, 1.0));
+    QCOMPARE(pp.ep.value(), (QtnEnumValueType)COLOR::RED);
+    QCOMPARE(pp.epc.value(), (QtnEnumValueType)COLOR::BLUE);
+    QCOMPARE(pp.efp.value(), (QtnEnumFlagsValueType)MASK::FOUR);
+    QCOMPARE(pp.efpc.value(), (QtnEnumFlagsValueType)MASK::ONE);
+    QCOMPARE(pp.cp.value(), QColor(Qt::red));
+    QCOMPARE(pp.cpc.value(), QColor(Qt::blue));
+    QCOMPARE(pp.fnp.value(), QFont("Courier New", 11));
+    QCOMPARE(pp.fnpc.value(), QFont("Myfont", 0));
 }
 
 void TestProperty::name()
@@ -106,8 +124,8 @@ void TestProperty::name()
     QCOMPARE(p.name(), QString("PropertyName"));
 
     QtnPropertySet p1(nullptr);
-    p1.setName("Another Name");
-    QCOMPARE(p1.name(), QString("Another Name"));
+    p1.setName("AnotherName");
+    QCOMPARE(p1.name(), QString("AnotherName"));
 }
 
 void TestProperty::description()
@@ -139,9 +157,10 @@ void TestProperty::state()
 {
     QtnPropertySet ps(0);
     QtnPropertyInt p(&ps);
+    ps.addChildProperty(&p);
 
     QCOMPARE(ps.state(), QtnPropertyStateNone);
-    QCOMPARE(p.state(), QtnPropertyStateNone);
+    QCOMPARE(p.state(), QtnPropertyStateCollapsed);
 
     QtnPropertyState master_state = QtnPropertyStateInvisible|QtnPropertyStateNonSimple;
 
@@ -149,24 +168,24 @@ void TestProperty::state()
     QCOMPARE(ps.state(), master_state);
     QCOMPARE(ps.stateLocal(), master_state);
     QCOMPARE(ps.stateInherited(), QtnPropertyStateNone);
-    QCOMPARE(p.state(), master_state);
-    QCOMPARE(p.stateLocal(), QtnPropertyStateNone);
+    QCOMPARE(p.state(), master_state|QtnPropertyStateCollapsed);
+    QCOMPARE(p.stateLocal(), QtnPropertyStateCollapsed);
     QCOMPARE(p.stateInherited(), master_state);
 
-    p.addState(QtnPropertyStateCollapsed);
+    p.addState(QtnPropertyStateImmutable);
     QCOMPARE(ps.state(), master_state);
     QCOMPARE(ps.stateLocal(), master_state);
     QCOMPARE(ps.stateInherited(), QtnPropertyStateNone);
-    QCOMPARE(p.state(), master_state|QtnPropertyStateCollapsed);
-    QCOMPARE(p.stateLocal(), QtnPropertyStateCollapsed);
+    QCOMPARE(p.state(), master_state|QtnPropertyStateCollapsed|QtnPropertyStateImmutable);
+    QCOMPARE(p.stateLocal(), QtnPropertyStateCollapsed|QtnPropertyStateImmutable);
     QCOMPARE(p.stateInherited(), master_state);
 
     ps.removeState(QtnPropertyStateInvisible);
     QCOMPARE(ps.state(), QtnPropertyStateNonSimple);
     QCOMPARE(ps.stateLocal(), QtnPropertyStateNonSimple);
     QCOMPARE(ps.stateInherited(), QtnPropertyStateNone);
-    QCOMPARE(p.state(), QtnPropertyStateNonSimple|QtnPropertyStateCollapsed);
-    QCOMPARE(p.stateLocal(), QtnPropertyStateCollapsed);
+    QCOMPARE(p.state(), QtnPropertyStateNonSimple|QtnPropertyStateCollapsed|QtnPropertyStateImmutable);
+    QCOMPARE(p.stateLocal(), QtnPropertyStateCollapsed|QtnPropertyStateImmutable);
     QCOMPARE(p.stateInherited(), QtnPropertyStateNonSimple);
 
     p.switchState(QtnPropertyStateCollapsed, false);
@@ -174,8 +193,8 @@ void TestProperty::state()
     QCOMPARE(ps.state(), master_state);
     QCOMPARE(ps.stateLocal(), master_state);
     QCOMPARE(ps.stateInherited(), QtnPropertyStateNone);
-    QCOMPARE(p.state(), master_state);
-    QCOMPARE(p.stateLocal(), QtnPropertyStateNone);
+    QCOMPARE(p.state(), master_state|QtnPropertyStateImmutable);
+    QCOMPARE(p.stateLocal(), QtnPropertyStateImmutable);
     QCOMPARE(p.stateInherited(), master_state);
 
     QCOMPARE(ps.isEditableByUser(), false);
@@ -185,11 +204,11 @@ void TestProperty::state()
     QCOMPARE(ps.state(), QtnPropertyStateNone);
 
     int call_count = 0;
-    QObject::connect(&ps, &QtnPropertyBase::propertyWillChange, [&call_count](const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue) {
+    QObject::connect(&ps, &QtnPropertyBase::propertyWillChange, [&call_count](const QtnPropertyBase*, const QtnPropertyBase*, QtnPropertyChangeReason, QtnPropertyValuePtr) {
         ++call_count;
     });
 
-    QObject::connect(&ps, &QtnPropertyBase::propertyDidChange, [&call_count](const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason) {
+    QObject::connect(&ps, &QtnPropertyBase::propertyDidChange, [&call_count](const QtnPropertyBase*, const QtnPropertyBase*, QtnPropertyChangeReason) {
         ++call_count;
     });
 
@@ -244,7 +263,7 @@ void TestProperty::propertyDelegateCallback()
     QtnPropertyBool p(this);
     QVERIFY(!p.delegate());
 
-    p.setDelegateCallback([]()->const QtnPropertyDelegateInfo* {
+    p.setDelegateCallback([]()->QtnPropertyDelegateInfo* {
         QtnPropertyDelegateInfo *info(new QtnPropertyDelegateInfo());
         info->name = "delegate";
         info->attributes["one"] = 1;
@@ -459,15 +478,56 @@ void TestProperty::propertyEnumFlags()
     QVERIFY(!(p & MASK::ONE));
 }
 
+void TestProperty::propertyPen()
+{
+    {
+        QtnPropertyQPenStyle p(this);
+        p = Qt::SolidLine;
+        QCOMPARE(p.value(), Qt::SolidLine);
+
+        p = Qt::DashDotDotLine;
+        QCOMPARE(p.value(), Qt::DashDotDotLine);
+    }
+
+    {
+        QtnPropertyQPen p(this);
+
+        {
+            QPen pen(QBrush(QColor(10, 100, 200)), 10, Qt::DashDotLine, Qt::RoundCap, Qt::SvgMiterJoin);
+            p = pen;
+            QCOMPARE(p.value(), pen);
+        }
+
+        {
+            QString str;
+            QVERIFY(p.toStr(str));
+            QCOMPARE(str, QString("#0a64c8, Qt::DashDotLine, 10, Qt::RoundCap, Qt::SvgMiterJoin"));
+        }
+
+        {
+            QString str = "#0000ff, Qt::DashLine, 3, Qt::SquareCap, Qt::BevelJoin";
+            QVERIFY(p.fromStr(str));
+
+            QCOMPARE(p.value().color(), QColor(Qt::blue));
+            QCOMPARE(p.value().width(), 3);
+            QCOMPARE(p.value().style(), Qt::DashLine);
+            QCOMPARE(p.value().capStyle(), Qt::SquareCap);
+            QCOMPARE(p.value().joinStyle(), Qt::BevelJoin);
+        }
+    }
+}
+
 void TestProperty::propertySet()
 {
     QtnPropertySet p(this);
 
     QtnPropertySet pp(&p);
     pp.setName("pp");
+    p.addChildProperty(&pp);
 
     QtnPropertyBool b(&pp);
     b.setName("b");
+    pp.addChildProperty(&b);
 
     QtnPropertyFloat f(nullptr);
     f.setName("f");
@@ -475,6 +535,7 @@ void TestProperty::propertySet()
 
     QtnPropertyBool bb(&p);
     bb.setName("b");
+    p.addChildProperty(&bb);
 
     QList<QtnPropertyBase*> res = p.findChildProperties("pp");
     QCOMPARE(res.size(), 1);
@@ -538,13 +599,14 @@ void TestProperty::serializationChildren()
 
     QByteArray data;
 
-    QtnProperty* p2(new QtnPropertyInt(&ps));
+    QtnProperty* p2(qtnCreateProperty<QtnPropertyInt>(&ps));
     p2->setId(1);
     p2->setState(QtnPropertyStateImmutable);
 
     QtnPropertyBool p3(&ps);
     p3.setId(2);
     p3.setState(QtnPropertyStateNonSerialized);
+    ps.addChildProperty(&p3);
 
     {
         QDataStream s(&data, QIODevice::WriteOnly);
@@ -687,7 +749,7 @@ void TestProperty::copyValues()
         verifyInitialValues(pp1);
         QCOMPARE(pp1.bp.value(), false);
         pp.bp.addState(QtnPropertyStateImmutable);
-        QCOMPARE(pp.bp.state(), QtnPropertyStateImmutable);
+        QCOMPARE(pp.bp.state(), QtnPropertyStateImmutable|QtnPropertyStateCollapsed);
 
         pp1.copyValues(&pp, QtnPropertyStateImmutable);
         QCOMPARE(pp1.bp.value(), false);
@@ -792,7 +854,7 @@ void TestProperty::propertyScripting()
 
         b.setState(QtnPropertyStateInvisible);
         val = eng.evaluate("b.isEditable");
-        QCOMPARE(val.toBool(), false);
+        QCOMPARE(val.toBool(), true);
 
         val = eng.evaluate("b.state");
         QCOMPARE(val.toUInt32(), 2u);
@@ -811,7 +873,7 @@ void TestProperty::propertyScripting()
         QCOMPARE(val.toBool(), true);
 
         val = eng.evaluate("b.value = false");
-        QCOMPARE(b.value(), true);
+        QCOMPARE(b.value(), false);
 
         eng.evaluate("b.state = 0");
         QCOMPARE(b.state(), QtnPropertyStateInvisible);
@@ -1029,6 +1091,26 @@ void TestProperty::variantConversions()
         QVERIFY(!pp.rpc.fromVariant(value));
         QCOMPARE(pp.rpc.value(), QRect(-2, 3, 23, 3));
 
+        QVERIFY(pp.rpf.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QRectF);
+        QCOMPARE(value.toRectF(), QRectF());
+        value = QRectF(23.1, 4.2, 56.3, 76.4);
+        QVERIFY(pp.rpf.fromVariant(value));
+        QCOMPARE(pp.rpf.value(), QRectF(23.1, 4.2, 56.3, 76.4));
+        value = "sss";
+        QVERIFY(!pp.rpf.fromVariant(value));
+        QCOMPARE(pp.rpf.value(), QRectF(23.1, 4.2, 56.3, 76.4));
+
+        QVERIFY(pp.rpfc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QRectF);
+        QCOMPARE(value.toRectF(), QRectF(10.1, 10.2, 10.3, 10.4));
+        value = QRectF(-2.7, 3.6, 23.5, 3.4);
+        QVERIFY(pp.rpfc.fromVariant(value));
+        QCOMPARE(pp.rpfc.value(), QRectF(-2.7, 3.6, 23.5, 3.4));
+        value = "sss";
+        QVERIFY(!pp.rpfc.fromVariant(value));
+        QCOMPARE(pp.rpfc.value(), QRectF(-2.7, 3.6, 23.5, 3.4));
+
         QVERIFY(pp.pp.toVariant(value));
         QCOMPARE(value.userType(), (int)QMetaType::QPoint);
         QCOMPARE(value.toPoint(), QPoint());
@@ -1049,6 +1131,27 @@ void TestProperty::variantConversions()
         QVERIFY(!pp.ppc.fromVariant(value));
         QCOMPARE(pp.ppc.value(), QPoint(100, 100));
 
+
+        QVERIFY(pp.ppf.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QPointF);
+        QCOMPARE(value.toPointF(), QPointF());
+        value = QPointF(-2.2, 3.3);
+        QVERIFY(pp.ppf.fromVariant(value));
+        QCOMPARE(pp.ppf.value(), QPointF(-2.2, 3.3));
+        value = "sss";
+        QVERIFY(!pp.ppf.fromVariant(value));
+        QCOMPARE(pp.ppf.value(), QPointF(-2.2, 3.3));
+
+        QVERIFY(pp.ppfc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QPointF);
+        QCOMPARE(value.toPointF(), QPointF(9.9, 2.2));
+        value = QPointF(100.100, 100.100);
+        QVERIFY(pp.ppfc.fromVariant(value));
+        QCOMPARE(pp.ppfc.value(), QPointF(100.100, 100.100));
+        value = "sss";
+        QVERIFY(!pp.ppfc.fromVariant(value));
+        QCOMPARE(pp.ppfc.value(), QPointF(100.100, 100.100));
+
         QVERIFY(pp.szp.toVariant(value));
         QCOMPARE(value.userType(), (int)QMetaType::QSize);
         QCOMPARE(value.toSize(), QSize());
@@ -1068,6 +1171,26 @@ void TestProperty::variantConversions()
         value = "sss";
         QVERIFY(!pp.szpc.fromVariant(value));
         QCOMPARE(pp.szpc.value(), QSize(6, 4));
+
+        QVERIFY(pp.szpf.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QSizeF);
+        QCOMPARE(value.toSizeF(), QSizeF());
+        value = QSizeF(72.3, 3.2);
+        QVERIFY(pp.szpf.fromVariant(value));
+        QCOMPARE(pp.szpf.value(), QSizeF(72.3, 3.2));
+        value = "sss";
+        QVERIFY(!pp.szpf.fromVariant(value));
+        QCOMPARE(pp.szpf.value(), QSizeF(72.3, 3.2));
+
+        QVERIFY(pp.szpfc.toVariant(value));
+        QCOMPARE(value.userType(), (int)QMetaType::QSizeF);
+        QCOMPARE(value.toSizeF(), QSizeF(33.0, 21.9));
+        value = QSizeF(6.3, 4.5);
+        QVERIFY(pp.szpfc.fromVariant(value));
+        QCOMPARE(pp.szpfc.value(), QSizeF(6.3, 4.5));
+        value = "sss";
+        QVERIFY(!pp.szpfc.fromVariant(value));
+        QCOMPARE(pp.szpfc.value(), QSizeF(6.3, 4.5));
 
         QVERIFY(pp.ep.toVariant(value));
         QCOMPARE(value.userType(), (int)QMetaType::Int);
@@ -1202,7 +1325,7 @@ void TestProperty::stringConversions()
         QCOMPARE(pp.ip.value(), -23);
         pp.ip.setMinValue(-2);
         QCOMPARE(pp.ip.value(), -2);
-        QVERIFY(!pp.ip.fromStr("-32"));
+        QVERIFY(pp.ip.fromStr("-32"));
         QCOMPARE(pp.ip.value(), -2);
 
         QVERIFY(pp.ipc.toStr(str));
@@ -1233,7 +1356,7 @@ void TestProperty::stringConversions()
         QCOMPARE(pp.upc.value(), 11u);
         pp.upc.setMaxValue(100);
         QCOMPARE(pp.upc.value(), 11u);
-        QVERIFY(!pp.upc.fromStr("110"));
+        QVERIFY(pp.upc.fromStr("110"));
         QCOMPARE(pp.upc.value(), 11u);
 
         QVERIFY(pp.fp.toStr(str));
@@ -1306,6 +1429,24 @@ void TestProperty::stringConversions()
         QVERIFY(!pp.rpc.fromStr("weee"));
         QCOMPARE(pp.rpc.value(), QRect(0, 0, 10, 10));
 
+        QVERIFY(pp.rpf.toStr(str));
+        QCOMPARE(str, tr("QRectF(0, 0, 0, 0)"));
+        QVERIFY(pp.rpf.fromStr(tr("QRectF (-2.3, 3.2, 43.5, 45.6 )   ")));
+        QCOMPARE(pp.rpf.value(), QRectF(-2.3, 3.2, 43.5, 45.6));
+        QVERIFY(pp.rpf.toStr(str));
+        QCOMPARE(str, tr("QRectF(-2.3, 3.2, 43.5, 45.6)"));
+        QVERIFY(!pp.rpf.fromStr("ddlwk,s"));
+        QCOMPARE(pp.rpf.value(), QRectF(-2.3, 3.2, 43.5, 45.6));
+
+        QVERIFY(pp.rpfc.toStr(str));
+        QCOMPARE(str, tr("QRectF(10.1, 10.2, 10.3, 10.4)"));
+        QVERIFY(pp.rpfc.fromStr(tr("QRectF(0.3, 0.0, 10.1, 10.1)")));
+        QCOMPARE(pp.rpfc.value(), QRectF(0.3, 0.0, 10.1, 10.10));
+        QVERIFY(pp.rpfc.toStr(str));
+        QCOMPARE(str, tr("QRectF(0.3, 0, 10.1, 10.1)"));
+        QVERIFY(!pp.rpfc.fromStr("weee"));
+        QCOMPARE(pp.rpfc.value(), QRectF(0.3, 0.0, 10.1, 10.1));
+
         QVERIFY(pp.pp.toStr(str));
         QCOMPARE(str, tr("QPoint(0, 0)"));
         QVERIFY(pp.pp.fromStr(tr("QPoint (-2, 3 )   ")));
@@ -1323,6 +1464,24 @@ void TestProperty::stringConversions()
         QCOMPARE(str, tr("QPoint(-3, 20)"));
         QVERIFY(!pp.ppc.fromStr("weee"));
         QCOMPARE(pp.ppc.value(), QPoint(-3, 20));
+
+        QVERIFY(pp.ppf.toStr(str));
+        QCOMPARE(str, tr("QPointF(0, 0)"));
+        QVERIFY(pp.ppf.fromStr(tr("QPointF (-2.2, 3.3 )   ")));
+        QCOMPARE(pp.ppf.value(), QPointF(-2.2, 3.3));
+        QVERIFY(pp.ppf.toStr(str));
+        QCOMPARE(str, tr("QPointF(-2.2, 3.3)"));
+        QVERIFY(!pp.ppf.fromStr("ddlwk,s"));
+        QCOMPARE(pp.ppf.value(), QPointF(-2.2, 3.3));
+
+        QVERIFY(pp.ppfc.toStr(str));
+        QCOMPARE(str, tr("QPointF(9.9, 2.2)"));
+        QVERIFY(pp.ppfc.fromStr(tr("QPointF(-3.3, 20.20)")));
+        QCOMPARE(pp.ppfc.value(), QPointF(-3.3, 20.20));
+        QVERIFY(pp.ppfc.toStr(str));
+        QCOMPARE(str, tr("QPointF(-3.3, 20.2)"));
+        QVERIFY(!pp.ppfc.fromStr("weee"));
+        QCOMPARE(pp.ppfc.value(), QPointF(-3.3, 20.20));
 
         QVERIFY(pp.szp.toStr(str));
         QCOMPARE(str, tr("QSize(-1, -1)"));
@@ -1342,26 +1501,44 @@ void TestProperty::stringConversions()
         QVERIFY(!pp.szpc.fromStr("weee"));
         QCOMPARE(pp.szpc.value(), QSize(-3, 20));
 
+        QVERIFY(pp.szpf.toStr(str));
+        QCOMPARE(str, tr("QSizeF(-1, -1)"));
+        QVERIFY(pp.szpf.fromStr(tr("QSizeF (-2.3, 3.4 )   ")));
+        QCOMPARE(pp.szpf.value(), QSizeF(-2.3, 3.4));
+        QVERIFY(pp.szpf.toStr(str));
+        QCOMPARE(str, tr("QSizeF(-2.3, 3.4)"));
+        QVERIFY(!pp.szpf.fromStr("ddlwk,s"));
+        QCOMPARE(pp.szpf.value(), QSizeF(-2.3, 3.4));
+
+        QVERIFY(pp.szpfc.toStr(str));
+        QCOMPARE(str, tr("QSizeF(33, 21.9)"));
+        QVERIFY(pp.szpfc.fromStr(tr("QSizeF(-3.1, 20.8)")));
+        QCOMPARE(pp.szpfc.value(), QSizeF(-3.1, 20.8));
+        QVERIFY(pp.szpfc.toStr(str));
+        QCOMPARE(str, tr("QSizeF(-3.1, 20.8)"));
+        QVERIFY(!pp.szpfc.fromStr("weee"));
+        QCOMPARE(pp.szpfc.value(), QSizeF(-3.1, 20.8));
+
         QVERIFY(pp.ep.toStr(str));
-        QCOMPARE(str, tr("COLOR::Blue"));
+        QCOMPARE(str, tr("COLOR::BLUE"));
         QVERIFY(pp.ep.fromStr(tr(" Color::Yellow   \t")));
         QCOMPARE(pp.ep.value(), (QtnEnumValueType)COLOR::YELLOW);
         QVERIFY(pp.ep.toStr(str));
-        QCOMPARE(str, tr("COLOR::Yellow"));
+        QCOMPARE(str, tr("COLOR::YELLOW"));
         QVERIFY(!pp.ep.fromStr("ddlwk,s"));
         QCOMPARE(pp.ep.value(), (QtnEnumValueType)COLOR::YELLOW);
 
         QVERIFY(pp.epc.toStr(str));
-        QCOMPARE(str, tr("COLOR::Red"));
+        QCOMPARE(str, tr("COLOR::RED"));
         QVERIFY(pp.epc.fromStr(tr("COLOR::BlUe")));
         QCOMPARE(pp.epc.value(), (QtnEnumValueType)COLOR::BLUE);
         QVERIFY(pp.epc.toStr(str));
-        QCOMPARE(str, tr("COLOR::Blue"));
+        QCOMPARE(str, tr("COLOR::BLUE"));
         QVERIFY(!pp.epc.fromStr("COLOUR::Red"));
         QCOMPARE(pp.epc.value(), (QtnEnumValueType)COLOR::BLUE);
 
         QVERIFY(pp.efp.toStr(str));
-        QCOMPARE(str, tr("MASK::One|MASK::Four"));
+        QCOMPARE(str, tr("MASK::ONE|MASK::FOUR"));
         QVERIFY(pp.efp.fromStr(tr(" 0   \t")));
         QCOMPARE(pp.efp.value(), 0);
         QVERIFY(pp.efp.toStr(str));
@@ -1374,11 +1551,11 @@ void TestProperty::stringConversions()
         QCOMPARE(pp.efp.value(), (QtnEnumFlagsValueType)(MASK::TWO|MASK::FOUR));
 
         QVERIFY(pp.efpc.toStr(str));
-        QCOMPARE(str, tr("MASK::One|MASK::Four"));
+        QCOMPARE(str, tr("MASK::ONE|MASK::FOUR"));
         QVERIFY(pp.efpc.fromStr(tr("Two")));
         QCOMPARE(pp.efpc.value(), (QtnEnumFlagsValueType)MASK::TWO);
         QVERIFY(pp.efpc.toStr(str));
-        QCOMPARE(str, tr("MASK::Two"));
+        QCOMPARE(str, tr("MASK::TWO"));
         QVERIFY(!pp.efpc.fromStr("weee"));
         QCOMPARE(pp.efpc.value(), (QtnEnumFlagsValueType)MASK::TWO);
 
@@ -1432,6 +1609,42 @@ void TestProperty::stringConversions()
         QCOMPARE(p.yy.s.value(), tr("new value"));
         QCOMPARE(p.s.a.value(), true);
     }
+
+    {
+        QtnPropertySet ps(this);
+
+        QtnPropertyBool pb(&ps);
+        pb.setName("AAAA");
+        pb.setDisplayName("AA AA");
+        pb.setValue(false);
+
+        QtnPropertyInt pi(&ps);
+        pi.setName("BBBB");
+        pi.setDisplayName("BB BB");
+        pi.setValue(12);
+
+        {
+            QString res;
+            QVERIFY(ps.toStr(res));
+            QVERIFY(ps.fromStr(res));
+        }
+
+        pb.addState(QtnPropertyStateInvisible);
+
+        {
+            QString res;
+            QVERIFY(ps.toStr(res));
+            QVERIFY(ps.fromStr(res));
+        }
+    }
+
+    {
+        QtnPropertySetTest12 ps(this);
+
+        QString res;
+        QVERIFY(ps.toStr(res));
+        QVERIFY(ps.fromStr(res));
+    }
 }
 
 void TestProperty::qObjectProperty()
@@ -1445,7 +1658,7 @@ void TestProperty::qObjectProperty()
         QtnPropertyQStringBase* ps = qobject_cast<QtnPropertyQStringBase*>(p);
         QVERIFY(ps);
         QCOMPARE(ps->value(), tr("Item1"));
-        QCOMPARE(ps->state(), QtnPropertyStateNone);
+        QCOMPARE(ps->state(), QtnPropertyStateCollapsed);
         ps->setValue("NewItemName");
         QCOMPARE(obj.objectName(), tr("NewItemName"));
         QCOMPARE(ps->value(), tr("NewItemName"));
@@ -1485,5 +1698,5 @@ void TestProperty::checkPropertyStateIsNonSimple(const QtnPropertyBase* changedP
     QCOMPARE(reason, QtnPropertyChangeReasonStateLocal);
     auto state = qtnCastPropertyValue<QtnPropertyState>(newValue);
     QVERIFY(state);
-    QCOMPARE(*state, QtnPropertyStateNonSimple);
+    QCOMPARE(*state, QtnPropertyStateNonSimple|QtnPropertyStateCollapsed);
 }

@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,52 +16,39 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegate.h"
-#include "MultiProperty.h"
-#include "PropertyEditorAux.h"
 
-#include <QLineEdit>
-#include <QKeyEvent>
-
-QString qtnElidedText(const QPainter &painter, const QString &text,
-	const QRect &rect, bool *elided)
+QtnPropertyDelegate::QtnPropertyDelegate(QtnPropertyBase &ownerProperty)
+	: m_ownerProperty(&ownerProperty)
 {
-	QString newText =
-		painter.fontMetrics().elidedText(text, Qt::ElideRight, rect.width());
-
-	if (elided)
-		*elided = (newText != text);
-
-	return newText;
 }
 
-QtnPropertyDelegate::~QtnPropertyDelegate() {}
+QtnPropertyDelegate::~QtnPropertyDelegate()
+{
+	// do not remove
+}
 
 void QtnPropertyDelegate::init()
 {
 	// do nothing
 }
 
-QWidget *QtnPropertyDelegate::createValueEditor(
-	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+QtnPropertyChangeReason QtnPropertyDelegate::editReason() const
 {
-	QWidget *valueEditor = createValueEditorImpl(parent, rect, inplaceInfo);
-
-	if (!valueEditor)
-		return valueEditor;
-
-	valueEditor->setObjectName("QtnPropertyValueEditor");
-	return valueEditor;
+	QtnPropertyChangeReason result = QtnPropertyChangeReasonEditValue;
+	if (stateProperty()->isMultiValue())
+		result |= QtnPropertyChangeReasonEditMultiValue;
+	return result;
 }
 
-bool QtnPropertyDelegate::propertyValueToStr(QString &strValue) const
+void QtnPropertyDelegate::applySubPropertyInfo(
+	const QtnPropertyDelegateInfo &info, const QtnSubPropertyInfo &subInfo)
 {
-	Q_UNUSED(strValue);
-	return false;
-}
-
-QtnPropertyDelegate::QtnPropertyDelegate(QtnProperty *ownerProperty)
-	: ownerProperty(ownerProperty)
-{
+	auto p = subProperty(subInfo.id);
+	p->setName(subInfo.key);
+	info.storeAttributeValue(subInfo.displayNameAttr, p,
+		&QtnPropertyBase::displayName, &QtnPropertyBase::setDisplayName);
+	info.storeAttributeValue(subInfo.descriptionAttr, p,
+		&QtnPropertyBase::description, &QtnPropertyBase::setDescription);
 }
 
 int QtnPropertyDelegate::subPropertyCountImpl() const
@@ -76,75 +63,28 @@ QtnPropertyBase *QtnPropertyDelegate::subPropertyImpl(int index)
 }
 
 void QtnPropertyDelegate::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	Q_UNUSED(attributes);
+	Q_UNUSED(info);
 }
 
-void QtnPropertyDelegate::drawValueImpl(QStylePainter &painter,
-	const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+QStyle::State QtnPropertyDelegate::state(
+	bool isActive, const QtnSubItem &subItem) const
 {
-	QString strValue;
-
-	if (propertyValueToStr(strValue))
+	auto subState = subItem.state();
+	QStyle::State state = QStyle::State_Active;
+	if (stateProperty()->isEditableByUser())
+		state |= QStyle::State_Enabled;
+	if (isActive)
 	{
-		drawValueText(strValue, painter, rect, state, needTooltip);
-	}
-}
-
-QString QtnPropertyDelegate::toolTipImpl() const
-{
-	QString strValue;
-	propertyValueToStr(strValue);
-	return strValue;
-}
-
-bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(
-	QKeyEvent *keyEvent) const
-{
-	int key = keyEvent->key();
-	return (key == Qt::Key_Space || key == Qt::Key_Return);
-}
-
-void QtnPropertyDelegate::drawValueText(const QString &text,
-	QStylePainter &painter, const QRect &rect, const QStyle::State &state,
-	bool *needTooltip)
-{
-	Q_UNUSED(state);
-
-	if (text.isEmpty())
-		return;
-
-	painter.drawText(rect, Qt::AlignLeading | Qt::AlignVCenter,
-		qtnElidedText(painter, text, rect, needTooltip));
-}
-
-QLineEdit *QtnPropertyDelegate::createValueEditorLineEdit(QWidget *parent,
-	const QRect &rect, bool readOnly, QtnInplaceInfo *inplaceInfo)
-{
-	QLineEdit *lineEdit = new QLineEdit(parent);
-	lineEdit->setGeometry(rect);
-	lineEdit->setReadOnly(readOnly);
-
-	QString strValue;
-
-	if (ownerProperty->valueIsHidden())
-	{
-		lineEdit->setPlaceholderText(
-			QtnMultiProperty::getMultiValuePlaceholder());
-	} else
-	{
-		propertyValueToStr(strValue);
+		state |= QStyle::State_Selected;
+		state |= QStyle::State_HasFocus;
 	}
 
-	lineEdit->setText(strValue);
+	if (subState == QtnSubItemStateUnderCursor)
+		state |= QStyle::State_MouseOver;
+	else if (subState == QtnSubItemStatePushed)
+		state |= QStyle::State_Sunken;
 
-	qtnInitLineEdit(lineEdit, inplaceInfo);
-
-	return lineEdit;
-}
-
-QtnInplaceInfo::QtnInplaceInfo()
-	: activationEvent(0)
-{
+	return state;
 }

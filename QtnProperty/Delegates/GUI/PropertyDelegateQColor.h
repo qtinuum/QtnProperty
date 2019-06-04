@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,34 +18,54 @@ limitations under the License.
 #ifndef PROPERTY_DELEGATE_QCOLOR_H
 #define PROPERTY_DELEGATE_QCOLOR_H
 
-#include "QtnProperty/Delegates/PropertyDelegate.h"
-
-class QtnPropertyQColorBase;
+#include "QtnProperty/Delegates/Utils/PropertyDelegateMisc.h"
+#include "QtnProperty/GUI/PropertyQColor.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQColor
-	: public QtnPropertyDelegateTyped<QtnPropertyQColorBase>
+	: public QtnPropertyDelegateTypedEx<QtnPropertyQColorBase>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQColor)
 
 public:
 	QtnPropertyDelegateQColor(QtnPropertyQColorBase &owner);
 
-	static bool Register();
+	static void Register(QtnPropertyDelegateFactory &factory);
 
 protected:
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
+		const QtnPropertyDelegateInfo &info) override;
 
-	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
-		const QStyle::State &state, bool *needTooltip = nullptr) const override;
+	virtual void drawValueImpl(
+		QStylePainter &painter, const QRect &rect) const override;
 
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 
 private:
 	quint32 m_shape;
+};
+
+class QTN_IMPORT_EXPORT QtnPropertyDelegateQColorSolid
+	: public QtnPropertyDelegateTyped<QtnPropertyQColorBase>
+{
+	Q_DISABLE_COPY(QtnPropertyDelegateQColorSolid)
+
+public:
+	QtnPropertyDelegateQColorSolid(QtnPropertyQColorBase &owner);
+
+	static void Register(QtnPropertyDelegateFactory &factory);
+
+protected:
+	virtual bool createSubItemValueImpl(
+		QtnDrawContext &context, QtnSubItem &subItemValue) override;
+
+	virtual void drawValueImpl(
+		QStylePainter &painter, const QRect &rect) const override;
+
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
 };
 
 #endif // PROPERTY_DELEGATE_QCOLOR_H

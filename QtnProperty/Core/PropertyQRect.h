@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,16 +28,11 @@ class QTN_IMPORT_EXPORT QtnPropertyQRectBase
 {
 	Q_OBJECT
 
-	bool coordinates;
-
 private:
 	QtnPropertyQRectBase(const QtnPropertyQRectBase &other) Q_DECL_EQ_DELETE;
 
 public:
 	explicit QtnPropertyQRectBase(QObject *parent);
-
-	inline bool coordinateMode() const;
-	void setMode(bool coordinates);
 
 	QtnProperty *createLeftProperty(bool move);
 	QtnProperty *createTopProperty(bool move);
@@ -46,21 +41,14 @@ public:
 	QtnProperty *createWidthProperty();
 	QtnProperty *createHeightProperty();
 
-	static QByteArray qtnQRect_LTRB();
-	static QByteArray qtnQRect_LTWH();
-
 protected:
 	// string conversion implementation
-	bool fromStrImpl(const QString &str, bool edit) override;
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQRectBase)
 };
-
-bool QtnPropertyQRectBase::coordinateMode() const
-{
-	return coordinates;
-}
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQRectBase, QRect)
 
@@ -91,15 +79,21 @@ private:
 public:
 	Q_INVOKABLE explicit QtnPropertyQRect(QObject *parent = nullptr);
 
-	static QString getToStringFormat(bool coordinates);
+	static QByteArray delegateName(bool coordinateMode);
+
+	static QString getToStringFormat(bool m_coordinates);
+	static QString leftKey();
 	static QString leftString();
-	static QString leftDescription();
+	static QString leftDescriptionFmt();
+	static QString topKey();
 	static QString topString();
-	static QString topDescription();
+	static QString topDescriptionFmt();
+	static QString rightKey();
 	static QString rightString();
-	static QString rightDescription();
+	static QString rightDescriptionFmt();
+	static QString bottomKey();
 	static QString bottomString();
-	static QString bottomDescription();
+	static QString bottomDescriptionFmt();
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRect, QtnPropertyQRectBase)
 };

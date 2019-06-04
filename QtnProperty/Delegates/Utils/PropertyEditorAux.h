@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,24 +19,59 @@ limitations under the License.
 #define PROPERTY_EDITOR_AUX_H
 
 #include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Delegates/PropertyDelegate.h"
 
 #include <QLineEdit>
 #include <QToolButton>
+#include <QComboBox>
 
 class QKeyEvent;
 class QtnInplaceInfo;
-class QtnProperty;
 
 class QTN_IMPORT_EXPORT QtnLineEditBttn : public QWidget
 {
 public:
 	QtnLineEditBttn(QWidget *parent);
 
-	void setTextForProperty(QtnProperty *property, const QString &text);
+	void setTextForProperty(QtnPropertyBase *property, const QString &text);
 
 	QLineEdit *lineEdit;
 	QToolButton *toolButton;
 };
+
+class QTN_IMPORT_EXPORT QtnPropertyComboBox : public QComboBox
+{
+	QtnPropertyDelegate *m_delegate;
+
+public:
+	explicit QtnPropertyComboBox(
+		QtnPropertyDelegate *delegate, QWidget *parent = Q_NULLPTR);
+
+	inline QtnPropertyDelegate *delegate() const;
+	inline QtnPropertyBase *property() const;
+	inline QtnPropertyBase *stateProperty() const;
+
+private:
+	virtual void paintEvent(QPaintEvent *event) override;
+
+protected:
+	virtual void customPaint(QPainter &painter, const QRect &rect);
+};
+
+QtnPropertyDelegate *QtnPropertyComboBox::delegate() const
+{
+	return m_delegate;
+}
+
+QtnPropertyBase *QtnPropertyComboBox::property() const
+{
+	return m_delegate->property();
+}
+
+QtnPropertyBase *QtnPropertyComboBox::stateProperty() const
+{
+	return m_delegate->stateProperty();
+}
 
 enum QtnNumType
 {

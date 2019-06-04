@@ -301,6 +301,13 @@ public:
     QtnPropertyQColorCallback& cpc;
     QtnPropertyQFont& fnp;
     QtnPropertyQFontCallback& fnpc;
+    QtnPropertyButton& bttn;
+    QtnPropertyQPointF& ppf;
+    QtnPropertyQPointFCallback& ppfc;
+    QtnPropertyQRectF& rpf;
+    QtnPropertyQRectFCallback& rpfc;
+    QtnPropertyQSizeF& szpf;
+    QtnPropertyQSizeFCallback& szpfc;
     // end children declarations
 
 protected:
@@ -324,13 +331,60 @@ private:
         double _d;
         QString _s;
         QRect _r;
+        QRectF _rf;
         QPoint _p;
+        QPointF _pf;
         QSize _sz;
+        QSizeF _szf;
         QtnEnumValueType _e;
         QtnEnumFlagsValueType _ef;
         QColor _cl;
         QFont _fn;
     
+};
+
+class MY_TYPE
+{
+public:
+    enum Enum
+    {
+        MY_TYPE1 = 1,
+        MY_TYPE2 = 2
+    };
+    
+    static const QtnEnumInfo& info();
+    static const unsigned int values_count = 2;
+};
+
+class QtnPropertySetTest12: public QtnPropertySet
+{
+    Q_OBJECT
+    //Q_DISABLE_COPY(QtnPropertySetTest12)
+
+public:
+    // constructor declaration
+    explicit QtnPropertySetTest12(QObject* parent = 0);
+    // destructor declaration
+    virtual ~QtnPropertySetTest12();
+    // assignment declaration
+    QtnPropertySetTest12& operator=(const QtnPropertySetTest12& other);
+    
+    // start children declarations
+    QtnPropertyEnum& p;
+    // end children declarations
+
+protected:
+    // cloning implementation
+    QtnPropertySet* createNewImpl(QObject* parentForNew) const override;
+    QtnPropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    // copy values implementation
+    bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) override;
+
+private:
+    void init();
+    void connectSlots();
+    void disconnectSlots();
+    void connectDelegates();
 };
 
 #endif // TEST_H

@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateEnum.h"
-#include "Core/PropertyEnum.h"
 #include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorHandler.h"
-#include "PropertyDelegateAttrs.h"
+#include "Delegates/Utils/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyEditorAux.h"
 
 #include <QComboBox>
 #include <QLineEdit>
@@ -29,7 +28,7 @@ class QtnPropertyEnumComboBoxHandler
 {
 public:
 	QtnPropertyEnumComboBoxHandler(
-		QtnPropertyEnumBase &property, QComboBox &editor);
+		QtnPropertyDelegate *delegate, QComboBox &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -38,10 +37,9 @@ private:
 	void onCurrentIndexChanged(int index);
 };
 
-bool QtnPropertyDelegateEnum::Register()
+void QtnPropertyDelegateEnum::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyEnumBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyEnumBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateEnum, QtnPropertyEnumBase>,
 		qtnComboBoxDelegate());
 }
@@ -59,53 +57,40 @@ QWidget *QtnPropertyDelegateEnum::createValueEditorImpl(
 	if (!info)
 		return 0;
 
-	if (owner().isEditableByUser())
-	{
-		QComboBox *combo = new QComboBox(parent);
-		info->forEachEnumValue([combo](const QtnEnumValueInfo &value) -> bool {
-			combo->addItem(value.name(), QVariant(value.value()));
-			return true;
-		});
+	QComboBox *combo = new QtnPropertyComboBox(this, parent);
+	info->forEachEnumValue([combo](const QtnEnumValueInfo &value) -> bool {
+		combo->addItem(value.displayName(), QVariant(value.value()));
+		return true;
+	});
 
-		combo->setGeometry(rect);
+	combo->setGeometry(rect);
 
-		new QtnPropertyEnumComboBoxHandler(owner(), *combo);
+	new QtnPropertyEnumComboBoxHandler(this, *combo);
 
-		if (inplaceInfo)
-			combo->showPopup();
+	if (inplaceInfo)
+		combo->showPopup();
 
-		return combo;
-	}
-
-	const QtnEnumValueInfo *valueInfo = info->findByValue(owner());
-
-	if (!valueInfo)
-		return nullptr;
-
-	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
+	return combo;
 }
 
-bool QtnPropertyDelegateEnum::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateEnum::propertyValueToStrImpl(QString &strValue) const
 {
-	QtnEnumValueType value = owner().value();
 	const QtnEnumInfo *info = owner().enumInfo();
-	const QtnEnumValueInfo *valueInfo = info ? info->findByValue(value) : 0;
+	const QtnEnumValueInfo *valueInfo =
+		info ? info->findByValue(owner().value()) : 0;
 
 	if (!valueInfo)
 		return false;
 
-	strValue = valueInfo->name();
+	strValue = valueInfo->displayName();
 	return true;
 }
 
 QtnPropertyEnumComboBoxHandler::QtnPropertyEnumComboBoxHandler(
-	QtnPropertyEnumBase &property, QComboBox &editor)
-	: QtnPropertyEditorHandlerVT(property, editor)
+	QtnPropertyDelegate *delegate, QComboBox &editor)
+	: QtnPropertyEditorHandlerVT(delegate, editor)
 {
 	updateEditor();
-
-	if (!property.isEditableByUser())
-		editor.setDisabled(true);
 
 	QObject::connect(&editor,
 		static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -115,15 +100,14 @@ QtnPropertyEnumComboBoxHandler::QtnPropertyEnumComboBoxHandler(
 void QtnPropertyEnumComboBoxHandler::updateEditor()
 {
 	updating++;
+	editor().setEnabled(stateProperty()->isEditableByUser());
 
-	if (property().valueIsHidden())
+	if (stateProperty()->isMultiValue())
 		editor().setCurrentIndex(-1);
 	else
 	{
-		int index = editor().findData((int) property());
-
-		if (index >= 0)
-			editor().setCurrentIndex(index);
+		int index = editor().findData(property().value());
+		editor().setCurrentIndex(index);
 	}
 
 	updating--;

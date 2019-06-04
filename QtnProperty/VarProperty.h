@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -99,10 +99,10 @@ public:
 	};
 
 private:
-	static QtnPropertySet *NewExtraPropertySet(QObject *parent,
+	static QtnPropertySet *NewExtraPropertySet(QtnPropertySet *parent,
 		const QVariantMap &map, VarProperty *mapParent, const QString &name,
 		int index, const RegisterPropertyCallback &registerProperty);
-	static QtnPropertySet *NewExtraPropertyList(QObject *parent,
+	static QtnPropertySet *NewExtraPropertyList(QtnPropertySet *parent,
 		const QVariantList &list, VarProperty *mapParent, const QString &name,
 		int index, const RegisterPropertyCallback &registerProperty);
 

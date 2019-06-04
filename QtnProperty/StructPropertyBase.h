@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,68 +18,86 @@ limitations under the License.
 
 #include "Auxiliary/PropertyTemplates.h"
 
-template <typename VALUE_T, typename FIELD_PROP_T,
-	typename FIELD_T = typename FIELD_PROP_T::ValueType>
+template <typename FIELD_PROP_T, typename VALUE_T,
+	typename FIELD_RET = typename FIELD_PROP_T::ValueType,
+	typename FIELD_ARG = FIELD_RET>
+FIELD_PROP_T *qtnCreateFieldProperty(QtnSinglePropertyBase<VALUE_T> *property,
+	const QString &name, const QString &displayName, const QString &desc_fmt,
+	FIELD_RET (VALUE_T::*get)() const, void (VALUE_T::*set)(FIELD_ARG))
+{
+	using CallbackValueType = typename FIELD_PROP_T::ValueType;
+	using CallbackValueTypeStore = typename FIELD_PROP_T::ValueTypeStore;
+	using ValueTypeStore =
+		typename QtnSinglePropertyBase<VALUE_T>::ValueTypeStore;
+
+	Q_ASSERT(property);
+
+	auto result = new FIELD_PROP_T(nullptr);
+
+	result->setDisplayName(displayName);
+	result->setName(name);
+	result->setDescription(desc_fmt.arg(property->displayName()));
+	result->setCallbackValueGet([property, get]() -> CallbackValueTypeStore {
+		return (property->value().*get)();
+	});
+	result->setCallbackValueSet([property, set](CallbackValueType new_value) {
+		auto v = property->value();
+		(v.*set)(new_value);
+		property->setValue(v);
+	});
+
+	if (!property->isQObjectProperty() && property->isResettable())
+	{
+		result->addState(QtnPropertyStateResettable);
+		result->setCallbackValueDefault([property, get]() -> CallbackValueType {
+			ValueTypeStore value;
+			if (!property->readDefaultValue(value))
+			{
+				value = property->value();
+			}
+			return (value.*get)();
+		});
+	}
+
+	auto delegateInfoCallback = [property]() -> QtnPropertyDelegateInfo {
+		auto baseDelegate = property->delegateInfo();
+		QtnPropertyDelegateInfo result;
+		if (baseDelegate)
+		{
+			result.attributes = baseDelegate->attributes;
+			auto it = result.attributes.find(qtnFieldDelegateNameAttr());
+			if (it != result.attributes.end())
+			{
+				result.name = it.value().toByteArray();
+			}
+		}
+		return result;
+	};
+	result->setDelegateInfoCallback(delegateInfoCallback);
+	return result;
+}
+
+template <typename VALUE_T, typename FIELD_PROP_T>
 class QtnStructPropertyBase : public QtnSinglePropertyBase<VALUE_T>
 {
 	typedef QtnSinglePropertyBase<VALUE_T> Inherited;
 
 public:
-	typedef FIELD_PROP_T FieldProperty;
-	typedef FIELD_T FieldValueType;
-	typedef typename FIELD_PROP_T::ValueType CallbackValueType;
-	typedef typename FIELD_PROP_T::ValueTypeStore CallbackValueTypeStore;
 	typedef QtnStructPropertyBase ParentClass;
-	typedef typename Inherited::ValueTypeStore ValueTypeStore;
+
+	template <typename FIELD_RET = typename FIELD_PROP_T::ValueType,
+		typename FIELD_ARG = FIELD_RET>
+	inline FIELD_PROP_T *createFieldProperty(const QString &name,
+		const QString &displayName, const QString &desc_fmt,
+		FIELD_RET (VALUE_T::*get)() const, void (VALUE_T::*set)(FIELD_ARG))
+	{
+		return qtnCreateFieldProperty<FIELD_PROP_T, VALUE_T>(
+			this, name, displayName, desc_fmt, get, set);
+	}
 
 protected:
 	explicit QtnStructPropertyBase(QObject *parent)
 		: Inherited(parent)
 	{
-	}
-
-	QtnProperty *createFieldProperty(const QString &name,
-		const QString &desc_fmt, FieldValueType (VALUE_T::*get)() const,
-		void (VALUE_T::*set)(FieldValueType))
-	{
-		auto result = new FieldProperty(nullptr);
-
-		result->setName(name);
-		result->setDescription(desc_fmt.arg(this->name()));
-		result->setCallbackValueGet([this, get]() -> CallbackValueType {
-			return (Inherited::value().*get)();
-		});
-		result->setCallbackValueSet([this, set](CallbackValueType new_value) {
-			auto v = Inherited::value();
-			(v.*set)(new_value);
-			Inherited::setValue(v);
-		});
-
-		if (Inherited::isResettable())
-		{
-			result->addState(QtnPropertyStateResettable);
-			result->setCallbackValueDefault([this, get]() -> CallbackValueType {
-				ValueTypeStore value;
-				this->defaultValueImpl(value);
-				return (value.*get)();
-			});
-		}
-
-		auto delegateInfoCallback = [this]() -> QtnPropertyDelegateInfo {
-			auto baseDelegate = Inherited::delegateInfo();
-			QtnPropertyDelegateInfo result;
-			if (baseDelegate)
-			{
-				result.attributes = baseDelegate->attributes;
-			}
-			auto it = result.attributes.find(qtnFieldDelegateName());
-			if (it != result.attributes.end())
-			{
-				result.name = it.value().toByteArray();
-			}
-			return result;
-		};
-		result->setDelegateInfoCallback(delegateInfoCallback);
-		return result;
 	}
 };

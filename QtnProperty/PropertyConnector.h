@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ limitations under the License.
 #pragma once
 
 #include "CoreAPI.h"
+#include "Auxiliary/PropertyAux.h"
 
 #include <QObject>
 #include <QMetaProperty>
@@ -34,7 +35,7 @@ public:
 	void connectProperty(QObject *object, const QMetaProperty &metaProperty);
 
 	bool isResettablePropertyValue() const;
-	void resetPropertyValue(bool edit);
+	void resetPropertyValue(QtnPropertyChangeReason reason);
 
 	inline QObject *getObject() const;
 	inline const QMetaProperty &getMetaProperty() const;

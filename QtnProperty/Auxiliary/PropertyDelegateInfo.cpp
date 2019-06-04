@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@ limitations under the License.
 
 #include "PropertyDelegateInfo.h"
 #include "PropertyDelegateAttrs.h"
-
-QtnPropertyDelegateInfo::QtnPropertyDelegateInfo() {}
+#include "PropertyMacro.h"
 
 QtnPropertyDelegateInfo::QtnPropertyDelegateInfo(
 	const QtnPropertyDelegateInfo &other)
@@ -27,9 +26,26 @@ QtnPropertyDelegateInfo::QtnPropertyDelegateInfo(
 {
 }
 
-QByteArray qtnFieldDelegateName()
+QtnPropertyDelegateInfo::QtnPropertyDelegateInfo(
+	const QByteArray &name, const Attributes &attributes)
+	: name(name)
+	, attributes(attributes)
 {
-	returnQByteArrayLiteral("fieldDelegateName");
+}
+
+QByteArray qtnComboBoxDelegate()
+{
+	return QByteArrayLiteral("ComboBox");
+}
+
+QByteArray qtnCheckBoxDelegate()
+{
+	return QByteArrayLiteral("CheckBox");
+}
+
+QByteArray qtnFieldDelegateNameAttr()
+{
+	return QByteArrayLiteral("fieldDelegateName");
 }
 
 double qtnHundredPercent(double value)

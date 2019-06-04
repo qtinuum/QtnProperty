@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,18 +15,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 
-#include "PropertyWidget.h"
+#include "PropertyView.h"
 
 #include "Utils/InplaceEditing.h"
+#include "Utils/QtnConnections.h"
+#include "Delegates/Utils/PropertyDelegateMisc.h"
 
-#include <QtGui>
 #include <QApplication>
 #include <QScrollBar>
-#include <QStyleOptionFrameV3>
 #include <QHelpEvent>
 #include <QToolTip>
 
-#include <memory>
+struct QtnPropertyView::Item
+{
+	QtnPropertyBase *property;
+	std::unique_ptr<QtnPropertyDelegate> delegate;
+	int level;
+
+	Item *parent;
+	std::vector<std::unique_ptr<Item>> children;
+	QtnConnections connections;
+
+	Item();
+
+	inline bool collapsed() const;
+};
+
+struct QtnPropertyView::VisibleItem
+{
+	Item *item;
+	int level;
+	bool hasChildren;
+
+	mutable QList<QtnSubItem> subItems;
+	mutable bool subItemsValid;
+
+	VisibleItem();
+};
 
 class QtnPainterState
 {
@@ -38,20 +63,26 @@ private:
 	QPainter &m_p;
 };
 
+extern void set_smaller_text_osx(QWidget *w);
+
 QtnPropertyView::QtnPropertyView(QWidget *parent, QtnPropertySet *propertySet)
 	: QAbstractScrollArea(parent)
 	, m_propertySet(propertySet)
 	, m_activeProperty(nullptr)
 	, m_delegateFactory(&QtnPropertyDelegateFactory::staticInstance())
 	, m_visibleItemsValid(false)
+	, m_grabMouseSubItem(nullptr)
 	, m_style(QtnPropertyViewStyleLiveSplit)
 	, m_itemHeight(0)
 	, m_itemHeightSpacing(6)
-	, m_leadMargin(0)
+	, m_valueLeftMargin(0)
 	, m_splitRatio(0.5f)
 	, m_rubberBand(nullptr)
+	, m_mouseAtSplitter(false)
 	, m_accessibilityProxy(nullptr)
 {
+	set_smaller_text_osx(this);
+
 	setFocusPolicy(Qt::StrongFocus);
 	viewport()->setMouseTracking(true);
 
@@ -60,7 +91,10 @@ QtnPropertyView::QtnPropertyView(QWidget *parent, QtnPropertySet *propertySet)
 	updateItemsTree();
 }
 
-QtnPropertyView::~QtnPropertyView() {}
+QtnPropertyView::~QtnPropertyView()
+{
+	// destruct everything
+}
 
 QtnAccessibilityProxy *QtnPropertyView::accessibilityProxy()
 {
@@ -80,15 +114,12 @@ void QtnPropertyView::onActivePropertyDestroyed()
 void QtnPropertyView::onEditedPropertyWillChange(
 	QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
 {
-	if (0 != (reason & QtnPropertyChangeReasonEditValue))
+	if (reason & QtnPropertyChangeReasonEditValue)
 	{
-		auto property = qobject_cast<QtnPropertyBase *>(sender());
-		Q_ASSERT(nullptr != property);
+		Q_ASSERT(nullptr != qobject_cast<QtnPropertyBase *>(sender()));
+		auto property = static_cast<QtnPropertyBase *>(sender());
 
-		auto rootProperty = property->getRootProperty()->asProperty();
-		Q_ASSERT(nullptr != rootProperty);
-
-		emit beforePropertyEdited(rootProperty, newValue, typeId);
+		emit beforePropertyEdited(property, newValue, typeId);
 	}
 }
 
@@ -96,13 +127,10 @@ void QtnPropertyView::onEditedPropertyDidChange(QtnPropertyChangeReason reason)
 {
 	if (0 != (reason & QtnPropertyChangeReasonEditValue))
 	{
-		auto property = qobject_cast<QtnPropertyBase *>(sender());
-		Q_ASSERT(nullptr != property);
+		Q_ASSERT(nullptr != qobject_cast<QtnPropertyBase *>(sender()));
+		auto property = static_cast<QtnPropertyBase *>(sender());
 
-		auto rootProperty = property->getRootProperty()->asProperty();
-		Q_ASSERT(nullptr != rootProperty);
-
-		emit propertyEdited(rootProperty);
+		emit propertyEdited(property);
 	}
 }
 
@@ -110,10 +138,21 @@ void QtnPropertyView::setPropertySet(QtnPropertySet *newPropertySet)
 {
 	if (newPropertySet == m_propertySet)
 		return;
+	if (m_propertySet)
+	{
+		QObject::disconnect(m_propertySet, &QtnPropertyBase::destroyed, this,
+			&QtnPropertyView::onPropertySetDestroyed);
+	}
 
 	m_propertySet = newPropertySet;
+
+	if (m_propertySet)
+	{
+		QObject::connect(m_propertySet, &QtnPropertyBase::destroyed, this,
+			&QtnPropertyView::onPropertySetDestroyed);
+	}
+
 	updateItemsTree();
-	viewport()->update();
 }
 
 QtnPropertyBase *QtnPropertyView::getPropertyParent(
@@ -220,6 +259,11 @@ QtnPropertyBase *QtnPropertyView::getPropertyAt(
 	return nullptr;
 }
 
+int QtnPropertyView::valueLeftMargin() const
+{
+	return m_valueLeftMargin;
+}
+
 void QtnPropertyView::connectPropertyToEdit(
 	QtnPropertyBase *property, QtnConnections &outConnections)
 {
@@ -263,234 +307,37 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 	for (int i = firstVisibleItemIndex; i <= lastVisibleItemIndex; ++i)
 	{
 		const VisibleItem &vItem = m_visibleItems[i];
-
-		if (!vItem.item->delegate)
-			drawPropertySetItem(painter, itemRect, vItem);
-		else
-			drawPropertyItem(painter, itemRect, vItem);
-
-		// mark as valid actions after any painting
-		vItem.actionsValid = true;
-
+		drawItem(painter, itemRect, vItem);
 		itemRect.translate(0, m_itemHeight);
 	}
 }
 
-void QtnPropertyView::drawBranchNode(
-	QStylePainter &painter, QRect &rect, const VisibleItem &vItem)
+void QtnPropertyView::drawItem(
+	QStylePainter &painter, const QRect &rect, const VisibleItem &vItem) const
 {
-	if (!vItem.hasChildren)
+	if (!vItem.item->delegate.get())
+	{
 		return;
-
-	QRectF branchRect(rect.left(), rect.top(), rect.height(), rect.height());
-	//painter.drawRect(branchRect);
-	qreal side = branchRect.height() / 3.5f;
-
-	QPainterPath branchPath;
-
-	if (vItem.item->collapsed())
-	{
-		branchPath.moveTo(branchRect.left() + side, branchRect.top() + side);
-		branchPath.lineTo(branchRect.right() - side - 1,
-			branchRect.top() + branchRect.height() / 2.f);
-		branchPath.lineTo(branchRect.left() + side, branchRect.bottom() - side);
-		branchPath.closeSubpath();
-	} else
-	{
-		branchPath.moveTo(branchRect.left() + side, branchRect.top() + side);
-		branchPath.lineTo(branchRect.right() - side, branchRect.top() + side);
-		branchPath.lineTo(branchRect.left() + branchRect.width() / 2.f,
-			branchRect.bottom() - side - 1);
-		branchPath.closeSubpath();
 	}
 
-	if (painter.testRenderHint(QPainter::Antialiasing))
+	QMargins margins(m_valueLeftMargin + rect.height() * vItem.level, 0, 0, 0);
+	bool isActive = (m_activeProperty == vItem.item->property);
+
+	QtnDrawContext drawContext{ &painter, this, rect, margins, splitPosition(),
+		isActive, vItem.hasChildren };
+
+	// create sub-items if not initialized
+	if (!vItem.subItemsValid)
 	{
-		painter.fillPath(branchPath, palette().color(QPalette::Text));
-	} else
-	{
-		painter.setRenderHint(QPainter::Antialiasing, true);
-		painter.fillPath(branchPath, palette().color(QPalette::Text));
-		painter.setRenderHint(QPainter::Antialiasing, false);
+		Q_ASSERT(vItem.subItems.isEmpty());
+		vItem.item->delegate->createSubItems(drawContext, vItem.subItems);
+		vItem.subItemsValid = true;
 	}
 
-	// add action to collapse/expand branch
-	if (!vItem.actionsValid)
+	// draw sub-items
+	for (const auto &subItem : vItem.subItems)
 	{
-		Action branch;
-		branch.rect = branchRect.toRect(); //opt.rect;
-
-		QtnPropertyBase *property = vItem.item->property;
-		branch.action = [property](QEvent *e, QRect) -> bool {
-			if (e->type() == QEvent::MouseButtonPress)
-			{
-				property->toggleState(QtnPropertyStateCollapsed);
-				return true;
-			}
-
-			return false;
-		};
-
-		vItem.actions.append(branch);
-	}
-
-	// skip branch space
-	rect.setLeft(int(branchRect.right() + 1));
-}
-
-void QtnPropertyView::drawPropertySetItem(
-	QStylePainter &painter, const QRect &rect, const VisibleItem &vItem)
-{
-	bool enabled = vItem.item->property->isEditableByUser();
-	bool selected = m_activeProperty == vItem.item->property;
-
-	QPalette::ColorGroup cg = enabled ? QPalette::Active : QPalette::Disabled;
-
-	// fill background
-	painter.fillRect(rect,
-		selected ? palette().color(QPalette::Highlight)
-				 : m_propertySetBackdroundColor);
-
-	QRect nameRect = rect;
-
-	// skip levels indent
-	nameRect.setLeft(
-		nameRect.left() + m_leadMargin + nameRect.height() * vItem.level);
-
-	if (!nameRect.isValid())
-		return;
-
-	// draw branch node
-	drawBranchNode(painter, nameRect, vItem);
-
-	if (!nameRect.isValid())
-		return;
-
-	QtnPainterState s(painter);
-
-	// draw name
-	QFont font = painter.font();
-	font.setBold(true);
-	painter.setFont(font);
-
-	painter.setPen(palette().color(
-		cg, selected ? QPalette::HighlightedText : QPalette::Text));
-
-	QString elidedName = painter.fontMetrics().elidedText(
-		vItem.item->property->name(), Qt::ElideRight, nameRect.width());
-	painter.drawText(nameRect,
-		Qt::AlignLeading | Qt::AlignVCenter | Qt::TextSingleLine, elidedName);
-}
-
-void QtnPropertyView::drawPropertyItem(
-	QStylePainter &painter, const QRect &rect, const VisibleItem &vItem)
-{
-	bool enabled = vItem.item->property->isEditableByUser();
-	bool selected = m_activeProperty == vItem.item->property;
-
-	QStyle::State state = QStyle::State_Active;
-
-	if (enabled)
-		state |= QStyle::State_Enabled;
-
-	if (selected)
-	{
-		state |= QStyle::State_Selected;
-		state |= QStyle::State_HasFocus;
-	}
-
-	QPalette::ColorGroup cg = enabled ? QPalette::Active : QPalette::Disabled;
-
-	// fill background
-	if (selected)
-		painter.fillRect(rect, palette().color(QPalette::Highlight));
-
-	int splitPos = splitPosition();
-
-	QtnPainterState s(painter);
-
-	QPen linesPen(m_linesColor);
-	painter.setPen(linesPen);
-
-	painter.drawLine(rect.bottomLeft(), rect.bottomRight());
-	painter.drawLine(splitPos, rect.top(), splitPos, rect.bottom());
-
-	QRect nameRect = rect;
-	QRect valueRect = rect;
-	QRect editRect = rect;
-
-	nameRect.setRight(splitPosition());
-	valueRect.setLeft(splitPosition() + m_leadMargin + 1);
-	editRect.setLeft(splitPosition() + 1);
-
-	// skip levels space
-	nameRect.setLeft(
-		nameRect.left() + m_leadMargin + nameRect.height() * vItem.level);
-
-	if (!nameRect.isValid())
-		return;
-
-	// draw branch node
-	drawBranchNode(painter, nameRect, vItem);
-
-	if (!nameRect.isValid())
-		return;
-
-	// draw name
-	painter.setPen(palette().color(
-		cg, selected ? QPalette::HighlightedText : QPalette::Text));
-
-	auto font = painter.font();
-	auto property = vItem.item->property;
-	font.setBold(!property->valueIsDefault());
-	painter.setFont(font);
-
-	painter.drawText(nameRect,
-		Qt::AlignLeading | Qt::AlignVCenter | Qt::TextSingleLine,
-		qtnElidedText(painter, property->name(), nameRect));
-
-	font.setBold(false);
-	painter.setFont(font);
-
-	// draw property value
-	if (valueRect.isValid())
-	{
-		vItem.needTooltip = false;
-
-		// draw property value
-		vItem.item->delegate->drawValue(
-			painter, valueRect, state, &vItem.needTooltip);
-
-		// add action to edit property value
-		if (!vItem.actionsValid)
-		{
-			Action edit;
-			edit.rect = editRect;
-
-			auto propertyDelegate = vItem.item->delegate.get();
-			edit.action = [propertyDelegate, this](
-							  QEvent *e, QRect rect) -> bool {
-				bool doEdit = false;
-
-				if (this->propertyViewStyle() &
-					QtnPropertyViewStyleDblClickActivation)
-				{
-					doEdit = (e->type() == QEvent::MouseButtonDblClick);
-				} else
-				{
-					doEdit = (e->type() == QEvent::MouseButtonRelease);
-				}
-
-				if (doEdit)
-				{
-					return startPropertyEdit(propertyDelegate, e, rect);
-				}
-
-				return false;
-			};
-
-			vItem.actions.append(edit);
-		}
+		subItem.draw(drawContext);
 	}
 }
 
@@ -502,10 +349,20 @@ void QtnPropertyView::changeActivePropertyByIndex(int index)
 	ensureVisibleItemByIndex(index);
 }
 
-int QtnPropertyView::visibleItemIndexByPoint(QPoint pos) const
+QtnPropertyBase *QtnPropertyView::visiblePropertyAtPoint(
+	const QPoint &pos) const
+{
+	int index = visibleItemIndexByPoint(pos);
+
+	if (index < 0)
+		return nullptr;
+
+	return m_visibleItems[index].item->property;
+}
+
+int QtnPropertyView::visibleItemIndexByPoint(const QPoint &pos) const
 {
 	int index = (verticalScrollBar()->value() + pos.y()) / m_itemHeight;
-
 	if (index >= m_visibleItems.size())
 		return -1;
 
@@ -518,10 +375,8 @@ int QtnPropertyView::visibleItemIndexByProperty(
 	validateVisibleItems();
 
 	for (int i = 0, n = m_visibleItems.size(); i < n; ++i)
-	{
 		if (m_visibleItems[i].item->property == property)
 			return i;
-	}
 
 	return -1;
 }
@@ -537,34 +392,46 @@ QRect QtnPropertyView::visibleItemRect(int index) const
 	return rect;
 }
 
-bool QtnPropertyView::processItemActionByMouse(int index, QMouseEvent *e)
+QRect QtnPropertyView::propertyActionRect(
+	QtnPropertyBase *property, int actionIndex)
+{
+	if (!property)
+		return QRect();
+
+	int index = visibleItemIndexByProperty(property);
+
+	if (index < 0)
+		return QRect();
+
+	const auto &item = m_visibleItems[index];
+
+	if (!item.subItemsValid)
+		return QRect();
+
+	if (actionIndex < 0 || actionIndex >= item.subItems.size())
+		return QRect();
+
+	return item.subItems[actionIndex].rect;
+}
+
+bool QtnPropertyView::handleMouseEvent(int index, QEvent *e, QPoint mousePos)
 {
 	if (index < 0)
-		return false;
-
-	const VisibleItem &vItem = m_visibleItems[index];
-
-	if (!vItem.actionsValid)
-		return false;
-
-	const QList<Action> &actions = vItem.actions;
-
-	for (const Action &action : actions)
 	{
-		if (action.rect.contains(e->pos()))
-		{
-			return action.action(e, action.rect);
-		}
+		deactivateSubItems();
+		return false;
 	}
 
-	return false;
+	QtnEventContext context{ e, this };
+	return handleEvent(context, m_visibleItems[index], mousePos);
 }
 
 void QtnPropertyView::resizeEvent(QResizeEvent *e)
 {
 	Q_UNUSED(e);
+
 	qtnStopInplaceEdit();
-	invalidateVisibleItemsActions();
+	invalidateSubItems();
 	updateVScrollbar();
 }
 
@@ -585,11 +452,10 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 	} else
 	{
 		int index = visibleItemIndexByPoint(e->pos());
-
 		if (index >= 0)
 		{
 			changeActivePropertyByIndex(index);
-			processItemActionByMouse(index, e);
+			handleMouseEvent(index, e, e->pos());
 		}
 
 		QAbstractScrollArea::mousePressEvent(e);
@@ -608,8 +474,7 @@ void QtnPropertyView::mouseReleaseEvent(QMouseEvent *e)
 		updateSplitRatio((float) (e->x() - rect.left()) / (float) rect.width());
 	} else
 	{
-		processItemActionByMouse(visibleItemIndexByPoint(e->pos()), e);
-
+		handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos());
 		emit mouseReleased(e);
 	}
 }
@@ -632,22 +497,25 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)
 		}
 	} else if (qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
-		setCursor(Qt::SplitHCursor);
+		if (!m_mouseAtSplitter)
+		{
+			m_mouseAtSplitter = true;
+			m_oldCursor = cursor();
+			setCursor(Qt::SplitHCursor);
+		}
 	} else
 	{
-		setCursor(Qt::ArrowCursor);
-
-		int index = visibleItemIndexByPoint(e->pos());
-
-		if (index >= 0)
+		if (m_mouseAtSplitter)
 		{
-			if (e->buttons() & Qt::LeftButton)
-				changeActivePropertyByIndex(index);
-			else
-				processItemActionByMouse(index, e);
+			m_mouseAtSplitter = false;
+			setCursor(m_oldCursor);
 		}
 
-		QAbstractScrollArea::mouseMoveEvent(e);
+		int index = visibleItemIndexByPoint(e->pos());
+		if (e->buttons() & Qt::LeftButton)
+			changeActivePropertyByIndex(index);
+		//else
+		handleMouseEvent(index, e, e->pos());
 	}
 }
 
@@ -655,7 +523,7 @@ void QtnPropertyView::mouseDoubleClickEvent(QMouseEvent *e)
 {
 	if (!m_rubberBand)
 	{
-		processItemActionByMouse(visibleItemIndexByPoint(e->pos()), e);
+		handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos());
 		QAbstractScrollArea::mouseDoubleClickEvent(e);
 	}
 }
@@ -675,6 +543,10 @@ bool QtnPropertyView::viewportEvent(QEvent *e)
 			break;
 		}
 
+		case QEvent::Leave:
+			deactivateSubItems();
+			break;
+
 		default:; // do nothing
 	}
 
@@ -686,7 +558,7 @@ void QtnPropertyView::scrollContentsBy(int dx, int dy)
 	if (dx != 0 || dy != 0)
 	{
 		qtnStopInplaceEdit();
-		invalidateVisibleItemsActions();
+		invalidateSubItems();
 	}
 
 	QAbstractScrollArea::scrollContentsBy(dx, dy);
@@ -703,11 +575,9 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 	}
 
 	QWidget *inplaceEditor = qtnGetInplaceEdit();
-
 	if (inplaceEditor)
 	{
 		int key = e->key();
-
 		if (key == Qt::Key_Escape || key == Qt::Key_Return ||
 			key == Qt::Key_Enter)
 		{
@@ -715,7 +585,6 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 			// eat event
 			e->accept();
 		}
-
 		return;
 	}
 
@@ -739,12 +608,10 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 		{
 			// go to previous item
 			int index = visibleItemIndexByProperty(activeProperty());
-
 			if (index < 0)
 				changeActivePropertyByIndex(0);
 			else
 				changeActivePropertyByIndex(qMax(0, index - 1));
-
 			break;
 		}
 
@@ -752,13 +619,11 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 		{
 			// go to next item
 			int index = visibleItemIndexByProperty(activeProperty());
-
 			if (index < 0)
 				changeActivePropertyByIndex(0);
 			else
 				changeActivePropertyByIndex(
 					qMin(m_visibleItems.size() - 1, index + 1));
-
 			break;
 		}
 
@@ -766,7 +631,6 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 		{
 			// go to previous page
 			int index = visibleItemIndexByProperty(activeProperty());
-
 			if (index < 0)
 				changeActivePropertyByIndex(0);
 			else
@@ -775,7 +639,6 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 					qMax(viewport()->rect().height() / m_itemHeight, 1);
 				changeActivePropertyByIndex(qMax(0, index - itemsPerPage));
 			}
-
 			break;
 		}
 
@@ -783,7 +646,6 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 		{
 			// go to next page
 			int index = visibleItemIndexByProperty(activeProperty());
-
 			if (index < 0)
 				changeActivePropertyByIndex(0);
 			else
@@ -793,7 +655,6 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 				changeActivePropertyByIndex(
 					qMin(m_visibleItems.size() - 1, index + itemsPerPage));
 			}
-
 			break;
 		}
 
@@ -801,13 +662,11 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 		{
 			// go to parent item or collapse
 			int index = visibleItemIndexByProperty(activeProperty());
-
 			if (index < 0)
 				changeActivePropertyByIndex(0);
 			else
 			{
 				const VisibleItem &vItem = m_visibleItems[index];
-
 				if (vItem.hasChildren && !vItem.item->collapsed())
 				{
 					// collapse opened property
@@ -818,7 +677,6 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 					setActiveProperty(vItem.item->parent->property, true);
 				}
 			}
-
 			break;
 		}
 
@@ -826,13 +684,11 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 		{
 			// go to child item or expand
 			int index = visibleItemIndexByProperty(activeProperty());
-
 			if (index < 0)
 				changeActivePropertyByIndex(0);
 			else
 			{
 				const VisibleItem &vItem = m_visibleItems[index];
-
 				if (vItem.hasChildren && vItem.item->collapsed())
 				{
 					// expand closed property
@@ -845,7 +701,6 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 						vItem.item->children.front()->property, true);
 				}
 			}
-
 			break;
 		}
 
@@ -855,16 +710,9 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 
 			if (index >= 0)
 			{
-				const auto &delegate = m_visibleItems[index].item->delegate;
-
-				if (delegate && delegate->acceptKeyPressedForInplaceEdit(e))
+				QtnEventContext context{ e, this };
+				if (handleEvent(context, m_visibleItems[index], QPoint()))
 				{
-					QRect valueRect = visibleItemRect(index);
-					valueRect.setLeft(splitPosition());
-
-					if (!startPropertyEdit(delegate.get(), e, valueRect))
-						return;
-
 					// eat event
 					e->accept();
 					return;
@@ -877,55 +725,66 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 	}
 }
 
-static QString qtnGetPropertyTooltip(const QtnPropertyBase *property)
+void QtnPropertyView::wheelEvent(QWheelEvent *e)
 {
-	if (!property)
-		return QString();
+	bool processed =
+		handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos());
+	if (processed)
+		return;
 
-	QString tooltipText = property->description();
-
-	if (tooltipText.isEmpty())
-		tooltipText = property->name();
-
-	return tooltipText;
+	QAbstractScrollArea::wheelEvent(e);
 }
 
 void QtnPropertyView::tooltipEvent(QHelpEvent *e)
 {
-	int index = visibleItemIndexByPoint(e->pos());
-
-	if (index >= 0)
-	{
-		QRect rect = visibleItemRect(index);
-		int splitPos = splitPosition();
-
-		QString tooltipText;
-
-		const VisibleItem &vItem = m_visibleItems[index];
-
-		// propertyset case
-		if (!vItem.item->delegate)
-		{
-			tooltipText = qtnGetPropertyTooltip(vItem.item->property);
-		}
-		// name sub rect
-		else if (e->x() < splitPos)
-		{
-			rect.setRight(splitPos);
-			tooltipText = qtnGetPropertyTooltip(vItem.item->property);
-		}
-		// value sub rect
-		else if (vItem.needTooltip)
-		{
-			rect.setLeft(splitPos);
-			tooltipText = vItem.item->delegate->toolTip();
-		}
-
-		QToolTip::showText(e->globalPos(), tooltipText, this, rect);
-	} else
+	if (!handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos()))
 	{
 		QToolTip::hideText();
 	}
+}
+
+bool QtnPropertyView::handleEvent(
+	QtnEventContext &context, VisibleItem &vItem, QPoint mousePos)
+{
+	if (!vItem.subItemsValid)
+		return false;
+
+	// process event
+	if (m_grabMouseSubItem)
+		return m_grabMouseSubItem->event(context);
+	else
+	{
+		// update list of sub items under cursor
+		QList<QtnSubItem *> activeSubItems;
+
+		// make list of new active sub items
+		for (auto &subItem : vItem.subItems)
+		{
+			if (mousePos.isNull() || subItem.rect.contains(mousePos))
+			{
+				subItem.activate(this, mousePos);
+				activeSubItems.append(&subItem);
+			}
+		}
+
+		// deactivate old sub items
+		for (auto activeSubItem : m_activeSubItems)
+		{
+			activeSubItem->deactivate(this, mousePos);
+		}
+
+		// adopt new active sub items
+		m_activeSubItems.swap(activeSubItems);
+
+		// process event
+		for (auto activeSubItem : m_activeSubItems)
+		{
+			if (activeSubItem->event(context))
+				return true;
+		}
+	}
+
+	return false;
 }
 
 QtnPropertyView::Item::Item()
@@ -935,11 +794,37 @@ QtnPropertyView::Item::Item()
 {
 }
 
-QtnPropertyView::Item::~Item() {}
-
 bool QtnPropertyView::Item::collapsed() const
 {
 	return property->isCollapsed();
+}
+
+bool QtnPropertyView::grabMouseForSubItem(QtnSubItem *subItem, QPoint mousePos)
+{
+	Q_ASSERT(!m_grabMouseSubItem);
+	if (m_grabMouseSubItem)
+		return false;
+
+	viewport()->grabMouse();
+	m_grabMouseSubItem = subItem;
+	m_grabMouseSubItem->grabMouse(this, mousePos);
+
+	return true;
+}
+
+bool QtnPropertyView::releaseMouseForSubItem(
+	QtnSubItem *subItem, QPoint mousePos)
+{
+	Q_UNUSED(subItem);
+	Q_ASSERT(m_grabMouseSubItem == subItem);
+	if (!m_grabMouseSubItem)
+		return false;
+
+	m_grabMouseSubItem->releaseMouse(this, mousePos);
+	m_grabMouseSubItem = nullptr;
+	viewport()->releaseMouse();
+
+	return true;
 }
 
 void QtnPropertyView::updateItemsTree()
@@ -962,57 +847,27 @@ QtnPropertyView::Item *QtnPropertyView::createItemsTree(
 		QObject::connect(rootProperty, &QtnPropertyBase::propertyDidChange,
 			this, &QtnPropertyView::onPropertyDidChange));
 
-	QtnProperty *asProperty = rootProperty->asProperty();
+	auto delegate = m_delegateFactory.createDelegate(*rootProperty);
+	item->delegate.reset(delegate);
 
-	if (asProperty)
+	if (delegate)
 	{
-		auto &delegate = item->delegate;
-		delegate.reset(m_delegateFactory.createDelegate(*asProperty));
-
-		if (delegate)
+		// apply attributes
+		auto delegateInfo = rootProperty->delegateInfo();
+		if (delegateInfo)
 		{
-			// apply attributes
-			auto delegateInfo = asProperty->delegateInfo();
-
-			if (delegateInfo)
-			{
-				delegate->applyAttributes(delegateInfo->attributes);
-			}
-
-			int n = delegate->subPropertyCount();
-			item->children.reserve(n);
-
-			// process delegate subproperties
-			for (int i = 0; i < n; ++i)
-			{
-				QtnPropertyBase *child = delegate->subProperty(i);
-				Q_ASSERT(child);
-
-				auto childItem = createItemsTree(child);
-				childItem->parent = item;
-				item->children.emplace_back(childItem);
-			}
+			delegate->applyAttributes(*delegateInfo);
 		}
-	} else
-	{
-		QtnPropertySet *asPropertySet = rootProperty->asPropertySet();
 
-		if (asPropertySet)
+		// process delegate subproperties
+		for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
 		{
-			auto &childProperties = asPropertySet->childProperties();
-			item->children.reserve(childProperties.size());
+			auto child = delegate->subProperty(i);
+			Q_ASSERT(child);
 
-			// process property set subproperties
-			for (auto child : childProperties)
-			{
-				auto childItem = createItemsTree(child);
-				childItem->parent = item;
-				item->children.emplace_back(childItem);
-			}
-		} else
-		{
-			// unrecognized PropertyBase class
-			Q_UNREACHABLE();
+			auto childItem = createItemsTree(child);
+			childItem->parent = item;
+			item->children.emplace_back(childItem);
 		}
 	}
 
@@ -1030,53 +885,12 @@ void QtnPropertyView::setActivePropertyInternal(QtnPropertyBase *property)
 	connectActiveProperty();
 }
 
-bool QtnPropertyView::startPropertyEdit(
-	QtnPropertyDelegate *delegate, QEvent *e, const QRect &rect)
-{
-	Q_ASSERT(nullptr != delegate);
-
-	QtnInplaceInfo inplaceInfo;
-	inplaceInfo.activationEvent = e;
-
-	auto property = delegate->getOwnerProperty();
-	Q_ASSERT(nullptr != property);
-
-	auto connections = std::make_shared<QtnConnections>();
-	bool editable = property->isEditableByUser();
-
-	if (editable)
-	{
-		connections->push_back(QObject::connect(property, &QObject::destroyed,
-			[connections]() { connections->clear(); }));
-
-		connectPropertyToEdit(property, *connections);
-	}
-
-	auto editor = delegate->createValueEditor(viewport(), rect, &inplaceInfo);
-
-	auto editFinished = [connections]() { connections->disconnect(); };
-
-	if (nullptr == editor)
-	{
-		if (editable)
-			editFinished();
-
-		return false;
-	}
-
-	QObject::connect(editor, &QObject::destroyed, editFinished);
-
-	if (!editor->isVisible())
-		editor->show();
-
-	qtnStartInplaceEdit(editor);
-	return true;
-}
-
 void QtnPropertyView::invalidateVisibleItems()
 {
+	deactivateSubItems();
 	m_visibleItemsValid = false;
-	update();
+	m_visibleItems.clear();
+	viewport()->update();
 }
 
 void QtnPropertyView::validateVisibleItems() const
@@ -1084,7 +898,6 @@ void QtnPropertyView::validateVisibleItems() const
 	if (m_visibleItemsValid)
 		return;
 
-	m_visibleItems.clear();
 	fillVisibleItems(
 		m_itemsTree.get(), (m_style & QtnPropertyViewStyleShowRoot) ? 0 : -1);
 
@@ -1176,7 +989,7 @@ void QtnPropertyView::updateStyleStuff()
 	m_propertySetBackdroundColor = m_linesColor =
 		palette().color(QPalette::Button);
 
-	m_leadMargin = style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
+	m_valueLeftMargin = style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
 }
 
 bool QtnPropertyView::ensureVisibleItemByIndex(int index)
@@ -1201,13 +1014,31 @@ bool QtnPropertyView::ensureVisibleItemByIndex(int index)
 	return true;
 }
 
-void QtnPropertyView::invalidateVisibleItemsActions()
+void QtnPropertyView::invalidateSubItems()
 {
-	for (auto it = m_visibleItems.begin(); it != m_visibleItems.end(); ++it)
+	deactivateSubItems();
+
+	for (auto &item : m_visibleItems)
 	{
-		(*it).actionsValid = false;
-		(*it).actions.clear();
+		item.subItemsValid = false;
+		item.subItems.clear();
 	}
+}
+
+void QtnPropertyView::deactivateSubItems()
+{
+	if (m_grabMouseSubItem)
+	{
+		viewport()->releaseMouse();
+		m_grabMouseSubItem = nullptr;
+	}
+
+	for (auto subItem : m_activeSubItems)
+		subItem->deactivate(this, QPoint());
+
+	m_activeSubItems.clear();
+
+	QToolTip::hideText();
 }
 
 int QtnPropertyView::splitPosition() const
@@ -1218,8 +1049,8 @@ int QtnPropertyView::splitPosition() const
 void QtnPropertyView::updateSplitRatio(float splitRatio)
 {
 	m_splitRatio = qBound(0.f, splitRatio, 1.f);
-	// firce to regenerate actions
-	invalidateVisibleItemsActions();
+	// firce to regenerate sub-items
+	invalidateSubItems();
 	// repaint
 	viewport()->update();
 }
@@ -1253,8 +1084,10 @@ void QtnPropertyView::onPropertyDidChange(QtnPropertyChangeReason reason)
 	} else if (reason & QtnPropertyChangeReasonState)
 	{
 		invalidateVisibleItems();
+	} else
+	{
+		viewport()->update();
 	}
-	viewport()->update();
 
 	emit propertiesChanged(reason);
 }
@@ -1283,14 +1116,15 @@ QtnPropertyView::VisibleItem::VisibleItem()
 	: item(nullptr)
 	, level(0)
 	, hasChildren(false)
-	, actionsValid(false)
-	, needTooltip(false)
+	, subItemsValid(false)
 {
 }
 
-QtnPropertyViewFilter::~QtnPropertyViewFilter() {}
-
-QtnPropertyViewFilter::QtnPropertyViewFilter() {}
+void QtnPropertyView::onPropertySetDestroyed()
+{
+	m_propertySet = nullptr;
+	updateItemsTree();
+}
 
 QtnPainterState::QtnPainterState(QPainter &p)
 	: m_p(p)

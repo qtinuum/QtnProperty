@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ limitations under the License.
 #ifndef QTN_PROPERTYVIEW_H
 #define QTN_PROPERTYVIEW_H
 
-#include "CoreAPI.h"
+#include "PropertyWidgetAPI.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Utils/AccessibilityProxy.h"
-#include "Utils/QtnConnections.h"
 
 #include <QAbstractScrollArea>
 
@@ -29,19 +28,7 @@ limitations under the License.
 
 class QRubberBand;
 class QHelpEvent;
-
-class QTN_IMPORT_EXPORT QtnPropertyViewFilter
-{
-	Q_DISABLE_COPY(QtnPropertyViewFilter)
-
-public:
-	virtual bool accept(const QtnPropertyBase *property) const = 0;
-
-	virtual ~QtnPropertyViewFilter();
-
-protected:
-	QtnPropertyViewFilter();
-};
+class QtnConnections;
 
 enum QtnPropertyViewStyleFlag
 {
@@ -94,105 +81,76 @@ public:
 
 	void connectPropertyToEdit(
 		QtnPropertyBase *property, QtnConnections &outConnections);
+	int valueLeftMargin() const;
 
 public slots:
 	QtnAccessibilityProxy *accessibilityProxy();
 
-Q_SIGNALS:
+signals:
 	void propertiesChanged(QtnPropertyChangeReason reason);
 	// emits when active property has changed
 	void activePropertyChanged(QtnPropertyBase *activeProperty);
 	void mouseReleased(QMouseEvent *e);
 	void beforePropertyEdited(
-		QtnProperty *property, QtnPropertyValuePtr newValue, int typeId);
-	void propertyEdited(QtnProperty *property);
+		QtnPropertyBase *property, QtnPropertyValuePtr newValue, int typeId);
+	void propertyEdited(QtnPropertyBase *property);
 
-private slots:
+private:
 	void onActivePropertyDestroyed();
 	void onEditedPropertyWillChange(QtnPropertyChangeReason reason,
 		QtnPropertyValuePtr newValue, int typeId);
 	void onEditedPropertyDidChange(QtnPropertyChangeReason reason);
 
 protected:
-	virtual void paintEvent(QPaintEvent *e) override;
-	virtual void resizeEvent(QResizeEvent *e) override;
-	virtual void mousePressEvent(QMouseEvent *e) override;
-	virtual void mouseReleaseEvent(QMouseEvent *e) override;
-	virtual void mouseMoveEvent(QMouseEvent *e) override;
-	virtual void mouseDoubleClickEvent(QMouseEvent *e) override;
-	virtual bool viewportEvent(QEvent *e) override;
-	virtual void scrollContentsBy(int dx, int dy) override;
-	virtual void keyPressEvent(QKeyEvent *e) override;
-	virtual void tooltipEvent(QHelpEvent *e);
+	void paintEvent(QPaintEvent *e) override;
+	void resizeEvent(QResizeEvent *e) override;
+	void mousePressEvent(QMouseEvent *e) override;
+	void mouseReleaseEvent(QMouseEvent *e) override;
+	void mouseMoveEvent(QMouseEvent *e) override;
+	void mouseDoubleClickEvent(QMouseEvent *e) override;
+	bool viewportEvent(QEvent *e) override;
+	void scrollContentsBy(int dx, int dy) override;
+	void keyPressEvent(QKeyEvent *e) override;
+	void wheelEvent(QWheelEvent *e) override;
+	void tooltipEvent(QHelpEvent *e);
 
 private:
-	struct Item
-	{
-		QtnPropertyBase *property;
-		std::unique_ptr<QtnPropertyDelegate> delegate;
-		int level;
-
-		Item *parent;
-		std::vector<std::unique_ptr<Item>> children;
-		QtnConnections connections;
-
-		Item();
-		~Item();
-
-		bool collapsed() const;
-	};
-
-	struct Action
-	{
-		QRect rect;
-		std::function<bool(QEvent *, QRect)> action;
-	};
-
-	struct VisibleItem
-	{
-		Item *item;
-		int level;
-		bool hasChildren;
-
-		mutable QList<Action> actions;
-		mutable bool actionsValid;
-		mutable bool needTooltip;
-
-		VisibleItem();
-	};
+	struct Item;
+	struct VisibleItem;
 
 private:
 	void updateItemsTree();
 	Item *createItemsTree(QtnPropertyBase *rootProperty);
 
 	void setActivePropertyInternal(QtnPropertyBase *property);
-	bool startPropertyEdit(
-		QtnPropertyDelegate *delegate, QEvent *e, const QRect &rect);
 
 	void invalidateVisibleItems();
 	void validateVisibleItems() const;
 	void fillVisibleItems(Item *item, int level) const;
 	bool acceptItem(const Item &item) const;
 
-	void drawBranchNode(
-		QStylePainter &painter, QRect &rect, const VisibleItem &vItem);
-	void drawPropertySetItem(
-		QStylePainter &painter, const QRect &rect, const VisibleItem &vItem);
-	void drawPropertyItem(
-		QStylePainter &painter, const QRect &rect, const VisibleItem &vItem);
+	void drawItem(QStylePainter &painter, const QRect &rect,
+		const VisibleItem &vItem) const;
 
 	void changeActivePropertyByIndex(int index);
-	int visibleItemIndexByPoint(QPoint pos) const;
+	QtnPropertyBase *visiblePropertyAtPoint(const QPoint &pos) const;
+	int visibleItemIndexByPoint(const QPoint &pos) const;
 	int visibleItemIndexByProperty(const QtnPropertyBase *property) const;
 	QRect visibleItemRect(int index) const;
+	QRect propertyActionRect(QtnPropertyBase *property, int actionIndex);
 
-	bool processItemActionByMouse(int index, QMouseEvent *e);
+	bool handleMouseEvent(int index, QEvent *e, QPoint mousePos);
+	bool handleEvent(
+		QtnEventContext &context, VisibleItem &vItem, QPoint mousePos);
+	bool grabMouseForSubItem(QtnSubItem *subItem, QPoint mousePos);
+	bool releaseMouseForSubItem(QtnSubItem *subItem, QPoint mousePos);
 
 	void updateVScrollbar() const;
 	void updateStyleStuff();
 
 	bool ensureVisibleItemByIndex(int index);
-	void invalidateVisibleItemsActions();
+	void invalidateSubItems();
+	void deactivateSubItems();
 
 	int splitPosition() const;
 	void updateSplitRatio(float splitRatio);
@@ -201,10 +159,11 @@ private:
 	void disconnectActiveProperty();
 
 	void onPropertyDidChange(QtnPropertyChangeReason reason);
+	void onPropertySetDestroyed();
 
-private:
 	Item *findItem(Item *currentItem, const QtnPropertyBase *property) const;
 
+private:
 	QtnPropertySet *m_propertySet;
 	QtnPropertyBase *m_activeProperty;
 
@@ -215,18 +174,24 @@ private:
 	mutable QList<VisibleItem> m_visibleItems;
 	mutable bool m_visibleItemsValid;
 
+	QList<QtnSubItem *> m_activeSubItems;
+	QtnSubItem *m_grabMouseSubItem;
+
 	QtnPropertyViewStyle m_style;
 	int m_itemHeight;
 	quint32 m_itemHeightSpacing;
-	int m_leadMargin;
+	int m_valueLeftMargin;
 	QColor m_linesColor;
 	QColor m_propertySetBackdroundColor;
 
 	float m_splitRatio;
 	QRubberBand *m_rubberBand;
+	bool m_mouseAtSplitter;
+	QCursor m_oldCursor;
 
 	friend class QtnAccessibilityProxy;
 	QtnAccessibilityProxy *m_accessibilityProxy;
+	friend struct QtnEventContext;
 };
 
 QtnPropertyDelegateFactory *QtnPropertyView::delegateFactory()

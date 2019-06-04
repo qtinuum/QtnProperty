@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ enum class QtnApplyPosition
 
 struct QTN_IMPORT_EXPORT QtnPropertyWidgetExDelegate
 {
-	virtual ~QtnPropertyWidgetExDelegate() {}
+	virtual ~QtnPropertyWidgetExDelegate();
 
 	virtual bool canDeleteProperty(QtnPropertyBase *property) = 0;
 	virtual bool canCutToClipboard() = 0;
@@ -68,8 +68,9 @@ public:
 
 	QtnPropertyBase *getActiveProperty() const;
 
-	static void addShortcutForAction(
-		const QKeySequence &seq, QAction *action, QWidget *parent);
+	static void addShortcutForAction(const QKeySequence &seq, QAction *action,
+		QWidget *parent,
+		Qt::ShortcutContext shortcutContext = Qt::WidgetWithChildrenShortcut);
 
 private:
 	void onMouseReleased();

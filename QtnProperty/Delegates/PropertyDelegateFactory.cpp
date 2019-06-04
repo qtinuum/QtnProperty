@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,6 +16,34 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateFactory.h"
+#include "Utils/PropertyDelegateMisc.h"
+#include "Utils/PropertyDelegatePropertySet.h"
+#include "Utils/PropertyDelegateGeoCoord.h"
+#include "Utils/PropertyDelegateGeoPoint.h"
+#include "Core/PropertyDelegateBool.h"
+#include "Core/PropertyDelegateInt.h"
+#include "Core/PropertyDelegateUInt.h"
+#include "Core/PropertyDelegateDouble.h"
+#include "Core/PropertyDelegateFloat.h"
+#include "Core/PropertyDelegateEnum.h"
+#include "Core/PropertyDelegateEnumFlags.h"
+#include "Core/PropertyDelegateQString.h"
+#include "Core/PropertyDelegateQPoint.h"
+#include "Core/PropertyDelegateQPointF.h"
+#include "Core/PropertyDelegateQSize.h"
+#include "Core/PropertyDelegateQSizeF.h"
+#include "Core/PropertyDelegateQRect.h"
+#include "Core/PropertyDelegateQRectF.h"
+#include "GUI/PropertyDelegateQColor.h"
+#include "GUI/PropertyDelegateQPen.h"
+#include "GUI/PropertyDelegateQBrush.h"
+#include "GUI/PropertyDelegateQFont.h"
+#include "GUI/PropertyDelegateButton.h"
+#include "PropertyQKeySequence.h"
+#include "PropertyInt64.h"
+#include "PropertyUInt64.h"
+
+#include <QDebug>
 
 QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(
 	QtnPropertyDelegateFactory *superFactory)
@@ -31,7 +59,7 @@ void QtnPropertyDelegateFactory::setSuperFactory(
 }
 
 QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegate(
-	QtnProperty &owner)
+	QtnPropertyBase &owner)
 {
 	auto factory = this;
 
@@ -48,15 +76,40 @@ QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegate(
 		factory = factory->m_superFactory;
 	}
 
-	return nullptr;
+	auto delegateInfo = owner.delegateInfo();
+	QByteArray delegateName;
+
+	if (delegateInfo)
+		delegateName = delegateInfo->name;
+
+	// create delegate stub
+	if (delegateName.isEmpty())
+	{
+		qWarning() << "Cannot find default delegate for property"
+				   << owner.name();
+		qWarning() << "Did you forget to register default delegate for "
+				   << owner.metaObject()->className() << "type?";
+	} else
+	{
+		qWarning() << "Cannot find delegate with name" << delegateName
+				   << "for property" << owner.name();
+		qWarning() << "Did you forget to register" << delegateName
+				   << "delegate for" << owner.metaObject()->className()
+				   << "type?";
+	}
+
+	return qtnCreateDelegateError(owner,
+		QString("Delegate <%1> unknown")
+			.arg(QString::fromLatin1(delegateName)));
 }
 
 QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegateInternal(
-	QtnProperty &owner)
+	QtnPropertyBase &owner)
 {
 	const QMetaObject *metaObject = owner.metaObject();
 
-	while (metaObject)
+	CreateFunction createFunction = nullptr;
+	while (metaObject && !createFunction)
 	{
 		// try to find delegate factory by class name
 		auto it = m_createItems.find(metaObject);
@@ -65,13 +118,11 @@ QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegateInternal(
 		{
 			// try to find delegate factory by name
 			const CreateItem &createItem = it.value();
-			const QtnPropertyDelegateInfo *propertyDelegate = owner.delegateInfo();
+			auto delegateInfo = owner.delegateInfo();
 			QByteArray delegateName;
 
-			if (propertyDelegate)
-				delegateName = propertyDelegate->name;
-
-			CreateFunction createFunction = nullptr;
+			if (delegateInfo)
+				delegateName = delegateInfo->name;
 
 			if (delegateName.isEmpty())
 			{
@@ -82,18 +133,15 @@ QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegateInternal(
 				if (jt != createItem.createFunctions.end())
 					createFunction = jt.value();
 			}
-
-			if (!createFunction)
-				return nullptr;
-
-			// call factory function
-			return createFunction(owner);
 		}
 
 		metaObject = metaObject->superClass();
 	}
 
-	return nullptr;
+	if (!createFunction)
+		return nullptr;
+
+	return createFunction(owner);
 }
 
 bool QtnPropertyDelegateFactory::registerDelegateDefault(
@@ -165,8 +213,71 @@ bool QtnPropertyDelegateFactory::unregisterDelegate(
 	return true;
 }
 
+void QtnPropertyDelegateFactory::registerDefaultDelegates(
+	QtnPropertyDelegateFactory &factory)
+{
+	QtnPropertyDelegatePropertySet::Register(factory);
+	QtnPropertyDelegateBoolCheck::Register(factory);
+	QtnPropertyDelegateBoolCombobox::Register(factory);
+	QtnPropertyDelegateInt::Register(factory);
+	QtnPropertyDelegateUInt::Register(factory);
+	QtnPropertyDelegateInt64::Register(factory);
+	QtnPropertyDelegateUInt64::Register(factory);
+	QtnPropertyDelegateDouble::Register(factory);
+	QtnPropertyDelegateFloat::Register(factory);
+	QtnPropertyDelegateEnum::Register(factory);
+	QtnPropertyDelegateEnumFlags::Register(factory);
+	QtnPropertyDelegateQString::Register(factory);
+	QtnPropertyDelegateQStringFile::Register(factory);
+	QtnPropertyDelegateQStringList::Register(factory);
+	QtnPropertyDelegateQStringCallback::Register(factory);
+	QtnPropertyDelegateQPoint::Register(factory);
+	QtnPropertyDelegateQPointF::Register(factory);
+	QtnPropertyDelegateQSize::Register(factory);
+	QtnPropertyDelegateQSizeF::Register(factory);
+	QtnPropertyDelegateQRect::Register(factory);
+	QtnPropertyDelegateQRectF::Register(factory);
+	QtnPropertyDelegateGeoCoord::Register(factory);
+	QtnPropertyDelegateGeoPoint::Register(factory);
+	QtnPropertyDelegateQColor::Register(factory);
+	QtnPropertyDelegateQColorSolid::Register(factory);
+	QtnPropertyDelegateQFont::Register(factory);
+	QtnPropertyDelegateButton::Register(factory);
+	QtnPropertyDelegateButtonLink::Register(factory);
+	QtnPropertyDelegateQPenStyle::Register(factory);
+	QtnPropertyDelegateQPen::Register(factory);
+	QtnPropertyDelegateQBrushStyle::Register(factory);
+	QtnPropertyDelegateQKeySequence::Register(factory);
+}
+
+static QScopedPointer<QtnPropertyDelegateFactory> _staticInstance;
+
 QtnPropertyDelegateFactory &QtnPropertyDelegateFactory::staticInstance()
 {
-	static QtnPropertyDelegateFactory factory;
-	return factory;
+	if (!_staticInstance)
+	{
+		_staticInstance.reset(new QtnPropertyDelegateFactory);
+		registerDefaultDelegates(*_staticInstance.data());
+	}
+	return *_staticInstance.data();
+}
+
+void QtnPropertyDelegateFactory::resetDefaultInstance(
+	QtnPropertyDelegateFactory *factory)
+{
+	if (_staticInstance)
+	{
+		auto currentFactory = factory;
+		while (currentFactory)
+		{
+			if (currentFactory == _staticInstance.data())
+			{
+				_staticInstance.take();
+				break;
+			}
+			currentFactory = currentFactory->superFactory();
+		}
+	}
+
+	_staticInstance.reset(factory);
 }

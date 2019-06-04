@@ -1,5 +1,6 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,15 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 
-#pragma once
+#ifndef PROPERTYQRECTF_H
+#define PROPERTYQRECTF_H
 
-#include "Auxiliary/PropertyTemplates.h"
-#include "Delegates/PropertyDelegate.h"
-#include "Core/PropertyDouble.h"
-#include "StructPropertyBase.h"
-
+#include "QtnProperty/Auxiliary/PropertyTemplates.h"
+#include "PropertyDouble.h"
+#include "QtnProperty/StructPropertyBase.h"
 #include <QRectF>
-#include <QRegExp>
 
 class QTN_IMPORT_EXPORT QtnPropertyQRectFBase
 	: public QtnStructPropertyBase<QRectF, QtnPropertyDoubleCallback>
@@ -35,9 +34,6 @@ private:
 public:
 	explicit QtnPropertyQRectFBase(QObject *parent);
 
-	inline bool coordinateMode() const;
-	void setMode(bool coordinates);
-
 	QtnProperty *createLeftProperty(bool move);
 	QtnProperty *createTopProperty(bool move);
 	QtnProperty *createRightProperty(bool move);
@@ -47,19 +43,12 @@ public:
 
 protected:
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString &str, bool edit) override;
-	virtual bool toStrImpl(QString &str) const override;
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
+	bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQRectFBase)
-
-private:
-	bool coordinates;
 };
-
-bool QtnPropertyQRectFBase::coordinateMode() const
-{
-	return coordinates;
-}
 
 P_PROPERTY_DECL_EQ_OPERATORS(QtnPropertyQRectFBase, QRectF)
 
@@ -73,10 +62,7 @@ private:
 		const QtnPropertyQRectFCallback &other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQRectFCallback(QObject *parent, bool coordinates);
-
-	static QtnPropertyQRectFCallback *createFrom(
-		QObject *object, const QMetaProperty &metaProperty);
+	Q_INVOKABLE explicit QtnPropertyQRectFCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
 		QtnPropertyQRectFCallback, QtnPropertyQRectFBase)
@@ -90,30 +76,10 @@ class QTN_IMPORT_EXPORT QtnPropertyQRectF
 private:
 	QtnPropertyQRectF(const QtnPropertyQRectF &other) Q_DECL_EQ_DELETE;
 
-	static QtnProperty *internalCreateFrom(
-		QObject *object, const QMetaProperty &metaProperty);
-
 public:
-	explicit QtnPropertyQRectF(QObject *parent, bool coordinates);
+	Q_INVOKABLE explicit QtnPropertyQRectF(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQRectF, QtnPropertyQRectFBase)
-
-	static bool Register();
 };
 
-class QTN_IMPORT_EXPORT QtnPropertyDelegateQRectF
-	: public QtnPropertyDelegateTypedEx<QtnPropertyQRectFBase>
-{
-	Q_DISABLE_COPY(QtnPropertyDelegateQRectF)
-
-public:
-	QtnPropertyDelegateQRectF(QtnPropertyQRectFBase &owner);
-
-protected:
-	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
-		QtnInplaceInfo *inplaceInfo = nullptr) override;
-	virtual bool propertyValueToStr(QString &strValue) const override;
-
-private:
-	bool coordinates;
-};
+#endif // PROPERTYQRECT_H

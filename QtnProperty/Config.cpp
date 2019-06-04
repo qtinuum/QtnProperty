@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@ limitations under the License.
 
 #include "PropertyInt64.h"
 #include "PropertyUInt64.h"
-#include "PropertyQPointF.h"
-#include "PropertyQSizeF.h"
-#include "PropertyQRectF.h"
 #include "PropertyQVariant.h"
 #include "PropertyQKeySequence.h"
 #include "Delegates/Core/PropertyDelegateBool.h"
 #include "Delegates/Core/PropertyDelegateDouble.h"
+#include "Delegates/Core/PropertyDelegateFloat.h"
 #include "Delegates/Core/PropertyDelegateInt.h"
 #include "Delegates/Core/PropertyDelegateUInt.h"
 #include "Delegates/Core/PropertyDelegateEnum.h"
@@ -33,8 +31,13 @@ limitations under the License.
 #include "Delegates/Core/PropertyDelegateQRect.h"
 #include "Delegates/Core/PropertyDelegateQSize.h"
 #include "Delegates/Core/PropertyDelegateQString.h"
+#include "Delegates/Core/PropertyDelegateQPointF.h"
+#include "Delegates/Core/PropertyDelegateQSizeF.h"
+#include "Delegates/Core/PropertyDelegateQRectF.h"
 #include "Delegates/GUI/PropertyDelegateQColor.h"
 #include "Delegates/GUI/PropertyDelegateQFont.h"
+#include "Delegates/GUI/PropertyDelegateQPen.h"
+#include "Delegates/GUI/PropertyDelegateQBrush.h"
 #include "MultiProperty.h"
 #include "QObjectPropertySet.h"
 #include "Utils/AccessibilityProxy.h"
@@ -45,56 +48,125 @@ limitations under the License.
 
 #include <map>
 
-static bool Register()
+template <typename QtnPropertyRealCallback>
+static QtnProperty *createRealNumberProperty(
+	QObject *object, const QMetaProperty &metaProperty)
+{
+	using ValueTypeStore = typename QtnPropertyRealCallback::ValueTypeStore;
+
+	auto property = new QtnPropertyRealCallback(nullptr);
+
+	switch (metaProperty.revision())
+	{
+		case PERCENT_SUFFIX:
+		{
+			QtnPropertyDelegateInfo delegate;
+			qtnInitPercentSpinBoxDelegate(delegate);
+			property->setDelegateInfo(delegate);
+
+			property->setCallbackValueGet(
+				[object, metaProperty]() -> ValueTypeStore {
+					return ValueTypeStore(
+						metaProperty.read(object).toDouble() * 100.0);
+				});
+
+			property->setCallbackValueSet(
+				[object, metaProperty](ValueTypeStore value) {
+					metaProperty.write(object, value / ValueTypeStore(100.0));
+				});
+
+			return property;
+		}
+
+		case DEGREE_SUFFIX:
+		{
+			QtnPropertyDelegateInfo delegate;
+			qtnInitDegreeSpinBoxDelegate(delegate);
+			property->setDelegateInfo(delegate);
+			break;
+		}
+	}
+
+	property->setCallbackValueGet([object, metaProperty]() -> ValueTypeStore {
+		return ValueTypeStore(metaProperty.read(object).toDouble());
+	});
+
+	property->setCallbackValueSet([object, metaProperty](ValueTypeStore value) {
+		metaProperty.write(object, value);
+	});
+
+	return property;
+}
+
+static void qtnRegisterDefaultMetaPropertyFactory()
+{
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QString, qtnCreateFactory<QtnPropertyQStringCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::Double, createRealNumberProperty<QtnPropertyDoubleCallback>);
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::Float, createRealNumberProperty<QtnPropertyFloatCallback>);
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::Int, qtnCreateFactory<QtnPropertyIntCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::UInt, qtnCreateFactory<QtnPropertyUIntCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::LongLong, qtnCreateFactory<QtnPropertyInt64Callback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::ULongLong, qtnCreateFactory<QtnPropertyUInt64Callback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QPoint, qtnCreateFactory<QtnPropertyQPointCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QPointF, qtnCreateFactory<QtnPropertyQPointFCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QRect, qtnCreateFactory<QtnPropertyQRectCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QRectF, qtnCreateFactory<QtnPropertyQRectFCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QSize, qtnCreateFactory<QtnPropertyQSizeCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QSizeF, qtnCreateFactory<QtnPropertyQSizeFCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QColor, qtnCreateFactory<QtnPropertyQColorCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QFont, qtnCreateFactory<QtnPropertyQFontCallback>());
+	qtnRegisterMetaPropertyFactory(
+		QMetaType::QPen, qtnCreateFactory<QtnPropertyQPenCallback>());
+	qtnRegisterMetaPropertyFactory(qMetaTypeId<Qt::PenStyle>(),
+		qtnCreateFactory<QtnPropertyQPenStyleCallback>());
+	qtnRegisterMetaPropertyFactory(qMetaTypeId<Qt::BrushStyle>(),
+		qtnCreateFactory<QtnPropertyQBrushStyleCallback>());
+	qtnRegisterMetaPropertyFactory(QMetaType::QVariant,
+		[](QObject *object,
+			const QMetaProperty &metaProperty) -> QtnProperty * {
+			return new QtnPropertyQVariantCallback(object, metaProperty);
+		});
+	qtnRegisterMetaPropertyFactory(QMetaType::QKeySequence,
+		qtnCreateFactory<QtnPropertyQKeySequenceCallback>());
+}
+
+bool qtnPropertyRegister()
 {
 	Q_INIT_RESOURCE(QtnProperty);
 
-	qRegisterMetaType<QtnPropertyChangeReason>("QtnPropertyChangeReason");
-	qRegisterMetaType<QtnPropertyBase *>("QtnPropertyBase*");
-	qRegisterMetaType<QtnPropertySet *>("QtnPropertySet*");
-	qRegisterMetaType<QtnAccessibilityProxy *>("QtnAccessibilityProxy*");
+	qRegisterMetaType<QtnPropertyChangeReason>();
+	qRegisterMetaType<QtnPropertyBase *>();
+	qRegisterMetaType<QtnPropertySet *>();
+	qRegisterMetaType<QtnAccessibilityProxy *>();
+	qRegisterMetaType<QtnMultiVariant>();
 
-	bool ok = qtnRegisterDefaultMetaPropertyFactory() && //
-		QtnPropertyDelegateBoolCheck::Register() && //
-		QtnPropertyDelegateBoolCombobox::Register() && //
-		QtnPropertyDelegateDouble::Register() && //
-		QtnPropertyDelegateInt::Register() && //
-		QtnPropertyDelegateUInt::Register() && //
-		QtnPropertyDelegateEnum::Register() && //
-		QtnPropertyDelegateEnumFlags::Register() && //
-		QtnPropertyDelegateQPoint::Register() && //
-		QtnPropertyDelegateQRect::Register() && //
-		QtnPropertyDelegateQSize::Register() && //
-		QtnPropertyDelegateQString::Register() && //
-		QtnPropertyDelegateQStringFile::Register() && //
-		QtnPropertyDelegateQStringList::Register() && //
-		QtnPropertyDelegateQColor::Register() && //
-		QtnPropertyDelegateQFont::Register() && //
-		QtnPropertyInt64::Register() && //
-		QtnPropertyUInt64::Register() && //
-		QtnPropertyQPointF::Register() && //
-		QtnPropertyQSizeF::Register() && //
-		QtnPropertyQRectF::Register() && //
-		QtnPropertyQVariant::Register() && //
-		QtnPropertyQKeySequence::Register() && //
-		QtnMultiProperty::Register();
-
-	Q_ASSERT(ok);
-	return ok;
+	qtnRegisterDefaultMetaPropertyFactory();
+	return true;
 }
 
-static const bool qtnReg = Register();
-
-void qtnInstallTranslations(const QLocale &locale)
+void qtnPropertyInstallTranslations(const QLocale &locale)
 {
 	static QTranslator translator;
+	QCoreApplication::removeTranslator(&translator);
 	if (translator.load(locale, "QtnProperty.qm", "", ":/Translations"))
 	{
-		static bool installOnce = false;
-		if (!installOnce)
-		{
-			installOnce = true;
-			QCoreApplication::installTranslator(&translator);
-		}
+		QCoreApplication::installTranslator(&translator);
 	}
 }

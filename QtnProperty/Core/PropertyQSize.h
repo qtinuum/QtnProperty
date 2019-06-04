@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -39,7 +39,8 @@ public:
 
 protected:
 	// string conversion implementation
-	bool fromStrImpl(const QString &str, bool edit) override;
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQSizeBase)
@@ -75,10 +76,12 @@ public:
 	Q_INVOKABLE explicit QtnPropertyQSize(QObject *parent = nullptr);
 
 	static QString getToStringFormat();
-	static QString widthString();
-	static QString widthDescription();
-	static QString heightString();
-	static QString heightDescription();
+	static QString widthKey();
+	static QString widthDisplayName();
+	static QString widthDescriptionFmt();
+	static QString heightKey();
+	static QString heightDisplayName();
+	static QString heightDescriptionFmt();
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSize, QtnPropertyQSizeBase)
 };

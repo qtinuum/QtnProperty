@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,27 +19,23 @@ limitations under the License.
 
 #include "Core/PropertyBool.h"
 #include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyEditorHandler.h"
 #include "PropertyDelegateAttrs.h"
 
 #include <QStyleOption>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
-
-QByteArray qtnCheckBoxDelegate()
-{
-	returnQByteArrayLiteral("CheckBox");
-}
+#include <QMouseEvent>
 
 QByteArray qtnLabelFalseAttr()
 {
-	returnQByteArrayLiteral("labelFalse");
+	return QByteArrayLiteral("labelFalse");
 }
 
 QByteArray qtnLabelTrueAttr()
 {
-	returnQByteArrayLiteral("labelTrue");
+	return QByteArrayLiteral("labelTrue");
 }
 
 class QtnPropertyBoolComboBoxHandler
@@ -47,7 +43,7 @@ class QtnPropertyBoolComboBoxHandler
 {
 public:
 	QtnPropertyBoolComboBoxHandler(
-		QtnPropertyBoolBase &property, QComboBox &editor);
+		QtnPropertyDelegate *delegate, QComboBox &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -58,37 +54,77 @@ private:
 
 QtnPropertyDelegateBoolCheck::QtnPropertyDelegateBoolCheck(
 	QtnPropertyBoolBase &owner)
-	: QtnPropertyDelegateTyped<QtnPropertyBoolBase>(owner)
+	: QtnPropertyDelegateTyped(owner)
 {
 }
 
-bool QtnPropertyDelegateBoolCheck::Register()
+void QtnPropertyDelegateBoolCheck::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyBoolBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyBoolBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateBoolCheck, QtnPropertyBoolBase>,
 		qtnCheckBoxDelegate());
 }
 
-void QtnPropertyDelegateBoolCheck::drawValueImpl(QStylePainter &painter,
-	const QRect &rect, const QStyle::State &state, bool *) const
+bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(
+	QtnDrawContext &context, QtnSubItem &subItemValue)
 {
-	QStyleOptionButton opt;
-	opt.rect = rect;
-	opt.state = state;
+	subItemValue.trackState();
+	subItemValue.rect.setWidth(
+		context.style()->pixelMetric(QStyle::PM_IndicatorWidth));
 
-	opt.state |= owner().value() ? QStyle::State_On : QStyle::State_Off;
+	subItemValue.drawHandler = [this](QtnDrawContext &context,
+								   const QtnSubItem &item) {
+		QStyleOptionButton opt;
+		opt.rect = item.rect;
+		opt.state = state(context.isActive, item);
 
-	painter.drawControl(QStyle::CE_CheckBox, opt);
-}
+		if (stateProperty()->isMultiValue())
+		{
+			opt.state |= QStyle::State_NoChange;
+		} else
+		{
+			bool value = owner().value();
+			opt.state |= (value ? QStyle::State_On : QStyle::State_Off);
+		}
 
-QWidget *QtnPropertyDelegateBoolCheck::createValueEditorImpl(
-	QWidget *, const QRect &, QtnInplaceInfo *)
-{
-	if (owner().isEditableByUser())
-		owner().edit(!owner().value());
+		context.painter->drawControl(QStyle::CE_CheckBox, opt);
+	};
 
-	return nullptr;
+	subItemValue.eventHandler = [this](QtnEventContext &context,
+									const QtnSubItem &,
+									QtnPropertyToEdit *toEdit) {
+		bool toggleValue = false;
+		switch (context.eventType())
+		{
+			case QEvent::MouseButtonRelease:
+				toggleValue = true;
+				break;
+
+			case QEvent::KeyPress:
+			{
+				int key = context.eventAs<QKeyEvent>()->key();
+				toggleValue = (key == Qt::Key_Space) || (key == Qt::Key_Return);
+				break;
+			}
+
+			default:
+				return false;
+		}
+
+		if (toggleValue)
+		{
+			toEdit->setup(property(), [this]() -> QWidget * {
+				QtnPropertyDelegateBoolCheck *thiz = this;
+				auto &p = thiz->owner();
+				p.setValue(!p.value(), editReason());
+				return nullptr;
+			});
+		}
+
+		return true;
+	};
+
+	return true;
 }
 
 QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(
@@ -99,46 +135,41 @@ QtnPropertyDelegateBoolCombobox::QtnPropertyDelegateBoolCombobox(
 	m_labels[1] = QtnPropertyBool::getBoolText(true, false);
 }
 
-bool QtnPropertyDelegateBoolCombobox::Register()
+void QtnPropertyDelegateBoolCombobox::Register(
+	QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegate(
-		&QtnPropertyBoolBase::staticMetaObject,
+	factory.registerDelegate(&QtnPropertyBoolBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateBoolCombobox,
 			QtnPropertyBoolBase>,
 		qtnComboBoxDelegate());
 }
 
 void QtnPropertyDelegateBoolCombobox::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	qtnGetAttribute(attributes, qtnLabelFalseAttr(), m_labels[0]);
-	qtnGetAttribute(attributes, qtnLabelTrueAttr(), m_labels[1]);
+	info.loadAttribute(qtnLabelFalseAttr(), m_labels[0]);
+	info.loadAttribute(qtnLabelTrueAttr(), m_labels[1]);
 }
 
 QWidget *QtnPropertyDelegateBoolCombobox::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	if (owner().isEditableByUser())
-	{
-		QComboBox *comboBox = new QComboBox(parent);
-		comboBox->addItem(m_labels[0], false);
-		comboBox->addItem(m_labels[1], true);
+	QComboBox *comboBox = new QComboBox(parent);
+	comboBox->addItem(m_labels[0], false);
+	comboBox->addItem(m_labels[1], true);
 
-		comboBox->setGeometry(rect);
+	comboBox->setGeometry(rect);
 
-		// connect widget and property
-		new QtnPropertyBoolComboBoxHandler(owner(), *comboBox);
+	// connect widget and property
+	new QtnPropertyBoolComboBoxHandler(this, *comboBox);
 
-		if (inplaceInfo)
-			comboBox->showPopup();
+	if (inplaceInfo)
+		comboBox->showPopup();
 
-		return comboBox;
-	}
-
-	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
+	return comboBox;
 }
 
-bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(
+bool QtnPropertyDelegateBoolCombobox::propertyValueToStrImpl(
 	QString &strValue) const
 {
 	strValue = m_labels[owner().value() ? 1 : 0];
@@ -146,13 +177,10 @@ bool QtnPropertyDelegateBoolCombobox::propertyValueToStr(
 }
 
 QtnPropertyBoolComboBoxHandler::QtnPropertyBoolComboBoxHandler(
-	QtnPropertyBoolBase &property, QComboBox &editor)
-	: QtnPropertyEditorHandlerVT(property, editor)
+	QtnPropertyDelegate *delegate, QComboBox &editor)
+	: QtnPropertyEditorHandlerVT(delegate, editor)
 {
 	updateEditor();
-
-	if (!property.isEditableByUser())
-		editor.setDisabled(true);
 
 	QObject::connect(&editor,
 		static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -162,15 +190,13 @@ QtnPropertyBoolComboBoxHandler::QtnPropertyBoolComboBoxHandler(
 void QtnPropertyBoolComboBoxHandler::updateEditor()
 {
 	updating++;
+	editor().setEnabled(stateProperty()->isEditableByUser());
 
-	if (property().valueIsHidden())
+	if (stateProperty()->isMultiValue())
 		editor().setCurrentIndex(-1);
 	else
 	{
-		int index = editor().findData(property().value());
-
-		if (index >= 0)
-			editor().setCurrentIndex(index);
+		editor().setCurrentIndex(property().value() ? 1 : 0);
 	}
 
 	updating--;

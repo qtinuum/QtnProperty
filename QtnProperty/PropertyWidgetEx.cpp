@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ limitations under the License.
 
 #include "PropertyWidgetEx.h"
 
+#include "PropertyView.h"
 #include "Utils/QtnConnections.h"
 
 #include <QMouseEvent>
@@ -94,8 +95,8 @@ QtnPropertyBase *QtnPropertyWidgetEx::getActiveProperty() const
 	return propertyView()->activeProperty();
 }
 
-void QtnPropertyWidgetEx::addShortcutForAction(
-	const QKeySequence &seq, QAction *action, QWidget *parent)
+void QtnPropertyWidgetEx::addShortcutForAction(const QKeySequence &seq,
+	QAction *action, QWidget *parent, Qt::ShortcutContext shortcutContext)
 {
 	if (seq.isEmpty())
 		return;
@@ -104,7 +105,7 @@ void QtnPropertyWidgetEx::addShortcutForAction(
 	Q_ASSERT(nullptr != parent);
 
 	auto shortcut =
-		new QShortcut(seq, parent, nullptr, nullptr, Qt::WindowShortcut);
+		new QShortcut(seq, parent, nullptr, nullptr, shortcutContext);
 	QObject::connect(
 		shortcut, &QShortcut::activated, action, &QAction::trigger);
 }
@@ -122,7 +123,8 @@ void QtnPropertyWidgetEx::onResetTriggered()
 	{
 		QtnConnections connections;
 		propertyView()->connectPropertyToEdit(activeProperty, connections);
-		activeProperty->reset(true);
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonEditValue;
+		activeProperty->reset(reason);
 	}
 }
 
@@ -217,8 +219,6 @@ QMimeData *QtnPropertyWidgetEx::getPropertyDataForAction(
 bool QtnPropertyWidgetEx::applyPropertyData(
 	const QMimeData *data, QtnPropertyBase *destination, QtnApplyPosition)
 {
-	bool result = false;
-
 	if (nullptr != destination)
 	{
 		QtnConnections connections;
@@ -227,6 +227,7 @@ bool QtnPropertyWidgetEx::applyPropertyData(
 
 		Q_ASSERT(nullptr != data);
 
+		QString str;
 		if (data->hasUrls())
 		{
 			QStringList list;
@@ -239,18 +240,23 @@ bool QtnPropertyWidgetEx::applyPropertyData(
 					list.push_back(url.toString());
 			}
 
-			result = destination->fromStr(list.join('\n'), true);
+			str = list.join('\n');
 		} else if (data->hasColor())
 		{
-			result = destination->fromStr(
-				data->colorData().value<QColor>().name(), true);
+			auto color = data->colorData().value<QColor>();
+			str = color.name(
+				(color.alpha() < 255) ? QColor::HexArgb : QColor::HexRgb);
 		} else if (data->hasText())
 		{
-			result = destination->fromStr(data->text(), true);
+			str = data->text();
+		} else
+		{
+			return false;
 		}
+		return destination->fromStr(str, QtnPropertyChangeReasonEditValue);
 	}
 
-	return result;
+	return false;
 }
 
 bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
@@ -418,3 +424,5 @@ void QtnPropertyWidgetEx::internalConnect(
 	else
 		QObject::disconnect(action, &QAction::triggered, this, slot);
 }
+
+QtnPropertyWidgetExDelegate::~QtnPropertyWidgetExDelegate() {}

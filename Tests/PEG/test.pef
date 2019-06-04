@@ -5,10 +5,12 @@
 
 property_set Test1
 {
+    id = 1;
     description = "Test property_set description";
     state =0 ;
     Int a
     {
+        id = 2;
         description = "Descripion";
         value = 5;
         stepValue = -1;
@@ -16,6 +18,7 @@ property_set Test1
     }
 
 QString text{
+    id = 3;
     value=QString("#^{};");
     description = "defrf\"sde\"""deerf3rf"
     "derf r g\r\nreg r{}""dfrgerg"
@@ -25,6 +28,7 @@ QString text{
 }
 
 property_set Test2{
+    id = 4;
 }
 
 
@@ -35,8 +39,10 @@ code_h
 }
 
 property_set Test3 {
+    id = 5;
     property_set YY yy
     {
+        id = 6;
         description = tr("ss")+tr("ss");
         // rectangle property
         QRect rect {value = QRect(10, 10, 10, 10);}
@@ -46,10 +52,12 @@ property_set Test3 {
 
     property_set SS iis
     {
-        Bool a{ value = true; }
+        id = 7;
+        Bool a{ value = true; id = 8; }
 
         property_set AA aa
         {
+            id = 9;
            code_h
            {
                private:
@@ -64,6 +72,7 @@ property_set Test3 {
 
     Bool u
     {
+        id = 10;
         value = true;
         slot propertyDidChange
         {
@@ -105,10 +114,11 @@ property_set Test3 {
 
     }
 
-    Bool ww;
+    Bool ww {id = 11; }
 
     BoolCallback bc
     {
+        id = 12;
         callbackValueGet = [this]()->bool {
                 return ww;
         };
@@ -121,7 +131,7 @@ property_set Test3 {
             }
         };
 
-        callbackValueEqual = [](bool value)->bool { return false; };
+        callbackValueEqual = [](bool)->bool { return false; };
 
         callbackValueSet = [this](bool value) {
             m_s = value;
@@ -164,128 +174,158 @@ enum MASK {
 
 property_set AllPropertyTypes
 {
-    Bool bp { id = 1; }
+    id = 13;
+    Bool bp { id = 14; }
     BoolCallback bpc
     {
         callbackValueGet = [this]() { return _b; };
         callbackValueSet = [this](bool v) { _b = v; };
-        id = 2;
+        id = 15;
     }
 
-    Int ip { id = 3; }
+    Int ip { id = 16; }
     IntCallback ipc
     {
         callbackValueGet = [this]() { return _i; };
         callbackValueSet = [this](qint32 v) { _i =v; };
-        id = 4;
+        id = 17;
     }
 
-    UInt up { id = 5; }
+    UInt up { id = 18; }
     UIntCallback upc
     {
         callbackValueGet = [this]() { return _ui; };
         callbackValueSet = [this](quint32 v) { _ui = v; };
-        id = 6;
+        id = 19;
     }
 
-    Float fp { id = 7; }
+    Float fp { id = 20; }
     FloatCallback fpc
     {
         callbackValueGet = [this]() { return _f; };
         callbackValueSet = [this](float v) { _f = v; };
-        id = 8;
+        id = 21;
     }
 
-    Double dp { id = 9; }
+    Double dp { id = 22; }
     DoubleCallback dpc
     {
         callbackValueGet = [this]() { return _d; };
         callbackValueSet = [this](double v) { _d = v; };
-        id = 10;
+        id = 23;
     }
 
-    QString sp { id = 11; }
+    QString sp { id = 24; }
     QStringCallback spc
     {
         callbackValueGet = [this]() { return _s; };
         callbackValueSet = [this](QString v) { _s = v; };
-        id = 12;
+        id = 25;
     }
 
-    QRect rp { id = 13; }
+    QRect rp { id = 26; }
     QRectCallback rpc
     {
         callbackValueGet = [this]() { return _r; };
         callbackValueSet = [this](QRect v) { _r = v; };
-        id = 14;
+        id = 27;
     }
 
-    QPoint pp { id = 15; }
+    QPoint pp { id = 28; }
     QPointCallback ppc
     {
         callbackValueGet = [this]() { return _p; };
         callbackValueSet = [this](QPoint v) { _p = v; };
-        id = 16;
+        id = 29;
     }
 
-    QSize szp { id = 17; }
+    QSize szp { id = 30; }
     QSizeCallback szpc
     {
         callbackValueGet = [this]() { return _sz; };
         callbackValueSet = [this](QSize v) { _sz = v; };
-        id = 18;
+        id = 31;
     }
 
     Enum ep
     {
         enumInfo = &COLOR::info();
         value = COLOR::BLUE;
-        id = 19;
+        id = 32;
     }
     EnumCallback epc
     {
         enumInfo = &COLOR::info();
         callbackValueGet = [this]() { return _e; };
         callbackValueSet = [this](QtnEnumValueType v) { _e = v; };
-        id = 20;
+        id = 33;
     }
 
     EnumFlags efp
     {
         enumInfo = &MASK::info();
         value = MASK::ONE|MASK::FOUR;
-        id = 21;
+        id = 34;
     }
     EnumFlagsCallback efpc
     {
         enumInfo = &MASK::info();
         callbackValueGet = [this]() { return _ef; };
         callbackValueSet = [this](QtnEnumFlagsValueType v) { _ef = v; };
-        id = 22;
+        id = 35;
     }
 
     QColor cp
     {
         value = QColor(Qt::blue);
-        id = 23;
+        id = 36;
     }
     QColorCallback cpc
     {
         callbackValueGet = [this]() { return _cl; };
         callbackValueSet = [this](QColor v) { _cl = v; };
-        id = 24;
+        id = 37;
     }
 
     QFont fnp
     {
         value = QFont("Courier", 10);
-        id = 25;
+        id = 38;
     }
     QFontCallback fnpc
     {
         callbackValueGet = [this]() { return _fn; };
         callbackValueSet = [this](QFont v) { _fn = v; };
-        id = 26;
+        id = 39;
+    }
+    
+    Button bttn
+    {
+        id = 40;
+    }
+
+    QPointF ppf { id = 41; }
+    QPointFCallback ppfc
+    {
+        callbackValueGet = [this]() { return _pf; };
+        callbackValueSet = [this](QPointF v) { _pf = v; };
+        id = 42;
+    }
+
+    QRectF rpf { id = 43; }
+    QRectFCallback rpfc
+    {
+        callbackValueGet = [this]() { return _rf; };
+        callbackValueSet = [this](QRectF v) { _rf = v; };
+        id = 44;
+    }
+    
+    QSizeF szpf { id = 45; }
+    QSizeFCallback szpfc
+    {
+        callbackValueGet = [this]() { return _szf; };
+        callbackValueSet = [this](QSizeF v) { _szf = v; };
+        id = 46;
     }
 
     AllPropertyTypes()
@@ -297,8 +337,11 @@ property_set AllPropertyTypes
         _d = 32.4;
         _s = "name";
         _r = QRect(10, 10, 10, 10);
+        _rf = QRectF(10.1, 10.2, 10.3, 10.4);
         _p = QPoint(9, 2);
+        _pf = QPointF(9.9, 2.2);
         _sz = QSize(33, 21);
+        _szf = QSizeF(33.0, 21.9);
         _e = COLOR::RED;
         _ef = MASK::ONE|MASK::FOUR;
         _cl = QColor(Qt::red);
@@ -320,8 +363,11 @@ property_set AllPropertyTypes
         double _d;
         QString _s;
         QRect _r;
+        QRectF _rf;
         QPoint _p;
+        QPointF _pf;
         QSize _sz;
+        QSizeF _szf;
         QtnEnumValueType _e;
         QtnEnumFlagsValueType _ef;
         QColor _cl;
@@ -341,3 +387,18 @@ enum MY_TYPE
     MY_TYPE2(2, "My type 2")
 }
 */
+
+enum MY_TYPE
+{
+    MY_TYPE1(1, "My type 1"),
+    MY_TYPE2(2, "My type 2")
+}
+
+property_set Test12
+{
+    Enum p
+    {
+        value = MY_TYPE::MY_TYPE1;
+        enumInfo = &MY_TYPE::info();
+    }
+}

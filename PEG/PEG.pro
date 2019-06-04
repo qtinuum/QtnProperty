@@ -1,4 +1,4 @@
-include(../Common.pri)
+include(../Config.pri)
 include(Bison.pri)
 include(Flex.pri)
 
@@ -26,3 +26,5 @@ OTHER_FILES += \
 HEADERS += \
     PropertyEnumGeneratorCommon.h \
     PropertyEnumGenerator.h
+
+win32:QMAKE_CXXFLAGS += /wd4065 /wd4267 /wd4005

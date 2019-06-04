@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,16 +16,15 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateUInt.h"
-#include "Core/PropertyUInt.h"
-#include "Delegates/PropertyEditorAux.h"
+#include "Delegates/Utils/PropertyEditorAux.h"
+#include "Delegates/Utils/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyDelegateSliderBox.h"
 #include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorHandler.h"
 #include "Utils/QtnInt64SpinBox.h"
 #include "MultiProperty.h"
 #include "PropertyDelegateAttrs.h"
 
-#include <QSpinBox>
-#include <QLineEdit>
+#include <QCoreApplication>
 #include <QLocale>
 
 class QtnPropertyUIntSpinBoxHandler
@@ -33,9 +32,9 @@ class QtnPropertyUIntSpinBoxHandler
 {
 public:
 	QtnPropertyUIntSpinBoxHandler(
-		QtnPropertyUIntBase &property, QtnInt64SpinBox &editor);
+		QtnPropertyDelegate *delegate, QtnInt64SpinBox &editor);
 
-private:
+protected:
 	virtual void updateEditor() override;
 	void onValueChanged(qint64 value);
 };
@@ -45,26 +44,31 @@ QtnPropertyDelegateUInt::QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner)
 {
 }
 
-bool QtnPropertyDelegateUInt::Register()
+void QtnPropertyDelegateUInt::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyUIntBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyUIntBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>,
 		qtnSpinBoxDelegate());
+
+	factory.registerDelegate(&QtnPropertyUIntBase::staticMetaObject,
+		&qtnCreateDelegate<
+			QtnPropertyDelegateSlideBoxTyped<QtnPropertyUIntBase>,
+			QtnPropertyUIntBase>,
+		qtnSliderBoxDelegate());
 }
 
 QWidget *QtnPropertyDelegateUInt::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnInt64SpinBox(parent);
-	spinBox->setSuffix(suffix);
+	spinBox->setSuffix(m_suffix);
 	spinBox->setGeometry(rect);
 
-	new QtnPropertyUIntSpinBoxHandler(owner(), *spinBox);
+	new QtnPropertyUIntSpinBoxHandler(this, *spinBox);
 
 	spinBox->selectAll();
 
-	if (owner().isEditableByUser())
+	if (stateProperty()->isEditableByUser())
 		qtnInitNumEdit(spinBox, inplaceInfo, NUM_UNSIGNED_INT);
 
 	return spinBox;
@@ -81,26 +85,27 @@ bool QtnPropertyDelegateUInt::acceptKeyPressedForInplaceEditImpl(
 }
 
 void QtnPropertyDelegateUInt::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	qtnGetAttribute(attributes, qtnSuffixAttr(), suffix);
+	info.loadAttribute(qtnSuffixAttr(), m_suffix);
 }
 
-bool QtnPropertyDelegateUInt::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateUInt::propertyValueToStrImpl(QString &strValue) const
 {
 	strValue = QLocale().toString(owner().value());
 	return true;
 }
 
 QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(
-	QtnPropertyUIntBase &property, QtnInt64SpinBox &editor)
-	: QtnPropertyEditorHandlerVT(property, editor)
+	QtnPropertyDelegate *delegate, QtnInt64SpinBox &editor)
+	: QtnPropertyEditorHandlerVT(delegate, editor)
 {
-	if (!property.isEditableByUser())
+	if (!stateProperty()->isEditableByUser())
 		editor.setReadOnly(true);
 
-	editor.setRange(property.minValue(), property.maxValue());
-	editor.setSingleStep(property.stepValue());
+	auto &p = property();
+	editor.setRange(p.minValue(), p.maxValue());
+	editor.setSingleStep(p.stepValue());
 
 	updateEditor();
 
@@ -116,7 +121,7 @@ void QtnPropertyUIntSpinBoxHandler::updateEditor()
 {
 	updating++;
 
-	if (property().valueIsHidden())
+	if (stateProperty()->isMultiValue())
 	{
 		editor().setValue(editor().minimum());
 		editor().setSpecialValueText(

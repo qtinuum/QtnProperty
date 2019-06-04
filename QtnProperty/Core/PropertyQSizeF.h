@@ -1,5 +1,6 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,15 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 
-#pragma once
+#ifndef PROPERTYQSIZEF_H
+#define PROPERTYQSIZEF_H
 
-#include "Auxiliary/PropertyTemplates.h"
-#include "Delegates/PropertyDelegate.h"
-#include "Core/PropertyDouble.h"
-#include "StructPropertyBase.h"
-
+#include "QtnProperty/Auxiliary/PropertyTemplates.h"
+#include "PropertyDouble.h"
+#include "QtnProperty/StructPropertyBase.h"
 #include <QSizeF>
-#include <QRegExp>
 
 class QTN_IMPORT_EXPORT QtnPropertyQSizeFBase
 	: public QtnStructPropertyBase<QSizeF, QtnPropertyDoubleCallback>
@@ -40,8 +39,9 @@ public:
 
 protected:
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString &str, bool edit) override;
-	virtual bool toStrImpl(QString &str) const override;
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
+	bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQSizeFBase)
 };
@@ -58,7 +58,7 @@ private:
 		const QtnPropertyQSizeFCallback &other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQSizeFCallback(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQSizeFCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
 		QtnPropertyQSizeFCallback, QtnPropertyQSizeFBase)
@@ -73,23 +73,9 @@ private:
 	QtnPropertyQSizeF(const QtnPropertyQSizeF &other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQSizeF(QObject *parent);
+	Q_INVOKABLE explicit QtnPropertyQSizeF(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQSizeF, QtnPropertyQSizeFBase)
-
-	static bool Register();
 };
 
-class QTN_IMPORT_EXPORT QtnPropertyDelegateQSizeF
-	: public QtnPropertyDelegateTypedEx<QtnPropertyQSizeFBase>
-{
-	Q_DISABLE_COPY(QtnPropertyDelegateQSizeF)
-
-public:
-	QtnPropertyDelegateQSizeF(QtnPropertyQSizeFBase &owner);
-
-protected:
-	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
-		QtnInplaceInfo *inplaceInfo = nullptr) override;
-	virtual bool propertyValueToStr(QString &strValue) const override;
-};
+#endif // PROPERTYQSIZEF_H
