@@ -31,7 +31,7 @@ private slots:
 
 private:
     QStringList getCandidates() const { return m_candidates; }
-    QString createCandidate(QWidget* parent);
+    QString createCandidate(QWidget* parent, QString candidate);
 
     Ui::MainWindow *ui;
 

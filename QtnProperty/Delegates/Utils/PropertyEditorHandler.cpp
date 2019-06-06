@@ -90,7 +90,7 @@ bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
 
 bool QtnPropertyEditorHandlerBase::canApply() const
 {
-	if (nullptr != stateProperty())
+	if (nullptr != stateProperty() && stateProperty()->isEditableByUser())
 		return (!reverted && (returned || !stateProperty()->isMultiValue()));
 
 	return false;

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2012-2019 Alex Zhondin <lexxmark.dev@gmail.com>
 Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@ class QtnInplaceInfo;
 class QTN_IMPORT_EXPORT QtnLineEditBttn : public QWidget
 {
 public:
-	QtnLineEditBttn(QWidget *parent);
+	QtnLineEditBttn(QWidget *parent, const QString &bttnText = "...");
 
 	void setTextForProperty(QtnPropertyBase *property, const QString &text);
 
@@ -72,6 +72,15 @@ QtnPropertyBase *QtnPropertyComboBox::stateProperty() const
 {
 	return m_delegate->stateProperty();
 }
+
+class QTN_IMPORT_EXPORT QtnComboBoxBttn : public QWidget
+{
+public:
+	QtnComboBoxBttn(QWidget *parent, const QString &bttnText = "...");
+
+	QComboBox *comboBox;
+	QToolButton *toolButton;
+};
 
 enum QtnNumType
 {

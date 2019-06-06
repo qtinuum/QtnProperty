@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2012-2019 Alex Zhondin <lexxmark.dev@gmail.com>
 Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,9 +26,9 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQString
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQString)
 
-public:
 	typedef QtnPropertyDelegateTyped<QtnPropertyQStringBase> Inherited;
 
+public:
 	QtnPropertyDelegateQString(QtnPropertyQStringBase &owner);
 
 	static void Register(QtnPropertyDelegateFactory &factory);
@@ -123,7 +123,7 @@ private:
 };
 
 using QtnGetCandidatesFn = std::function<QStringList()>;
-using QtnCreateCandidateFn = std::function<QString(QWidget *)>;
+using QtnCreateCandidateFn = std::function<QString(QWidget *, QString)>;
 Q_DECLARE_METATYPE(QtnGetCandidatesFn);
 Q_DECLARE_METATYPE(QtnCreateCandidateFn);
 
@@ -143,11 +143,7 @@ protected:
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 private:
-	QtnGetCandidatesFn m_getCandidatesFn;
-	QtnCreateCandidateFn m_createCandidateFn;
-	QString m_createCandidateLabel;
-
-	friend class QtnPropertyQStringCandidatesComboBoxHandler;
+	QtnPropertyDelegateInfo m_editorAttributes;
 };
 
 #endif // PROPERTY_DELEGATE_QSTRING_H
