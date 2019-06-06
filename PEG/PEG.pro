@@ -1,4 +1,5 @@
-include(../Config.pri)
+include(../Internal/BaseConfig.pri)
+include(../Internal/TargetConfig.pri)
 include(Bison.pri)
 include(Flex.pri)
 
@@ -7,8 +8,7 @@ QT -= gui
 
 TARGET = QtnPEG
 
-CONFIG += console
-CONFIG -= app_bundle
+CONFIG += cmdline
 
 TEMPLATE = app
 VERSION = 1.0.0
@@ -27,4 +27,4 @@ HEADERS += \
     PropertyEnumGeneratorCommon.h \
     PropertyEnumGenerator.h
 
-win32:QMAKE_CXXFLAGS += /wd4065 /wd4267 /wd4005
+msvc:QMAKE_CXXFLAGS += /wd4065 /wd4267 /wd4005

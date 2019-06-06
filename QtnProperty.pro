@@ -1,11 +1,9 @@
 TEMPLATE   = subdirs
-SUBDIRS   += Library \
-             PEG \
-             Tests \
-             Demo
+SUBDIRS   += \
+    QtnProperty \
+    PEG \
+    Tests \
+    Demo
 
-Library.file = QtnProperty/QtnProperty.pro
-
-PEG.depends = Library
-Tests.depends = Library
-Demo.depends = Library
+Tests.depends = QtnProperty
+Demo.depends = QtnProperty

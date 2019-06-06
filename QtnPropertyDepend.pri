@@ -1,0 +1,34 @@
+include($$PWD/Internal/BaseConfig.pri)
+
+QTNPROPERTY_PATH = $$PWD
+
+isEmpty(QTNPROPERTY_LIB) {
+    QTNPROPERTY_LIB = $$BIN_DIR
+}
+
+QTNPROPERTY_LIBNAME = QtnProperty2
+
+win32 {
+    msvc:PRE_TARGETDEPS += $$QTNPROPERTY_LIB/$$QTNPROPERTY_LIBNAME.lib
+    else:PRE_TARGETDEPS += $$QTNPROPERTY_LIB/lib$$QTNPROPERTY_LIBNAME.a
+}
+
+qtnproperty_dynamic {
+    macx {
+        QMAKE_SONAME_PREFIX = @rpath
+        DYNAMIC_LIBS.files += $$QTNPROPERTY_LIB/lib$$QTNPROPERTY_LIBNAME.dylib
+    }
+
+    unix {
+        QMAKE_RPATHDIR += $$BIN_DIR
+    }
+} else {
+    unix {
+        PRE_TARGETDEPS += $$QTNPROPERTY_LIB/lib$$QTNPROPERTY_LIBNAME.a
+    }
+}
+
+LIBS += -L$$QTNPROPERTY_LIB
+LIBS += -l$$QTNPROPERTY_LIBNAME
+
+INCLUDEPATH += $$QTNPROPERTY_PATH

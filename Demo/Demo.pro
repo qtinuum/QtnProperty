@@ -1,6 +1,6 @@
-include(../Config.pri)
-PEG_TOOL = $$BIN_DIR/QtnPEG
-include(../PEG.pri)
+include(../QtnPropertyDepend.pri)
+include(../Internal/TargetConfig.pri)
+include(../PEG/PEG.pri)
 
 QT += core gui widgets script scripttools
 
@@ -37,24 +37,8 @@ FORMS    += MainWindow.ui \
 
 PEG_SOURCES += Demo.pef
 
-INCLUDEPATH += $$TOP_SRC_DIR/Core
-INCLUDEPATH += $$TOP_SRC_DIR/Widget
-
-LIBS += -L$$BIN_DIR -lQtnProperty
-
-unix:PRE_TARGETDEPS += $$BIN_DIR/libQtnPropertyCore.a $$BIN_DIR/libQtnPropertyWidget.a
-else:PRE_TARGETDEPS += $$BIN_DIR/QtnPropertyCore.lib  $$BIN_DIR/QtnPropertyWidget.lib
-
-win32 {
-} else:unix {
-    QMAKE_LFLAGS += -Wl,-rpath,\'\$$ORIGIN\'
-}
-
 OTHER_FILES += \
     Demo.pef
-
-
-DYNAMIC_LIBS.files += $$BIN_DIR/libQtnProperty.1.dylib
 
 DYNAMIC_LIBS.path = "Contents/MacOS"
 

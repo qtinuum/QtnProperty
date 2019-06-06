@@ -1,0 +1,7 @@
+DESTDIR = $$BIN_DIR
+
+CONFIG += c++11
+
+msvc {
+    DEFINES += _CRT_SECURE_NO_WARNINGS
+}

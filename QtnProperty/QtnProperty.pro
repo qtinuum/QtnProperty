@@ -1,4 +1,5 @@
-include(../Config.pri)
+include(../Internal/BaseConfig.pri)
+include(../Internal/TargetConfig.pri)
 
 QT += core gui widgets script
 
@@ -6,14 +7,16 @@ TARGET = QtnProperty
 TEMPLATE = lib
 VERSION = 2.0.0
 
-DEFINES += QTN_DYNAMIC_LIBRARY
-macx {
-    QMAKE_SONAME_PREFIX = @executable_path/../lib
-    TARGET_EXT = .dylib
-}
+qtnproperty_dynamic {
+    DEFINES += QTN_DYNAMIC_LIBRARY
+    macx {
+        QMAKE_SONAME_PREFIX = @rpath
+    }
 
-win32:TARGET_EXT = .dll
-linux:TARGET_EXT = .so
+    CONFIG += shared
+} else {
+    CONFIG += static
+}
 
 SOURCES += PropertyBase.cpp \
     Property.cpp \
