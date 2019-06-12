@@ -15,8 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 
-#ifndef QTN_PROPERTYWIDGETAPI_H
-#define QTN_PROPERTYWIDGETAPI_H
+#pragma once
 
 #include "Config.h"
 
@@ -37,5 +36,3 @@ std::function<R(Types...)> qtnMemFn(T *t, R (T::*memFn)(Types...))
 		return std::mem_fn(memFn)(t, std::forward<Types>(args)...);
 	};
 }
-
-#endif // QTN_PROPERTYWIDGETAPI_H
