@@ -19,6 +19,7 @@ limitations under the License.
 
 QtnPropertyDelegate::QtnPropertyDelegate(QtnPropertyBase &ownerProperty)
 	: m_ownerProperty(&ownerProperty)
+	, m_stateProperty(nullptr)
 {
 }
 
