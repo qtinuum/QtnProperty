@@ -395,6 +395,11 @@ void QtnPropertyDelegateWithValues::addSubItemValues(
 	auto rect = context.rect.marginsRemoved(context.margins);
 	rect.setLeft(context.splitPos + context.widget->valueLeftMargin());
 
+	if (stateProperty()->isResettable() && stateProperty()->isEditableByUser())
+	{
+		rect.setRight(rect.right() - rect.height());
+	}
+
 	if (rect.isValid())
 		createSubItemValuesImpl(context, rect, subItems);
 }
