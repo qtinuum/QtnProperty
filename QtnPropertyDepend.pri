@@ -12,18 +12,18 @@ QTNPROPERTY_LIBNAME = QtnProperty
 qtnproperty_dynamic:QTNPROPERTY_LIBNAME = $$join(QTNPROPERTY_LIBNAME, , , 2)
 
 win32 {
-    msvc:PRE_TARGETDEPS += $$QTNPROPERTY_LIB/$$QTNPROPERTY_LIBNAME.lib
-    else:PRE_TARGETDEPS += $$QTNPROPERTY_LIB/lib$$QTNPROPERTY_LIBNAME.a
+    msvc:PRE_TARGETDEPS += $$QTNPROPERTY_LIB/$$join(QTNPROPERTY_LIBNAME, , , .lib)
+    else:PRE_TARGETDEPS += $$QTNPROPERTY_LIB/$$join(QTNPROPERTY_LIBNAME, , lib, .a)
 }
 
 qtnproperty_dynamic {
     DEFINES += QTN_DYNAMIC_IMPORT
     macx {
-        DYNAMIC_LIBS.files += $$QTNPROPERTY_LIB/lib$$QTNPROPERTY_LIBNAME.dylib
+        DYNAMIC_LIBS.files += $$QTNPROPERTY_LIB/$$join(QTNPROPERTY_LIBNAME, , lib, .dylib)
     }
 } else {
     unix {
-        PRE_TARGETDEPS += $$QTNPROPERTY_LIB/lib$$QTNPROPERTY_LIBNAME.a
+        PRE_TARGETDEPS += $$QTNPROPERTY_LIB/$$join(QTNPROPERTY_LIBNAME, , lib, .a)
     }
 }
 
