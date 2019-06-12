@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef PROPERTY_EDITOR_AUX_H
 #define PROPERTY_EDITOR_AUX_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 #include "QtnProperty/Delegates/PropertyDelegate.h"
 
 #include <QLineEdit>

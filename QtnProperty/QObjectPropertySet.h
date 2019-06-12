@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_QOBJECT_PROPERTY_SET_H
 #define QTN_QOBJECT_PROPERTY_SET_H
 
-#include "CoreAPI.h"
+#include "Config.h"
 #include "Auxiliary/PropertyAux.h"
 
 #include <QMetaProperty>

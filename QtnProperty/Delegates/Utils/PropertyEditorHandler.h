@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef PROPERTY_EDITOR_HANDLER_H
 #define PROPERTY_EDITOR_HANDLER_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 #include "QtnProperty/Property.h"
 #include "QtnProperty/Delegates/PropertyDelegate.h"
 

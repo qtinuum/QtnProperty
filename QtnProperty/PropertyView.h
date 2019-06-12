@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_PROPERTYVIEW_H
 #define QTN_PROPERTYVIEW_H
 
-#include "PropertyWidgetAPI.h"
+#include "FunctionalHelpers.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Utils/AccessibilityProxy.h"
 

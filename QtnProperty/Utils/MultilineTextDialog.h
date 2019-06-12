@@ -16,7 +16,7 @@ limitations under the License.
 
 #pragma once
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 
 #include <QDialog>
 

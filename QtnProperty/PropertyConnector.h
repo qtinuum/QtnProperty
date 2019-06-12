@@ -16,7 +16,7 @@ limitations under the License.
 
 #pragma once
 
-#include "CoreAPI.h"
+#include "Config.h"
 #include "Auxiliary/PropertyAux.h"
 
 #include <QObject>

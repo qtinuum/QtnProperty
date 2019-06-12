@@ -7,7 +7,7 @@
 
 #include "QtnProperty/QObjectPropertySet.h"
 #include "Demo.peg.h"
-#include "QtnProperty/PropertyWidgetAPI.h"
+#include "QtnProperty/FunctionalHelpers.h"
 
 // this is required for QStringCallbackProperty delegate parameters
 #include "QtnProperty/Delegates/Core/PropertyDelegateQString.h"

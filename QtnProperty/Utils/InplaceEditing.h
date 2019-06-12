@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef INPLACE_EDITING_H
 #define INPLACE_EDITING_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 
 #include <QWidget>
 

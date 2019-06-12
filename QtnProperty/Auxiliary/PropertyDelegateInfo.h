@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_PROPERTY_DELEGATE_INFO_H
 #define QTN_PROPERTY_DELEGATE_INFO_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 #include <QMap>
 #include <QVariant>
 

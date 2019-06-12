@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_PROPERTY_DELEGATE_AUX_H
 #define QTN_PROPERTY_DELEGATE_AUX_H
 
-#include "QtnProperty/PropertyWidgetAPI.h"
+#include "QtnProperty/FunctionalHelpers.h"
 
 #include <QStyleOption>
 #include <QStylePainter>

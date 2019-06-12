@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_PROPERTY_AUX_H
 #define QTN_PROPERTY_AUX_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 #include <QObject>
 
 // forward declarations

@@ -94,7 +94,7 @@ SOURCES += PropertyBase.cpp \
     PropertyDelegateMetaEnum.cpp \
     Install.cpp
 
-HEADERS += CoreAPI.h\
+HEADERS +=\
     PropertyBase.h \
     Property.h\
     PropertySet.h\
@@ -123,7 +123,6 @@ HEADERS += CoreAPI.h\
     GUI/PropertyQPen.h \
     GUI/PropertyButton.h \
     PropertyWidget.h \
-    PropertyWidgetAPI.h \
     PropertyView.h \
     Utils/InplaceEditing.h \
     Delegates/PropertyDelegate.h \
@@ -179,7 +178,9 @@ HEADERS += CoreAPI.h\
     PropertyDelegateAttrs.h \
     PropertyQKeySequence.h \
     PropertyDelegateMetaEnum.h \
-    Install.h
+    Install.h \
+    Config.h \
+    FunctionalHelpers.h
 
 TRANSLATIONS = \
     Translations/en.ts \

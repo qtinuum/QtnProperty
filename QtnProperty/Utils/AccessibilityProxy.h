@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_ACCESSIBILITY_PROXY_H
 #define QTN_ACCESSIBILITY_PROXY_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 #include "QtnProperty/PropertySet.h"
 #include <QObject>
 #include <QRect>

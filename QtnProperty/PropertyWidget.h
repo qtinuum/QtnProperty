@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_PROPERTYWIDGET_H
 #define QTN_PROPERTYWIDGET_H
 
-#include "CoreAPI.h"
+#include "Config.h"
 
 #include <QWidget>
 

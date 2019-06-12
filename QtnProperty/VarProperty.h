@@ -16,7 +16,7 @@ limitations under the License.
 
 #pragma once
 
-#include "CoreAPI.h"
+#include "Config.h"
 
 #include <QObject>
 #include <QVariant>
