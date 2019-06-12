@@ -29,7 +29,7 @@ QString QtnDoubleSpinBox::textFromValue(double val) const
 QString QtnDoubleSpinBox::valueToText(
 	double value, const QLocale &locale, int decimals, bool groupSeparatorShown)
 {
-	auto result = locale.toString(value, 'f', decimals);
+	auto result = locale.toString(value, 'g', decimals);
 
 	auto groupSeparator = locale.groupSeparator();
 
