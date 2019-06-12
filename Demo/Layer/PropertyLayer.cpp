@@ -16,34 +16,6 @@
 
 #include "PropertyLayer.h"
 
-/*
-QDataStream& operator<< (QDataStream& stream, const LayerInfo& layer)
-{
-    // version
-    stream << (quint8)1;
-    stream << layer.name;
-    stream << layer.color;
-    stream << (quint64)layer.data;
-    return stream;
-}
-
-QDataStream& operator>> (QDataStream& stream, LayerInfo& layer)
-{
-    quint8 version = 0;
-    stream >> version;
-    if (version == 1)
-    {
-        stream >> layer.name;
-        stream >> layer.color;
-        quint64 data = 0;
-        stream >> data;
-        layer.data = (quintptr)data;
-    }
-
-    return stream;
-}
-*/
-
 const LayerInfo *QtnPropertyLayerBase::valueLayer() const
 {
 	const auto &layerValues = layers();

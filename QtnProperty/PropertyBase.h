@@ -50,6 +50,8 @@ class QTN_IMPORT_EXPORT QtnPropertyBase : public QObject
 	inline void setConnector(QtnPropertyConnector *connector);
 
 public:
+	static const quint8 STORAGE_VERSION;
+
 	using DelegateInfoCallback = std::function<QtnPropertyDelegateInfo()>;
 
 	virtual ~QtnPropertyBase() override;

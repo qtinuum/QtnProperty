@@ -522,7 +522,7 @@ bool QtnPropertySet::loadImpl(QDataStream &stream)
 	quint8 version = 0;
 	stream >> version;
 	// version incorrect
-	if (version != 1)
+	if (version != STORAGE_VERSION)
 		return false;
 
 	forever
@@ -567,8 +567,7 @@ bool QtnPropertySet::saveImpl(QDataStream &stream) const
 		return false;
 
 	// for compatibility
-	quint8 version = 1;
-	stream << version;
+	stream << STORAGE_VERSION;
 
 	for (auto childProperty : m_childProperties)
 	{

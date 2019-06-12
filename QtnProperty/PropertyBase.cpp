@@ -25,6 +25,7 @@ limitations under the License.
 
 const qint32 QtnPropertyIDInvalid = -1;
 static quint16 qtnPropertyMagicNumber = 0x1984;
+const quint8 QtnPropertyBase::STORAGE_VERSION = 2;
 
 class QtnPropertyDelegateInfoGetter
 {
@@ -375,7 +376,7 @@ bool QtnPropertyBase::load(QDataStream &stream)
 	stream >> version;
 
 	// version incorrect
-	if (version != 1)
+	if (version != STORAGE_VERSION)
 		return false;
 
 	qint32 contentSize = 0;
@@ -419,8 +420,7 @@ bool QtnPropertyBase::save(QDataStream &stream) const
 	stream << qtnPropertyMagicNumber;
 
 	// for compatibility
-	quint8 version = 1;
-	stream << version;
+	stream << STORAGE_VERSION;
 
 	QByteArray data;
 	QDataStream contentStream(&data, QIODevice::WriteOnly);
@@ -459,7 +459,7 @@ bool QtnPropertyBase::skipLoad(QDataStream &stream)
 	stream >> version;
 
 	// version incorrect
-	if (version != 2)
+	if (version != STORAGE_VERSION)
 		return false;
 
 	qint32 contentSize = 0;
@@ -484,7 +484,7 @@ bool QtnPropertyBase::loadImpl(QDataStream &stream)
 	stream >> version;
 
 	// incorrect version
-	if (version != 2)
+	if (version != STORAGE_VERSION)
 		return false;
 
 	QtnPropertyState::Int stateLocal = QtnPropertyStateNone;
@@ -501,7 +501,7 @@ bool QtnPropertyBase::saveImpl(QDataStream &stream) const
 {
 	Q_ASSERT(stream.status() == QDataStream::Ok);
 
-	qint16 version = 2;
+	qint16 version = STORAGE_VERSION;
 	stream << version;
 
 	stream << (QtnPropertyState::Int) m_stateLocal;
