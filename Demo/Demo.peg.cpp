@@ -203,7 +203,7 @@ void QtnPropertySetSubPropertySetType::connectDelegates()
     });
     StringFromList.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
         QtnPropertyDelegateInfo info;
-        info.name = "List";
+        info.name = "ComboBox";
         info.attributes["items"] = QStringList() << "one" << "two" << "three" << "four";
         return info;
     });

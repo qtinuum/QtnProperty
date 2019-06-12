@@ -137,11 +137,6 @@ QByteArray qtnSelectFileDelegate()
 	return QByteArrayLiteral("File");
 }
 
-QByteArray qtnListDelegate()
-{
-	return QByteArrayLiteral("List");
-}
-
 QByteArray qtnCallbackDelegate()
 {
 	return QByteArrayLiteral("Callback");
@@ -472,7 +467,7 @@ void QtnPropertyDelegateQStringList::Register(
 	factory.registerDelegate(&QtnPropertyQStringBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQStringList,
 			QtnPropertyQStringBase>,
-		qtnListDelegate());
+		qtnComboBoxDelegate());
 }
 
 void QtnPropertyDelegateQStringList::applyAttributesImpl(
@@ -573,12 +568,6 @@ QtnPropertyQStringFileLineEditBttnHandler::
 {
 	dialogContainer = connectDialog(dialog);
 
-	if (!stateProperty()->isEditableByUser())
-	{
-		editor.lineEdit->setReadOnly(true);
-		editor.toolButton->setEnabled(false);
-	}
-
 	updateEditor();
 
 	editor.lineEdit->installEventFilter(this);
@@ -629,6 +618,10 @@ void QtnPropertyQStringFileLineEditBttnHandler::onToolButtonClick()
 
 void QtnPropertyQStringFileLineEditBttnHandler::updateEditor()
 {
+	bool editable = stateProperty()->isEditableByUser();
+	editor().lineEdit->setReadOnly(!editable);
+	editor().toolButton->setEnabled(editable);
+
 	auto path = QDir::toNativeSeparators(property().value());
 	editor().setTextForProperty(stateProperty(), path);
 

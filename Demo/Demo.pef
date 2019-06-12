@@ -218,7 +218,7 @@ property_set SamplePS
         {
             description = "QString property with list of acepted values (one, two, three, four).";
             value = "two";
-            delegate List
+            delegate ComboBox
             {
                 items = QStringList() << "one" << "two" << "three" << "four";
             }

@@ -71,7 +71,6 @@ QTN_IMPORT_EXPORT QByteArray qtnCoordinateModeAttr();
 QTN_IMPORT_EXPORT QByteArray qtnFieldDelegateNameAttr();
 
 QTN_IMPORT_EXPORT QByteArray qtnLineEditDelegate();
-QTN_IMPORT_EXPORT QByteArray qtnListDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnSelectFileDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnSelectFontDelegate();
 QTN_IMPORT_EXPORT QByteArray qtnSelectColorDelegateName();

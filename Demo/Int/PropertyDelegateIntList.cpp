@@ -57,7 +57,6 @@ private:
 		else
 		{
 			int index = editor().findData((int) property());
-			Q_ASSERT(index >= 0);
 			editor().setCurrentIndex(index);
 		}
 		updating--;
