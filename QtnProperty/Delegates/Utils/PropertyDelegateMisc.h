@@ -160,7 +160,7 @@ protected:
 
 	virtual int subPropertyCountImpl() const override
 	{
-		return m_subProperties.size();
+		return int(m_subProperties.size());
 	}
 
 	virtual QtnPropertyBase *subPropertyImpl(int index) override
