@@ -194,7 +194,9 @@ void QtnPropertyDelegateQColorSolid::drawValueImpl(
 		return;
 	}
 
-	painter.fillRect(rect, owner());
+	auto boxRect = rect;
+	boxRect.adjust(2, 2, -2, -2);
+	painter.fillRect(boxRect, owner());
 }
 
 QWidget *QtnPropertyDelegateQColorSolid::createValueEditorImpl(
