@@ -127,11 +127,8 @@ protected:
 
 		auto &p = this->owner();
 
-		double value = valuePart * interval(p.maxValue());
-		value /= double(p.stepValue());
-		value = std::floor(value) * double(p.stepValue());
-
-		return ValueTypeStore(value) + p.minValue();
+		return ValueTypeStore(valuePart * interval(p.maxValue())) +
+			p.minValue();
 	}
 };
 
