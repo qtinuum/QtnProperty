@@ -16,7 +16,7 @@ limitations under the License.
 
 #include "MultiProperty.h"
 
-#include "Config.h"
+#include "Install.h"
 #include "Property.h"
 #include "PropertySet.h"
 #include "PropertyConnector.h"

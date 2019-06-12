@@ -21,7 +21,7 @@ limitations under the License.
 #include "PropertyConnector.h"
 #include "MultiProperty.h"
 #include "IQtnPropertyStateProvider.h"
-#include "Config.h"
+#include "Install.h"
 #include "PropertyDelegateAttrs.h"
 
 #include <QCoreApplication>

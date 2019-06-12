@@ -87,12 +87,12 @@ SOURCES += PropertyBase.cpp \
     QObjectPropertyWidget.cpp \
     MultiProperty.cpp \
     PropertyConnector.cpp \
-    Config.cpp \
     Utils/QtnConnections.cpp \
     Utils/QtnInt64SpinBox.cpp \
     Auxiliary/PropertyDelegateInfo.cpp \
     PropertyQKeySequence.cpp \
-    PropertyDelegateMetaEnum.cpp
+    PropertyDelegateMetaEnum.cpp \
+    Install.cpp
 
 HEADERS += CoreAPI.h\
     PropertyBase.h \
@@ -174,12 +174,12 @@ HEADERS += CoreAPI.h\
     MultiProperty.h \
     StructPropertyBase.h \
     PropertyConnector.h \
-    Config.h \
     Utils/QtnConnections.h \
     Utils/QtnInt64SpinBox.h \
     PropertyDelegateAttrs.h \
     PropertyQKeySequence.h \
-    PropertyDelegateMetaEnum.h
+    PropertyDelegateMetaEnum.h \
+    Install.h
 
 TRANSLATIONS = \
     Translations/en.ts \
