@@ -16,7 +16,7 @@ limitations under the License.
 
 #include <QDoubleSpinBox>
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 
 class QTN_IMPORT_EXPORT QtnDoubleSpinBox : public QDoubleSpinBox
 {

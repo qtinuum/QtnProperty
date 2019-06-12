@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_ENUM_H
 #define QTN_ENUM_H
 
-#include "CoreAPI.h"
+#include "Config.h"
 #include <QVector>
 #include <QSharedPointer>
 #include <QMetaEnum>
