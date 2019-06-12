@@ -309,13 +309,14 @@ bool QtnPropertySet::fromStrImpl(
 	if (lines.isEmpty())
 		return true;
 
-	bool anySuccess = false;
+	bool ok = true;
 
 	for (const auto &line : lines)
 	{
 		if (!parserLine.exactMatch(line))
 		{
 			qDebug() << "Cannot parse string: " << line;
+			ok = false;
 			continue;
 		}
 
@@ -323,6 +324,7 @@ bool QtnPropertySet::fromStrImpl(
 		if (params.size() != 3)
 		{
 			qDebug() << "Cannot parse string: " << line;
+			ok = false;
 			continue;
 		}
 
@@ -334,7 +336,18 @@ bool QtnPropertySet::fromStrImpl(
 		if (subProperties.size() != 1)
 		{
 			qDebug() << "Ambiguous property path: " << propertyPath;
+			ok = false;
 			continue;
+		}
+
+		if (subProperties[0]->state() & QtnPropertyStateNonSerialized)
+			continue;
+
+		propertyStrValue = propertyStrValue.trimmed();
+		if (propertyStrValue.startsWith('"') && propertyStrValue.endsWith('"'))
+		{
+			propertyStrValue =
+				propertyStrValue.mid(1, propertyStrValue.length() - 2);
 		}
 
 		if (!subProperties[0]->fromStr(propertyStrValue, reason))
@@ -344,26 +357,25 @@ bool QtnPropertySet::fromStrImpl(
 							.arg(subProperties[0]->name(),
 								subProperties[0]->metaObject()->className(),
 								propertyStrValue);
+			ok = false;
 			continue;
 		}
-
-		anySuccess = true;
 	}
 
-	return anySuccess;
+	return ok;
 }
 
 bool QtnPropertySet::fromJson(
 	const QJsonObject &jsonObject, QtnPropertyChangeReason reason)
 {
-	bool anyFail = false;
+	bool ok = true;
 
 	for (auto it = jsonObject.begin(), end = jsonObject.end(); it != end; ++it)
 	{
 		if (it.value().type() != QJsonValue::Object)
 		{
 			qDebug() << "Json object expected";
-			anyFail = true;
+			ok = false;
 			continue;
 		}
 
@@ -373,14 +385,17 @@ bool QtnPropertySet::fromJson(
 		if (childProperties.isEmpty())
 		{
 			qDebug() << "Cannot find property " << cppName;
-			anyFail = true;
+			ok = false;
 			continue;
 		} else if (childProperties.size() > 1)
 		{
 			qDebug() << "Ambiguous property " << cppName;
-			anyFail = true;
+			ok = false;
 			continue;
 		}
+
+		if (childProperties[0]->state() & QtnPropertyStateNonSerialized)
+			continue;
 
 		auto childPropertySet = childProperties[0]->asPropertySet();
 		if (childPropertySet)
@@ -389,7 +404,7 @@ bool QtnPropertySet::fromJson(
 			{
 				qDebug() << "Cannot load \"" << childPropertySet->name()
 						 << "\" from JSON";
-				anyFail = true;
+				ok = false;
 			}
 		} else
 		{
@@ -400,7 +415,7 @@ bool QtnPropertySet::fromJson(
 				if (!jsonProperty.contains("value"))
 				{
 					qDebug() << "Cannot parse \"value\" attribute";
-					anyFail = true;
+					ok = false;
 					continue;
 				}
 
@@ -409,25 +424,28 @@ bool QtnPropertySet::fromJson(
 				{
 					qDebug() << "Cannot convert value" << propertyValue
 							 << "to property" << childProperty->name();
-					anyFail = true;
+					ok = false;
 				}
 			} else
 			{
 				Q_ASSERT(false && "Cannot recognize property type");
-				anyFail = true;
+				ok = false;
 			}
 		}
 	}
 
-	return !anyFail;
+	return ok;
 }
 
 bool QtnPropertySet::toJson(QJsonObject &jsonObject) const
 {
-	int successCount = 0;
+	bool ok = true;
 
 	for (auto childPropertyBase : childProperties())
 	{
+		if (childPropertyBase->state() & QtnPropertyStateNonSerialized)
+			continue;
+
 		QJsonObject jsonSubObject;
 
 		auto childPropertySet = childPropertyBase->asPropertySet();
@@ -437,6 +455,7 @@ bool QtnPropertySet::toJson(QJsonObject &jsonObject) const
 			{
 				qDebug() << "Cannot save \"" << childPropertySet->name()
 						 << "\" to JSON";
+				ok = false;
 				continue;
 			}
 		} else
@@ -449,6 +468,7 @@ bool QtnPropertySet::toJson(QJsonObject &jsonObject) const
 				{
 					qDebug() << "Cannot convert property \""
 							 << childProperty->name() << "\" to QString";
+					ok = false;
 					continue;
 				}
 
@@ -456,15 +476,15 @@ bool QtnPropertySet::toJson(QJsonObject &jsonObject) const
 			} else
 			{
 				Q_ASSERT(false && "Cannot recognize property type");
+				ok = false;
 				continue;
 			}
 		}
 
 		jsonObject.insert(childPropertyBase->name(), jsonSubObject);
-		++successCount;
 	}
 
-	return (successCount == childProperties().size());
+	return ok;
 }
 
 bool QtnPropertySet::toStrImpl(QString &str) const
@@ -609,6 +629,8 @@ bool QtnPropertySet::toStrWithPrefix(QString &str, const QString &prefix) const
 {
 	for (auto childPropertyBase : m_childProperties)
 	{
+		if (childPropertyBase->state() & QtnPropertyStateNonSerialized)
+			continue;
 		QtnProperty *childProperty = childPropertyBase->asProperty();
 
 		if (childProperty)

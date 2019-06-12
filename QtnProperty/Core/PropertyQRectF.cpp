@@ -76,8 +76,9 @@ bool QtnPropertyQRectFBase::fromStrImpl(
 {
 	static QRegExp parserRect(
 		"^\\s*QRectF\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
-	static QRegExp parserParams(
-		"^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$",
+	static QRegExp parserParams("^\\s*(\\-?\\d+(\\.\\d{0,})?)\\s*,\\s*(\\-?\\d+"
+								"(\\.\\d{0,})?)\\s*,\\s*(\\d+(\\.\\d{0,})?)\\s*"
+								",\\s*(\\d+(\\.\\d{0,})?)\\s*$",
 		Qt::CaseInsensitive);
 
 	if (!parserRect.exactMatch(str))
@@ -91,23 +92,23 @@ bool QtnPropertyQRectFBase::fromStrImpl(
 		return false;
 
 	params = parserParams.capturedTexts();
-	if (params.size() != 5)
+	if (params.size() != 9)
 		return false;
 
 	bool ok = false;
-	int left = params[1].toInt(&ok);
+	double left = params[1].toDouble(&ok);
 	if (!ok)
 		return false;
 
-	int top = params[2].toInt(&ok);
+	double top = params[3].toDouble(&ok);
 	if (!ok)
 		return false;
 
-	int width = params[3].toInt(&ok);
+	double width = params[5].toDouble(&ok);
 	if (!ok)
 		return false;
 
-	int height = params[4].toInt(&ok);
+	double height = params[7].toDouble(&ok);
 	if (!ok)
 		return false;
 

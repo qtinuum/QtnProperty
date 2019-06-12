@@ -36,31 +36,23 @@ static Signatures createSlotSignatures()
 {
 	Signatures _slots;
 	_slots.insert("propertyWillChange",
-		{ "const QtnPropertyBase* changedProperty, "
-		  "const QtnPropertyBase* firedProperty, "
-		  "QtnPropertyChangeReason reason, "
-		  "QtnPropertyValuePtr newValue",
+		{ "QtnPropertyChangeReason reason, "
+		  "QtnPropertyValuePtr newValue, "
+		  "int typeId",
 
-			"Q_UNUSED(changedProperty); "
-			"Q_UNUSED(firedProperty); "
 			"Q_UNUSED(reason); "
-			"Q_UNUSED(newValue);" });
+			"Q_UNUSED(newValue);"
+			"Q_UNUSED(typeId);" });
 
 	_slots.insert("propertyDidChange",
-		{ "const QtnPropertyBase* changedProperty, "
-		  "const QtnPropertyBase* firedProperty, "
-		  "QtnPropertyChangeReason reason",
+		{ "QtnPropertyChangeReason reason",
 
-			"Q_UNUSED(changedProperty); "
-			"Q_UNUSED(firedProperty); "
 			"Q_UNUSED(reason);" });
 
 	_slots.insert("propertyValueAccept",
-		{ "const QtnProperty *property, "
-		  "QtnPropertyValuePtr valueToAccept, "
+		{ "QtnPropertyValuePtr valueToAccept, "
 		  "bool* accept",
 
-			"Q_UNUSED(property); "
 			"Q_UNUSED(valueToAccept); "
 			"Q_UNUSED(accept);" });
 	return _slots;
@@ -159,19 +151,18 @@ static QString slotName(
 
 void DelegateInfo::generateCode(TextStreamIndent &s) const
 {
-	s.newLine() << QString("QScopedPointer<QtnPropertyDelegateInfo> info(new "
-						   "QtnPropertyDelegateInfo());");
+	s.newLine() << QString("QtnPropertyDelegateInfo info;");
 
 	if (!name.isEmpty())
-		s.newLine() << QString("info->name = \"%1\";").arg(name);
+		s.newLine() << QString("info.name = \"%1\";").arg(name);
 
 	for (auto it = attributes.begin(); it != attributes.end(); ++it)
 	{
-		s.newLine() << QString("info->attributes[\"%1\"] = %2;")
+		s.newLine() << QString("info.attributes[\"%1\"] = %2;")
 						   .arg(it.key(), it.value());
 	}
 
-	s.newLine() << "return info.take();";
+	s.newLine() << "return info;";
 }
 
 IncludeCode::IncludeCode(QString name, bool isHeader)
@@ -273,9 +264,10 @@ void PropertySetCode::generateHFile(TextStreamIndent &s) const
 	s.newLine(-1) << "public:";
 	s.newLine() << "// constructor declaration";
 	s.newLine() << QString("explicit %1(QObject* parent = %2);")
-					   .arg(selfType, valueByName(assignments, "parent", "0"));
+					   .arg(selfType,
+						   valueByName(assignments, "parent", "nullptr"));
 	s.newLine() << "// destructor declaration";
-	s.newLine() << QString("virtual ~%1();").arg(selfType);
+	s.newLine() << QString("virtual ~%1() override;").arg(selfType);
 	s.newLine() << "// assignment declaration";
 	s.newLine() << QString("%1& operator=(const %1& other);").arg(selfType);
 	generateChildrenDeclaration(s);
@@ -599,7 +591,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent &s) const
 	if (!delegateInfo.isNull())
 	{
 		s.newLine() << QString(
-			"setDelegateCallback([] () -> QtnPropertyDelegateInfo * {");
+			"setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {");
 		s.addIndent();
 		delegateInfo->generateCode(s);
 		s.delIndent();
@@ -611,7 +603,7 @@ void PropertySetCode::generateDelegatesConnection(TextStreamIndent &s) const
 		if (!p->delegateInfo.isNull())
 		{
 			s.newLine() << QString(
-				"%1.setDelegateCallback([] () -> QtnPropertyDelegateInfo * {")
+				"%1.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {")
 							   .arg(p->name);
 			s.addIndent();
 			p->delegateInfo->generateCode(s);
@@ -633,7 +625,7 @@ void PropertySetCode::generateConstructorInitializationList(
 void PropertySetCode::generateCopyValues(TextStreamIndent &s) const
 {
 	s.newLine() << QString(
-		"%1* theCopyFrom = qobject_cast<%1*>(propertySetCopyFrom);")
+		"auto theCopyFrom = qobject_cast<%1*>(propertySetCopyFrom);")
 					   .arg(selfType);
 	s.newLine() << "if (!theCopyFrom)";
 	s.newLine(1) << "return false;";

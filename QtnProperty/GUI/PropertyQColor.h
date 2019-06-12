@@ -19,8 +19,8 @@ limitations under the License.
 #define PROPERTY_COLOR_H
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
-#include "StructPropertyBase.h"
-#include "Core/PropertyInt.h"
+#include "QtnProperty/StructPropertyBase.h"
+#include "QtnProperty/Core/PropertyInt.h"
 #include <QColor>
 
 enum QtnColorDelegateShape

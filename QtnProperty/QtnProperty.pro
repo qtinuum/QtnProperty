@@ -1,4 +1,3 @@
-include(../Internal/BaseConfig.pri)
 include(../Internal/TargetConfig.pri)
 
 QT += core gui widgets script

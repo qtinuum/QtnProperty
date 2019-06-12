@@ -54,7 +54,7 @@ bool QtnPropertyQPointFBase::fromStrImpl(
 		return false;
 
 	static QRegExp parserParams(
-		QLatin1String("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$"),
+		"^\\s*(\\-?\\d+(\\.\\d{0,})?)\\s*,\\s*(\\-?\\d+(\\.\\d{0,})?)\\s*$",
 		Qt::CaseInsensitive);
 
 	if (!parserParams.exactMatch(params[1]))
@@ -62,16 +62,16 @@ bool QtnPropertyQPointFBase::fromStrImpl(
 
 	params = parserParams.capturedTexts();
 
-	if (params.size() != 3)
+	if (params.size() != 5)
 		return false;
 
 	bool ok = false;
-	int x = params[1].toInt(&ok);
+	double x = params[1].toDouble(&ok);
 
 	if (!ok)
 		return false;
 
-	int y = params[2].toInt(&ok);
+	double y = params[3].toDouble(&ok);
 
 	if (!ok)
 		return false;

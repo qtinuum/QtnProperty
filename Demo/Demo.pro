@@ -40,6 +40,7 @@ PEG_SOURCES += Demo.pef
 OTHER_FILES += \
     Demo.pef
 
-DYNAMIC_LIBS.path = "Contents/MacOS"
-
 QMAKE_BUNDLE_DATA += DYNAMIC_LIBS
+
+unix:QMAKE_LFLAGS += -Wl,-rpath,\'\$$ORIGIN\'
+

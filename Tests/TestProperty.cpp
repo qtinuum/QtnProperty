@@ -1,5 +1,5 @@
 #include "TestProperty.h"
-#include "QObjectPropertySet.h"
+#include "QtnProperty/QObjectPropertySet.h"
 #include "PEG/test.peg.h"
 #include <QtTest/QtTest>
 #include <QtScript/QScriptEngine>
@@ -159,7 +159,7 @@ void TestProperty::state()
 	ps.addChildProperty(&p);
 
 	QCOMPARE(ps.state(), QtnPropertyStateNone);
-	QCOMPARE(p.state(), QtnPropertyStateCollapsed);
+	QCOMPARE(p.state(), QtnPropertyStateResettable);
 
 	QtnPropertyState master_state =
 		QtnPropertyStateInvisible | QtnPropertyStateNonSimple;
@@ -168,8 +168,8 @@ void TestProperty::state()
 	QCOMPARE(ps.state(), master_state);
 	QCOMPARE(ps.stateLocal(), master_state);
 	QCOMPARE(ps.stateInherited(), QtnPropertyStateNone);
-	QCOMPARE(p.state(), master_state | QtnPropertyStateCollapsed);
-	QCOMPARE(p.stateLocal(), QtnPropertyStateCollapsed);
+	QCOMPARE(p.state(), master_state | QtnPropertyStateResettable);
+	QCOMPARE(p.stateLocal(), QtnPropertyStateResettable);
 	QCOMPARE(p.stateInherited(), master_state);
 
 	p.addState(QtnPropertyStateImmutable);
@@ -177,9 +177,9 @@ void TestProperty::state()
 	QCOMPARE(ps.stateLocal(), master_state);
 	QCOMPARE(ps.stateInherited(), QtnPropertyStateNone);
 	QCOMPARE(p.state(),
-		master_state | QtnPropertyStateCollapsed | QtnPropertyStateImmutable);
+		master_state | QtnPropertyStateResettable | QtnPropertyStateImmutable);
 	QCOMPARE(
-		p.stateLocal(), QtnPropertyStateCollapsed | QtnPropertyStateImmutable);
+		p.stateLocal(), QtnPropertyStateResettable | QtnPropertyStateImmutable);
 	QCOMPARE(p.stateInherited(), master_state);
 
 	ps.removeState(QtnPropertyStateInvisible);
@@ -187,13 +187,13 @@ void TestProperty::state()
 	QCOMPARE(ps.stateLocal(), QtnPropertyStateNonSimple);
 	QCOMPARE(ps.stateInherited(), QtnPropertyStateNone);
 	QCOMPARE(p.state(),
-		QtnPropertyStateNonSimple | QtnPropertyStateCollapsed |
+		QtnPropertyStateNonSimple | QtnPropertyStateResettable |
 			QtnPropertyStateImmutable);
 	QCOMPARE(
-		p.stateLocal(), QtnPropertyStateCollapsed | QtnPropertyStateImmutable);
+		p.stateLocal(), QtnPropertyStateResettable | QtnPropertyStateImmutable);
 	QCOMPARE(p.stateInherited(), QtnPropertyStateNonSimple);
 
-	p.switchState(QtnPropertyStateCollapsed, false);
+	p.switchState(QtnPropertyStateResettable, false);
 	ps.switchState(QtnPropertyStateInvisible, true);
 	QCOMPARE(ps.state(), master_state);
 	QCOMPARE(ps.stateLocal(), master_state);
@@ -202,20 +202,20 @@ void TestProperty::state()
 	QCOMPARE(p.stateLocal(), QtnPropertyStateImmutable);
 	QCOMPARE(p.stateInherited(), master_state);
 
-	QCOMPARE(ps.isEditableByUser(), false);
+	QVERIFY(!ps.isEditableByUser());
 
 	ps.removeState(master_state | QtnPropertyStateCollapsed);
-	QCOMPARE(ps.isEditableByUser(), true);
+	QVERIFY(ps.isEditableByUser());
 	QCOMPARE(ps.state(), QtnPropertyStateNone);
 
 	int call_count = 0;
 	QObject::connect(&ps, &QtnPropertyBase::propertyWillChange,
-		[&call_count](const QtnPropertyBase *, const QtnPropertyBase *,
-			QtnPropertyChangeReason, QtnPropertyValuePtr) { ++call_count; });
+		[&call_count](QtnPropertyChangeReason, QtnPropertyValuePtr, int) {
+			++call_count;
+		});
 
 	QObject::connect(&ps, &QtnPropertyBase::propertyDidChange,
-		[&call_count](const QtnPropertyBase *, const QtnPropertyBase *,
-			QtnPropertyChangeReason) { ++call_count; });
+		[&call_count](QtnPropertyChangeReason) { ++call_count; });
 
 	ps.addState(QtnPropertyStateNone, true);
 	QCOMPARE(call_count, 2);
@@ -239,68 +239,55 @@ void TestProperty::stateChange()
 void TestProperty::propertyDelegate()
 {
 	QtnPropertyBool p(this);
-	QVERIFY(!p.delegate());
+	QVERIFY(!p.delegateInfo());
 
 	QtnPropertyDelegateInfo info;
 	info.name = "delegateName";
-	p.setDelegate(info);
-	QVERIFY(p.delegate());
-	QVERIFY(p.delegate()->name == "delegateName");
-	QVERIFY(p.delegate()->attributes.isEmpty());
+	p.setDelegateInfo(info);
+	QVERIFY(p.delegateInfo());
+	QVERIFY(p.delegateInfo()->name == "delegateName");
+	QVERIFY(p.delegateInfo()->attributes.isEmpty());
 
 	info.attributes["int"] = 4;
-	p.setDelegate(info);
-	QVERIFY(p.delegate()->attributes.size() == 1);
-	QVERIFY(p.delegate()->attributes["int"] == 4);
+	p.setDelegateInfo(info);
+	QVERIFY(p.delegateInfo()->attributes.size() == 1);
+	QVERIFY(p.delegateInfo()->attributes["int"] == 4);
 
 	info.attributes["str"] = QString("Text");
-	p.setDelegate(info);
-	QVERIFY(p.delegate()->attributes.size() == 2);
-	QVERIFY(p.delegate()->attributes["str"] == "Text");
+	p.setDelegateInfo(info);
+	QVERIFY(p.delegateInfo()->attributes.size() == 2);
+	QVERIFY(p.delegateInfo()->attributes["str"] == "Text");
 
 	info.attributes["int"] = 12;
-	p.setDelegate(info);
-	QVERIFY(p.delegate()->attributes.size() == 2);
-	QVERIFY(p.delegate()->attributes["int"] == 12);
+	p.setDelegateInfo(info);
+	QVERIFY(p.delegateInfo()->attributes.size() == 2);
+	QVERIFY(p.delegateInfo()->attributes["int"] == 12);
 }
 
 void TestProperty::propertyDelegateCallback()
 {
 	QtnPropertyBool p(this);
-	QVERIFY(!p.delegate());
+	QVERIFY(!p.delegateInfo());
 
-	p.setDelegateCallback([]() -> QtnPropertyDelegateInfo * {
-		QtnPropertyDelegateInfo *info(new QtnPropertyDelegateInfo());
-		info->name = "delegate";
-		info->attributes["one"] = 1;
-		info->attributes["color"] = QColor(Qt::black);
+	p.setDelegateInfoCallback([]() -> QtnPropertyDelegateInfo {
+		QtnPropertyDelegateInfo info;
+		info.name = "delegate";
+		info.attributes["one"] = 1;
+		info.attributes["color"] = QColor(Qt::black);
 		return info;
 	});
 
-	QVERIFY(p.delegate());
-	QVERIFY(p.delegate()->name == "delegate");
-	QVERIFY(p.delegate()->attributes.size() == 2);
-	QVERIFY(p.delegate()->attributes["one"] == 1);
-	QVERIFY(p.delegate()->attributes["color"] == QColor(Qt::black));
+	QVERIFY(p.delegateInfo());
+	QVERIFY(p.delegateInfo()->name == "delegate");
+	QVERIFY(p.delegateInfo()->attributes.size() == 2);
+	QVERIFY(p.delegateInfo()->attributes["one"] == 1);
+	QVERIFY(p.delegateInfo()->attributes["color"] == QColor(Qt::black));
 }
 
 void TestProperty::propertyBool()
 {
 	{
 		QtnPropertyBoolCallback p(this);
-
-		bool hasException = false;
-		try
-		{
-			if (p)
-			{
-			}
-		} catch (const std::exception &e)
-		{
-			Q_UNUSED(e);
-			hasException = true;
-		}
-		QVERIFY(hasException);
 
 		p.setCallbackValueGet([]() -> bool { return false; });
 		QVERIFY(p.value() == false);
@@ -313,29 +300,13 @@ void TestProperty::propertyBool()
 			[](bool newValue) { QVERIFY(newValue == false); });
 		p.setValue(false);
 
-		QVERIFY(!p);
-		if (p)
-			QFAIL("p expected as false");
+		QVERIFY2(!p, "p expected as false");
 
 		p.setCallbackValueGet(&ret_true);
-		QVERIFY(p);
-
-		switch (p)
-		{
-			case false:
-				QFAIL("p expected as true");
-		}
+		QVERIFY2(p, "p expected as true");
 
 		QtnPropertyBoolBase &p1 = p;
-		QVERIFY(p1);
-		if (p1 == false)
-			QFAIL("p1 expected as true");
-
-		switch (p1)
-		{
-			case false:
-				QFAIL("p1 expected as true");
-		}
+		QVERIFY2(p1, "p1 expected as true");
 
 		QtnPropertyBoolCallback p2(this);
 		bool val = true;
@@ -365,9 +336,7 @@ void TestProperty::propertyBool()
 
 	{
 		QtnPropertyBool p(this);
-		QVERIFY(!p);
-		if (p)
-			QFAIL("p expected as false");
+		QVERIFY2(!p, "p expected as false");
 
 		p = true;
 		QVERIFY(p == true);
@@ -375,7 +344,7 @@ void TestProperty::propertyBool()
 		p = (p != true);
 		QVERIFY(!p);
 
-		switch (p + 4)
+		switch (int(p) + 4)
 		{
 			case 4:
 				break;
@@ -383,7 +352,7 @@ void TestProperty::propertyBool()
 				QFAIL("p expected as false");
 		}
 
-		p = 5;
+		p = bool(5);
 		QVERIFY(p);
 
 		QVERIFY(p != false);
@@ -768,8 +737,7 @@ void TestProperty::copyValues()
 		verifyInitialValues(pp1);
 		QCOMPARE(pp1.bp.value(), false);
 		pp.bp.addState(QtnPropertyStateImmutable);
-		QCOMPARE(pp.bp.state(),
-			QtnPropertyStateImmutable | QtnPropertyStateCollapsed);
+		QCOMPARE(pp.bp.state(), QtnPropertyStateImmutable);
 
 		pp1.copyValues(&pp, QtnPropertyStateImmutable);
 		QCOMPARE(pp1.bp.value(), false);
@@ -874,6 +842,8 @@ void TestProperty::propertyScripting()
 		b.setState(QtnPropertyStateInvisible);
 		val = eng.evaluate("b.isEditable");
 		QCOMPARE(val.toBool(), true);
+		val = eng.evaluate("b.isEditableByUser");
+		QCOMPARE(val.toBool(), false);
 
 		val = eng.evaluate("b.state");
 		QCOMPARE(val.toUInt32(), 2u);
@@ -915,20 +885,19 @@ void TestProperty::propertyScripting()
 
 		eng.evaluate("var success = true;");
 		eng.evaluate(
-			"var f1 = function(p1, p2, reason) {"
-			"  if (p1 != p2) success = false;"
-			"  if (p1.name != 'isValid') success = false;"
-			"  if (p1.state != QtnPropertyStateNone) success = false;"
-			"  if (p1.id != 15) success = false;"
+			"var f1 = function(reason) {"
+			"  if (this.name != 'isValid') success = false;"
+			"  if (this.state != QtnPropertyStateNone) success = false;"
+			"  if (this.id != 15) success = false;"
 			"  if (reason != QtnPropertyChangeReasonNewValue) success = false;"
-			"  if (p1.value != true) success = false;"
+			"  if (this.value != true) success = false;"
 			"}");
-		eng.evaluate("b.propertyDidChange.connect(f1);");
+		eng.evaluate("b.propertyDidChange.connect(b, f1);");
 		eng.evaluate("b.value = true;");
 		val = eng.evaluate("success");
 		QCOMPARE(val.toBool(), true);
 
-		eng.evaluate("b.propertyDidChange.disconnect(f1);");
+		eng.evaluate("b.propertyDidChange.disconnect(b, f1);");
 		eng.evaluate("b.value = true;");
 		val = eng.evaluate("success");
 		QCOMPARE(val.toBool(), true);
@@ -945,7 +914,7 @@ void TestProperty::variantConversions()
 		QVERIFY(b.fromVariant(value));
 		QCOMPARE(b.value(), true);
 
-		value = 17;
+		value = QRect();
 		QVERIFY(!b.fromVariant(value));
 		QCOMPARE(b.value(), true);
 
@@ -1344,7 +1313,7 @@ void TestProperty::stringConversions()
 		QCOMPARE(pp.ip.value(), -23);
 		pp.ip.setMinValue(-2);
 		QCOMPARE(pp.ip.value(), -2);
-		QVERIFY(pp.ip.fromStr("-32"));
+		QVERIFY(!pp.ip.fromStr("-32"));
 		QCOMPARE(pp.ip.value(), -2);
 
 		QVERIFY(pp.ipc.toStr(str));
@@ -1375,7 +1344,7 @@ void TestProperty::stringConversions()
 		QCOMPARE(pp.upc.value(), 11u);
 		pp.upc.setMaxValue(100);
 		QCOMPARE(pp.upc.value(), 11u);
-		QVERIFY(pp.upc.fromStr("110"));
+		QVERIFY(!pp.upc.fromStr("110"));
 		QCOMPARE(pp.upc.value(), 11u);
 
 		QVERIFY(pp.fp.toStr(str));
@@ -1421,7 +1390,7 @@ void TestProperty::stringConversions()
 		QVERIFY(pp.sp.toStr(str));
 		QCOMPARE(str, QString("Hello"));
 		QVERIFY(pp.sp.fromStr("  \"Hello world \"  "));
-		QCOMPARE(pp.sp.value(), QString("Hello world "));
+		QCOMPARE(pp.sp.value(), QString("\"Hello world \""));
 
 		QVERIFY(pp.spc.toStr(str));
 		QCOMPARE(str, QString("name"));
@@ -1679,7 +1648,7 @@ void TestProperty::qObjectProperty()
 		QtnPropertyQStringBase *ps = qobject_cast<QtnPropertyQStringBase *>(p);
 		QVERIFY(ps);
 		QCOMPARE(ps->value(), QString("Item1"));
-		QCOMPARE(ps->state(), QtnPropertyStateCollapsed);
+		QCOMPARE(ps->state(), QtnPropertyStateNone);
 		ps->setValue("NewItemName");
 		QCOMPARE(obj.objectName(), QString("NewItemName"));
 		QCOMPARE(ps->value(), QString("NewItemName"));
@@ -1714,13 +1683,11 @@ void TestProperty::qObjectPropertySet()
 }
 
 void TestProperty::checkPropertyStateIsNonSimple(
-	const QtnPropertyBase *changedProperty,
-	const QtnPropertyBase *firedProperty, QtnPropertyChangeReason reason,
-	QtnPropertyValuePtr newValue)
+	QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
 {
-	QCOMPARE(changedProperty, firedProperty);
+	QCOMPARE(typeId, qMetaTypeId<QtnPropertyState>());
 	QCOMPARE(reason, QtnPropertyChangeReasonStateLocal);
 	auto state = qtnCastPropertyValue<QtnPropertyState>(newValue);
 	QVERIFY(state);
-	QCOMPARE(*state, QtnPropertyStateNonSimple | QtnPropertyStateCollapsed);
+	QCOMPARE(*state, QtnPropertyStateNonSimple | QtnPropertyStateResettable);
 }

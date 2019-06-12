@@ -1,14 +1,24 @@
-macx:BIN_DIR = $$PWD/bin-osx
-win32:BIN_DIR = $$PWD/bin-win
-linux:BIN_DIR = $$PWD/bin-linux
+QTNPROPERTY_BIN_PREFIX = $$PWD/..
 
-isEmpty(BIN_DIR) {
-    MESSAGE(CRITICAL, "Only mac/win32/linux supported")
+win32 {
+    QTNPROPERTY_BIN = $$QTNPROPERTY_BIN_PREFIX/bin-win32
+    msvc {
+        QTNPROPERTY_BIN = $$QTNPROPERTY_BIN-msvc
+    }
+}
+
+macx:QTNPROPERTY_BIN = $$QTNPROPERTY_BIN_PREFIX/bin-osx
+else:linux:QTNPROPERTY_BIN = $$QTNPROPERTY_BIN_PREFIX/bin-linux
+
+isEmpty(QTNPROPERTY_BIN) {
+    message("Only mac/win32/linux supported")
+    QTNPROPERTY_BIN = "FAIL"
 } else {
+    clang:QTNPROPERTY_BIN = $$QTNPROPERTY_BIN-clang
+    else:gcc:QTNPROPERTY_BIN = $$QTNPROPERTY_BIN-gcc
+
+    QTNPROPERTY_BIN = $$QTNPROPERTY_BIN-$$QT_ARCH
     CONFIG(debug, debug|release) {
-        DEFINES += DEBUG
-        BIN_DIR = $$BIN_DIR/debug
-    } else {
-        DEFINES += NDEBUG
+        QTNPROPERTY_BIN = $$QTNPROPERTY_BIN/debug
     }
 }

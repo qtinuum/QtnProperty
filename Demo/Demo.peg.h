@@ -1,8 +1,8 @@
 #ifndef DEMO_H
 #define DEMO_H
 
-#include "../Core/PropertyCore.h"
-#include "../Core/PropertyGUI.h"
+#include "QtnProperty/PropertyCore.h"
+#include "QtnProperty/PropertyGUI.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
 #include "PenWidth/PropertyPenWidth.h"
@@ -43,9 +43,9 @@ class QtnPropertySetSubPropertySetType: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetSubPropertySetType(QObject* parent = 0);
+    explicit QtnPropertySetSubPropertySetType(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetSubPropertySetType();
+    virtual ~QtnPropertySetSubPropertySetType() override;
     // assignment declaration
     QtnPropertySetSubPropertySetType& operator=(const QtnPropertySetSubPropertySetType& other);
     
@@ -79,9 +79,9 @@ class QtnPropertySetSamplePS: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetSamplePS(QObject* parent = 0);
+    explicit QtnPropertySetSamplePS(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetSamplePS();
+    virtual ~QtnPropertySetSamplePS() override;
     // assignment declaration
     QtnPropertySetSamplePS& operator=(const QtnPropertySetSamplePS& other);
     
@@ -134,8 +134,8 @@ private:
     void connectDelegates();
     
     // start slot declarations
-    void on_EnableSubPropertySet_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
-    void on_QColorProperty_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+    void on_EnableSubPropertySet_propertyDidChange(QtnPropertyChangeReason reason);
+    void on_QColorProperty_propertyDidChange(QtnPropertyChangeReason reason);
     // end slot declarations
 };
 

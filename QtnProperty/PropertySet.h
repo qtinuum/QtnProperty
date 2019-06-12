@@ -75,8 +75,8 @@ public slots:
 		QtnPropertyState ignoreMask = QtnPropertyStateNone);
 
 	// JSON support
-	bool fromJson(
-		const QJsonObject &jsonObject, QtnPropertyChangeReason reason);
+	bool fromJson(const QJsonObject &jsonObject,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonChildren);
 	bool toJson(QJsonObject &jsonObject) const;
 
 public:

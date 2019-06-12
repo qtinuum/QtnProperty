@@ -4,13 +4,13 @@
 # 3. Define PEG_TOOL to point to QtnPEG before including
 # PEG.pri file in your pro file
 
-isEmpty(BIN_DIR) {
+isEmpty(QTNPROPERTY_BIN) {
     include($$PWD/../Internal/BaseConfig.pri)
 }
 
 isEmpty(PEG_TOOL) {
-win32:$$BIN_DIR/QtnPEG.exe
-else:PEG_TOOL = $$BIN_DIR/QtnPEG
+win32:PEG_TOOL = $$QTNPROPERTY_BIN/QtnPEG.exe
+else:PEG_TOOL = $$QTNPROPERTY_BIN/QtnPEG
 }
 
 peg.name = PropertyEnum generator ${QMAKE_FILE_IN}

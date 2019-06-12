@@ -425,7 +425,9 @@ public:
 		emit this->propertyDidChange(QtnPropertyChangeReasonStateLocal);
 	}
 
-	inline void incrementValue(QtnPropertyChangeReason reason, int steps = 1)
+	inline void incrementValue(
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonNewValue,
+		int steps = 1)
 	{
 		auto oldValue = this->value();
 		ValueType newValue;
@@ -564,5 +566,15 @@ private:
 
 	Q_DISABLE_COPY(QtnNumericPropertyValue)
 };
+
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<bool>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<qint32>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<quint32>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<qint64>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<quint64>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<float>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<double>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<QString>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<QVariant>;
 
 #endif // PROPERTY_TEMPLATES_H

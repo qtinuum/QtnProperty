@@ -1,7 +1,7 @@
-#include "Enum.h"
+#include "QtnProperty/Enum.h"
 #include_cpp <vector>
-#include_h "PropertyCore.h"
-#include_h "PropertyGUI.h"
+#include_h "QtnProperty/PropertyCore.h"
+#include_h "QtnProperty/PropertyGUI.h"
 
 property_set Test1
 {
@@ -43,7 +43,7 @@ property_set Test3 {
     property_set YY yy
     {
         id = 6;
-        description = tr("ss")+tr("ss");
+        description = QString("ss")+QString("ss");
         // rectangle property
         QRect rect {value = QRect(10, 10, 10, 10);}
 
@@ -101,7 +101,7 @@ property_set Test3 {
     {
         a.value = false;
 
-        slot propertyWillChange
+        slot a.propertyWillChange
         {
             yy.rect = QRect(1, 1, 1, 1);
             // ss propertyWillChange

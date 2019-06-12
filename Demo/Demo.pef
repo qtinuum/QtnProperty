@@ -1,5 +1,5 @@
-#include "../Core/PropertyCore.h"
-#include "../Core/PropertyGUI.h"
+#include "QtnProperty/PropertyCore.h"
+#include "QtnProperty/PropertyGUI.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
 #include "PenWidth/PropertyPenWidth.h"
@@ -37,16 +37,16 @@ property_set SamplePS
         clickHandler = [](const QtnPropertyButton* bttn) {
             qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
         };
-        
+
         delegate { title = "Click me"; }
     }
-    
+
     Button ButtonLinkProperty
     {
         clickHandler = [](const QtnPropertyButton* bttn) {
             qDebug() << Q_FUNC_INFO << "Link has clicked: " << bttn;
         };
-        
+
         delegate Link { title = "Click on me"; }
     }
 
@@ -58,10 +58,6 @@ property_set SamplePS
         clickHandler = [this](const QtnPropertyABColor* color) {
             qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
             RGBColor = QColor::fromRgb(qrand()%255, qrand()%255, qrand()%255);
-        };
-        
-        resetCallback = [this](QtnPropertyBase&){
-            RGBColor = Qt::green;
         };
 
         delegate { rgbSubItems = true; }
@@ -83,7 +79,7 @@ property_set SamplePS
         minValue = 0;
         maxValue = 10.f;
         stepValue = 0.1f;
-        
+
         delegate SliderBox
         {
             fillColor = QColor::fromRgb(170, 170, 255);
@@ -294,7 +290,7 @@ property_set SamplePS
         value = 15;
         unit = FreqUnit::KHz;
     }
-    
+
     Layer LayerProperty
     {
         description = "Property to hold layer.";
@@ -306,13 +302,13 @@ property_set SamplePS
         description = "Property to hold QBrushStyle enum.";
         value = Qt::HorPattern;
 	}
-	
+
 	PenWidth PenWidthProperty
 	{
         description = "Property to hold PenWidth enum.";
         value = PenWidth::Middle;
 	}
-    
+
     QPenStyle PenStyleProperty
     {
         description = "Property to hold pen style values.";
@@ -329,7 +325,7 @@ property_set SamplePS
             editWidth = true;
         }
     }
-	
+
 	QString QStringCallbackProperty
 	{
         description = "Property to hold QString values with candidates.";

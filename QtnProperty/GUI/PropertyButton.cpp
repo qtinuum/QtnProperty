@@ -20,6 +20,7 @@ limitations under the License.
 QtnPropertyButton::QtnPropertyButton(QObject *parent)
 	: QtnProperty(parent)
 {
+	switchState(QtnPropertyStateNonSerialized, true);
 }
 
 void QtnPropertyButton::invokeClick()

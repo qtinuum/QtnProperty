@@ -1,4 +1,3 @@
-include(../Internal/BaseConfig.pri)
 include(../Internal/TargetConfig.pri)
 include(Bison.pri)
 include(Flex.pri)
@@ -11,7 +10,7 @@ TARGET = QtnPEG
 CONFIG += cmdline
 
 TEMPLATE = app
-VERSION = 1.0.0
+VERSION = 2.0.0
 
 SOURCES += main.cpp \
     PropertyEnumGenerator.cpp

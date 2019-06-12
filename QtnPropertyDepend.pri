@@ -1,12 +1,15 @@
-include($$PWD/Internal/BaseConfig.pri)
+isEmpty(QTNPROPERTY_BIN) {
+    include($$PWD/Internal/BaseConfig.pri)
+}
 
 QTNPROPERTY_PATH = $$PWD
 
 isEmpty(QTNPROPERTY_LIB) {
-    QTNPROPERTY_LIB = $$BIN_DIR
+    QTNPROPERTY_LIB = $$QTNPROPERTY_BIN
 }
 
-QTNPROPERTY_LIBNAME = QtnProperty2
+QTNPROPERTY_LIBNAME = QtnProperty
+qtnproperty_dynamic:QTNPROPERTY_LIBNAME = $$join(QTNPROPERTY_LIBNAME, , , 2)
 
 win32 {
     msvc:PRE_TARGETDEPS += $$QTNPROPERTY_LIB/$$QTNPROPERTY_LIBNAME.lib
@@ -14,13 +17,9 @@ win32 {
 }
 
 qtnproperty_dynamic {
+    DEFINES += QTN_DYNAMIC_IMPORT
     macx {
-        QMAKE_SONAME_PREFIX = @rpath
         DYNAMIC_LIBS.files += $$QTNPROPERTY_LIB/lib$$QTNPROPERTY_LIBNAME.dylib
-    }
-
-    unix {
-        QMAKE_RPATHDIR += $$BIN_DIR
     }
 } else {
     unix {

@@ -26,7 +26,6 @@ class QStyleOptionButton;
 class QTN_IMPORT_EXPORT QtnPropertyButton : public QtnProperty
 {
 	Q_OBJECT
-	Q_DISABLE_COPY(QtnPropertyButton)
 
 public:
 	explicit QtnPropertyButton(QObject *parent);
@@ -34,6 +33,8 @@ public:
 	void invokeClick();
 	void setClickHandler(
 		const std::function<void(const QtnPropertyButton *)> &clickHandler);
+
+	inline QtnPropertyButton &operator=(const QtnPropertyButton &);
 
 Q_SIGNALS:
 	void click(const QtnPropertyButton *property);
@@ -49,5 +50,11 @@ protected:
 	bool fromStrImpl(const QString &, QtnPropertyChangeReason) override;
 	bool toStrImpl(QString &str) const override;
 };
+
+QtnPropertyButton &QtnPropertyButton::operator=(const QtnPropertyButton &)
+{
+	// do nothing
+	return *this;
+}
 
 #endif // PROPERTY_BUTTON_H

@@ -22,19 +22,19 @@ limitations under the License.
 #include <QCoreApplication>
 
 QtnEnumInfo::QtnEnumInfo()
-	: m_case_sensitivity(Qt::CaseSensitive)
+	: m_case_sensitivity(Qt::CaseInsensitive)
 {
 }
 
 QtnEnumInfo::QtnEnumInfo(const QString &name)
-	: m_case_sensitivity(Qt::CaseSensitive)
+	: m_case_sensitivity(Qt::CaseInsensitive)
 	, m_name(name)
 {
 }
 
 QtnEnumInfo::QtnEnumInfo(
 	const QString &name, QVector<QtnEnumValueInfo> &staticValues)
-	: m_case_sensitivity(Qt::CaseSensitive)
+	: m_case_sensitivity(Qt::CaseInsensitive)
 	, m_name(name)
 {
 	m_values.swap(staticValues);

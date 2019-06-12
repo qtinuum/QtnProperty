@@ -2,23 +2,25 @@
 #define MYDIALOG_H
 
 #include <QDialog>
-#include "Property.h"
+#include "QtnProperty/Property.h"
 
-namespace Ui {
+namespace Ui
+{
 class MyDialog;
 }
 
 class MyDialog : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    MyDialog(QWidget* parent, QtnPropertySet& properties, const QtnPropertySet* defaultProperties = nullptr);
-    ~MyDialog();
-    
+	MyDialog(QWidget *parent, QtnPropertySet &properties,
+		const QtnPropertySet *defaultProperties = nullptr);
+	~MyDialog();
+
 private:
-    Ui::MyDialog *ui;
-    const QtnPropertySet* m_defaultProperty;
+	Ui::MyDialog *ui;
+	const QtnPropertySet *m_defaultProperty;
 };
 
 #endif // MYDIALOG_H

@@ -44,54 +44,56 @@ QDataStream& operator>> (QDataStream& stream, LayerInfo& layer)
 }
 */
 
-const LayerInfo* QtnPropertyLayerBase::valueLayer() const
+const LayerInfo *QtnPropertyLayerBase::valueLayer() const
 {
-    const auto& layerValues = layers();
-    auto layerIndex = value();
-    if (layerIndex < 0 || layerIndex >= layerValues.size())
-        return nullptr;
+	const auto &layerValues = layers();
+	auto layerIndex = value();
+	if (layerIndex < 0 || layerIndex >= layerValues.size())
+		return nullptr;
 
-    return &layerValues[layerIndex];
+	return &layerValues[layerIndex];
 }
 
-LayerInfo* QtnPropertyLayerBase::valueLayer()
+LayerInfo *QtnPropertyLayerBase::valueLayer()
 {
-    return const_cast<LayerInfo*>(((const QtnPropertyLayerBase*)this)->valueLayer());
+	return const_cast<LayerInfo *>(
+		((const QtnPropertyLayerBase *) this)->valueLayer());
 }
 
-const QList<LayerInfo>& QtnPropertyLayerBase::layers() const
+const QList<LayerInfo> &QtnPropertyLayerBase::layers() const
 {
-    return m_layers;
+	return m_layers;
 }
 
 void QtnPropertyLayerBase::setLayers(QList<LayerInfo> layers)
 {
-    Q_EMIT propertyWillChange(this, this, QtnPropertyChangeReasonValue, nullptr);
+	Q_EMIT propertyWillChange(QtnPropertyChangeReasonValue, nullptr, 0);
 
-    m_layers = layers;
+	m_layers = layers;
 
-    Q_EMIT propertyDidChange(this, this, QtnPropertyChangeReasonValue);
+	Q_EMIT propertyDidChange(QtnPropertyChangeReasonValue);
 }
 
-bool QtnPropertyLayerBase::fromStrImpl(const QString& str)
+bool QtnPropertyLayerBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
-    int index = 0;
-    for (const auto& layer : layers())
-    {
-        if (layer.name == str)
-        {
-            return setValue(index);
-        }
-        ++index;
-    }
+	int index = 0;
+	for (const auto &layer : layers())
+	{
+		if (layer.name == str)
+		{
+			return setValue(index, reason);
+		}
+		++index;
+	}
 
-    return false;
+	return false;
 }
 
-bool QtnPropertyLayerBase::toStrImpl(QString& str) const
+bool QtnPropertyLayerBase::toStrImpl(QString &str) const
 {
-    auto layer = valueLayer();
-    if (layer)
-        str = layer->name;
-    return true;
+	auto layer = valueLayer();
+	if (layer)
+		str = layer->name;
+	return true;
 }

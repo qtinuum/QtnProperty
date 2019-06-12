@@ -20,8 +20,6 @@ limitations under the License.
 QtnProperty::QtnProperty(QObject *parent)
 	: QtnPropertyBase(parent)
 {
-	// collapsed by default
-	addState(QtnPropertyStateCollapsed);
 }
 
 QtnProperty::~QtnProperty()

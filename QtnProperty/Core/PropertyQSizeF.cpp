@@ -55,23 +55,24 @@ bool QtnPropertyQSizeFBase::fromStrImpl(
 		return false;
 
 	static QRegExp parserParams(
-		"^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
+		"^\\s*(\\-?\\d+(\\.\\d{0,})?)\\s*,\\s*(\\-?\\d+(\\.\\d{0,})?)\\s*$",
+		Qt::CaseInsensitive);
 
 	if (!parserParams.exactMatch(params[1]))
 		return false;
 
 	params = parserParams.capturedTexts();
 
-	if (params.size() != 3)
+	if (params.size() != 5)
 		return false;
 
 	bool ok = false;
-	int width = params[1].toInt(&ok);
+	double width = params[1].toDouble(&ok);
 
 	if (!ok)
 		return false;
 
-	int height = params[2].toInt(&ok);
+	double height = params[3].toDouble(&ok);
 
 	if (!ok)
 		return false;

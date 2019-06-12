@@ -15,9 +15,9 @@
 */
 
 #include "PropertyDelegateLayer.h"
-#include "Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "PropertyLayer.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
 
 #include <QComboBox>
 #include <QLineEdit>
@@ -26,140 +26,144 @@
 
 void regLayerDelegates()
 {
-  QtnPropertyDelegateFactory::staticInstance()
-    .registerDelegateDefault(&QtnPropertyLayerBase::staticMetaObject
-                            , &qtnCreateDelegate<QtnPropertyDelegateLayer, QtnPropertyLayerBase>);
+	QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
+		&QtnPropertyLayerBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateLayer, QtnPropertyLayerBase>);
 }
 
-static void drawLayer(const LayerInfo& layer, QPainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip)
+static void drawLayer(
+	const LayerInfo &layer, QPainter &painter, const QRect &rect)
 {
-    QRect textRect = rect;
+	QRect textRect = rect;
 
-    QRect colorRect = rect;
-    colorRect.setWidth(colorRect.height());
-    colorRect.adjust(2, 2, -2, -2);
+	QRect colorRect = rect;
+	colorRect.setWidth(colorRect.height());
+	colorRect.adjust(2, 2, -2, -2);
 
-    painter.fillRect(colorRect, Qt::black);
-    colorRect.adjust(1, 1, -1, -1);
-    painter.fillRect(colorRect, layer.color);
+	painter.fillRect(colorRect, Qt::black);
+	colorRect.adjust(1, 1, -1, -1);
+	painter.fillRect(colorRect, layer.color);
 
-    textRect.setLeft(colorRect.right() + 5);
+	textRect.setLeft(colorRect.right() + 5);
 
-    if (textRect.isValid())
-    {
-        qtnDrawValueText(layer.name, painter, textRect, state, needTooltip);
-    }
+	if (textRect.isValid())
+	{
+		qtnDrawValueText(layer.name, painter, textRect);
+	}
 }
 
 class QtnPropertyLayerComboBox : public QComboBox
 {
 public:
-    explicit QtnPropertyLayerComboBox(QtnPropertyLayerBase& property, QWidget *parent = Q_NULLPTR)
-        : QComboBox(parent),
-          m_property(property),
-          m_layers(property.layers())
-    {
-        setLineEdit(nullptr);
-        setItemDelegate(new ItemDelegate(m_layers));
-        for (const auto& layer : m_layers)
-        {
-            Q_UNUSED(layer);
-            addItem("");
-        }
+	explicit QtnPropertyLayerComboBox(
+		QtnPropertyDelegateLayer *delegate, QWidget *parent = Q_NULLPTR)
+		: QComboBox(parent)
+		, m_delegate(delegate)
+		, m_property(static_cast<QtnPropertyLayerBase *>(delegate->property()))
+		, m_updating(0)
+	{
+		setLineEdit(nullptr);
+		setItemDelegate(new ItemDelegate(m_layers));
+		for (const auto &layer : m_layers)
+		{
+			Q_UNUSED(layer);
+			addItem("");
+		}
 
-        updateEditor();
+		updateEditor();
 
-        if (!property.isEditableByUser())
-            setDisabled(true);
-
-        QObject::connect(  &m_property, &QtnPropertyBase::propertyDidChange,
-                           this, &QtnPropertyLayerComboBox::onPropertyDidChange, Qt::QueuedConnection);
-        QObject::connect(  this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
-                         , this, &QtnPropertyLayerComboBox::onCurrentIndexChanged);
-    }
+		QObject::connect(m_property, &QtnPropertyBase::propertyDidChange, this,
+			&QtnPropertyLayerComboBox::onPropertyDidChange);
+		QObject::connect(this,
+			static_cast<void (QComboBox::*)(int)>(
+				&QComboBox::currentIndexChanged),
+			this, &QtnPropertyLayerComboBox::onCurrentIndexChanged);
+	}
 
 protected:
-    void paintEvent(QPaintEvent *event) override
-    {
-        QComboBox::paintEvent(event);
+	void paintEvent(QPaintEvent *event) override
+	{
+		QComboBox::paintEvent(event);
 
-        QPainter painter(this);
+		QPainter painter(this);
 
-        auto index = currentIndex();
-        if (index != -1)
-        {
-            Q_ASSERT(index < m_layers.size());
-            drawLayer(m_layers[index], painter, event->rect(), QStyle::State_Active|QStyle::State_Enabled, nullptr);
-        }
-    }
+		auto index = currentIndex();
+		if (index != -1)
+		{
+			Q_ASSERT(index < m_layers.size());
+			drawLayer(m_layers[index], painter, event->rect());
+		}
+	}
 
-    void updateEditor()
-    {
-        setCurrentIndex(m_property.value());
-    }
+	void updateEditor()
+	{
+		m_updating++;
+		setEnabled(m_delegate->stateProperty()->isEditableByUser());
+		setCurrentIndex(m_property->value());
+		m_updating--;
+	}
 
-    void onPropertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
-    {
-        Q_UNUSED(changedProperty);
+	void onPropertyDidChange(QtnPropertyChangeReason reason)
+	{
+		if ((reason & QtnPropertyChangeReasonValue))
+			updateEditor();
+	}
 
-        if ((reason & QtnPropertyChangeReasonValue) && (&m_property == firedProperty))
-            updateEditor();
-    }
+	void onCurrentIndexChanged(int index)
+	{
+		if (m_updating)
+			return;
 
-    void onCurrentIndexChanged(int index)
-    {
-        if (index >= 0)
-        {
-            Q_ASSERT(index < m_layers.size());
-            m_property.setValue(index);
-        }
-    }
+		if (index >= 0)
+		{
+			Q_ASSERT(index < m_layers.size());
+			m_property->setValue(index, m_delegate->editReason());
+		}
+	}
 
 private:
-    QtnPropertyLayerBase& m_property;
-    QList<LayerInfo> m_layers;
+	QtnPropertyDelegateLayer *m_delegate;
+	QtnPropertyLayerBase *m_property;
+	QList<LayerInfo> m_layers;
+	unsigned m_updating;
 
-    class ItemDelegate : public QStyledItemDelegate
-    {
-    public:
-        ItemDelegate(const QList<LayerInfo>& layers)
-            : m_layers(layers)
-        {
-        }
+	class ItemDelegate : public QStyledItemDelegate
+	{
+	public:
+		ItemDelegate(const QList<LayerInfo> &layers)
+			: m_layers(layers)
+		{
+		}
 
-        void paint(QPainter *painter,
-                    const QStyleOptionViewItem &option,
-                    const QModelIndex &index) const override
-        {
-            QStyledItemDelegate::paint(painter, option, index);
+		void paint(QPainter *painter, const QStyleOptionViewItem &option,
+			const QModelIndex &index) const override
+		{
+			QStyledItemDelegate::paint(painter, option, index);
 
-            Q_ASSERT(index.row() < m_layers.size());
-            drawLayer(m_layers[index.row()], *painter, option.rect, option.state, nullptr);
-        }
+			Q_ASSERT(index.row() < m_layers.size());
+			drawLayer(m_layers[index.row()], *painter, option.rect);
+		}
 
-    private:
-        const QList<LayerInfo>& m_layers;
-    };
+	private:
+		const QList<LayerInfo> &m_layers;
+	};
 };
 
-void QtnPropertyDelegateLayer::drawValueImpl(QStylePainter& painter, const QRect& rect, const QStyle::State& state, bool* needTooltip) const
+void QtnPropertyDelegateLayer::drawValueImpl(
+	QStylePainter &painter, const QRect &rect) const
 {
-    auto layer = owner().valueLayer();
-    if (layer)
-        drawLayer(*layer, painter, rect, state, needTooltip);
+	auto layer = owner().valueLayer();
+	if (layer)
+		drawLayer(*layer, painter, rect);
 }
 
-QWidget* QtnPropertyDelegateLayer::createValueEditorImpl(QWidget* parent, const QRect& rect, QtnInplaceInfo* inplaceInfo)
+QWidget *QtnPropertyDelegateLayer::createValueEditorImpl(
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-    if (owner().isEditableByUser())
-    {
-        auto combo = new QtnPropertyLayerComboBox(owner(), parent);
-        combo->setGeometry(rect);
-        if (inplaceInfo)
-            combo->showPopup();
+	auto combo = new QtnPropertyLayerComboBox(this, parent);
+	combo->setGeometry(rect);
+	if (inplaceInfo)
+		combo->showPopup();
 
-        return combo;
-    }
-
-    return nullptr;
+	return combo;
 }

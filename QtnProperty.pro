@@ -5,5 +5,5 @@ SUBDIRS   += \
     Tests \
     Demo
 
-Tests.depends = QtnProperty
-Demo.depends = QtnProperty
+Tests.depends = PEG QtnProperty
+Demo.depends = PEG QtnProperty

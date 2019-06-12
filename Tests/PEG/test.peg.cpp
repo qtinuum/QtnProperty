@@ -43,7 +43,7 @@ bool QtnPropertySetTest1::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetTest1* theCopyFrom = qobject_cast<QtnPropertySetTest1*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetTest1*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -62,7 +62,7 @@ bool QtnPropertySetTest1::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 
 void QtnPropertySetTest1::init()
 {
-    static QString Test1_name = tr("Test1");
+    static QString Test1_name = QStringLiteral("Test1");
     setName(Test1_name);
     static QString description = "Test property_set description";
     setDescription(description);
@@ -70,7 +70,7 @@ void QtnPropertySetTest1::init()
     setState(0);
     
     // start children initialization
-    static QString a_name = tr("a");
+    static QString a_name = QStringLiteral("a");
     a.setName(a_name);
     static QString a_description = "Descripion";
     a.setDescription(a_description);
@@ -78,7 +78,7 @@ void QtnPropertySetTest1::init()
     a.setMaxValue(10);
     a.setStepValue(-1);
     a.setValue(5);
-    static QString text_name = tr("text");
+    static QString text_name = QStringLiteral("text");
     text.setName(text_name);
     static QString text_description = "defrf\"sde\"""deerf3rf"
     "derf r g\r\nreg r{}""dfrgerg"
@@ -138,7 +138,7 @@ bool QtnPropertySetTest2::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetTest2* theCopyFrom = qobject_cast<QtnPropertySetTest2*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetTest2*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -147,7 +147,7 @@ bool QtnPropertySetTest2::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 
 void QtnPropertySetTest2::init()
 {
-    static QString Test2_name = tr("Test2");
+    static QString Test2_name = QStringLiteral("Test2");
     setName(Test2_name);
     setId(4);
 }
@@ -205,7 +205,7 @@ bool QtnPropertySetYY::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetYY* theCopyFrom = qobject_cast<QtnPropertySetYY*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetYY*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -224,17 +224,17 @@ bool QtnPropertySetYY::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 
 void QtnPropertySetYY::init()
 {
-    static QString yy_name = tr("yy");
+    static QString yy_name = QStringLiteral("yy");
     setName(yy_name);
-    static QString description = tr("ss")+tr("ss");
+    static QString description = QString("ss")+QString("ss");
     setDescription(description);
     setId(6);
     
     // start children initialization
-    static QString rect_name = tr("rect");
+    static QString rect_name = QStringLiteral("rect");
     rect.setName(rect_name);
     rect.setValue(QRect(10, 10, 10, 10));
-    static QString s_name = tr("s");
+    static QString s_name = QStringLiteral("s");
     s.setName(s_name);
     // end children initialization
 }
@@ -288,7 +288,7 @@ bool QtnPropertySetAA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetAA* theCopyFrom = qobject_cast<QtnPropertySetAA*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetAA*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -297,7 +297,7 @@ bool QtnPropertySetAA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 
 void QtnPropertySetAA::init()
 {
-    static QString aa_name = tr("aa");
+    static QString aa_name = QStringLiteral("aa");
     setName(aa_name);
     setId(9);
 }
@@ -358,7 +358,7 @@ bool QtnPropertySetSS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetSS* theCopyFrom = qobject_cast<QtnPropertySetSS*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetSS*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -374,16 +374,16 @@ bool QtnPropertySetSS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 
 void QtnPropertySetSS::init()
 {
-    static QString iis_name = tr("iis");
+    static QString iis_name = QStringLiteral("iis");
     setName(iis_name);
     setId(7);
     
     // start children initialization
-    static QString a_name = tr("a");
+    static QString a_name = QStringLiteral("a");
     a.setName(a_name);
     a.setId(8);
     a.setValue(true);
-    static QString aa_name = tr("aa");
+    static QString aa_name = QStringLiteral("aa");
     aa.setName(aa_name);
     aa.setId(9);
     // end children initialization
@@ -454,7 +454,7 @@ bool QtnPropertySetTest3::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetTest3* theCopyFrom = qobject_cast<QtnPropertySetTest3*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetTest3*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -488,34 +488,34 @@ bool QtnPropertySetTest3::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 
 void QtnPropertySetTest3::init()
 {
-    static QString Test3_name = tr("Test3");
+    static QString Test3_name = QStringLiteral("Test3");
     setName(Test3_name);
     setId(5);
     
     // start children initialization
-    static QString yy_name = tr("yy");
+    static QString yy_name = QStringLiteral("yy");
     yy.setName(yy_name);
-    static QString yy_description = tr("ss")+tr("ss");
+    static QString yy_description = QString("ss")+QString("ss");
     yy.setDescription(yy_description);
     yy.setId(6);
-    static QString iis_name = tr("iis");
+    static QString iis_name = QStringLiteral("iis");
     iis.setName(iis_name);
     iis.setId(7);
-    static QString u_name = tr("u");
+    static QString u_name = QStringLiteral("u");
     u.setName(u_name);
     u.setId(10);
     u.setValue(true);
-    static QString xx_name = tr("xx");
+    static QString xx_name = QStringLiteral("xx");
     xx.setName(xx_name);
-    static QString tt_name = tr("tt");
+    static QString tt_name = QStringLiteral("tt");
     tt.setName(tt_name);
-    static QString s_name = tr("s");
+    static QString s_name = QStringLiteral("s");
     s.setName(s_name);
     s.a.setValue(false);
-    static QString ww_name = tr("ww");
+    static QString ww_name = QStringLiteral("ww");
     ww.setName(ww_name);
     ww.setId(11);
-    static QString bc_name = tr("bc");
+    static QString bc_name = QStringLiteral("bc");
     bc.setName(bc_name);
     bc.setCallbackValueAccepted([](bool value)->bool {
             if (value) {
@@ -541,7 +541,7 @@ void QtnPropertySetTest3::connectSlots()
     QObject::connect(&u, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_u_propertyWillChange);
     QObject::connect(&u, &QtnProperty::propertyDidChange, this, &QtnPropertySetTest3::on_u_propertyDidChange);
     QObject::connect(&s.a, &QtnProperty::propertyValueAccept, this, &QtnPropertySetTest3::on_s_a_propertyValueAccept);
-    QObject::connect(&s, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_s_propertyWillChange);
+    QObject::connect(&s.a, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_s_a_propertyWillChange);
 }
 
 void QtnPropertySetTest3::disconnectSlots()
@@ -550,44 +550,44 @@ void QtnPropertySetTest3::disconnectSlots()
     QObject::disconnect(&u, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_u_propertyWillChange);
     QObject::disconnect(&u, &QtnProperty::propertyDidChange, this, &QtnPropertySetTest3::on_u_propertyDidChange);
     QObject::disconnect(&s.a, &QtnProperty::propertyValueAccept, this, &QtnPropertySetTest3::on_s_a_propertyValueAccept);
-    QObject::disconnect(&s, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_s_propertyWillChange);
+    QObject::disconnect(&s.a, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_s_a_propertyWillChange);
 }
 
-void QtnPropertySetTest3::on_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertySetTest3::on_propertyDidChange(QtnPropertyChangeReason reason)
 {
-    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason);
+    Q_UNUSED(reason);
     
         // this propertyDidChange
     
 }
 
-void QtnPropertySetTest3::on_u_propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue)
+void QtnPropertySetTest3::on_u_propertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
 {
-    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason); Q_UNUSED(newValue);
+    Q_UNUSED(reason); Q_UNUSED(newValue);Q_UNUSED(typeId);
     
         // u.propertyWillChange code
     
 }
 
-void QtnPropertySetTest3::on_u_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertySetTest3::on_u_propertyDidChange(QtnPropertyChangeReason reason)
 {
-    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason);
+    Q_UNUSED(reason);
     
             // sub u propertyDidChange
         
 }
 
-void QtnPropertySetTest3::on_s_a_propertyValueAccept(const QtnProperty *property, QtnPropertyValuePtr valueToAccept, bool* accept)
+void QtnPropertySetTest3::on_s_a_propertyValueAccept(QtnPropertyValuePtr valueToAccept, bool* accept)
 {
-    Q_UNUSED(property); Q_UNUSED(valueToAccept); Q_UNUSED(accept);
+    Q_UNUSED(valueToAccept); Q_UNUSED(accept);
     
             // s.a.propertyValueAccept
         
 }
 
-void QtnPropertySetTest3::on_s_propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue)
+void QtnPropertySetTest3::on_s_a_propertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
 {
-    Q_UNUSED(changedProperty); Q_UNUSED(firedProperty); Q_UNUSED(reason); Q_UNUSED(newValue);
+    Q_UNUSED(reason); Q_UNUSED(newValue);Q_UNUSED(typeId);
     
             yy.rect = QRect(1, 1, 1, 1);
             // ss propertyWillChange
@@ -787,7 +787,7 @@ bool QtnPropertySetAllPropertyTypes::copyValuesImpl(QtnPropertySet* propertySetC
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetAllPropertyTypes* theCopyFrom = qobject_cast<QtnPropertySetAllPropertyTypes*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetAllPropertyTypes*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -961,146 +961,146 @@ bool QtnPropertySetAllPropertyTypes::copyValuesImpl(QtnPropertySet* propertySetC
 
 void QtnPropertySetAllPropertyTypes::init()
 {
-    static QString AllPropertyTypes_name = tr("AllPropertyTypes");
+    static QString AllPropertyTypes_name = QStringLiteral("AllPropertyTypes");
     setName(AllPropertyTypes_name);
     setId(13);
     
     // start children initialization
-    static QString bp_name = tr("bp");
+    static QString bp_name = QStringLiteral("bp");
     bp.setName(bp_name);
     bp.setId(14);
-    static QString bpc_name = tr("bpc");
+    static QString bpc_name = QStringLiteral("bpc");
     bpc.setName(bpc_name);
     bpc.setCallbackValueGet([this]() { return _b; });
     bpc.setCallbackValueSet([this](bool v) { _b = v; });
     bpc.setId(15);
-    static QString ip_name = tr("ip");
+    static QString ip_name = QStringLiteral("ip");
     ip.setName(ip_name);
     ip.setId(16);
-    static QString ipc_name = tr("ipc");
+    static QString ipc_name = QStringLiteral("ipc");
     ipc.setName(ipc_name);
     ipc.setCallbackValueGet([this]() { return _i; });
     ipc.setCallbackValueSet([this](qint32 v) { _i =v; });
     ipc.setId(17);
-    static QString up_name = tr("up");
+    static QString up_name = QStringLiteral("up");
     up.setName(up_name);
     up.setId(18);
-    static QString upc_name = tr("upc");
+    static QString upc_name = QStringLiteral("upc");
     upc.setName(upc_name);
     upc.setCallbackValueGet([this]() { return _ui; });
     upc.setCallbackValueSet([this](quint32 v) { _ui = v; });
     upc.setId(19);
-    static QString fp_name = tr("fp");
+    static QString fp_name = QStringLiteral("fp");
     fp.setName(fp_name);
     fp.setId(20);
-    static QString fpc_name = tr("fpc");
+    static QString fpc_name = QStringLiteral("fpc");
     fpc.setName(fpc_name);
     fpc.setCallbackValueGet([this]() { return _f; });
     fpc.setCallbackValueSet([this](float v) { _f = v; });
     fpc.setId(21);
-    static QString dp_name = tr("dp");
+    static QString dp_name = QStringLiteral("dp");
     dp.setName(dp_name);
     dp.setId(22);
-    static QString dpc_name = tr("dpc");
+    static QString dpc_name = QStringLiteral("dpc");
     dpc.setName(dpc_name);
     dpc.setCallbackValueGet([this]() { return _d; });
     dpc.setCallbackValueSet([this](double v) { _d = v; });
     dpc.setId(23);
-    static QString sp_name = tr("sp");
+    static QString sp_name = QStringLiteral("sp");
     sp.setName(sp_name);
     sp.setId(24);
-    static QString spc_name = tr("spc");
+    static QString spc_name = QStringLiteral("spc");
     spc.setName(spc_name);
     spc.setCallbackValueGet([this]() { return _s; });
     spc.setCallbackValueSet([this](QString v) { _s = v; });
     spc.setId(25);
-    static QString rp_name = tr("rp");
+    static QString rp_name = QStringLiteral("rp");
     rp.setName(rp_name);
     rp.setId(26);
-    static QString rpc_name = tr("rpc");
+    static QString rpc_name = QStringLiteral("rpc");
     rpc.setName(rpc_name);
     rpc.setCallbackValueGet([this]() { return _r; });
     rpc.setCallbackValueSet([this](QRect v) { _r = v; });
     rpc.setId(27);
-    static QString pp_name = tr("pp");
+    static QString pp_name = QStringLiteral("pp");
     pp.setName(pp_name);
     pp.setId(28);
-    static QString ppc_name = tr("ppc");
+    static QString ppc_name = QStringLiteral("ppc");
     ppc.setName(ppc_name);
     ppc.setCallbackValueGet([this]() { return _p; });
     ppc.setCallbackValueSet([this](QPoint v) { _p = v; });
     ppc.setId(29);
-    static QString szp_name = tr("szp");
+    static QString szp_name = QStringLiteral("szp");
     szp.setName(szp_name);
     szp.setId(30);
-    static QString szpc_name = tr("szpc");
+    static QString szpc_name = QStringLiteral("szpc");
     szpc.setName(szpc_name);
     szpc.setCallbackValueGet([this]() { return _sz; });
     szpc.setCallbackValueSet([this](QSize v) { _sz = v; });
     szpc.setId(31);
-    static QString ep_name = tr("ep");
+    static QString ep_name = QStringLiteral("ep");
     ep.setName(ep_name);
     ep.setEnumInfo(&COLOR::info());
     ep.setId(32);
     ep.setValue(COLOR::BLUE);
-    static QString epc_name = tr("epc");
+    static QString epc_name = QStringLiteral("epc");
     epc.setName(epc_name);
     epc.setCallbackValueGet([this]() { return _e; });
     epc.setCallbackValueSet([this](QtnEnumValueType v) { _e = v; });
     epc.setEnumInfo(&COLOR::info());
     epc.setId(33);
-    static QString efp_name = tr("efp");
+    static QString efp_name = QStringLiteral("efp");
     efp.setName(efp_name);
     efp.setEnumInfo(&MASK::info());
     efp.setId(34);
     efp.setValue(MASK::ONE|MASK::FOUR);
-    static QString efpc_name = tr("efpc");
+    static QString efpc_name = QStringLiteral("efpc");
     efpc.setName(efpc_name);
     efpc.setCallbackValueGet([this]() { return _ef; });
     efpc.setCallbackValueSet([this](QtnEnumFlagsValueType v) { _ef = v; });
     efpc.setEnumInfo(&MASK::info());
     efpc.setId(35);
-    static QString cp_name = tr("cp");
+    static QString cp_name = QStringLiteral("cp");
     cp.setName(cp_name);
     cp.setId(36);
     cp.setValue(QColor(Qt::blue));
-    static QString cpc_name = tr("cpc");
+    static QString cpc_name = QStringLiteral("cpc");
     cpc.setName(cpc_name);
     cpc.setCallbackValueGet([this]() { return _cl; });
     cpc.setCallbackValueSet([this](QColor v) { _cl = v; });
     cpc.setId(37);
-    static QString fnp_name = tr("fnp");
+    static QString fnp_name = QStringLiteral("fnp");
     fnp.setName(fnp_name);
     fnp.setId(38);
     fnp.setValue(QFont("Courier", 10));
-    static QString fnpc_name = tr("fnpc");
+    static QString fnpc_name = QStringLiteral("fnpc");
     fnpc.setName(fnpc_name);
     fnpc.setCallbackValueGet([this]() { return _fn; });
     fnpc.setCallbackValueSet([this](QFont v) { _fn = v; });
     fnpc.setId(39);
-    static QString bttn_name = tr("bttn");
+    static QString bttn_name = QStringLiteral("bttn");
     bttn.setName(bttn_name);
     bttn.setId(40);
-    static QString ppf_name = tr("ppf");
+    static QString ppf_name = QStringLiteral("ppf");
     ppf.setName(ppf_name);
     ppf.setId(41);
-    static QString ppfc_name = tr("ppfc");
+    static QString ppfc_name = QStringLiteral("ppfc");
     ppfc.setName(ppfc_name);
     ppfc.setCallbackValueGet([this]() { return _pf; });
     ppfc.setCallbackValueSet([this](QPointF v) { _pf = v; });
     ppfc.setId(42);
-    static QString rpf_name = tr("rpf");
+    static QString rpf_name = QStringLiteral("rpf");
     rpf.setName(rpf_name);
     rpf.setId(43);
-    static QString rpfc_name = tr("rpfc");
+    static QString rpfc_name = QStringLiteral("rpfc");
     rpfc.setName(rpfc_name);
     rpfc.setCallbackValueGet([this]() { return _rf; });
     rpfc.setCallbackValueSet([this](QRectF v) { _rf = v; });
     rpfc.setId(44);
-    static QString szpf_name = tr("szpf");
+    static QString szpf_name = QStringLiteral("szpf");
     szpf.setName(szpf_name);
     szpf.setId(45);
-    static QString szpfc_name = tr("szpfc");
+    static QString szpfc_name = QStringLiteral("szpfc");
     szpfc.setName(szpfc_name);
     szpfc.setCallbackValueGet([this]() { return _szf; });
     szpfc.setCallbackValueSet([this](QSizeF v) { _szf = v; });
@@ -1174,7 +1174,7 @@ bool QtnPropertySetTest12::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Q
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetTest12* theCopyFrom = qobject_cast<QtnPropertySetTest12*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetTest12*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -1188,11 +1188,11 @@ bool QtnPropertySetTest12::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Q
 
 void QtnPropertySetTest12::init()
 {
-    static QString Test12_name = tr("Test12");
+    static QString Test12_name = QStringLiteral("Test12");
     setName(Test12_name);
     
     // start children initialization
-    static QString p_name = tr("p");
+    static QString p_name = QStringLiteral("p");
     p.setName(p_name);
     p.setEnumInfo(&MY_TYPE::info());
     p.setValue(MY_TYPE::MY_TYPE1);

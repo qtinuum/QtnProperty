@@ -39,7 +39,8 @@ class QTN_IMPORT_EXPORT QtnPropertyBase : public QObject
 	Q_PROPERTY(QString displayName READ displayName)
 	Q_PROPERTY(QString description READ description)
 	Q_PROPERTY(qint32 id READ id)
-	Q_PROPERTY(bool isEditable READ isEditableByUser)
+	Q_PROPERTY(bool isEditable READ isWritable)
+	Q_PROPERTY(bool isEditableByUser READ isEditableByUser)
 	Q_PROPERTY(quint32 state READ state)
 	Q_PROPERTY(QVariant value READ valueAsVariant WRITE fromVariant)
 

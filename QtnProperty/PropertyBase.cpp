@@ -23,6 +23,7 @@ limitations under the License.
 #include <QScriptEngine>
 #include <QCoreApplication>
 
+const qint32 QtnPropertyIDInvalid = -1;
 static quint16 qtnPropertyMagicNumber = 0x1984;
 
 class QtnPropertyDelegateInfoGetter
@@ -458,7 +459,7 @@ bool QtnPropertyBase::skipLoad(QDataStream &stream)
 	stream >> version;
 
 	// version incorrect
-	if (version != 1)
+	if (version != 2)
 		return false;
 
 	qint32 contentSize = 0;
@@ -483,7 +484,7 @@ bool QtnPropertyBase::loadImpl(QDataStream &stream)
 	stream >> version;
 
 	// incorrect version
-	if (version != 1)
+	if (version != 2)
 		return false;
 
 	QtnPropertyState::Int stateLocal = QtnPropertyStateNone;
@@ -500,7 +501,7 @@ bool QtnPropertyBase::saveImpl(QDataStream &stream) const
 {
 	Q_ASSERT(stream.status() == QDataStream::Ok);
 
-	qint16 version = 1;
+	qint16 version = 2;
 	stream << version;
 
 	stream << (QtnPropertyState::Int) m_stateLocal;
@@ -768,6 +769,7 @@ QVariant QtnPropertyBase::valueAsVariant() const
 void QtnPropertyBase::onMasterPropertyDestroyed(QObject *object)
 {
 	Q_ASSERT(object == m_masterProperty);
+	Q_UNUSED(object);
 	m_masterProperty = nullptr;
 }
 

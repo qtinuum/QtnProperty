@@ -70,10 +70,7 @@ Q_DECLARE_FLAGS(QtnPropertyChangeReason, QtnPropertyChangeReasonFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyChangeReason)
 
 typedef qint32 QtnPropertyID;
-enum
-{
-	QtnPropertyIDInvalid = -1
-};
+extern QTN_IMPORT_EXPORT const qint32 QtnPropertyIDInvalid;
 
 typedef void *QtnPropertyValuePtr;
 
