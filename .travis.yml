@@ -21,4 +21,4 @@ install:
 script:
     - qmake
     - make
-    - ./bin-linux/QtnPropertyTests
+    - ./bin-linux-gcc-x86_64/QtnPropertyTests
