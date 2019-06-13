@@ -3,6 +3,10 @@ language: cpp
 compiler:
   - gcc
 
+branches:
+  only:
+    - release/v2.0.0
+
 os:
   - linux
 
