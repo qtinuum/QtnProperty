@@ -75,6 +75,7 @@ QtnProperty project consists of four submodules:
 
 ## Step 1.
 To have QtnProperty in your project you should include QtnPropertyDepend.pri file into your pro file. Example:
+
 MyProject.pro
 -------------
 ```
@@ -128,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
     floatValue->setValue(0.3f);
 
     auto textColor = qtnCreateProperty<QtnPropertyQColor>(m_propertySet);
-    floatValue->setName("textColor");
+    textColor->setName("textColor");
     textColor->setDisplayName(tr("TextColor"));
     textColor->setDescription(tr("Foreground text color"));
     textColor->setValue(QColor(0, 0, 0));
