@@ -5,9 +5,18 @@ include(Flex.pri)
 QT += core
 QT -= gui
 
+clang:QMAKE_CXXFLAGS_WARN_ON += \
+    -Wno-deprecated-register \
+    -Wno-unneeded-internal-declaration \
+    -Wno-unused-const-variable
+
+gcc:QMAKE_CXXFLAGS_WARN_ON += \
+    -Wno-unused-function
+
 TARGET = QtnPEG
 
 CONFIG += cmdline
+CONFIG -= app_bundle
 
 TEMPLATE = app
 VERSION = 2.0.0

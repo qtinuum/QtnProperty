@@ -7,6 +7,7 @@ QT += core gui widgets script testlib
 TARGET = QtnPropertyTests
 
 CONFIG   += cmdline
+CONFIG -= app_bundle
 
 TEMPLATE = app
 
