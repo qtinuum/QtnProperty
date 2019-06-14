@@ -50,13 +50,14 @@ Some screenshots of the Demo application:
 Or just open path\_to\_QtnProperty/QtnProperty.pro file in Qt Creator and build all.
 Generated libraries and executables will be placed into the target specific folders.
 For example:
+
     bin-linux-gcc-x86_64
     bin-osx-clang-x86_64
     bin-win32-msvc-i386
     bin-win32-msvc-clang-x86_64
     bin-win32-gcc-i386
     bin-win32-gcc-x86_64
-  
+
 **To run tests and demo, go to one of the binary folders:**
 
     ./QtnPropertyTests
@@ -66,7 +67,7 @@ QtnProperty project consists of four submodules:
 
 1. **QtnProperty** library - property classes
     By default it is a static library. If you need a dynamic library, you should use
-    qmake with CONFIG+=qtnproperty_dynamic argument
+    qmake with **CONFIG+=qtnproperty_dynamic** argument
 3. **QtnPEG** tool - optional executable to generate C++ code for property sets from simple QML like files (*.pef files)
 4. **QtnPropertyTests** - tests for QtnPropertyCore library
 5. **QtnPropertyDemo** - demo application
@@ -160,7 +161,7 @@ PEG_SOURCES += TextEditor.pef
 Write *.pef file with propertyset declaration. See [wiki](https://github.com/lexxmark/QtnProperty/wiki/Property-Enum-file-format-(*.pef)) for more info. For example TextEditor.pef:
   
 ```C++
-#include "Core/PropertyCore.h"
+#include "QtnProperty/PropertyCore.h"
 
 property_set TextEditor
 {
