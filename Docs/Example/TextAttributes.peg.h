@@ -1,7 +1,8 @@
 #ifndef TEXTATTRIBUTES_H
 #define TEXTATTRIBUTES_H
 
-#include "Core/PropertyCore.h"
+#include "QtnProperty/PropertyCore.h"
+#include "QtnProperty/PropertyGUI.h"
 
 class QtnPropertySetTextAttributes: public QtnPropertySet
 {
@@ -10,9 +11,9 @@ class QtnPropertySetTextAttributes: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetTextAttributes(QObject* parent = 0);
+    explicit QtnPropertySetTextAttributes(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetTextAttributes();
+    virtual ~QtnPropertySetTextAttributes() override;
     // assignment declaration
     QtnPropertySetTextAttributes& operator=(const QtnPropertySetTextAttributes& other);
     

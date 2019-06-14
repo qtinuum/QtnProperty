@@ -1,11 +1,11 @@
-#include "TextAttibutes.peg.h"
+#include "TextAttributes.peg.h"
 
 
 QtnPropertySetTextAttributes::QtnPropertySetTextAttributes(QObject* parent)
     : QtnPropertySet(parent)
-    , WordWrap(*new QtnPropertyBool(this))
-    , Height(*new QtnPropertyInt(this))
-    , Color(*new QtnPropertyQColor(this))
+    , WordWrap(*qtnCreateProperty<QtnPropertyBool>(this))
+    , Height(*qtnCreateProperty<QtnPropertyInt>(this))
+    , Color(*qtnCreateProperty<QtnPropertyQColor>(this))
 {
     init();
     connectSlots();
@@ -44,7 +44,7 @@ bool QtnPropertySetTextAttributes::copyValuesImpl(QtnPropertySet* propertySetCop
 {
     Q_UNUSED(ignoreMask);
 
-    QtnPropertySetTextAttributes* theCopyFrom = qobject_cast<QtnPropertySetTextAttributes*>(propertySetCopyFrom);
+    auto theCopyFrom = qobject_cast<QtnPropertySetTextAttributes*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -68,26 +68,26 @@ bool QtnPropertySetTextAttributes::copyValuesImpl(QtnPropertySet* propertySetCop
 
 void QtnPropertySetTextAttributes::init()
 {
-    static QString TextAttributes_name = tr("TextAttributes");
+    static QString TextAttributes_name = QStringLiteral("TextAttributes");
     setName(TextAttributes_name);
     
     // start children initialization
-    static QString WordWrap_name = tr("WordWrap");
+    static QString WordWrap_name = QStringLiteral("WordWrap");
     WordWrap.setName(WordWrap_name);
-    static QString WordWrap_description = tr("Text word wrapping");
+    static QString WordWrap_description = "Text word wrapping";
     WordWrap.setDescription(WordWrap_description);
     WordWrap.setValue(true);
-    static QString Height_name = tr("Height");
+    static QString Height_name = QStringLiteral("Height");
     Height.setName(Height_name);
-    static QString Height_description = tr("Text height");
+    static QString Height_description = "Text height";
     Height.setDescription(Height_description);
     Height.setMaxValue(100);
     Height.setMinValue(1);
     Height.setStepValue(1);
     Height.setValue(16);
-    static QString Color_name = tr("Color");
+    static QString Color_name = QStringLiteral("Color");
     Color.setName(Color_name);
-    static QString Color_description = tr("Foreground text color");
+    static QString Color_description = "Foreground text color";
     Color.setDescription(Color_description);
     Color.setValue(QColor(0, 0, 0));
     // end children initialization
