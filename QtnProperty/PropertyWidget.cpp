@@ -71,6 +71,12 @@ QtnPropertyWidget::QtnPropertyWidget(QWidget *parent)
 	updateParts();
 }
 
+QtnPropertyWidget::~QtnPropertyWidget()
+{
+	QObject::disconnect(m_propertyView, &QtnPropertyView::activePropertyChanged,
+		this, &QtnPropertyWidget::setActiveProperty);
+}
+
 void QtnPropertyWidget::setParts(QtnPropertyWidgetParts newParts)
 {
 	if (m_parts == newParts)

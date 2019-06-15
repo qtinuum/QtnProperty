@@ -45,6 +45,7 @@ class QTN_IMPORT_EXPORT QtnPropertyWidget : public QWidget
 
 public:
 	explicit QtnPropertyWidget(QWidget *parent = 0);
+	virtual ~QtnPropertyWidget() override;
 
 	inline QtnPropertyWidgetParts parts() const;
 	void setParts(QtnPropertyWidgetParts newParts);
