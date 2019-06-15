@@ -53,8 +53,6 @@ static void drawPenWidth(PenWidth penWidth, QPainter &painter, QRect rect)
 		case PenWidth::Thick:
 			pen.setWidth(3);
 			break;
-		default:
-			break;
 	}
 
 	painter.save();
@@ -174,7 +172,7 @@ QWidget *QtnPropertyDelegatePenWidth::createValueEditorImpl(
 {
 	auto combo = new QtnPropertyPenWidthComboBox(this, parent);
 	combo->setGeometry(rect);
-	if (inplaceInfo)
+	if (inplaceInfo && stateProperty()->isEditableByUser())
 		combo->showPopup();
 
 	return combo;

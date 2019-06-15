@@ -62,6 +62,7 @@ public:
 		, m_property(static_cast<QtnPropertyLayerBase *>(delegate->property()))
 		, m_updating(0)
 	{
+		m_layers = m_property->layers();
 		setLineEdit(nullptr);
 		setItemDelegate(new ItemDelegate(m_layers));
 		for (const auto &layer : m_layers)
@@ -162,7 +163,7 @@ QWidget *QtnPropertyDelegateLayer::createValueEditorImpl(
 {
 	auto combo = new QtnPropertyLayerComboBox(this, parent);
 	combo->setGeometry(rect);
-	if (inplaceInfo)
+	if (inplaceInfo && stateProperty()->isEditableByUser())
 		combo->showPopup();
 
 	return combo;

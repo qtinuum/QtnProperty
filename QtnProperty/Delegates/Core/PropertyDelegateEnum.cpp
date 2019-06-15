@@ -67,7 +67,7 @@ QWidget *QtnPropertyDelegateEnum::createValueEditorImpl(
 
 	new QtnPropertyEnumComboBoxHandler(this, *combo);
 
-	if (inplaceInfo)
+	if (inplaceInfo && stateProperty()->isEditableByUser())
 		combo->showPopup();
 
 	return combo;

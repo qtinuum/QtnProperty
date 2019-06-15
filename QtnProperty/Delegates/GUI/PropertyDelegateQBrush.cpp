@@ -160,7 +160,7 @@ QWidget *QtnPropertyDelegateQBrushStyle::createValueEditorImpl(
 
 		new QtnPropertyBrushStyleComboBoxHandler(this, *combo);
 
-		if (inplaceInfo)
+		if (inplaceInfo && stateProperty()->isEditableByUser())
 			combo->showPopup();
 
 		return combo;

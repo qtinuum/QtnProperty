@@ -152,7 +152,7 @@ QWidget *QtnPropertyDelegateQPenStyle::createValueEditorImpl(
 
 		new QtnPropertyPenStyleComboBoxHandler(this, *combo);
 
-		if (inplaceInfo)
+		if (inplaceInfo && stateProperty()->isEditableByUser())
 			combo->showPopup();
 
 		return combo;

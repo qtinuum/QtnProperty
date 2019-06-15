@@ -132,7 +132,7 @@ QWidget *QtnPropertyDelegateMetaEnum::createValueEditorImpl(
 
 	new EditorHandler(this, *combo);
 
-	if (inplaceInfo)
+	if (inplaceInfo && stateProperty()->isEditableByUser())
 		combo->showPopup();
 
 	return combo;

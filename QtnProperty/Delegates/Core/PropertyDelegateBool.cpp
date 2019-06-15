@@ -163,7 +163,7 @@ QWidget *QtnPropertyDelegateBoolCombobox::createValueEditorImpl(
 	// connect widget and property
 	new QtnPropertyBoolComboBoxHandler(this, *comboBox);
 
-	if (inplaceInfo)
+	if (inplaceInfo && stateProperty()->isEditableByUser())
 		comboBox->showPopup();
 
 	return comboBox;

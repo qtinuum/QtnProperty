@@ -100,7 +100,7 @@ QWidget *QtnPropertyDelegateIntList::createValueEditorImpl(
 	// connect widget and property
 	new QtnPropertyIntComboBoxHandler(this, *comboBox);
 
-	if (inplaceInfo)
+	if (inplaceInfo && stateProperty()->isEditableByUser())
 		comboBox->showPopup();
 
 	return comboBox;
