@@ -117,6 +117,8 @@ void QtnInt64SpinBox::setRange(qint64 min, qint64 max)
 		return;
 	}
 
+	mMinimum = min;
+	mMaximum = max;
 	updateEdit(true, true);
 }
 
