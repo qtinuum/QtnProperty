@@ -16,15 +16,15 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQFont.h"
-#include "Core/PropertyQString.h"
-#include "Core/PropertyInt.h"
-#include "Core/PropertyBool.h"
-#include "Core/PropertyEnum.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "Delegates/Utils/PropertyEditorAux.h"
-#include "PropertySet.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Core/PropertyQString.h"
+#include "QtnProperty/Core/PropertyInt.h"
+#include "QtnProperty/Core/PropertyBool.h"
+#include "QtnProperty/Core/PropertyEnum.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/PropertySet.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QFontDialog>
 #include <QFontDatabase>

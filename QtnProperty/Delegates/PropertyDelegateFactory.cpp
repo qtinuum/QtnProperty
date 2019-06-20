@@ -39,9 +39,9 @@ limitations under the License.
 #include "GUI/PropertyDelegateQBrush.h"
 #include "GUI/PropertyDelegateQFont.h"
 #include "GUI/PropertyDelegateButton.h"
-#include "PropertyQKeySequence.h"
-#include "PropertyInt64.h"
-#include "PropertyUInt64.h"
+#include "QtnProperty/PropertyQKeySequence.h"
+#include "QtnProperty/PropertyInt64.h"
+#include "QtnProperty/PropertyUInt64.h"
 
 #include <QDebug>
 

@@ -16,9 +16,9 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQRect.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Core/PropertyQSize.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Core/PropertyQSize.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QLineEdit>
 

@@ -16,7 +16,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegatePropertySet.h"
-#include "Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 
 QtnPropertyDelegatePropertySet::QtnPropertyDelegatePropertySet(
 	QtnPropertySet &owner)
@@ -80,7 +80,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 									 const QtnSubItem &item) {
 				auto &painter = *context.painter;
 				QRectF branchRect = item.rect;
-				qreal side = branchRect.height() / 3.5f;
+				qreal side = branchRect.height() / static_cast<qreal>(3.5);
 				QColor fillClr = context.palette().color(QPalette::Text);
 				QColor outlineClr = (item.state() != QtnSubItemStateNone)
 					? Qt::blue
@@ -96,7 +96,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 					branchPath.moveTo(
 						branchRect.left() + side, branchRect.top() + side);
 					branchPath.lineTo(branchRect.right() - side - 1,
-						branchRect.top() + branchRect.height() / 2.f);
+						branchRect.top() + branchRect.height() / static_cast<qreal>(2.0));
 					branchPath.lineTo(
 						branchRect.left() + side, branchRect.bottom() - side);
 					branchPath.closeSubpath();
@@ -107,7 +107,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 					branchPath.lineTo(
 						branchRect.right() - side, branchRect.top() + side);
 					branchPath.lineTo(
-						branchRect.left() + branchRect.width() / 2.f,
+						branchRect.left() + branchRect.width() / static_cast<qreal>(2.0),
 						branchRect.bottom() - side - 1);
 					branchPath.closeSubpath();
 				}
