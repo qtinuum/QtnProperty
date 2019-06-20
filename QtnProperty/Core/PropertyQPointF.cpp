@@ -26,16 +26,16 @@ QtnPropertyQPointFBase::QtnPropertyQPointFBase(QObject *parent)
 
 QtnProperty *QtnPropertyQPointFBase::createXProperty()
 {
-	return createFieldProperty(QtnPropertyQPoint::xKey(),
-		QtnPropertyQPoint::xDisplayName(), QtnPropertyQPoint::xDescriptionFmt(),
-		&QPointF::x, &QPointF::setX);
+	return createFieldProperty(&QPointF::x, &QPointF::setX,
+		QtnPropertyQPoint::xKey(), QtnPropertyQPoint::xDisplayName(),
+		QtnPropertyQPoint::xDescriptionFmt());
 }
 
 QtnProperty *QtnPropertyQPointFBase::createYProperty()
 {
-	return createFieldProperty(QtnPropertyQPoint::yKey(),
-		QtnPropertyQPoint::yDisplayName(), QtnPropertyQPoint::yDescriptionFmt(),
-		&QPointF::y, &QPointF::setY);
+	return createFieldProperty(&QPointF::y, &QPointF::setY,
+		QtnPropertyQPoint::yKey(), QtnPropertyQPoint::yDisplayName(),
+		QtnPropertyQPoint::yDescriptionFmt());
 }
 
 bool QtnPropertyQPointFBase::fromStrImpl(

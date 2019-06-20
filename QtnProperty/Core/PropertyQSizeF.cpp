@@ -26,18 +26,16 @@ QtnPropertyQSizeFBase::QtnPropertyQSizeFBase(QObject *parent)
 
 QtnProperty *QtnPropertyQSizeFBase::createWidthProperty()
 {
-	return createFieldProperty(QtnPropertyQSize::widthKey(),
-		QtnPropertyQSize::widthDisplayName(),
-		QtnPropertyQSize::widthDescriptionFmt(), &QSizeF::width,
-		&QSizeF::setWidth);
+	return createFieldProperty(&QSizeF::width, &QSizeF::setWidth,
+		QtnPropertyQSize::widthKey(), QtnPropertyQSize::widthDisplayName(),
+		QtnPropertyQSize::widthDescriptionFmt());
 }
 
 QtnProperty *QtnPropertyQSizeFBase::createHeightProperty()
 {
-	return createFieldProperty(QtnPropertyQSize::heightKey(),
-		QtnPropertyQSize::heightDisplayName(),
-		QtnPropertyQSize::heightDescriptionFmt(), &QSizeF::height,
-		&QSizeF::setHeight);
+	return createFieldProperty(&QSizeF::height, &QSizeF::setHeight,
+		QtnPropertyQSize::heightKey(), QtnPropertyQSize::heightDisplayName(),
+		QtnPropertyQSize::heightDescriptionFmt());
 }
 
 bool QtnPropertyQSizeFBase::fromStrImpl(

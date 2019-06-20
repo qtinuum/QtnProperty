@@ -21,48 +21,46 @@ limitations under the License.
 
 QtnProperty *QtnPropertyQRectBase::createLeftProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRect::leftKey(),
-		QtnPropertyQRect::leftString(), QtnPropertyQRect::leftDescriptionFmt(),
-		&QRect::left, move ? &QRect::moveLeft : &QRect::setLeft);
+	return createFieldProperty(&QRect::left,
+		move ? &QRect::moveLeft : &QRect::setLeft, QtnPropertyQRect::leftKey(),
+		QtnPropertyQRect::leftString(), QtnPropertyQRect::leftDescriptionFmt());
 }
 
 QtnProperty *QtnPropertyQRectBase::createTopProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRect::topKey(),
-		QtnPropertyQRect::topString(), QtnPropertyQRect::topDescriptionFmt(),
-		&QRect::top, move ? &QRect::moveTop : &QRect::setTop);
+	return createFieldProperty(&QRect::top,
+		move ? &QRect::moveTop : &QRect::setTop, QtnPropertyQRect::topKey(),
+		QtnPropertyQRect::topString(), QtnPropertyQRect::topDescriptionFmt());
 }
 
 QtnProperty *QtnPropertyQRectBase::createRightProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRect::rightKey(),
-		QtnPropertyQRect::rightString(),
-		QtnPropertyQRect::rightDescriptionFmt(), &QRect::right,
-		move ? &QRect::moveRight : &QRect::setRight);
+	return createFieldProperty(&QRect::right,
+		move ? &QRect::moveRight : &QRect::setRight,
+		QtnPropertyQRect::rightKey(), QtnPropertyQRect::rightString(),
+		QtnPropertyQRect::rightDescriptionFmt());
 }
 
 QtnProperty *QtnPropertyQRectBase::createBottomProperty(bool move)
 {
-	return createFieldProperty(QtnPropertyQRect::bottomKey(),
-		QtnPropertyQRect::bottomString(),
-		QtnPropertyQRect::bottomDescriptionFmt(), &QRect::bottom,
-		move ? &QRect::moveBottom : &QRect::setBottom);
+	return createFieldProperty(&QRect::bottom,
+		move ? &QRect::moveBottom : &QRect::setBottom,
+		QtnPropertyQRect::bottomKey(), QtnPropertyQRect::bottomString(),
+		QtnPropertyQRect::bottomDescriptionFmt());
 }
 
 QtnProperty *QtnPropertyQRectBase::createWidthProperty()
 {
-	return createFieldProperty(QtnPropertyQSize::widthKey(),
-		QtnPropertyQSize::widthDisplayName(),
-		QtnPropertyQSize::widthDescriptionFmt(), &QRect::width,
-		&QRect::setWidth);
+	return createFieldProperty(&QRect::width, &QRect::setWidth,
+		QtnPropertyQSize::widthKey(), QtnPropertyQSize::widthDisplayName(),
+		QtnPropertyQSize::widthDescriptionFmt());
 }
 
 QtnProperty *QtnPropertyQRectBase::createHeightProperty()
 {
-	return createFieldProperty(QtnPropertyQSize::heightKey(),
-		QtnPropertyQSize::heightDisplayName(),
-		QtnPropertyQSize::heightDescriptionFmt(), &QRect::height,
-		&QRect::setHeight);
+	return createFieldProperty(&QRect::height, &QRect::setHeight,
+		QtnPropertyQSize::heightKey(), QtnPropertyQSize::heightDisplayName(),
+		QtnPropertyQSize::heightDescriptionFmt());
 }
 
 QByteArray QtnPropertyQRect::delegateName(bool coordinateMode)
