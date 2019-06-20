@@ -26,9 +26,9 @@ QtnPropertyQColorBase::QtnPropertyQColorBase(QObject *parent)
 
 QtnProperty *QtnPropertyQColorBase::createRedProperty()
 {
-	auto result = createFieldProperty(QtnPropertyQColor::redKey(),
-		QtnPropertyQColor::redDisplayName(),
-		QtnPropertyQColor::redDescriptionFmt(), &QColor::red, &QColor::setRed);
+	auto result = createFieldProperty(&QColor::red, &QColor::setRed,
+		QtnPropertyQColor::redKey(), QtnPropertyQColor::redDisplayName(),
+		QtnPropertyQColor::redDescriptionFmt());
 	result->setMinValue(0);
 	result->setMaxValue(255);
 
@@ -43,10 +43,9 @@ QtnProperty *QtnPropertyQColorBase::createRedProperty()
 
 QtnProperty *QtnPropertyQColorBase::createGreenProperty()
 {
-	auto result = createFieldProperty(QtnPropertyQColor::greenKey(),
-		QtnPropertyQColor::greenDisplayName(),
-		QtnPropertyQColor::greenDescriptionFmt(), &QColor::green,
-		&QColor::setGreen);
+	auto result = createFieldProperty(&QColor::green, &QColor::setGreen,
+		QtnPropertyQColor::greenKey(), QtnPropertyQColor::greenDisplayName(),
+		QtnPropertyQColor::greenDescriptionFmt());
 	result->setMinValue(0);
 	result->setMaxValue(255);
 
@@ -61,10 +60,9 @@ QtnProperty *QtnPropertyQColorBase::createGreenProperty()
 
 QtnProperty *QtnPropertyQColorBase::createBlueProperty()
 {
-	auto result = createFieldProperty(QtnPropertyQColor::blueKey(),
-		QtnPropertyQColor::blueDisplayName(),
-		QtnPropertyQColor::blueDescriptionFmt(), &QColor::blue,
-		&QColor::setBlue);
+	auto result = createFieldProperty(&QColor::blue, &QColor::setBlue,
+		QtnPropertyQColor::blueKey(), QtnPropertyQColor::blueDisplayName(),
+		QtnPropertyQColor::blueDescriptionFmt());
 	result->setMinValue(0);
 	result->setMaxValue(255);
 

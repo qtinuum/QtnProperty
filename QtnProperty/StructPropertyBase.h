@@ -18,12 +18,43 @@ limitations under the License.
 
 #include "Auxiliary/PropertyTemplates.h"
 
-template <typename FIELD_PROP_T, typename VALUE_T,
-	typename FIELD_RET = typename FIELD_PROP_T::ValueType,
-	typename FIELD_ARG = FIELD_RET>
+template <typename FIELD_T, typename CLASS_T, typename SETTER_T>
+void qtnSetFieldValue(CLASS_T &to, SETTER_T setter, FIELD_T value,
+	typename std::enable_if<
+		std::is_member_function_pointer<SETTER_T>::value>::type * = nullptr)
+{
+	(to.*setter)(value);
+}
+
+template <typename FIELD_T, typename CLASS_T, typename SETTER_T>
+void qtnSetFieldValue(CLASS_T &to, SETTER_T field, FIELD_T value,
+	typename std::enable_if<
+		std::is_member_object_pointer<SETTER_T>::value>::type * = nullptr)
+{
+	to.*field = value;
+}
+
+template <typename FIELD_T, typename CLASS_T, typename GETTER_T>
+FIELD_T qtnGetFieldValue(CLASS_T from, GETTER_T getter,
+	typename std::enable_if<
+		std::is_member_function_pointer<GETTER_T>::value>::type * = nullptr)
+{
+	return (from.*getter)();
+}
+
+template <typename FIELD_T, typename CLASS_T, typename GETTER_T>
+FIELD_T qtnGetFieldValue(const CLASS_T &from, GETTER_T field,
+	typename std::enable_if<
+		std::is_member_object_pointer<GETTER_T>::value>::type * = nullptr)
+{
+	return from.*field;
+}
+
+template <typename FIELD_PROP_T, typename VALUE_T, typename GETTER_T,
+	typename SETTER_T>
 FIELD_PROP_T *qtnCreateFieldProperty(QtnSinglePropertyBase<VALUE_T> *property,
-	const QString &name, const QString &displayName, const QString &desc_fmt,
-	FIELD_RET (VALUE_T::*get)() const, void (VALUE_T::*set)(FIELD_ARG))
+	GETTER_T getter, SETTER_T setter, const QString &name = QString(),
+	const QString &displayName = QString(), const QString &desc_fmt = QString())
 {
 	using CallbackValueType = typename FIELD_PROP_T::ValueType;
 	using CallbackValueTypeStore = typename FIELD_PROP_T::ValueTypeStore;
@@ -34,29 +65,36 @@ FIELD_PROP_T *qtnCreateFieldProperty(QtnSinglePropertyBase<VALUE_T> *property,
 
 	auto result = new FIELD_PROP_T(nullptr);
 
-	result->setDisplayName(displayName);
-	result->setName(name);
-	result->setDescription(desc_fmt.arg(property->displayName()));
-	result->setCallbackValueGet([property, get]() -> CallbackValueTypeStore {
-		return (property->value().*get)();
+	if (!displayName.isEmpty())
+		result->setDisplayName(displayName);
+	if (!name.isEmpty())
+		result->setName(name);
+	if (!desc_fmt.isEmpty())
+		result->setDescription(desc_fmt.arg(property->displayName()));
+
+	result->setCallbackValueGet([property, getter]() -> CallbackValueTypeStore {
+		return qtnGetFieldValue<CallbackValueTypeStore>(
+			property->value(), getter);
 	});
-	result->setCallbackValueSet([property, set](CallbackValueType new_value) {
-		auto v = property->value();
-		(v.*set)(new_value);
-		property->setValue(v);
-	});
+	result->setCallbackValueSet(
+		[property, setter](CallbackValueType new_value) {
+			auto v = property->value();
+			qtnSetFieldValue(v, setter, new_value);
+			property->setValue(v);
+		});
 
 	if (!property->isQObjectProperty() && property->isResettable())
 	{
 		result->addState(QtnPropertyStateResettable);
-		result->setCallbackValueDefault([property, get]() -> CallbackValueType {
-			ValueTypeStore value;
-			if (!property->readDefaultValue(value))
-			{
-				value = property->value();
-			}
-			return (value.*get)();
-		});
+		result->setCallbackValueDefault(
+			[property, getter]() -> CallbackValueTypeStore {
+				ValueTypeStore value;
+				if (!property->readDefaultValue(value))
+				{
+					value = property->value();
+				}
+				return qtnGetFieldValue<CallbackValueTypeStore>(value, getter);
+			});
 	}
 
 	auto delegateInfoCallback = [property]() -> QtnPropertyDelegateInfo {
@@ -85,14 +123,13 @@ class QtnStructPropertyBase : public QtnSinglePropertyBase<VALUE_T>
 public:
 	typedef QtnStructPropertyBase ParentClass;
 
-	template <typename FIELD_RET = typename FIELD_PROP_T::ValueType,
-		typename FIELD_ARG = FIELD_RET>
-	inline FIELD_PROP_T *createFieldProperty(const QString &name,
-		const QString &displayName, const QString &desc_fmt,
-		FIELD_RET (VALUE_T::*get)() const, void (VALUE_T::*set)(FIELD_ARG))
+	template <typename GETTER_T, typename SETTER_T>
+	inline FIELD_PROP_T *createFieldProperty(GETTER_T getter, SETTER_T setter,
+		const QString &name = QString(), const QString &displayName = QString(),
+		const QString &desc_fmt = QString())
 	{
-		return qtnCreateFieldProperty<FIELD_PROP_T, VALUE_T>(
-			this, name, displayName, desc_fmt, get, set);
+		return qtnCreateFieldProperty<FIELD_PROP_T>(
+			this, getter, setter, name, displayName, desc_fmt);
 	}
 
 protected:
