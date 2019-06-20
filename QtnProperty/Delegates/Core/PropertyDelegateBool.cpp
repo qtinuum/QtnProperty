@@ -17,10 +17,10 @@ limitations under the License.
 
 #include "PropertyDelegateBool.h"
 
-#include "Core/PropertyBool.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Core/PropertyBool.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QStyleOption>
 #include <QCheckBox>

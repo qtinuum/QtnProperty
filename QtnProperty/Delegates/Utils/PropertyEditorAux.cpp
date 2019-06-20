@@ -16,9 +16,9 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyEditorAux.h"
-#include "Delegates/PropertyDelegate.h"
+#include "QtnProperty/Delegates/PropertyDelegate.h"
 #include "PropertyDelegateMisc.h"
-#include "MultiProperty.h"
+#include "QtnProperty/MultiProperty.h"
 
 #include <QHBoxLayout>
 #include <QKeyEvent>

@@ -16,10 +16,10 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateButton.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "PropertyView.h"
-#include "GUI/PropertyButton.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/PropertyView.h"
+#include "QtnProperty/GUI/PropertyButton.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QStyleOptionButton>
 #include <QKeyEvent>

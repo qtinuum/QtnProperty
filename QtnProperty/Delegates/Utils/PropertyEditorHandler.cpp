@@ -16,8 +16,8 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyEditorHandler.h"
-#include "Utils/InplaceEditing.h"
-#include "Utils/QtnConnections.h"
+#include "QtnProperty/Utils/InplaceEditing.h"
+#include "QtnProperty/Utils/QtnConnections.h"
 
 #include <QDebug>
 #include <QKeyEvent>

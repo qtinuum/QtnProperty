@@ -15,9 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 #include "PropertyDelegateQSizeF.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Core/PropertyQSize.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Core/PropertyQSize.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QLineEdit>
 #include <QLocale>

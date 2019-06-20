@@ -16,13 +16,13 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateDouble.h"
-#include "Delegates/Utils/PropertyEditorAux.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "Delegates/Utils/PropertyDelegateSliderBox.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Utils/DoubleSpinBox.h"
-#include "MultiProperty.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyDelegateSliderBox.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Utils/DoubleSpinBox.h"
+#include "QtnProperty/MultiProperty.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QCoreApplication>
 #include <QLocale>

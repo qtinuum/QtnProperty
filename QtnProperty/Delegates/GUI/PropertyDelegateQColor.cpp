@@ -16,11 +16,11 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQColor.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "Delegates/Utils/PropertyEditorAux.h"
-#include "PropertyDelegateAttrs.h"
-#include "Utils/InplaceEditing.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Utils/InplaceEditing.h"
 
 #include <QColorDialog>
 

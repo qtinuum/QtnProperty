@@ -16,10 +16,10 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateGeoCoord.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "PropertyDelegateAttrs.h"
-#include "Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
 
 #include <QLineEdit>
 

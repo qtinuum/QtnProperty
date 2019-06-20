@@ -19,8 +19,8 @@ limitations under the License.
 
 #include "QtnProperty/PropertyView.h"
 #include "QtnProperty/Auxiliary/PropertyMacro.h"
-#include "PropertyDelegateAttrs.h"
-#include "MultiProperty.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/MultiProperty.h"
 
 #include <QMouseEvent>
 #include <QVariantAnimation>

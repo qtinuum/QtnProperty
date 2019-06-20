@@ -16,10 +16,10 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateEnumFlags.h"
-#include "Core/PropertyBool.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "MultiProperty.h"
+#include "QtnProperty/Core/PropertyBool.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/MultiProperty.h"
 
 #include <QLineEdit>
 

@@ -16,7 +16,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "AccessibilityProxy.h"
-#include "PropertyView.h"
+#include "QtnProperty/PropertyView.h"
 #include <QMessageBox>
 
 QtnAccessibilityProxy::QtnAccessibilityProxy(QtnPropertyView *owner)

@@ -16,14 +16,14 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQString.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "Delegates/Utils/PropertyEditorAux.h"
-#include "PropertyDelegateAttrs.h"
-#include "MultiProperty.h"
-#include "Utils/MultilineTextDialog.h"
-#include "Utils/InplaceEditing.h"
-#include "PropertyView.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/MultiProperty.h"
+#include "QtnProperty/Utils/MultilineTextDialog.h"
+#include "QtnProperty/Utils/InplaceEditing.h"
+#include "QtnProperty/PropertyView.h"
 
 #include <QLineEdit>
 #include <QKeyEvent>

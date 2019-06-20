@@ -16,10 +16,10 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateAux.h"
-#include "PropertyView.h"
-#include "MultiProperty.h"
-#include "Utils/InplaceEditing.h"
-#include "Utils/QtnConnections.h"
+#include "QtnProperty/PropertyView.h"
+#include "QtnProperty/MultiProperty.h"
+#include "QtnProperty/Utils/InplaceEditing.h"
+#include "QtnProperty/Utils/QtnConnections.h"
 
 #include <QMouseEvent>
 #include <QToolTip>

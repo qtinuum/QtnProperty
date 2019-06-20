@@ -17,7 +17,7 @@ limitations under the License.
 
 #include "PropertyQColor.h"
 
-#include "Auxiliary/PropertyDelegateInfo.h"
+#include "QtnProperty/Auxiliary/PropertyDelegateInfo.h"
 
 QtnPropertyQColorBase::QtnPropertyQColorBase(QObject *parent)
 	: QtnStructPropertyBase<QColor, QtnPropertyIntCallback>(parent)

@@ -16,7 +16,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyQPen.h"
-#include "GUI/PropertyQColor.h"
+#include "QtnProperty/GUI/PropertyQColor.h"
 
 #include <QMap>
 #include <QMetaEnum>
