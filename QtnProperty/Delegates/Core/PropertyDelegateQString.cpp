@@ -985,7 +985,7 @@ void QtnPropertyQStringCandidatesComboBoxHandler::updateCandidates()
 	comboBox->clear();
 	comboBox->addItems(m_candidates);
 
-	if (property().isEditableByUser())
+	if (stateProperty()->isEditableByUser())
 	{
 		comboBox->showPopup();
 	}
