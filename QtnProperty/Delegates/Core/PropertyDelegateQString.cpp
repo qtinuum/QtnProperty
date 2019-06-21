@@ -507,7 +507,7 @@ QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
 	auto handler = new QtnPropertyQStringListComboBoxHandler(this, *editor);
 	handler->applyAttributes(m_editorAttributes);
 
-	if (inplaceInfo)
+	if (inplaceInfo && stateProperty()->isEditableByUser())
 	{
 		editor->showPopup();
 	}
