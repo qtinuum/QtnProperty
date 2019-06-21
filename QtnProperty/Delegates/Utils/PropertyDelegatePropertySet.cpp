@@ -154,7 +154,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 			nameItem.drawHandler = [this](QtnDrawContext &context,
 									   const QtnSubItem &item) {
 				QPalette::ColorGroup cg = stateProperty()->isEditableByUser()
-					? QPalette::Active
+					? context.colorGroup()
 					: QPalette::Disabled;
 
 				QFont oldFont = context.painter->font();

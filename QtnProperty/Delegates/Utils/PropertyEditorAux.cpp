@@ -187,7 +187,10 @@ void QtnPropertyComboBox::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	if (stateProperty()->isMultiValue())
 	{
-		painter.setPen(Qt::darkGray);
+		if (isEnabled())
+		{
+			painter.setPen(palette().color(QPalette::Disabled, QPalette::Text));
+		}
 		qtnDrawValueText(
 			QtnMultiProperty::getMultiValuePlaceholder(), painter, rect);
 	} else

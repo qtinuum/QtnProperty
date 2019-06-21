@@ -240,12 +240,7 @@ const QPalette &QtnDrawContext::palette() const
 
 QPalette::ColorGroup QtnDrawContext::colorGroup() const
 {
-	if (!widget->isEnabled())
-		return QPalette::Disabled;
-	else if (!widget->hasFocus())
-		return QPalette::Inactive;
-	else
-		return QPalette::Active;
+	return palette().currentColorGroup();
 }
 
 void QtnEventContext::updateWidget()

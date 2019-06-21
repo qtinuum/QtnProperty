@@ -181,7 +181,6 @@ void QtnPropertyDelegateWithValues::addSubItemSelection(
 	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
 	QtnSubItem selItem(context.rect);
-	selItem.rect.setRight(context.splitPos);
 
 	if (!selItem.rect.isValid())
 		return;
@@ -190,8 +189,10 @@ void QtnPropertyDelegateWithValues::addSubItemSelection(
 	{
 		// highlight background if active property
 		if (context.isActive)
+		{
 			context.painter->fillRect(
 				item.rect, context.palette().color(QPalette::Highlight));
+		}
 	};
 
 	subItems.append(selItem);
@@ -296,11 +297,12 @@ void QtnPropertyDelegateWithValues::addSubItemName(
 							   const QtnSubItem &item) {
 		context.painter->save();
 
-		QPalette::ColorGroup cg = stateProperty()->isEditableByUser()
-			? QPalette::Active
-			: QPalette::Disabled;
-		context.painter->setPen(context.palette().color(cg,
-			(context.isActive) ? QPalette::HighlightedText : QPalette::Text));
+		auto cg = stateProperty()->isEditableByUser() ? context.colorGroup()
+													  : QPalette::Disabled;
+		auto color = context.palette().color(
+			cg, context.isActive ? QPalette::HighlightedText : QPalette::Text);
+		context.painter->setPen(color);
+
 		if (!stateProperty()->valueIsDefault())
 		{
 			auto font = context.painter->font();
@@ -443,16 +445,17 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(
 	subItemValue.drawHandler = [this](QtnDrawContext &context,
 								   const QtnSubItem &item) {
 		// draw property value
-		if (stateProperty()->isMultiValue())
-		{
-			auto oldPen = context.painter->pen();
-			context.painter->setPen(Qt::darkGray);
-			drawValueImpl(*context.painter, item.rect);
-			context.painter->setPen(oldPen);
-		} else
-		{
-			drawValueImpl(*context.painter, item.rect);
-		}
+		auto oldPen = context.painter->pen();
+		auto cg = (stateProperty()->isEditableByUser() &&
+					  !stateProperty()->isMultiValue())
+			? context.colorGroup()
+			: QPalette::Disabled;
+		auto color = context.palette().color(
+			cg, context.isActive ? QPalette::HighlightedText : QPalette::Text);
+
+		context.painter->setPen(color);
+		drawValueImpl(*context.painter, item.rect);
+		context.painter->setPen(oldPen);
 	};
 
 	subItemValue.eventHandler = [this](QtnEventContext &context,
