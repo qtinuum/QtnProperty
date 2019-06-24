@@ -73,7 +73,7 @@ QtnMetaPropertyFactory_t qtnCreateFactory()
 			});
 
 		property->setCallbackValueSet(
-			[object, metaProperty](CallbackValueType value) {
+			[object, metaProperty](CallbackValueType value, QtnPropertyChangeReason /*reason*/) {
 				auto variantValue =
 					QVariant::fromValue<ValueType>(ValueType(value));
 				metaProperty.write(object, variantValue);

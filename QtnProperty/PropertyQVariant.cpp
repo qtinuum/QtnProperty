@@ -88,7 +88,7 @@ QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(
 		return metaProperty.read(object);
 	});
 
-	setCallbackValueSet([object, metaProperty](QVariant value) {
+	setCallbackValueSet([object, metaProperty](QVariant value, QtnPropertyChangeReason /*reason*/) {
 		metaProperty.write(object, value);
 	});
 
