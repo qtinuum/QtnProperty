@@ -16,15 +16,15 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQPen.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "Delegates/Utils/PropertyEditorAux.h"
-#include "PropertyDelegateAttrs.h"
-#include "Core/PropertyDouble.h"
-#include "Core/PropertyQSize.h"
-#include "Core/PropertyEnum.h"
-#include "GUI/PropertyQColor.h"
-#include "MultiProperty.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Core/PropertyDouble.h"
+#include "QtnProperty/Core/PropertyQSize.h"
+#include "QtnProperty/Core/PropertyEnum.h"
+#include "QtnProperty/GUI/PropertyQColor.h"
+#include "QtnProperty/MultiProperty.h"
 
 #include <QComboBox>
 #include <QStyledItemDelegate>
@@ -207,11 +207,11 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(
 
 		if (editColor)
 		{
-			addSubProperty(qtnCreateFieldProperty<QtnPropertyQColorCallback>(
-				owner, QtnPropertyQPen::colorKey(),
-				QtnPropertyQPen::colorDisplayName(),
-				QtnPropertyQPen::colorDescriptionFmt(), &QPen::color,
-				&QPen::setColor));
+			addSubProperty(
+				qtnCreateFieldProperty<QtnPropertyQColorCallback>(owner,
+					&QPen::color, &QPen::setColor, QtnPropertyQPen::colorKey(),
+					QtnPropertyQPen::colorDisplayName(),
+					QtnPropertyQPen::colorDescriptionFmt()));
 		}
 	}
 
@@ -221,11 +221,11 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(
 
 		if (editStyle)
 		{
-			addSubProperty(qtnCreateFieldProperty<QtnPropertyQPenStyleCallback>(
-				owner, QtnPropertyQPen::styleKey(),
-				QtnPropertyQPen::styleDisplayName(),
-				QtnPropertyQPen::styleDescriptionFmt(), &QPen::style,
-				&QPen::setStyle));
+			addSubProperty(
+				qtnCreateFieldProperty<QtnPropertyQPenStyleCallback>(owner,
+					&QPen::style, &QPen::setStyle, QtnPropertyQPen::styleKey(),
+					QtnPropertyQPen::styleDisplayName(),
+					QtnPropertyQPen::styleDescriptionFmt()));
 		}
 	}
 
@@ -237,10 +237,10 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(
 		{
 			auto widthProperty =
 				qtnCreateFieldProperty<QtnPropertyDoubleCallback>(owner,
+					&QPen::widthF, &QPen::setWidthF,
 					QtnPropertyQSize::widthKey(),
 					QtnPropertyQSize::widthDisplayName(),
-					QtnPropertyQSize::widthDescriptionFmt(), &QPen::widthF,
-					&QPen::setWidthF);
+					QtnPropertyQSize::widthDescriptionFmt());
 			addSubProperty(widthProperty);
 
 			widthProperty->setMinValue(0.0);
@@ -257,11 +257,11 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(
 				sizeof(Qt::PenCapStyle) == sizeof(int), "enum size mismatch");
 			auto capStyleProperty =
 				qtnCreateFieldProperty<QtnPropertyEnumCallback>(owner,
+					reinterpret_cast<int (QPen::*)() const>(&QPen::capStyle),
+					reinterpret_cast<void (QPen::*)(int)>(&QPen::setCapStyle),
 					QtnPropertyQPen::capStyleKey(),
 					QtnPropertyQPen::capStyleDisplayName(),
-					QtnPropertyQPen::capStyleDescriptionFmt(),
-					reinterpret_cast<int (QPen::*)() const>(&QPen::capStyle),
-					reinterpret_cast<void (QPen::*)(int)>(&QPen::setCapStyle));
+					QtnPropertyQPen::capStyleDescriptionFmt());
 			capStyleProperty->setEnumInfo(&QtnPropertyQPen::penCapStyleEnum());
 			addSubProperty(capStyleProperty);
 		}
@@ -277,11 +277,11 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(
 				sizeof(Qt::PenJoinStyle) == sizeof(int), "enum size mismatch");
 			auto joinStyleProperty =
 				qtnCreateFieldProperty<QtnPropertyEnumCallback>(owner,
+					reinterpret_cast<int (QPen::*)() const>(&QPen::joinStyle),
+					reinterpret_cast<void (QPen::*)(int)>(&QPen::setJoinStyle),
 					QtnPropertyQPen::joinStyleKey(),
 					QtnPropertyQPen::joinStyleDisplayName(),
-					QtnPropertyQPen::joinStyleDescriptionFmt(),
-					reinterpret_cast<int (QPen::*)() const>(&QPen::joinStyle),
-					reinterpret_cast<void (QPen::*)(int)>(&QPen::setJoinStyle));
+					QtnPropertyQPen::joinStyleDescriptionFmt());
 			joinStyleProperty->setEnumInfo(
 				&QtnPropertyQPen::penJoinStyleEnum());
 			addSubProperty(joinStyleProperty);

@@ -16,7 +16,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateInfo.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 #include "PropertyMacro.h"
 
 QtnPropertyDelegateInfo::QtnPropertyDelegateInfo(

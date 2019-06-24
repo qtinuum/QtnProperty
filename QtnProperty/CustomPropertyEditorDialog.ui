@@ -147,7 +147,7 @@
   <customwidget>
    <class>QtnCustomPropertyWidget</class>
    <extends>QWidget</extends>
-   <header>CustomPropertyWidget.h</header>
+   <header>QtnProperty/CustomPropertyWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

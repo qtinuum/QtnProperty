@@ -206,8 +206,16 @@ void QtnPropertyDelegateQVariant::drawValueImpl(
 
 	QPen oldPen = painter.pen();
 
-	if (QtnPropertyQVariant::valueToString(owner().value()).isEmpty())
-		painter.setPen(Qt::darkGray);
+	if (stateProperty()->isEditableByUser() &&
+		QtnPropertyQVariant::valueToString(owner().value()).isEmpty())
+	{
+		auto palette = painter.style()->standardPalette();
+		if (palette.currentColorGroup() != QPalette::Disabled &&
+			oldPen.color() != palette.color(QPalette::HighlightedText))
+		{
+			painter.setPen(palette.color(QPalette::Disabled, QPalette::Text));
+		}
+	}
 
 	Inherited::drawValueImpl(painter, rect);
 	painter.setPen(oldPen);

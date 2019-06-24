@@ -48,6 +48,8 @@ protected:
 	virtual void drawValueImpl(
 		QStylePainter &painter, const QRect &rect) const override;
 
+	bool isPlaceholderColor() const;
+
 protected:
 	int m_maxLength;
 	bool m_multiline;

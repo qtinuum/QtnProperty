@@ -16,14 +16,14 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQString.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "Delegates/Utils/PropertyEditorAux.h"
-#include "PropertyDelegateAttrs.h"
-#include "MultiProperty.h"
-#include "Utils/MultilineTextDialog.h"
-#include "Utils/InplaceEditing.h"
-#include "PropertyView.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/MultiProperty.h"
+#include "QtnProperty/Utils/MultilineTextDialog.h"
+#include "QtnProperty/Utils/InplaceEditing.h"
+#include "QtnProperty/PropertyView.h"
 
 #include <QLineEdit>
 #include <QKeyEvent>
@@ -260,12 +260,26 @@ void QtnPropertyDelegateQString::drawValueImpl(
 
 	QPen oldPen = painter.pen();
 
-	if (!QtnPropertyQString::getPlaceholderStr(owner().value(), m_multiline)
-			 .isEmpty())
-		painter.setPen(Qt::darkGray);
+	if (isPlaceholderColor())
+	{
+		auto palette = painter.style()->standardPalette();
+		if (palette.currentColorGroup() != QPalette::Disabled &&
+			oldPen.color() != palette.color(QPalette::HighlightedText))
+		{
+			painter.setPen(palette.color(QPalette::Disabled, QPalette::Text));
+		}
+	}
 
 	Inherited::drawValueImpl(painter, rect);
 	painter.setPen(oldPen);
+}
+
+bool QtnPropertyDelegateQString::isPlaceholderColor() const
+{
+	return stateProperty()->isEditableByUser() &&
+		(stateProperty()->isMultiValue() ||
+			!QtnPropertyQString::getPlaceholderStr(owner().value(), m_multiline)
+				 .isEmpty());
 }
 
 class QtnPropertyQStringFileLineEditBttnHandler
@@ -309,8 +323,16 @@ void QtnPropertyDelegateQStringInvalidBase::drawValueImpl(
 {
 	QPen oldPen = painter.pen();
 
-	if ((m_invalidColor.alpha() != 0) && !isPropertyValid())
-		painter.setPen(m_invalidColor);
+	if ((m_invalidColor.alpha() != 0) && !isPlaceholderColor() &&
+		!isPropertyValid() && stateProperty()->isEditableByUser())
+	{
+		auto palette = painter.style()->standardPalette();
+		if (palette.currentColorGroup() != QPalette::Disabled &&
+			oldPen.color() != palette.color(QPalette::HighlightedText))
+		{
+			painter.setPen(m_invalidColor.rgb());
+		}
+	}
 
 	QtnPropertyDelegateQString::drawValueImpl(painter, rect);
 	painter.setPen(oldPen);
@@ -377,7 +399,7 @@ bool QtnPropertyDelegateQStringFile::isPropertyValid() const
 	auto filePath = absoluteFilePath();
 
 	if (filePath.isEmpty())
-		return false;
+		return true;
 
 	auto fileMode = QFileDialog::FileMode(m_editorAttributes.getAttribute(
 		qtnFileModeAttr(), QFileDialog::AnyFile));
@@ -485,7 +507,7 @@ QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
 	auto handler = new QtnPropertyQStringListComboBoxHandler(this, *editor);
 	handler->applyAttributes(m_editorAttributes);
 
-	if (inplaceInfo)
+	if (inplaceInfo && stateProperty()->isEditableByUser())
 	{
 		editor->showPopup();
 	}
@@ -963,7 +985,7 @@ void QtnPropertyQStringCandidatesComboBoxHandler::updateCandidates()
 	comboBox->clear();
 	comboBox->addItems(m_candidates);
 
-	if (property().isEditableByUser())
+	if (stateProperty()->isEditableByUser())
 	{
 		comboBox->showPopup();
 	}

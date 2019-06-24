@@ -16,9 +16,9 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyEditorAux.h"
-#include "Delegates/PropertyDelegate.h"
+#include "QtnProperty/Delegates/PropertyDelegate.h"
 #include "PropertyDelegateMisc.h"
-#include "MultiProperty.h"
+#include "QtnProperty/MultiProperty.h"
 
 #include <QHBoxLayout>
 #include <QKeyEvent>
@@ -187,7 +187,10 @@ void QtnPropertyComboBox::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	if (stateProperty()->isMultiValue())
 	{
-		painter.setPen(Qt::darkGray);
+		if (isEnabled())
+		{
+			painter.setPen(palette().color(QPalette::Disabled, QPalette::Text));
+		}
 		qtnDrawValueText(
 			QtnMultiProperty::getMultiValuePlaceholder(), painter, rect);
 	} else

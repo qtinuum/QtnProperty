@@ -16,8 +16,8 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateGeoPoint.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QLineEdit>
 #include <QCoreApplication>
@@ -75,13 +75,13 @@ QtnPropertyDelegateGeoPoint::QtnPropertyDelegateGeoPoint(
 	QtnPropertyDelegateInfo geoDelegate;
 	geoDelegate.name = qtnGeoCoordDelegateName();
 	auto longitudeSubProperty =
-		owner.createFieldProperty(longitudeKey(), longitudeDisplayName(),
-			longitudeDescriptionFmt(), &QPointF::x, &QPointF::setX);
+		owner.createFieldProperty(&QPointF::x, &QPointF::setX, longitudeKey(),
+			longitudeDisplayName(), longitudeDescriptionFmt());
 	longitudeSubProperty->setDelegateInfo(geoDelegate);
 
 	auto latitudeSubProperty =
-		owner.createFieldProperty(latitudeKey(), latitudeDisplayName(),
-			latitudeDescriptionFmt(), &QPointF::y, &QPointF::setY);
+		owner.createFieldProperty(&QPointF::y, &QPointF::setY, latitudeKey(),
+			latitudeDisplayName(), latitudeDescriptionFmt());
 	latitudeSubProperty->setDelegateInfo(geoDelegate);
 
 	addSubProperty(longitudeSubProperty);

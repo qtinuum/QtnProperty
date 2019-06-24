@@ -16,10 +16,10 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateButton.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "PropertyView.h"
-#include "GUI/PropertyButton.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/PropertyView.h"
+#include "QtnProperty/GUI/PropertyButton.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QStyleOptionButton>
 #include <QKeyEvent>
@@ -131,28 +131,44 @@ void QtnPropertyDelegateButtonLink::createSubItemsImpl(
 	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
 	QtnSubItem linkItem(context.rect.marginsRemoved(context.margins));
+	auto fullRect = linkItem.rect;
 	linkItem.rect.setWidth(context.painter->fontMetrics().width(m_title));
 	linkItem.setPropertyDescriptionAsTooltip(owner());
 	linkItem.trackState();
 
-	linkItem.drawHandler = [this](QtnDrawContext &context,
+	linkItem.drawHandler = [this, fullRect](QtnDrawContext &context,
 							   const QtnSubItem &item) {
 
 		context.painter->save();
 
-		QColor linkColor =
-			context.palette().color(context.colorGroup(), QPalette::Link);
+		QColor linkColor = context.palette().color(context.colorGroup(),
+			context.isActive ? QPalette::HighlightedText : QPalette::Link);
 		switch (item.state())
 		{
 			case QtnSubItemStateUnderCursor:
-				linkColor = linkColor.lighter();
+			{
+				auto font = context.painter->font();
+				font.setUnderline(true);
+				context.painter->setFont(font);
 				break;
+			}
 
 			case QtnSubItemStatePushed:
-				linkColor = linkColor.darker();
+			{
+				auto font = context.painter->font();
+				font.setUnderline(true);
+				context.painter->setFont(font);
 				break;
+			}
 
-			default:;
+			default:
+				break;
+		}
+
+		if (context.isActive)
+		{
+			context.painter->fillRect(
+				fullRect, context.palette().color(QPalette::Highlight));
 		}
 
 		context.painter->setPen(linkColor);

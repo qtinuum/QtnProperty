@@ -16,8 +16,8 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQPoint.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QLocale>
 #include <QLineEdit>

@@ -17,10 +17,10 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQBrush.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Utils/PropertyEditorHandler.h"
-#include "Delegates/Utils/PropertyEditorAux.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QComboBox>
 #include <QStyledItemDelegate>

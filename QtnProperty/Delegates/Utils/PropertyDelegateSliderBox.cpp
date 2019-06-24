@@ -19,8 +19,8 @@ limitations under the License.
 
 #include "QtnProperty/PropertyView.h"
 #include "QtnProperty/Auxiliary/PropertyMacro.h"
-#include "PropertyDelegateAttrs.h"
-#include "MultiProperty.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/MultiProperty.h"
 
 #include <QMouseEvent>
 #include <QVariantAnimation>
@@ -123,10 +123,6 @@ void QtnPropertyDelegateSlideBox::draw(
 	if (valuePart < 0.0)
 		return;
 
-	auto boxBorderColor = (item.state() == QtnSubItemStateNone)
-		? m_boxFillColor
-		: m_boxFillColor.darker(150);
-
 	auto boxRect = item.rect;
 	boxRect.adjust(2, 2, -2, -2);
 
@@ -137,9 +133,10 @@ void QtnPropertyDelegateSlideBox::draw(
 
 	painter.save();
 
+	painter.fillRect(boxRect, Qt::white);
 	painter.fillRect(valueRect, m_boxFillColor);
 
-	painter.setPen(boxBorderColor);
+	painter.setPen(Qt::black);
 	painter.drawRect(valueRect);
 	if (m_drawBorder)
 		painter.drawRect(boxRect);
