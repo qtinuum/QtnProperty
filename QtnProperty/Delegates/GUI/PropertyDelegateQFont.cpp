@@ -130,11 +130,11 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QtnPropertyQFont::getFamilyDescription(owner.name()));
 	propertyFamily->setCallbackValueGet(
 		[&owner]() -> QString { return owner.value().family(); });
-	propertyFamily->setCallbackValueSet([&owner, propertyStyle](QString value) {
+	propertyFamily->setCallbackValueSet([&owner, propertyStyle](QString value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
 		font.setFamily(value);
 		applyFontStyle(font);
-		owner.setValue(font);
+		owner.setValue(font, reason);
 
 #ifdef Q_OS_MAC
 		QtnPropertyDelegateInfo delegate;
@@ -163,11 +163,11 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QtnPropertyQFont::getStyleDescription(owner.name()));
 	propertyStyle->setCallbackValueGet(
 		[&owner]() -> QString { return owner.value().styleName(); });
-	propertyStyle->setCallbackValueSet([&owner](QString value) {
+	propertyStyle->setCallbackValueSet([&owner](QString value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
 		font.setStyleName(value);
 		applyFontStyle(font);
-		owner.setValue(font);
+		owner.setValue(font, reason);
 	});
 
 #ifdef Q_OS_MAC
@@ -203,7 +203,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 
 		return ps;
 	});
-	propertySize->setCallbackValueSet([&owner](qint32 value) {
+	propertySize->setCallbackValueSet([&owner](qint32 value, QtnPropertyChangeReason reason) {
 		if (value <= 0)
 			value = 1;
 		else if (value > 256)
@@ -219,7 +219,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 			font.setPixelSize(value);
 		}
 
-		owner.setValue(font);
+		owner.setValue(font, reason);
 	});
 
 	propertySize->setMinValue(1);
@@ -239,7 +239,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		return SizeUnitPoint;
 	});
 
-	propertySizeUnit->setCallbackValueSet([&owner](QtnEnumValueType value) {
+	propertySizeUnit->setCallbackValueSet([&owner](QtnEnumValueType value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
 
 		int size = std::max(font.pointSize(), font.pixelSize());
@@ -264,7 +264,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 				break;
 		}
 
-		owner.setValue(font);
+		owner.setValue(font, reason);
 	});
 
 	QtnPropertyBoolCallback *propertyBold = new QtnPropertyBoolCallback;
@@ -275,7 +275,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QtnPropertyQFont::getBoldDescription(owner.name()));
 	propertyBold->setCallbackValueGet(
 		[&owner]() -> bool { return owner.value().bold(); });
-	propertyBold->setCallbackValueSet([&owner](bool value) {
+	propertyBold->setCallbackValueSet([&owner](bool value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
 
 		if (font.bold() != value)
@@ -302,7 +302,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 
 #endif
 			font.setBold(value);
-			owner.setValue(font);
+			owner.setValue(font, reason);
 		}
 	});
 
@@ -314,7 +314,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QtnPropertyQFont::getItalicDescription(owner.name()));
 	propertyItalic->setCallbackValueGet(
 		[&owner]() -> bool { return owner.value().italic(); });
-	propertyItalic->setCallbackValueSet([&owner](bool value) {
+	propertyItalic->setCallbackValueSet([&owner](bool value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
 
 		if (font.italic() != value)
@@ -341,7 +341,7 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 
 #endif
 			font.setItalic(value);
-			owner.setValue(font);
+			owner.setValue(font, reason);
 		}
 	});
 
@@ -353,10 +353,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QtnPropertyQFont::getUnderlineDescription(owner.name()));
 	propertyUnderline->setCallbackValueGet(
 		[&owner]() -> bool { return owner.value().underline(); });
-	propertyUnderline->setCallbackValueSet([&owner](bool value) {
+	propertyUnderline->setCallbackValueSet([&owner](bool value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
 		font.setUnderline(value);
-		owner.setValue(font);
+		owner.setValue(font, reason);
 	});
 
 	QtnPropertyBoolCallback *propertyStrikeout = new QtnPropertyBoolCallback;
@@ -367,10 +367,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QtnPropertyQFont::getStrikeoutDescription(owner.name()));
 	propertyStrikeout->setCallbackValueGet(
 		[&owner]() -> bool { return owner.value().strikeOut(); });
-	propertyStrikeout->setCallbackValueSet([&owner](bool value) {
+	propertyStrikeout->setCallbackValueSet([&owner](bool value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
 		font.setStrikeOut(value);
-		owner.setValue(font);
+		owner.setValue(font, reason);
 	});
 
 	QtnPropertyBoolCallback *propertyKerning = new QtnPropertyBoolCallback;
@@ -381,13 +381,13 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 		QtnPropertyQFont::getKerningDescription(owner.name()));
 	propertyKerning->setCallbackValueGet(
 		[&owner]() -> bool { return owner.value().kerning(); });
-	propertyKerning->setCallbackValueSet([&owner](bool value) {
+	propertyKerning->setCallbackValueSet([&owner](bool value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
 		font.setKerning(value);
-		owner.setValue(font);
+		owner.setValue(font, reason);
 	});
 
-	auto propertyAntialiasing = new QtnPropertyEnumCallback(0);
+	auto propertyAntialiasing = new QtnPropertyEnumCallback(nullptr);
 	addSubProperty(propertyAntialiasing);
 	propertyAntialiasing->setName(QStringLiteral("antialiasing"));
 	propertyAntialiasing->setDisplayName(
@@ -398,10 +398,10 @@ QtnPropertyDelegateQFont::QtnPropertyDelegateQFont(QtnPropertyQFontBase &owner)
 	propertyAntialiasing->setCallbackValueGet([&owner]() -> QtnEnumValueType {
 		return owner.value().styleStrategy();
 	});
-	propertyAntialiasing->setCallbackValueSet([&owner](QtnEnumValueType value) {
+	propertyAntialiasing->setCallbackValueSet([&owner](QtnEnumValueType value, QtnPropertyChangeReason reason) {
 		QFont font = owner.value();
-		font.setStyleStrategy((QFont::StyleStrategy) value);
-		owner.setValue(font);
+		font.setStyleStrategy(static_cast<QFont::StyleStrategy>(value));
+		owner.setValue(font, reason);
 	});
 }
 

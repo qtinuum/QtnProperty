@@ -71,7 +71,7 @@ static QtnProperty *createRealNumberProperty(
 				});
 
 			property->setCallbackValueSet(
-				[object, metaProperty](ValueTypeStore value) {
+				[object, metaProperty](ValueTypeStore value, QtnPropertyChangeReason /*reason*/) {
 					metaProperty.write(object, value / ValueTypeStore(100.0));
 				});
 
@@ -91,7 +91,7 @@ static QtnProperty *createRealNumberProperty(
 		return ValueTypeStore(metaProperty.read(object).toDouble());
 	});
 
-	property->setCallbackValueSet([object, metaProperty](ValueTypeStore value) {
+	property->setCallbackValueSet([object, metaProperty](ValueTypeStore value, QtnPropertyChangeReason /*reason*/) {
 		metaProperty.write(object, value);
 	});
 
