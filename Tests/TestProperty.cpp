@@ -292,12 +292,12 @@ void TestProperty::propertyBool()
 		p.setCallbackValueGet([]() -> bool { return false; });
 		QVERIFY(p.value() == false);
 
-		p.setCallbackValueSet([](bool newValue) { QVERIFY(newValue == true); });
+		p.setCallbackValueSet([](bool newValue, QtnPropertyChangeReason /*reason*/) { QVERIFY(newValue == true); });
 
 		p = true;
 
 		p.setCallbackValueSet(
-			[](bool newValue) { QVERIFY(newValue == false); });
+			[](bool newValue, QtnPropertyChangeReason /*reason*/) { QVERIFY(newValue == false); });
 		p.setValue(false);
 
 		QVERIFY2(!p, "p expected as false");
@@ -313,7 +313,7 @@ void TestProperty::propertyBool()
 
 		p2.setCallbackValueGet([&val]() -> bool { return val; });
 
-		p2.setCallbackValueSet([&val](bool newValue) { val = newValue; });
+		p2.setCallbackValueSet([&val](bool newValue, QtnPropertyChangeReason /*reason*/) { val = newValue; });
 
 		QVERIFY(p2);
 
@@ -412,7 +412,7 @@ void TestProperty::propertyRect()
 	QRect pc_value;
 	pc.setCallbackValueGet([&pc_value]() -> const QRect & { return pc_value; });
 	pc.setCallbackValueSet(
-		[&pc_value](const QRect &value) { pc_value = value; });
+			[&pc_value](const QRect &value, QtnPropertyChangeReason /*reason*/) { pc_value = value; });
 
 	pc = QRect(10, 10, 10, 10);
 	QCOMPARE(pc.value(), QRect(10, 10, 10, 10));
@@ -758,7 +758,7 @@ void TestProperty::propertyAssignment()
 		p1 = 0.5;
 		p2 = 1.3;
 		p3.setCallbackValueGet([]() -> double { return 23.4; });
-		p3.setCallbackValueSet([&d](double v) { d = v; });
+		p3.setCallbackValueSet([&d](double v, QtnPropertyChangeReason /*reason*/) { d = v; });
 
 		QCOMPARE(p1.value(), 0.5);
 		QCOMPARE(p2.value(), 1.3);
