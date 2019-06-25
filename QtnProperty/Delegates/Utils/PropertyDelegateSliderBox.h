@@ -46,6 +46,9 @@ protected:
 	virtual void incrementPropertyValue(int steps) = 0;
 	virtual void setPropertyValuePart(double valuePart) = 0;
 
+	void prepareAnimate();
+	void startAnimate();
+
 	QColor m_boxFillColor;
 	bool m_liveUpdate;
 	bool m_drawBorder;
@@ -54,10 +57,9 @@ protected:
 	QString m_itemToolTip;
 
 private:
-	void updateDragValuePart(int x, const QRect &rect);
-	void onPropertyWillChange(QtnPropertyChangeReason reason,
-		QtnPropertyValuePtr newValue, int typeId);
-	void onPropertyDidChange(QtnPropertyChangeReason reason);
+	void incrementPropertyValueInternal(int steps);
+	double toDragValuePart(int x, const QRect &rect);
+	void dragTo(double value);
 	void onAnimationChanged(const QVariant &value);
 
 	double m_dragValuePart;
@@ -66,8 +68,6 @@ private:
 	QScopedPointer<QVariantAnimation> m_animation;
 	double m_oldValuePart;
 	QWidget *m_animateWidget;
-	QMetaObject::Connection m_c1;
-	QMetaObject::Connection m_c2;
 };
 
 double QtnPropertyDelegateSlideBox::dragValuePart() const
@@ -105,9 +105,32 @@ protected:
 		return interval(p.value()) / interval(p.maxValue());
 	}
 
+	template <typename T,
+		typename std::enable_if<std::is_floating_point<T>::value &&
+			sizeof(T) == 4>::type * = nullptr>
+	static QString valueToStr(T value)
+	{
+		return QLocale().toString(value, 'g', 6);
+	}
+
+	template <typename T,
+		typename std::enable_if<std::is_floating_point<T>::value &&
+			sizeof(T) == 8>::type * = nullptr>
+	static QString valueToStr(T value)
+	{
+		return QLocale().toString(value, 'g', 15);
+	}
+
+	template <typename T,
+		typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
+	static QString valueToStr(T value)
+	{
+		return QLocale().toString(value);
+	}
+
 	virtual QString valuePartToStr(double valuePart) const override
 	{
-		return QLocale().toString(partToValue(valuePart));
+		return valueToStr(partToValue(valuePart));
 	}
 
 	virtual void incrementPropertyValue(int steps) override

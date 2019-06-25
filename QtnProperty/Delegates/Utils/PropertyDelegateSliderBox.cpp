@@ -100,11 +100,6 @@ bool QtnPropertyDelegateSlideBox::createSubItemValueImpl(
 		m_dragValuePart = propertyValuePart();
 		m_animation.reset(new QVariantAnimation());
 		m_animateWidget = context.widget->viewport();
-		m_c1 = QObject::connect(property(),
-			&QtnPropertyBase::propertyWillChange,
-			qtnMemFn(this, &QtnPropertyDelegateSlideBox::onPropertyWillChange));
-		m_c2 = QObject::connect(property(), &QtnPropertyBase::propertyDidChange,
-			qtnMemFn(this, &QtnPropertyDelegateSlideBox::onPropertyDidChange));
 	}
 
 	return true;
@@ -120,9 +115,9 @@ void QtnPropertyDelegateSlideBox::draw(
 		return;
 	}
 
-	double valuePart =
+	double valuePart = m_dragValuePart =
 		(item.state() == QtnSubItemStatePushed ||
-			(m_animate && m_animation->state() == QAbstractAnimation::Running))
+			(m_animate && m_animation->state() == QVariantAnimation::Running))
 		? dragValuePart()
 		: propertyValuePart();
 	if (valuePart < 0.0)
@@ -172,7 +167,7 @@ bool QtnPropertyDelegateSlideBox::event(
 				return false;
 
 			toEdit->setup(property(), [this, increment]() -> QWidget * {
-				incrementPropertyValue(increment);
+				incrementPropertyValueInternal(increment);
 				return nullptr;
 			});
 			return true;
@@ -185,7 +180,7 @@ bool QtnPropertyDelegateSlideBox::event(
 				int steps =
 					context.eventAs<QWheelEvent>()->angleDelta().y() / 120;
 				toEdit->setup(property(), [this, steps]() -> QWidget * {
-					incrementPropertyValue(steps);
+					incrementPropertyValueInternal(steps);
 					return nullptr;
 				});
 				return true;
@@ -202,10 +197,9 @@ bool QtnPropertyDelegateSlideBox::event(
 
 		case QtnSubItemEvent::PressMouse:
 		{
-			//context.widget->setCursor(Qt::SplitHCursor);
 			if (!m_animate)
 			{
-				updateDragValuePart(
+				m_dragValuePart = toDragValuePart(
 					context.eventAs<QtnSubItemEvent>()->x(), item.rect);
 				context.updateWidget();
 			}
@@ -216,18 +210,21 @@ bool QtnPropertyDelegateSlideBox::event(
 		{
 			if (item.state() == QtnSubItemStatePushed)
 			{
+				auto dragValuePart = toDragValuePart(
+					context.eventAs<QMouseEvent>()->x(), item.rect);
 				if (m_liveUpdate)
 				{
-					updateDragValuePart(
-						context.eventAs<QMouseEvent>()->x(), item.rect);
-					toEdit->setup(property(), [this]() -> QWidget * {
-						setPropertyValuePart(m_dragValuePart);
-						return nullptr;
-					});
+					if (m_animate)
+						m_animation->stop();
+					m_dragValuePart = dragValuePart;
+					toEdit->setup(
+						property(), [this, dragValuePart]() -> QWidget * {
+							setPropertyValuePart(dragValuePart);
+							return nullptr;
+						});
 				} else if (!m_animate)
 				{
-					updateDragValuePart(
-						context.eventAs<QMouseEvent>()->x(), item.rect);
+					m_dragValuePart = dragValuePart;
 					context.updateWidget();
 				}
 			}
@@ -237,10 +234,10 @@ bool QtnPropertyDelegateSlideBox::event(
 		case QtnSubItemEvent::ReleaseMouse:
 		{
 			context.widget->setCursor(m_oldCursor);
-			updateDragValuePart(
+			auto dragValuePart = toDragValuePart(
 				context.eventAs<QtnSubItemEvent>()->x(), item.rect);
-			toEdit->setup(property(), [this]() -> QWidget * {
-				setPropertyValuePart(m_dragValuePart);
+			toEdit->setup(property(), [this, dragValuePart]() -> QWidget * {
+				dragTo(dragValuePart);
 				return nullptr;
 			});
 			return true;
@@ -251,25 +248,55 @@ bool QtnPropertyDelegateSlideBox::event(
 	}
 }
 
-void QtnPropertyDelegateSlideBox::updateDragValuePart(int x, const QRect &rect)
+void QtnPropertyDelegateSlideBox::incrementPropertyValueInternal(int steps)
 {
-	m_dragValuePart = double(x - rect.left()) / rect.width();
-	if (m_dragValuePart < 0.0)
-		m_dragValuePart = 0.0;
-	else if (m_dragValuePart > 1.0)
-		m_dragValuePart = 1.0;
+	if (m_animate)
+		m_animation->stop();
+	incrementPropertyValue(steps);
+	m_dragValuePart = propertyValuePart();
 }
 
-void QtnPropertyDelegateSlideBox::onPropertyWillChange(
-	QtnPropertyChangeReason, QtnPropertyValuePtr, int)
+double QtnPropertyDelegateSlideBox::toDragValuePart(int x, const QRect &rect)
 {
-	m_oldValuePart = m_dragValuePart = propertyValuePart();
+	double result = double(x - rect.left()) / rect.width();
+	if (result < 0.0)
+		result = 0.0;
+	else if (result > 1.0)
+		result = 1.0;
+	return result;
 }
 
-void QtnPropertyDelegateSlideBox::onPropertyDidChange(QtnPropertyChangeReason)
+void QtnPropertyDelegateSlideBox::dragTo(double value)
 {
-	m_animation->setStartValue(m_oldValuePart);
-	m_animation->setEndValue(propertyValuePart());
+	if (m_animate)
+		prepareAnimate();
+	setPropertyValuePart(value);
+	if (m_animate)
+		startAnimate();
+	else
+		m_dragValuePart = value;
+}
+
+void QtnPropertyDelegateSlideBox::prepareAnimate()
+{
+	if (m_animation->state() == QVariantAnimation::Running)
+	{
+		m_oldValuePart = m_dragValuePart;
+		m_animation->stop();
+	} else
+	{
+		m_oldValuePart = m_dragValuePart = propertyValuePart();
+	}
+}
+
+void QtnPropertyDelegateSlideBox::startAnimate()
+{
+	double startValue = m_oldValuePart;
+	double endValue = propertyValuePart();
+	if (endValue == startValue)
+		return;
+	m_animation->setStartValue(startValue);
+	m_animation->setEndValue(endValue);
 	m_animation->setDuration(300);
 	m_animation->setEasingCurve(QEasingCurve::OutCirc);
 	QObject::connect(m_animation.data(), &QVariantAnimation::valueChanged,
@@ -279,7 +306,7 @@ void QtnPropertyDelegateSlideBox::onPropertyDidChange(QtnPropertyChangeReason)
 
 void QtnPropertyDelegateSlideBox::onAnimationChanged(const QVariant &value)
 {
-	m_dragValuePart = value.toFloat();
+	m_dragValuePart = value.toDouble();
 	if (m_animateWidget)
 		m_animateWidget->update();
 }
