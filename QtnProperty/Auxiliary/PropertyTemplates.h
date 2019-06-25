@@ -67,7 +67,7 @@ public:
 
 		emit propertyWillChange(reason, QtnPropertyValuePtr(&newValue),
 			qMetaTypeId<ValueTypeStore>());
-		setValueImpl(newValue);
+		setValueImpl(newValue, reason);
 		emit propertyDidChange(reason);
 
 		return true;
@@ -116,7 +116,7 @@ protected:
 	}
 
 	virtual ValueType valueImpl() const = 0;
-	virtual void setValueImpl(ValueType newValue) = 0;
+	virtual void setValueImpl(ValueType newValue, QtnPropertyChangeReason reason) = 0;
 	virtual bool isValueAcceptedImpl(ValueType)
 	{
 		return true;
@@ -199,7 +199,7 @@ protected:
 		return m_value;
 	}
 
-	void setValueImpl(ValueType newValue) override
+	void setValueImpl(ValueType newValue, QtnPropertyChangeReason /*reason*/) override
 	{
 		m_value = newValue;
 	}
@@ -218,7 +218,7 @@ public:
 	typedef typename QtnSinglePropertyType::ValueTypeStore ValueTypeStore;
 
 	typedef std::function<ValueTypeStore()> CallbackValueGet;
-	typedef std::function<void(ValueType)> CallbackValueSet;
+	typedef std::function<void(ValueType, QtnPropertyChangeReason)> CallbackValueSet;
 	typedef std::function<bool(ValueType)> CallbackValueAccepted;
 	typedef std::function<bool(ValueType)> CallbackValueEqual;
 
@@ -286,10 +286,10 @@ protected:
 		return m_callbackValueGet();
 	}
 
-	virtual void setValueImpl(ValueType newValue) override
+	virtual void setValueImpl(ValueType newValue, QtnPropertyChangeReason reason) override
 	{
 		Q_ASSERT(m_callbackValueSet);
-		m_callbackValueSet(newValue);
+		m_callbackValueSet(newValue, reason);
 	}
 
 	virtual bool isValueAcceptedImpl(ValueType valueToAccept) override
@@ -501,7 +501,7 @@ inline void qtnMakePercentProperty(T *dProp,
 	if (prevSet)
 	{
 		dProp->setCallbackValueSet(
-			[prevSet](ValueType value) { prevSet(value / 100.0); });
+			[prevSet](ValueType value, QtnPropertyChangeReason reason) { prevSet(value / 100.0, reason); });
 	}
 
 	auto prevDefault = dProp->callbackValueDefault();
@@ -555,7 +555,7 @@ protected:
 		return m_value;
 	}
 
-	virtual void setValueImpl(ValueType newValue) override
+	virtual void setValueImpl(ValueType newValue, QtnPropertyChangeReason /*reason*/) override
 	{
 		m_value = newValue;
 	}

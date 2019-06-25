@@ -77,10 +77,10 @@ FIELD_PROP_T *qtnCreateFieldProperty(QtnSinglePropertyBase<VALUE_T> *property,
 			property->value(), getter);
 	});
 	result->setCallbackValueSet(
-		[property, setter](CallbackValueType new_value) {
+		[property, setter](CallbackValueType new_value, QtnPropertyChangeReason reason) {
 			auto v = property->value();
 			qtnSetFieldValue(v, setter, new_value);
-			property->setValue(v);
+			property->setValue(v, reason);
 		});
 
 	if (!property->isQObjectProperty() && property->isResettable())

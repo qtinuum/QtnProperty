@@ -88,11 +88,11 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(
 						return owner.value() & enumValue;
 					});
 				flagProperty->setCallbackValueSet(
-					[&owner, enumValue](bool value) {
+					[&owner, enumValue](bool value, QtnPropertyChangeReason reason) {
 						if (value)
-							owner.setValue(owner.value() | enumValue);
+							owner.setValue(owner.value() | enumValue, reason);
 						else
-							owner.setValue(owner.value() & ~enumValue);
+							owner.setValue(owner.value() & ~enumValue, reason);
 					});
 
 				addSubProperty(flagProperty);
