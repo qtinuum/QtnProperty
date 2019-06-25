@@ -467,10 +467,8 @@ class QtnPropertyQStringListComboBoxHandler
 	: public QtnPropertyEditorHandlerVT<QtnPropertyQStringBase, QComboBox>
 {
 public:
-	QtnPropertyQStringListComboBoxHandler(
-		QtnPropertyDelegate *delegate, QComboBox &editor);
-
-	void applyAttributes(const QtnPropertyDelegateInfo &info);
+	QtnPropertyQStringListComboBoxHandler(QtnPropertyDelegate *delegate,
+		QComboBox &editor, const QtnPropertyDelegateInfo &info);
 
 private:
 	virtual void updateEditor() override;
@@ -504,8 +502,9 @@ QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
 	QComboBox *editor = new QComboBox(parent);
 	editor->setGeometry(rect);
 
-	auto handler = new QtnPropertyQStringListComboBoxHandler(this, *editor);
-	handler->applyAttributes(m_editorAttributes);
+	auto handler = new QtnPropertyQStringListComboBoxHandler(
+		this, *editor, m_editorAttributes);
+	Q_UNUSED(handler);
 
 	if (inplaceInfo && stateProperty()->isEditableByUser())
 	{
@@ -516,30 +515,26 @@ QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
 }
 
 QtnPropertyQStringListComboBoxHandler::QtnPropertyQStringListComboBoxHandler(
-	QtnPropertyDelegate *delegate, QComboBox &editor)
-	: QtnPropertyEditorHandlerVT(delegate, editor)
-{
-	updateEditor();
-
-	QObject::connect(&editor, &QComboBox::currentTextChanged, this,
-		&QtnPropertyQStringListComboBoxHandler::onValueChanged);
-}
-
-void QtnPropertyQStringListComboBoxHandler::applyAttributes(
+	QtnPropertyDelegate *delegate, QComboBox &editor,
 	const QtnPropertyDelegateInfo &info)
+	: QtnPropertyEditorHandlerVT(delegate, editor)
 {
 	bool editable = false;
 	info.loadAttribute(qtnEditableAttr(), editable);
 	QStringList items;
 	info.loadAttribute(qtnItemsAttr(), items);
 
-	editor().clear();
-	editor().addItems(items);
-	editor().setEditable(editable);
-	editor().setAutoCompletion(false);
+	editor.clear();
+	editor.addItems(items);
+	editor.setEditable(editable);
+	editor.setAutoCompletion(false);
 
 	if (editable)
-		editor().installEventFilter(this);
+		editor.installEventFilter(this);
+	updateEditor();
+
+	QObject::connect(&editor, &QComboBox::currentTextChanged, this,
+		&QtnPropertyQStringListComboBoxHandler::onValueChanged);
 }
 
 void QtnPropertyQStringListComboBoxHandler::updateEditor()
@@ -560,6 +555,8 @@ void QtnPropertyQStringListComboBoxHandler::updateEditor()
 	} else
 	{
 		editor().setCurrentText(property());
+		if (editor().currentText() != property().value())
+			editor().setCurrentIndex(-1);
 		if (lineEdit)
 		{
 			lineEdit->setPlaceholderText(QString());
