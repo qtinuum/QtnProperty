@@ -133,7 +133,7 @@ property_set Test3 {
 
         callbackValueEqual = [](bool)->bool { return false; };
 
-        callbackValueSet = [this](bool value) {
+        callbackValueSet = [this](bool value, QtnPropertyChangeReason /*reason*/) {
             m_s = value;
         };
     }
@@ -179,7 +179,7 @@ property_set AllPropertyTypes
     BoolCallback bpc
     {
         callbackValueGet = [this]() { return _b; };
-        callbackValueSet = [this](bool v) { _b = v; };
+        callbackValueSet = [this](bool v, QtnPropertyChangeReason /*reason*/) { _b = v; };
         id = 15;
     }
 
@@ -187,7 +187,7 @@ property_set AllPropertyTypes
     IntCallback ipc
     {
         callbackValueGet = [this]() { return _i; };
-        callbackValueSet = [this](qint32 v) { _i =v; };
+        callbackValueSet = [this](qint32 v, QtnPropertyChangeReason /*reason*/) { _i =v; };
         id = 17;
     }
 
@@ -195,7 +195,7 @@ property_set AllPropertyTypes
     UIntCallback upc
     {
         callbackValueGet = [this]() { return _ui; };
-        callbackValueSet = [this](quint32 v) { _ui = v; };
+        callbackValueSet = [this](quint32 v, QtnPropertyChangeReason /*reason*/) { _ui = v; };
         id = 19;
     }
 
@@ -203,7 +203,7 @@ property_set AllPropertyTypes
     FloatCallback fpc
     {
         callbackValueGet = [this]() { return _f; };
-        callbackValueSet = [this](float v) { _f = v; };
+        callbackValueSet = [this](float v, QtnPropertyChangeReason /*reason*/) { _f = v; };
         id = 21;
     }
 
@@ -211,7 +211,7 @@ property_set AllPropertyTypes
     DoubleCallback dpc
     {
         callbackValueGet = [this]() { return _d; };
-        callbackValueSet = [this](double v) { _d = v; };
+        callbackValueSet = [this](double v, QtnPropertyChangeReason /*reason*/) { _d = v; };
         id = 23;
     }
 
@@ -219,7 +219,7 @@ property_set AllPropertyTypes
     QStringCallback spc
     {
         callbackValueGet = [this]() { return _s; };
-        callbackValueSet = [this](QString v) { _s = v; };
+        callbackValueSet = [this](QString v, QtnPropertyChangeReason /*reason*/) { _s = v; };
         id = 25;
     }
 
@@ -227,7 +227,7 @@ property_set AllPropertyTypes
     QRectCallback rpc
     {
         callbackValueGet = [this]() { return _r; };
-        callbackValueSet = [this](QRect v) { _r = v; };
+        callbackValueSet = [this](QRect v, QtnPropertyChangeReason /*reason*/) { _r = v; };
         id = 27;
     }
 
@@ -235,7 +235,7 @@ property_set AllPropertyTypes
     QPointCallback ppc
     {
         callbackValueGet = [this]() { return _p; };
-        callbackValueSet = [this](QPoint v) { _p = v; };
+        callbackValueSet = [this](QPoint v, QtnPropertyChangeReason /*reason*/) { _p = v; };
         id = 29;
     }
 
@@ -243,7 +243,7 @@ property_set AllPropertyTypes
     QSizeCallback szpc
     {
         callbackValueGet = [this]() { return _sz; };
-        callbackValueSet = [this](QSize v) { _sz = v; };
+        callbackValueSet = [this](QSize v, QtnPropertyChangeReason /*reason*/) { _sz = v; };
         id = 31;
     }
 
@@ -257,7 +257,7 @@ property_set AllPropertyTypes
     {
         enumInfo = &COLOR::info();
         callbackValueGet = [this]() { return _e; };
-        callbackValueSet = [this](QtnEnumValueType v) { _e = v; };
+        callbackValueSet = [this](QtnEnumValueType v, QtnPropertyChangeReason /*reason*/) { _e = v; };
         id = 33;
     }
 
@@ -271,7 +271,7 @@ property_set AllPropertyTypes
     {
         enumInfo = &MASK::info();
         callbackValueGet = [this]() { return _ef; };
-        callbackValueSet = [this](QtnEnumFlagsValueType v) { _ef = v; };
+        callbackValueSet = [this](QtnEnumFlagsValueType v, QtnPropertyChangeReason /*reason*/) { _ef = v; };
         id = 35;
     }
 
@@ -283,7 +283,7 @@ property_set AllPropertyTypes
     QColorCallback cpc
     {
         callbackValueGet = [this]() { return _cl; };
-        callbackValueSet = [this](QColor v) { _cl = v; };
+        callbackValueSet = [this](QColor v, QtnPropertyChangeReason /*reason*/) { _cl = v; };
         id = 37;
     }
 
@@ -295,7 +295,7 @@ property_set AllPropertyTypes
     QFontCallback fnpc
     {
         callbackValueGet = [this]() { return _fn; };
-        callbackValueSet = [this](QFont v) { _fn = v; };
+        callbackValueSet = [this](QFont v, QtnPropertyChangeReason /*reason*/) { _fn = v; };
         id = 39;
     }
     
@@ -308,7 +308,7 @@ property_set AllPropertyTypes
     QPointFCallback ppfc
     {
         callbackValueGet = [this]() { return _pf; };
-        callbackValueSet = [this](QPointF v) { _pf = v; };
+        callbackValueSet = [this](QPointF v, QtnPropertyChangeReason /*reason*/) { _pf = v; };
         id = 42;
     }
 
@@ -316,7 +316,7 @@ property_set AllPropertyTypes
     QRectFCallback rpfc
     {
         callbackValueGet = [this]() { return _rf; };
-        callbackValueSet = [this](QRectF v) { _rf = v; };
+        callbackValueSet = [this](QRectF v, QtnPropertyChangeReason /*reason*/) { _rf = v; };
         id = 44;
     }
     
@@ -324,7 +324,7 @@ property_set AllPropertyTypes
     QSizeFCallback szpfc
     {
         callbackValueGet = [this]() { return _szf; };
-        callbackValueSet = [this](QSizeF v) { _szf = v; };
+        callbackValueSet = [this](QSizeF v, QtnPropertyChangeReason /*reason*/) { _szf = v; };
         id = 46;
     }
 

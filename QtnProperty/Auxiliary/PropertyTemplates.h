@@ -501,7 +501,7 @@ inline void qtnMakePercentProperty(T *dProp,
 	if (prevSet)
 	{
 		dProp->setCallbackValueSet(
-			[prevSet](ValueType value) { prevSet(value / 100.0); });
+			[prevSet](ValueType value, QtnPropertyChangeReason reason) { prevSet(value / 100.0, reason); });
 	}
 
 	auto prevDefault = dProp->callbackValueDefault();
