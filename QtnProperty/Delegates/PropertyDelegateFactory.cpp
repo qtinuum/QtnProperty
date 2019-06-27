@@ -42,6 +42,7 @@ limitations under the License.
 #include "QtnProperty/PropertyQKeySequence.h"
 #include "QtnProperty/PropertyInt64.h"
 #include "QtnProperty/PropertyUInt64.h"
+#include "MultiProperty.h"
 
 #include <QDebug>
 
@@ -248,6 +249,7 @@ void QtnPropertyDelegateFactory::registerDefaultDelegates(
 	QtnPropertyDelegateQPen::Register(factory);
 	QtnPropertyDelegateQBrushStyle::Register(factory);
 	QtnPropertyDelegateQKeySequence::Register(factory);
+	QtnMultiPropertyDelegate::Register(factory);
 }
 
 static QScopedPointer<QtnPropertyDelegateFactory> _staticInstance;

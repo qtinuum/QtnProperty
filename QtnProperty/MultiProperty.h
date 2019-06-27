@@ -101,7 +101,7 @@ public:
 	QtnMultiPropertyDelegate(QtnMultiProperty &owner);
 	virtual ~QtnMultiPropertyDelegate() override;
 
-	void Register(QtnPropertyDelegateFactory &factory);
+	static void Register(QtnPropertyDelegateFactory &factory);
 
 private:
 	virtual void init() override;
