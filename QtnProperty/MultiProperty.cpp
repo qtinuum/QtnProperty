@@ -20,7 +20,6 @@ limitations under the License.
 #include "Property.h"
 #include "PropertySet.h"
 #include "PropertyConnector.h"
-#include "QObjectPropertySet.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Utils/QtnConnections.h"
 
@@ -399,7 +398,7 @@ void QtnMultiPropertyDelegate::init()
 					multiSet = it->data()->asPropertySet();
 				}
 
-				qtnPropertiesToMultiSet(multiSet, subSet);
+				qtnPropertiesToMultiSet(multiSet, subSet, false);
 			} else
 			{
 				QtnMultiProperty *multiProperty;
@@ -578,4 +577,68 @@ void QtnMultiPropertyDelegate::createSubItemsImpl(
 			return true;
 		};
 	}
+}
+
+void qtnPropertiesToMultiSet(
+	QtnPropertySet *target, QtnPropertySet *source, bool takeOwnership)
+{
+	Q_ASSERT(target);
+	Q_ASSERT(source);
+
+	auto &targetProperties = target->childProperties();
+	for (auto property : source->childProperties())
+	{
+		auto it = std::find_if(targetProperties.begin(), targetProperties.end(),
+			[property](const QtnPropertyBase *targetProperty) -> bool {
+				return property->propertyMetaObject() ==
+					targetProperty->propertyMetaObject() &&
+					property->displayName() == targetProperty->displayName();
+			});
+
+		auto subSet = property->asPropertySet();
+		if (subSet)
+		{
+			QtnPropertySet *multiSet;
+
+			if (it == targetProperties.end())
+			{
+				multiSet = new QtnPropertySet(
+					subSet->childrenOrder(), subSet->compareFunc());
+				multiSet->setName(subSet->name());
+				multiSet->setDisplayName(subSet->displayName());
+				multiSet->setDescription(subSet->description());
+				multiSet->setId(subSet->id());
+				multiSet->setState(subSet->stateLocal());
+
+				target->addChildProperty(multiSet, true);
+			} else
+			{
+				multiSet = (*it)->asPropertySet();
+			}
+
+			qtnPropertiesToMultiSet(multiSet, subSet, takeOwnership);
+		} else
+		{
+			QtnMultiProperty *multiProperty;
+
+			if (it == targetProperties.end())
+			{
+				multiProperty = new QtnMultiProperty(property->metaObject());
+				multiProperty->setName(property->name());
+				multiProperty->setDisplayName(property->displayName());
+				multiProperty->setDescription(property->description());
+				multiProperty->setId(property->id());
+
+				target->addChildProperty(multiProperty, true);
+			} else
+			{
+				Q_ASSERT(qobject_cast<QtnMultiProperty *>(*it));
+				multiProperty = static_cast<QtnMultiProperty *>(*it);
+			}
+
+			multiProperty->addProperty(property->asProperty(), takeOwnership);
+		}
+	}
+	if (takeOwnership)
+		source->clearChildProperties();
 }
