@@ -399,7 +399,7 @@ void QtnMultiPropertyDelegate::init()
 					multiSet = it->data()->asPropertySet();
 				}
 
-				qtnPropertiesToMultiSet(multiSet, subSet, false);
+				qtnPropertiesToMultiSet(multiSet, subSet);
 			} else
 			{
 				QtnMultiProperty *multiProperty;
