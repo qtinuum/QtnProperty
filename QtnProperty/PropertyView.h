@@ -160,6 +160,7 @@ private:
 
 	void onPropertyDidChange(QtnPropertyChangeReason reason);
 	void onPropertySetDestroyed();
+	void updateWithReason(QtnPropertyChangeReason reason);
 
 	Item *findItem(Item *currentItem, const QtnPropertyBase *property) const;
 
@@ -186,6 +187,8 @@ private:
 
 	float m_splitRatio;
 	QRubberBand *m_rubberBand;
+	QtnPropertyChangeReason m_lastChangeReason;
+	bool m_stopInvalidate;
 	bool m_mouseAtSplitter;
 	QCursor m_oldCursor;
 

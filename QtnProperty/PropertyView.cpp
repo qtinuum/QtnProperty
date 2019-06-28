@@ -78,6 +78,8 @@ QtnPropertyView::QtnPropertyView(QWidget *parent, QtnPropertySet *propertySet)
 	, m_valueLeftMargin(0)
 	, m_splitRatio(0.5f)
 	, m_rubberBand(nullptr)
+	, m_lastChangeReason(0)
+	, m_stopInvalidate(false)
 	, m_mouseAtSplitter(false)
 	, m_accessibilityProxy(nullptr)
 {
@@ -749,11 +751,16 @@ bool QtnPropertyView::handleEvent(
 	if (!vItem.subItemsValid)
 		return false;
 
+	Q_ASSERT(!m_stopInvalidate);
+	m_stopInvalidate = true;
+	m_lastChangeReason = QtnPropertyChangeReason(0);
+	bool result;
 	// process event
 	if (m_grabMouseSubItem)
-		return m_grabMouseSubItem->event(context);
+		result = m_grabMouseSubItem->event(context);
 	else
 	{
+		result = false;
 		// update list of sub items under cursor
 		QList<QtnSubItem *> activeSubItems;
 
@@ -780,11 +787,19 @@ bool QtnPropertyView::handleEvent(
 		for (auto activeSubItem : m_activeSubItems)
 		{
 			if (activeSubItem->event(context))
-				return true;
+			{
+				result = true;
+				break;
+			}
 		}
 	}
+	m_stopInvalidate = false;
+	if (m_lastChangeReason)
+	{
+		updateWithReason(m_lastChangeReason);
+	}
 
-	return false;
+	return result;
 }
 
 QtnPropertyView::Item::Item()
@@ -1078,15 +1093,12 @@ void QtnPropertyView::onPropertyDidChange(QtnPropertyChangeReason reason)
 	if (!reason)
 		return;
 
-	if (reason & QtnPropertyChangeReasonChildren)
+	if (m_stopInvalidate)
 	{
-		updateItemsTree();
-	} else if (reason & QtnPropertyChangeReasonState)
-	{
-		invalidateVisibleItems();
+		m_lastChangeReason |= reason;
 	} else
 	{
-		viewport()->update();
+		updateWithReason(reason);
 	}
 
 	emit propertiesChanged(reason);
@@ -1124,6 +1136,20 @@ void QtnPropertyView::onPropertySetDestroyed()
 {
 	m_propertySet = nullptr;
 	updateItemsTree();
+}
+
+void QtnPropertyView::updateWithReason(QtnPropertyChangeReason reason)
+{
+	if (reason & QtnPropertyChangeReasonChildren)
+	{
+		updateItemsTree();
+	} else if (reason & QtnPropertyChangeReasonState)
+	{
+		invalidateVisibleItems();
+	} else
+	{
+		viewport()->update();
+	}
 }
 
 QtnPainterState::QtnPainterState(QPainter &p)
