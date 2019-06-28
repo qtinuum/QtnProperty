@@ -794,10 +794,7 @@ bool QtnPropertyView::handleEvent(
 		}
 	}
 	m_stopInvalidate = false;
-	if (m_lastChangeReason)
-	{
-		updateWithReason(m_lastChangeReason);
-	}
+	updateWithReason(m_lastChangeReason);
 
 	return result;
 }
