@@ -42,6 +42,7 @@ QtnMultiProperty::QtnMultiProperty(
 	, calculateMultipleValues(true)
 	, multipleValues(false)
 {
+	setDelegateInfo(QtnPropertyDelegateInfo());
 }
 
 QtnMultiProperty::~QtnMultiProperty()
@@ -192,6 +193,24 @@ bool QtnMultiProperty::saveImpl(QDataStream &stream) const
 	}
 
 	return true;
+}
+
+void QtnMultiProperty::masterPropertyWillChange(QtnPropertyChangeReason reason)
+{
+	if (m_subPropertyUpdates)
+		return;
+	QtnProperty::masterPropertyWillChange(reason);
+}
+
+void QtnMultiProperty::masterPropertyDidChange(QtnPropertyChangeReason reason)
+{
+	if (m_subPropertyUpdates)
+		return;
+	if (reason & (QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue))
+	{
+		updateMultipleState(true);
+	}
+	QtnProperty::masterPropertyDidChange(reason);
 }
 
 bool QtnMultiProperty::fromStrImpl(
@@ -365,63 +384,6 @@ void QtnMultiPropertyDelegate::init()
 		auto delegate = factory()->createDelegate(*property);
 		delegate->setStateProperty(&owner());
 		superDelegates.emplace_back(delegate);
-
-		for (int i = 0, count = delegate->subPropertyCount(); i < count; ++i)
-		{
-			auto property = delegate->subProperty(i);
-			auto it = std::find_if(m_subProperties.begin(),
-				m_subProperties.end(),
-				[property](const QScopedPointer<QtnPropertyBase> &a) -> bool {
-					return property->propertyMetaObject() ==
-						a->propertyMetaObject() &&
-						property->displayName() == a->displayName();
-				});
-
-			auto subSet = property->asPropertySet();
-			if (subSet)
-			{
-				QtnPropertySet *multiSet;
-
-				if (it == m_subProperties.end())
-				{
-					multiSet = new QtnPropertySet(
-						subSet->childrenOrder(), subSet->compareFunc());
-					multiSet->setName(subSet->name());
-					multiSet->setDisplayName(subSet->displayName());
-					multiSet->setDescription(subSet->description());
-					multiSet->setId(subSet->id());
-					multiSet->setState(subSet->stateLocal());
-
-					addSubProperty(multiSet);
-				} else
-				{
-					multiSet = it->data()->asPropertySet();
-				}
-
-				qtnPropertiesToMultiSet(multiSet, subSet, false);
-			} else
-			{
-				QtnMultiProperty *multiProperty;
-
-				if (it == m_subProperties.end())
-				{
-					multiProperty =
-						new QtnMultiProperty(property->metaObject());
-					multiProperty->setName(property->name());
-					multiProperty->setDisplayName(property->displayName());
-					multiProperty->setDescription(property->description());
-					multiProperty->setId(property->id());
-
-					addSubProperty(multiProperty);
-				} else
-				{
-					Q_ASSERT(qobject_cast<QtnMultiProperty *>(it->data()));
-					multiProperty = static_cast<QtnMultiProperty *>(it->data());
-				}
-
-				multiProperty->addProperty(property->asProperty(), false);
-			}
-		}
 	}
 }
 
@@ -501,10 +463,80 @@ void QtnMultiPropertyDelegate::applyAttributesImpl(
 {
 	for (auto &delegate : superDelegates)
 	{
-		auto delegateInfo = delegate->propertyImmutable()->delegateInfo();
-		if (delegateInfo)
-			delegate->applyAttributes(*delegateInfo);
-		delegate->applyAttributes(info); // override base attributes
+		QtnPropertyDelegateInfo mergedInfo;
+		mergedInfo.attributes = info.attributes;
+		auto delegateInfoPtr = delegate->propertyImmutable()->delegateInfo();
+		if (delegateInfoPtr)
+		{
+			mergedInfo.name = delegateInfoPtr->name;
+			auto &attributes = delegateInfoPtr->attributes;
+			for (auto it = attributes.cbegin(); it != attributes.cend(); ++it)
+			{
+				auto rootIt = mergedInfo.attributes.find(it.key());
+				if (rootIt != mergedInfo.attributes.end())
+					continue;
+
+				mergedInfo.attributes[it.key()] = it.value();
+			}
+		}
+		delegate->applyAttributes(mergedInfo);
+
+		for (int i = 0, count = delegate->subPropertyCount(); i < count; ++i)
+		{
+			auto property = delegate->subProperty(i);
+			auto it = std::find_if(m_subProperties.begin(),
+				m_subProperties.end(),
+				[property](const QScopedPointer<QtnPropertyBase> &a) -> bool {
+					return property->propertyMetaObject() ==
+						a->propertyMetaObject() &&
+						property->displayName() == a->displayName();
+				});
+
+			auto subSet = property->asPropertySet();
+			if (subSet)
+			{
+				QtnPropertySet *multiSet;
+
+				if (it == m_subProperties.end())
+				{
+					multiSet = new QtnPropertySet(
+						subSet->childrenOrder(), subSet->compareFunc());
+					multiSet->setName(subSet->name());
+					multiSet->setDisplayName(subSet->displayName());
+					multiSet->setDescription(subSet->description());
+					multiSet->setId(subSet->id());
+					multiSet->setState(subSet->stateLocal());
+
+					addSubProperty(multiSet);
+				} else
+				{
+					multiSet = it->data()->asPropertySet();
+				}
+
+				qtnPropertiesToMultiSet(multiSet, subSet, false);
+			} else
+			{
+				QtnMultiProperty *multiProperty;
+
+				if (it == m_subProperties.end())
+				{
+					multiProperty =
+						new QtnMultiProperty(property->metaObject());
+					multiProperty->setName(property->name());
+					multiProperty->setDisplayName(property->displayName());
+					multiProperty->setDescription(property->description());
+					multiProperty->setId(property->id());
+
+					addSubProperty(multiProperty);
+				} else
+				{
+					Q_ASSERT(qobject_cast<QtnMultiProperty *>(it->data()));
+					multiProperty = static_cast<QtnMultiProperty *>(it->data());
+				}
+
+				multiProperty->addProperty(property->asProperty(), false);
+			}
+		}
 	}
 }
 

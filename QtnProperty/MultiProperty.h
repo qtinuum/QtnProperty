@@ -60,6 +60,10 @@ protected:
 	virtual void doReset(QtnPropertyChangeReason reason) override;
 	virtual bool loadImpl(QDataStream &stream) override;
 	virtual bool saveImpl(QDataStream &stream) const override;
+	virtual void masterPropertyWillChange(
+		QtnPropertyChangeReason reason) override;
+	virtual void masterPropertyDidChange(
+		QtnPropertyChangeReason reason) override;
 
 	virtual bool fromStrImpl(
 		const QString &str, QtnPropertyChangeReason reason) override;
