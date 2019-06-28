@@ -226,7 +226,7 @@ void QtnPropertyDelegateWithValues::addSubItemBranchNode(
 		painter.setPen(outlineClr);
 
 		QPainterPath branchPath;
-		if (propertyImmutable()->isCollapsed())
+		if (stateProperty()->isCollapsed())
 		{
 			branchPath.moveTo(
 				branchRect.left() + side, branchRect.top() + side);
@@ -266,7 +266,7 @@ void QtnPropertyDelegateWithValues::addSubItemBranchNode(
 		if ((context.eventType() == QEvent::MouseButtonPress) ||
 			(context.eventType() == QEvent::MouseButtonDblClick))
 		{
-			property()->toggleState(QtnPropertyStateCollapsed);
+			stateProperty()->toggleState(QtnPropertyStateCollapsed);
 			return true;
 		}
 
@@ -275,7 +275,7 @@ void QtnPropertyDelegateWithValues::addSubItemBranchNode(
 
 	brItem.tooltipHandler = [this](QtnEventContext &,
 								const QtnSubItem &) -> QString {
-		return (property()->isCollapsed())
+		return (stateProperty()->isCollapsed())
 			? QtnPropertyView::tr("Click to expand")
 			: QtnPropertyView::tr("Click to collapse");
 	};

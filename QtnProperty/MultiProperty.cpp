@@ -79,6 +79,8 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 
 	properties.push_back(property);
 
+	if (property->isCollapsed())
+		collapse();
 	updateStateFrom(property);
 
 	QObject::connect(property, &QtnProperty::propertyValueAccept, this,
@@ -318,8 +320,10 @@ bool QtnMultiProperty::toVariantImpl(QVariant &var) const
 
 void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 {
-	auto state = stateLocal() & QtnPropertyStateMultiValue;
-	state |= source->stateLocal();
+	static const QtnPropertyState unchangedState(QtnPropertyStateMultiValue |
+		QtnPropertyStateCollapsed | QtnPropertyStateModifiedValue);
+	auto state = stateLocal() & unchangedState;
+	state |= source->stateLocal() & ~unchangedState;
 
 	state &= ~(QtnPropertyStateImmutable | QtnPropertyStateResettable |
 		QtnPropertyStateInvisible);
