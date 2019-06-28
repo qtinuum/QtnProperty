@@ -79,7 +79,7 @@ QtnPropertyView::QtnPropertyView(QWidget *parent, QtnPropertySet *propertySet)
 	, m_splitRatio(0.5f)
 	, m_rubberBand(nullptr)
 	, m_lastChangeReason(0)
-	, m_stopInvalidate(false)
+	, m_stopInvalidate(0)
 	, m_mouseAtSplitter(false)
 	, m_accessibilityProxy(nullptr)
 {
@@ -751,9 +751,8 @@ bool QtnPropertyView::handleEvent(
 	if (!vItem.subItemsValid)
 		return false;
 
-	Q_ASSERT(!m_stopInvalidate);
-	m_stopInvalidate = true;
-	m_lastChangeReason = QtnPropertyChangeReason(0);
+	if (0 == m_stopInvalidate++)
+		m_lastChangeReason = QtnPropertyChangeReason(0);
 	bool result;
 	// process event
 	if (m_grabMouseSubItem)
@@ -793,8 +792,8 @@ bool QtnPropertyView::handleEvent(
 			}
 		}
 	}
-	m_stopInvalidate = false;
-	updateWithReason(m_lastChangeReason);
+	if (--m_stopInvalidate == 0)
+		updateWithReason(m_lastChangeReason);
 
 	return result;
 }
