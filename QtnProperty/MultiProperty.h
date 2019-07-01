@@ -82,6 +82,7 @@ private:
 	const QMetaObject *mPropertyMetaObject;
 	unsigned m_subPropertyUpdates;
 
+	bool edited;
 	bool calculateMultipleValues;
 	bool multipleValues;
 
@@ -111,11 +112,6 @@ private:
 
 	struct PropertyToEdit;
 
-	static void onEditedPropertyWillChange(PropertyToEdit *data,
-		QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue,
-		int typeId);
-	static void onEditedPropertyDidChange(
-		PropertyToEdit *data, QtnPropertyChangeReason reason);
 	static void onEditedPropertyDestroyed(PropertyToEdit *data);
 	static void onEditorDestroyed(PropertyToEdit *data);
 

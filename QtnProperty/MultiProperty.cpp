@@ -39,6 +39,7 @@ QtnMultiProperty::QtnMultiProperty(
 	: QtnProperty(parent)
 	, mPropertyMetaObject(propertyMetaObject)
 	, m_subPropertyUpdates(0)
+	, edited(false)
 	, calculateMultipleValues(true)
 	, multipleValues(false)
 {
@@ -156,10 +157,28 @@ void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 	if (m_subPropertyUpdates)
 		return;
 
+	Q_ASSERT(nullptr != qobject_cast<QtnProperty *>(sender()));
+	auto changedProperty = static_cast<QtnProperty *>(sender());
+	if (edited && (reason & QtnPropertyChangeReasonEditValue))
+	{
+		auto value = changedProperty->valueAsVariant();
+
+		auto singleReason = reason & ~QtnPropertyChangeReasonEditMultiValue;
+
+		m_subPropertyUpdates++;
+		for (auto property : properties)
+		{
+			if (property != changedProperty && property->isEditableByUser())
+			{
+				property->fromVariant(value, singleReason);
+			}
+		}
+		m_subPropertyUpdates--;
+	}
+
 	if (reason & (QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue))
 	{
-		Q_ASSERT(nullptr != qobject_cast<QtnProperty *>(sender()));
-		updateStateFrom(static_cast<QtnProperty *>(sender()));
+		updateStateFrom(changedProperty);
 		updateMultipleState(true);
 	}
 
@@ -403,62 +422,22 @@ void QtnMultiPropertyDelegate::Register(QtnPropertyDelegateFactory &factory)
 		"MultiProperty");
 }
 
-void QtnMultiPropertyDelegate::onEditedPropertyWillChange(PropertyToEdit *data,
-	QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
-{
-	Q_ASSERT(nullptr != data);
-	if (data->owner->m_subPropertyUpdates)
-		return;
-
-	auto owner = data->owner;
-	Q_ASSERT(nullptr != owner);
-
-	emit owner->propertyWillChange(reason, newValue, typeId);
-}
-
-void QtnMultiPropertyDelegate::onEditedPropertyDidChange(
-	PropertyToEdit *data, QtnPropertyChangeReason reason)
-{
-	Q_ASSERT(nullptr != data);
-	auto owner = data->owner;
-	Q_ASSERT(nullptr != owner);
-	if (owner->m_subPropertyUpdates)
-		return;
-
-	if (0 != (reason & QtnPropertyChangeReasonEditValue))
-	{
-		auto editedProperty = data->property;
-		Q_ASSERT(nullptr != editedProperty);
-
-		auto value = editedProperty->valueAsVariant();
-
-		auto singleReason = reason & ~QtnPropertyChangeReasonEditMultiValue;
-
-		owner->m_subPropertyUpdates++;
-		for (auto property : owner->properties)
-		{
-			if (property != editedProperty && property->isEditableByUser())
-			{
-				property->fromVariant(value, singleReason);
-			}
-		}
-		owner->m_subPropertyUpdates--;
-	}
-
-	owner->updateMultipleState(true);
-
-	emit owner->propertyDidChange(reason);
-}
-
 void QtnMultiPropertyDelegate::onEditedPropertyDestroyed(PropertyToEdit *data)
 {
 	Q_ASSERT(nullptr != data);
+	data->owner = nullptr;
 	data->property = nullptr;
 	data->connections.clear();
 }
 
 void QtnMultiPropertyDelegate::onEditorDestroyed(PropertyToEdit *data)
 {
+	auto multiProperty = data->owner;
+	if (multiProperty)
+	{
+		multiProperty->edited = false;
+	}
+
 	delete data;
 }
 
@@ -578,19 +557,10 @@ void QtnMultiPropertyDelegate::createSubItemsImpl(
 					auto data = new PropertyToEdit;
 					data->owner = &p;
 					data->property = propertyToEdit;
+					p.edited = true;
 
 					using namespace std::placeholders;
 
-					data->connections.emplace_back(QObject::connect(
-						propertyToEdit, &QtnProperty::propertyWillChange,
-						std::bind(&QtnMultiPropertyDelegate::
-									  onEditedPropertyWillChange,
-							data, _1, _2, _3)));
-					data->connections.emplace_back(QObject::connect(
-						propertyToEdit, &QtnProperty::propertyDidChange,
-						std::bind(&QtnMultiPropertyDelegate::
-									  onEditedPropertyDidChange,
-							data, _1)));
 					data->connections.emplace_back(
 						QObject::connect(propertyToEdit, &QObject::destroyed,
 							std::bind(&QtnMultiPropertyDelegate::
