@@ -21,6 +21,7 @@ limitations under the License.
 #include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
 #include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
 
 #include <QStyleOption>
 #include <QCheckBox>
@@ -154,7 +155,7 @@ void QtnPropertyDelegateBoolCombobox::applyAttributesImpl(
 QWidget *QtnPropertyDelegateBoolCombobox::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	QComboBox *comboBox = new QComboBox(parent);
+	QComboBox *comboBox = new QtnPropertyComboBox(this, parent);
 	comboBox->addItem(m_labels[0], false);
 	comboBox->addItem(m_labels[1], true);
 

@@ -42,7 +42,6 @@ public:
 
 	bool hasMultipleValues() const;
 
-	static bool Register();
 	static QString getMultiValuePlaceholder();
 
 	inline const std::vector<QtnProperty *> &getProperties() const;
@@ -61,6 +60,10 @@ protected:
 	virtual void doReset(QtnPropertyChangeReason reason) override;
 	virtual bool loadImpl(QDataStream &stream) override;
 	virtual bool saveImpl(QDataStream &stream) const override;
+	virtual void masterPropertyWillChange(
+		QtnPropertyChangeReason reason) override;
+	virtual void masterPropertyDidChange(
+		QtnPropertyChangeReason reason) override;
 
 	virtual bool fromStrImpl(
 		const QString &str, QtnPropertyChangeReason reason) override;
@@ -79,6 +82,7 @@ private:
 	const QMetaObject *mPropertyMetaObject;
 	unsigned m_subPropertyUpdates;
 
+	bool edited;
 	bool calculateMultipleValues;
 	bool multipleValues;
 
@@ -108,11 +112,6 @@ private:
 
 	struct PropertyToEdit;
 
-	static void onEditedPropertyWillChange(PropertyToEdit *data,
-		QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue,
-		int typeId);
-	static void onEditedPropertyDidChange(
-		PropertyToEdit *data, QtnPropertyChangeReason reason);
 	static void onEditedPropertyDestroyed(PropertyToEdit *data);
 	static void onEditorDestroyed(PropertyToEdit *data);
 
@@ -127,6 +126,9 @@ private:
 	typedef std::unique_ptr<QtnPropertyDelegate> DelegatePtr;
 	std::vector<DelegatePtr> superDelegates;
 };
+
+QTN_IMPORT_EXPORT void qtnPropertiesToMultiSet(
+	QtnPropertySet *target, QtnPropertySet *source, bool takeOwnership);
 
 struct QtnMultiVariant
 {

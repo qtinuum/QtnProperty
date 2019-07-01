@@ -224,6 +224,7 @@ bool QtnPropertyBase::event(QEvent *e)
 
 QtnPropertyBase::~QtnPropertyBase()
 {
+	disconnectMasterState();
 	qtnRemovePropertyAsChild(parent(), this);
 }
 
@@ -655,9 +656,9 @@ void QtnPropertyBase::connectMasterState(QtnPropertyBase *masterProperty)
 	QObject::connect(masterProperty, &QObject::destroyed, this,
 		&QtnPropertyBase::onMasterPropertyDestroyed);
 	QObject::connect(masterProperty, &QtnPropertyBase::propertyWillChange, this,
-		&QtnPropertyBase::masterPropertyStateWillChange);
+		&QtnPropertyBase::masterPropertyWillChange);
 	QObject::connect(masterProperty, &QtnPropertyBase::propertyDidChange, this,
-		&QtnPropertyBase::masterPropertyStateDidChange);
+		&QtnPropertyBase::masterPropertyDidChange);
 }
 
 void QtnPropertyBase::disconnectMasterState()
@@ -668,10 +669,10 @@ void QtnPropertyBase::disconnectMasterState()
 			&QtnPropertyBase::onMasterPropertyDestroyed);
 		QObject::disconnect(m_masterProperty,
 			&QtnPropertyBase::propertyWillChange, this,
-			&QtnPropertyBase::masterPropertyStateWillChange);
+			&QtnPropertyBase::masterPropertyWillChange);
 		QObject::disconnect(m_masterProperty,
 			&QtnPropertyBase::propertyDidChange, this,
-			&QtnPropertyBase::masterPropertyStateDidChange);
+			&QtnPropertyBase::masterPropertyDidChange);
 
 		m_masterProperty = nullptr;
 	}
@@ -717,8 +718,7 @@ QtnPropertyState QtnPropertyBase::masterPropertyState() const
 		: m_masterProperty->stateInherited();
 }
 
-void QtnPropertyBase::masterPropertyStateWillChange(
-	QtnPropertyChangeReason reason)
+void QtnPropertyBase::masterPropertyWillChange(QtnPropertyChangeReason reason)
 {
 	if (reason & QtnPropertyChangeReasonState)
 	{
@@ -727,8 +727,7 @@ void QtnPropertyBase::masterPropertyStateWillChange(
 	}
 }
 
-void QtnPropertyBase::masterPropertyStateDidChange(
-	QtnPropertyChangeReason reason)
+void QtnPropertyBase::masterPropertyDidChange(QtnPropertyChangeReason reason)
 {
 	if (reason & QtnPropertyChangeReasonState)
 	{

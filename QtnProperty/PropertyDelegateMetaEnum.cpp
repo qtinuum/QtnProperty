@@ -20,6 +20,7 @@ limitations under the License.
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Property.h"
 #include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
 
 #include <QCoreApplication>
 #include <QComboBox>
@@ -121,7 +122,7 @@ QByteArray qtnTranslateAttribute()
 QWidget *QtnPropertyDelegateMetaEnum::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	QComboBox *combo = new QComboBox(parent);
+	QComboBox *combo = new QtnPropertyComboBox(this, parent);
 	for (int i = 0, count = mMetaEnum.keyCount(); i < count; i++)
 	{
 		combo->addItem(
