@@ -36,6 +36,8 @@ bool qtnStartInplaceEdit(QWidget *editor)
 	if (!editor)
 		return false;
 
+	Q_ASSERT(g_inplaceEditorRetainCount == 0);
+
 	if (g_inplaceEditor)
 	{
 		qtnStopInplaceEdit(false);

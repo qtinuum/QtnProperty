@@ -16,6 +16,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegate.h"
+#include "Utils/PropertyEditorHandler.h"
 
 QtnPropertyDelegate::QtnPropertyDelegate(QtnPropertyBase &ownerProperty)
 	: m_ownerProperty(&ownerProperty)
@@ -25,7 +26,8 @@ QtnPropertyDelegate::QtnPropertyDelegate(QtnPropertyBase &ownerProperty)
 
 QtnPropertyDelegate::~QtnPropertyDelegate()
 {
-	// do not remove
+	if (m_editorHandler)
+		m_editorHandler->cleanup();
 }
 
 void QtnPropertyDelegate::init()

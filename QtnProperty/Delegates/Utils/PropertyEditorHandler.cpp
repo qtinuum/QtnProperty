@@ -32,6 +32,8 @@ QtnPropertyEditorHandlerBase::QtnPropertyEditorHandlerBase(
 	, m_editor(&editor)
 {
 	Q_ASSERT(delegate);
+	Q_ASSERT(!delegate->m_editorHandler);
+	delegate->m_editorHandler = this;
 	auto property = delegate->property();
 	Q_ASSERT(property);
 	QObject::connect(property, &QtnPropertyBase::propertyDidChange, this,
@@ -53,6 +55,23 @@ void QtnPropertyEditorHandlerBase::revertInput()
 {
 	reverted = true;
 	updateEditor();
+}
+
+void QtnPropertyEditorHandlerBase::cleanup()
+{
+	if (m_delegate)
+	{
+		m_delegate->m_editorHandler = nullptr;
+		m_delegate = nullptr;
+	}
+	if (m_editor)
+		m_editor->removeEventFilter(this);
+	qtnStopInplaceEdit();
+}
+
+QtnPropertyEditorHandlerBase::~QtnPropertyEditorHandlerBase()
+{
+	cleanup();
 }
 
 bool QtnPropertyEditorHandlerBase::eventFilter(QObject *obj, QEvent *event)
@@ -126,8 +145,7 @@ void QtnPropertyEditorHandlerBase::connectDialog(
 
 void QtnPropertyEditorHandlerBase::onPropertyDestroyed()
 {
-	m_delegate = nullptr;
-	qtnStopInplaceEdit();
+	cleanup();
 }
 
 void QtnPropertyEditorHandlerBase::onPropertyDidChange(

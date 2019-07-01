@@ -27,11 +27,15 @@ limitations under the License.
 class QtnPropertyDelegateFactory;
 struct QtnSubPropertyInfo;
 
+class QtnPropertyEditorHandlerBase;
+
 class QTN_IMPORT_EXPORT QtnPropertyDelegate
 {
 	Q_DISABLE_COPY(QtnPropertyDelegate)
 
+	friend class QtnPropertyEditorHandlerBase;
 	QtnPropertyDelegateFactory *m_factory = nullptr;
+	QtnPropertyEditorHandlerBase *m_editorHandler = nullptr;
 
 public:
 	virtual ~QtnPropertyDelegate();

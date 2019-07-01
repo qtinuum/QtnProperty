@@ -32,6 +32,10 @@ class QDialog;
 
 class QTN_IMPORT_EXPORT QtnPropertyEditorHandlerBase : public QObject
 {
+public:
+	void cleanup();
+	virtual ~QtnPropertyEditorHandlerBase() override;
+
 protected:
 	QtnPropertyEditorHandlerBase(
 		QtnPropertyDelegate *delegate, QWidget &editor);

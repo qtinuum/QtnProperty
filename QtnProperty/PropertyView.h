@@ -188,7 +188,7 @@ private:
 	float m_splitRatio;
 	QRubberBand *m_rubberBand;
 	QtnPropertyChangeReason m_lastChangeReason;
-	bool m_stopInvalidate;
+	unsigned m_stopInvalidate;
 	bool m_mouseAtSplitter;
 	QCursor m_oldCursor;
 
