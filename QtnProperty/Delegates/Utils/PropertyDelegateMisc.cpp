@@ -345,12 +345,19 @@ void QtnPropertyDelegateWithValues::addSubItemReset(
 		context.initStyleOption(option);
 
 		option.state = state(context.isActive, item);
-
+		option.state &= ~QStyle::State_HasFocus;
+		if (0 == (option.state & QStyle::State_Sunken))
+		{
+			option.state |= QStyle::State_Raised;
+		}
 		// dont initialize styleObject from widget for QWindowsVistaStyle
 		// this disables buggous animations
 		if (style->inherits("QWindowsVistaStyle"))
 			option.styleObject = nullptr;
-
+#ifdef Q_OS_MAC
+		option.state &= ~QStyle::State_MouseOver;
+		option.features = QStyleOptionButton::Flat;
+#endif
 		option.rect = item.rect;
 		QIcon icon = resetIcon();
 		if (!icon.availableSizes().empty())
