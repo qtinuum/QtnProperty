@@ -181,9 +181,6 @@ void QtnPropertyComboBox::paintEvent(QPaintEvent *event)
 	auto rect = event->rect();
 	QComboBox::paintEvent(event);
 
-	if (currentIndex() < 0)
-		return;
-
 	QPainter painter(this);
 	if (stateProperty()->isMultiValue())
 	{
@@ -193,7 +190,7 @@ void QtnPropertyComboBox::paintEvent(QPaintEvent *event)
 		}
 		qtnDrawValueText(
 			QtnMultiProperty::getMultiValuePlaceholder(), painter, rect);
-	} else
+	} else if (currentIndex() >= 0)
 	{
 		customPaint(painter, rect);
 	}
