@@ -19,7 +19,7 @@ limitations under the License.
 #include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "QtnProperty/Core/PropertyInt.h"
 #include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
-#include <QComboBox>
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
 #include <QLineEdit>
 
 void regIntListDelegates()
@@ -82,7 +82,7 @@ QtnPropertyDelegateIntList::QtnPropertyDelegateIntList(
 QWidget *QtnPropertyDelegateIntList::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	QComboBox *comboBox = new QComboBox(parent);
+	QComboBox *comboBox = new QtnPropertyComboBox(this, parent);
 
 	auto delegate = owner().delegateInfo();
 	if (delegate)

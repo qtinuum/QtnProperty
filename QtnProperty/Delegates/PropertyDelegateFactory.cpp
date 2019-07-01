@@ -42,7 +42,7 @@ limitations under the License.
 #include "QtnProperty/PropertyQKeySequence.h"
 #include "QtnProperty/PropertyInt64.h"
 #include "QtnProperty/PropertyUInt64.h"
-#include "MultiProperty.h"
+#include "QtnProperty/MultiProperty.h"
 
 #include <QDebug>
 

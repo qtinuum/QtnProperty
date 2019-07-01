@@ -171,11 +171,12 @@ protected:
 	virtual void updateStateInherited(bool force);
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
+	virtual void masterPropertyWillChange(QtnPropertyChangeReason reason);
+	virtual void masterPropertyDidChange(QtnPropertyChangeReason reason);
+
 private:
 	QtnPropertyState masterPropertyState() const;
 	void onMasterPropertyDestroyed(QObject *object);
-	void masterPropertyStateWillChange(QtnPropertyChangeReason reason);
-	void masterPropertyStateDidChange(QtnPropertyChangeReason reason);
 	void beforeUpdateStateFromMasterProperty();
 	void doUpdateStateFromMasterProperty();
 

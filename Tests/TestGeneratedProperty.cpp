@@ -133,7 +133,7 @@ void TestGeneratedProperty::testLoadSave()
 			QString result;
 			QVERIFY(allProperties.toStr(result));
 
-			QCOMPARE(result.size(), 1129);
+			QCOMPARE(result.size(), 1091);
 		}
 	}
 }
@@ -147,9 +147,9 @@ void TestGeneratedProperty::testJson()
 
 	QJsonDocument d(o);
 	auto res = d.toJson();
-	QCOMPARE(res.size(), 1633);
+	QCOMPARE(res.size(), 1595);
 	res = d.toJson(QJsonDocument::Compact);
-	QCOMPARE(res.size(), 959);
+	QCOMPARE(res.size(), 921);
 
 	QVERIFY(p.fromJson(o));
 }

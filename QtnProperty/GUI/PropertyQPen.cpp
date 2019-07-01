@@ -97,19 +97,58 @@ QtnPropertyQPenBase::QtnPropertyQPenBase(QObject *parent)
 
 const QtnEnumInfo &QtnPropertyQPenBase::penStyleEnum()
 {
-	static auto enumInfo = QtnEnumInfo::withEnum<Qt::PenStyle>();
+	static QtnEnumInfo enumInfo;
+	if (!enumInfo.isValid())
+	{
+		enumInfo = QtnEnumInfo::withEnum<Qt::PenStyle>(true);
+		auto &vec = enumInfo.getVector();
+		for (auto it = vec.begin(); it != vec.end(); ++it)
+		{
+			if (it->value() == Qt::MPenStyle)
+			{
+				vec.erase(it);
+				break;
+			}
+		}
+	}
 	return enumInfo;
 }
 
 const QtnEnumInfo &QtnPropertyQPenBase::penCapStyleEnum()
 {
-	static auto enumInfo = QtnEnumInfo::withEnum<Qt::PenCapStyle>();
+	static QtnEnumInfo enumInfo;
+	if (!enumInfo.isValid())
+	{
+		enumInfo = QtnEnumInfo::withEnum<Qt::PenCapStyle>(true);
+		auto &vec = enumInfo.getVector();
+		for (auto it = vec.begin(); it != vec.end(); ++it)
+		{
+			if (it->value() == Qt::MPenCapStyle)
+			{
+				vec.erase(it);
+				break;
+			}
+		}
+	}
 	return enumInfo;
 }
 
 const QtnEnumInfo &QtnPropertyQPenBase::penJoinStyleEnum()
 {
-	static auto enumInfo = QtnEnumInfo::withEnum<Qt::PenJoinStyle>();
+	static QtnEnumInfo enumInfo;
+	if (!enumInfo.isValid())
+	{
+		enumInfo = QtnEnumInfo::withEnum<Qt::PenJoinStyle>(true);
+		auto &vec = enumInfo.getVector();
+		for (auto it = vec.begin(); it != vec.end(); ++it)
+		{
+			if (it->value() == Qt::MPenJoinStyle)
+			{
+				vec.erase(it);
+				break;
+			}
+		}
+	}
 	return enumInfo;
 }
 

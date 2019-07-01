@@ -77,6 +77,14 @@ void QtnPropertyDelegateButton::createSubItemsImpl(
 		context.initStyleOption(option);
 
 		option.state = state(context.isActive, item);
+		if (0 == (option.state & QStyle::State_Sunken))
+		{
+			option.state |= QStyle::State_Raised;
+		}
+#ifdef Q_OS_MAC
+		option.state &= ~QStyle::State_MouseOver;
+		option.features = QStyleOptionButton::Flat;
+#endif
 
 		// dont initialize styleObject from widget for QWindowsVistaStyle
 		// this disables buggous animations

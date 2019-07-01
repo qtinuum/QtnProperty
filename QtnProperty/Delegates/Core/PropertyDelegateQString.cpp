@@ -499,7 +499,7 @@ void QtnPropertyDelegateQStringList::applyAttributesImpl(
 QWidget *QtnPropertyDelegateQStringList::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	QComboBox *editor = new QComboBox(parent);
+	QComboBox *editor = new QtnPropertyComboBox(this, parent);
 	editor->setGeometry(rect);
 
 	auto handler = new QtnPropertyQStringListComboBoxHandler(

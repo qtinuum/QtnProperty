@@ -50,7 +50,8 @@ QtnEnumInfo::QtnEnumInfo(
 
 QtnEnumInfo QtnEnumInfo::withMetaEnum(const QMetaEnum &metaEnum, bool translate)
 {
-	QtnEnumInfo enumInfo(QString("Qt"));
+	QtnEnumInfo enumInfo(QLatin1String(metaEnum.scope()) +
+		QStringLiteral("::") + QLatin1String(metaEnum.name()));
 	auto &vec = enumInfo.getVector();
 	int count = metaEnum.keyCount();
 	vec.reserve(count);
@@ -59,7 +60,8 @@ QtnEnumInfo QtnEnumInfo::withMetaEnum(const QMetaEnum &metaEnum, bool translate)
 		const char *key = metaEnum.key(i);
 		QString keyStr = QLatin1String(key);
 		vec.append(QtnEnumValueInfo(metaEnum.value(i), keyStr,
-			translate ? QCoreApplication::translate(metaEnum.scope(), key)
+			translate ? QCoreApplication::translate(
+							metaEnum.scope(), key, metaEnum.name())
 					  : keyStr));
 	}
 
@@ -123,25 +125,7 @@ const QtnEnumValueInfo *QtnEnumInfo::findByDisplayName(
 
 const QtnEnumValueInfo *QtnEnumInfo::fromStr(const QString &str) const
 {
-	static QRegExp parserEnum(
-		QStringLiteral("^\\s*([^:\\s]+)::([^:\\s]+)\\s*$"), m_case_sensitivity);
-
-	QString enumStr = str.trimmed();
-
-	if (parserEnum.exactMatch(str))
-	{
-		QStringList params = parserEnum.capturedTexts();
-
-		if (params.size() != 3)
-			return nullptr;
-
-		if (QString::compare(params[1], name(), m_case_sensitivity) != 0)
-			return nullptr;
-
-		enumStr = params[2];
-	}
-
-	return findByName(enumStr);
+	return findByName(str.trimmed());
 }
 
 bool QtnEnumInfo::toStr(QString &str, const QtnEnumValueInfo *value) const
@@ -149,7 +133,7 @@ bool QtnEnumInfo::toStr(QString &str, const QtnEnumValueInfo *value) const
 	if (!value)
 		return false;
 
-	str = QString("%1::%2").arg(name(), value->name());
+	str = value->name();
 	return true;
 }
 

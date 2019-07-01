@@ -164,7 +164,14 @@ void QtnPropertySet::clearChildProperties()
 	emit propertyWillChange(
 		QtnPropertyChangeReasonChildPropertyRemove, nullptr, 0);
 
-	m_childProperties.clear();
+	// Original list is cleared to avoid interference with property destructors,
+	// where properties are removed from the parent's list.
+	auto childProperties = std::move(m_childProperties);
+	for (auto p : childProperties)
+	{
+		if (p->parent() == this)
+			delete p;
+	}
 
 	emit propertyDidChange(QtnPropertyChangeReasonChildPropertyRemove);
 }
