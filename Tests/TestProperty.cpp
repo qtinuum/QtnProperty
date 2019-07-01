@@ -292,12 +292,17 @@ void TestProperty::propertyBool()
 		p.setCallbackValueGet([]() -> bool { return false; });
 		QVERIFY(p.value() == false);
 
-		p.setCallbackValueSet([](bool newValue, QtnPropertyChangeReason /*reason*/) { QVERIFY(newValue == true); });
+		p.setCallbackValueSet(
+			[](bool newValue, QtnPropertyChangeReason /*reason*/) {
+				QVERIFY(newValue == true);
+			});
 
 		p = true;
 
 		p.setCallbackValueSet(
-			[](bool newValue, QtnPropertyChangeReason /*reason*/) { QVERIFY(newValue == false); });
+			[](bool newValue, QtnPropertyChangeReason /*reason*/) {
+				QVERIFY(newValue == false);
+			});
 		p.setValue(false);
 
 		QVERIFY2(!p, "p expected as false");
@@ -313,7 +318,10 @@ void TestProperty::propertyBool()
 
 		p2.setCallbackValueGet([&val]() -> bool { return val; });
 
-		p2.setCallbackValueSet([&val](bool newValue, QtnPropertyChangeReason /*reason*/) { val = newValue; });
+		p2.setCallbackValueSet(
+			[&val](bool newValue, QtnPropertyChangeReason /*reason*/) {
+				val = newValue;
+			});
 
 		QVERIFY(p2);
 
@@ -412,7 +420,9 @@ void TestProperty::propertyRect()
 	QRect pc_value;
 	pc.setCallbackValueGet([&pc_value]() -> const QRect & { return pc_value; });
 	pc.setCallbackValueSet(
-			[&pc_value](const QRect &value, QtnPropertyChangeReason /*reason*/) { pc_value = value; });
+		[&pc_value](const QRect &value, QtnPropertyChangeReason /*reason*/) {
+			pc_value = value;
+		});
 
 	pc = QRect(10, 10, 10, 10);
 	QCOMPARE(pc.value(), QRect(10, 10, 10, 10));
@@ -478,13 +488,12 @@ void TestProperty::propertyPen()
 			QString str;
 			QVERIFY(p.toStr(str));
 			QCOMPARE(str,
-				QString("#0a64c8, Qt::DashDotLine, 10, Qt::RoundCap, "
-						"Qt::SvgMiterJoin"));
+				QString("#0a64c8, DashDotLine, 10, RoundCap, "
+						"SvgMiterJoin"));
 		}
 
 		{
-			QString str =
-				"#0000ff, Qt::DashLine, 3, Qt::SquareCap, Qt::BevelJoin";
+			QString str = "#0000ff, DashLine, 3, SquareCap, BevelJoin";
 			QVERIFY(p.fromStr(str));
 
 			QCOMPARE(p.value().color(), QColor(Qt::blue));
@@ -758,7 +767,8 @@ void TestProperty::propertyAssignment()
 		p1 = 0.5;
 		p2 = 1.3;
 		p3.setCallbackValueGet([]() -> double { return 23.4; });
-		p3.setCallbackValueSet([&d](double v, QtnPropertyChangeReason /*reason*/) { d = v; });
+		p3.setCallbackValueSet(
+			[&d](double v, QtnPropertyChangeReason /*reason*/) { d = v; });
 
 		QCOMPARE(p1.value(), 0.5);
 		QCOMPARE(p2.value(), 1.3);
@@ -1508,44 +1518,44 @@ void TestProperty::stringConversions()
 		QCOMPARE(pp.szpfc.value(), QSizeF(-3.1, 20.8));
 
 		QVERIFY(pp.ep.toStr(str));
-		QCOMPARE(str, QString("COLOR::BLUE"));
-		QVERIFY(pp.ep.fromStr(QString(" Color::Yellow   \t")));
+		QCOMPARE(str, QString("BLUE"));
+		QVERIFY(pp.ep.fromStr(QString(" Yellow   \t")));
 		QCOMPARE(pp.ep.value(), (QtnEnumValueType) COLOR::YELLOW);
 		QVERIFY(pp.ep.toStr(str));
-		QCOMPARE(str, QString("COLOR::YELLOW"));
+		QCOMPARE(str, QString("YELLOW"));
 		QVERIFY(!pp.ep.fromStr("ddlwk,s"));
 		QCOMPARE(pp.ep.value(), (QtnEnumValueType) COLOR::YELLOW);
 
 		QVERIFY(pp.epc.toStr(str));
-		QCOMPARE(str, QString("COLOR::RED"));
-		QVERIFY(pp.epc.fromStr(QString("COLOR::BlUe")));
+		QCOMPARE(str, QString("RED"));
+		QVERIFY(pp.epc.fromStr(QString("BlUe")));
 		QCOMPARE(pp.epc.value(), (QtnEnumValueType) COLOR::BLUE);
 		QVERIFY(pp.epc.toStr(str));
-		QCOMPARE(str, QString("COLOR::BLUE"));
+		QCOMPARE(str, QString("BLUE"));
 		QVERIFY(!pp.epc.fromStr("COLOUR::Red"));
 		QCOMPARE(pp.epc.value(), (QtnEnumValueType) COLOR::BLUE);
 
 		QVERIFY(pp.efp.toStr(str));
-		QCOMPARE(str, QString("MASK::ONE|MASK::FOUR"));
+		QCOMPARE(str, QString("ONE|FOUR"));
 		QVERIFY(pp.efp.fromStr(QString(" 0   \t")));
 		QCOMPARE(pp.efp.value(), 0);
 		QVERIFY(pp.efp.toStr(str));
 		QCOMPARE(str, QString("0"));
 		QVERIFY(pp.efp.fromStr("Two"));
 		QCOMPARE(pp.efp.value(), (QtnEnumFlagsValueType) MASK::TWO);
-		QVERIFY(pp.efp.fromStr("Two | Mask::Four"));
+		QVERIFY(pp.efp.fromStr("Two | Four"));
 		QCOMPARE(
 			pp.efp.value(), (QtnEnumFlagsValueType)(MASK::TWO | MASK::FOUR));
-		QVERIFY(!pp.efp.fromStr("Two&Mask::Four"));
+		QVERIFY(!pp.efp.fromStr("Two&Four"));
 		QCOMPARE(
 			pp.efp.value(), (QtnEnumFlagsValueType)(MASK::TWO | MASK::FOUR));
 
 		QVERIFY(pp.efpc.toStr(str));
-		QCOMPARE(str, QString("MASK::ONE|MASK::FOUR"));
+		QCOMPARE(str, QString("ONE|FOUR"));
 		QVERIFY(pp.efpc.fromStr(QString("Two")));
 		QCOMPARE(pp.efpc.value(), (QtnEnumFlagsValueType) MASK::TWO);
 		QVERIFY(pp.efpc.toStr(str));
-		QCOMPARE(str, QString("MASK::TWO"));
+		QCOMPARE(str, QString("TWO"));
 		QVERIFY(!pp.efpc.fromStr("weee"));
 		QCOMPARE(pp.efpc.value(), (QtnEnumFlagsValueType) MASK::TWO);
 
