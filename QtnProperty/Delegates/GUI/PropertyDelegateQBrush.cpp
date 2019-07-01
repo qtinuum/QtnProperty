@@ -42,7 +42,7 @@ void QtnPropertyDelegateQBrushStyle::Register(
 }
 
 static void drawBrushStyle(
-	QPainter &painter, QRect rect, Qt::BrushStyle brushStyle)
+	QStyle *style, QPainter &painter, QRect rect, Qt::BrushStyle brushStyle)
 {
 	switch (brushStyle)
 	{
@@ -54,7 +54,7 @@ static void drawBrushStyle(
 		{
 			QString str;
 			QtnPropertyQBrushStyle::translateBrushStyle(brushStyle, str);
-			qtnDrawValueText(str, painter, rect);
+			qtnDrawValueText(str, painter, rect, style);
 			break;
 		}
 
@@ -73,7 +73,10 @@ static void drawBrushStyle(
 
 class QtnPropertyBrushStyleItemDelegate : public QStyledItemDelegate
 {
+	QComboBox *m_owner;
+
 public:
+	QtnPropertyBrushStyleItemDelegate(QComboBox *owner);
 	void paint(QPainter *painter, const QStyleOptionViewItem &option,
 		const QModelIndex &index) const override;
 };
@@ -123,7 +126,7 @@ void QtnPropertyDelegateQBrushStyle::drawValueImpl(
 	} else
 	{
 		auto value = owner().value();
-		drawBrushStyle(painter, rect, value);
+		drawBrushStyle(painter.style(), painter, rect, value);
 	}
 }
 
@@ -134,7 +137,7 @@ QWidget *QtnPropertyDelegateQBrushStyle::createValueEditorImpl(
 	{
 		QComboBox *combo = new QtnPropertyBrushStyleComboBox(this, parent);
 		combo->setLineEdit(nullptr);
-		combo->setItemDelegate(new QtnPropertyBrushStyleItemDelegate());
+		combo->setItemDelegate(new QtnPropertyBrushStyleItemDelegate(combo));
 		if (m_showAll)
 		{
 			for (auto bs = Qt::NoBrush; bs <= Qt::ConicalGradientPattern;
@@ -223,7 +226,13 @@ void QtnPropertyBrushStyleComboBox::customPaint(
 	QPainter &painter, const QRect &rect)
 {
 	auto brushStyle = currentData().value<Qt::BrushStyle>();
-	drawBrushStyle(painter, rect, brushStyle);
+	drawBrushStyle(style(), painter, rect, brushStyle);
+}
+
+QtnPropertyBrushStyleItemDelegate::QtnPropertyBrushStyleItemDelegate(
+	QComboBox *owner)
+	: m_owner(owner)
+{
 }
 
 void QtnPropertyBrushStyleItemDelegate::paint(QPainter *painter,
@@ -231,5 +240,5 @@ void QtnPropertyBrushStyleItemDelegate::paint(QPainter *painter,
 {
 	QStyledItemDelegate::paint(painter, option, index);
 	auto brushStyle = index.data(Qt::UserRole).value<Qt::BrushStyle>();
-	drawBrushStyle(*painter, option.rect, brushStyle);
+	drawBrushStyle(m_owner->style(), *painter, option.rect, brushStyle);
 }

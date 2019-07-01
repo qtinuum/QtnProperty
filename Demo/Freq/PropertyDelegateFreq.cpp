@@ -87,8 +87,8 @@ void QtnPropertyDelegateFreq::addUnitSubItem(QtnDrawContext & /*context*/,
 	QtnSubItem subItem(rect);
 	subItem.drawHandler = [this](
 							  QtnDrawContext &context, const QtnSubItem &item) {
-		qtnDrawValueText(
-			freqUnit2Str(owner().unit()), *context.painter, item.rect);
+		qtnDrawValueText(freqUnit2Str(owner().unit()), *context.painter,
+			item.rect, context.style());
 	};
 
 	subItems.append(subItem);

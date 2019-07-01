@@ -198,7 +198,7 @@ int QtnEventContext::eventType() const
 
 QTN_IMPORT_EXPORT QString qtnElidedText(const QPainter &painter,
 	const QString &text, const QRect &rect, bool *elided = 0);
-QTN_IMPORT_EXPORT void qtnDrawValueText(
-	const QString &text, QPainter &painter, const QRect &rect);
+QTN_IMPORT_EXPORT void qtnDrawValueText(const QString &text, QPainter &painter,
+	const QRect &rect, QStyle *style = nullptr);
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H

@@ -131,12 +131,11 @@ void QtnPropertyDelegateButtonLink::createSubItemsImpl(
 	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
 	QtnSubItem linkItem(context.rect.marginsRemoved(context.margins));
-	auto fullRect = linkItem.rect;
 	linkItem.rect.setWidth(context.painter->fontMetrics().width(m_title));
 	linkItem.setPropertyDescriptionAsTooltip(owner());
 	linkItem.trackState();
 
-	linkItem.drawHandler = [this, fullRect](QtnDrawContext &context,
+	linkItem.drawHandler = [this](QtnDrawContext &context,
 							   const QtnSubItem &item) {
 
 		context.painter->save();
@@ -168,7 +167,7 @@ void QtnPropertyDelegateButtonLink::createSubItemsImpl(
 		if (context.isActive)
 		{
 			context.painter->fillRect(
-				fullRect, context.palette().color(QPalette::Highlight));
+				context.rect, context.palette().color(QPalette::Highlight));
 		}
 
 		context.painter->setPen(linkColor);

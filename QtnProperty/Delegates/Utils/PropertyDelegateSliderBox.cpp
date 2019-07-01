@@ -111,7 +111,7 @@ void QtnPropertyDelegateSlideBox::draw(
 	if (stateProperty()->isMultiValue())
 	{
 		qtnDrawValueText(QtnMultiProperty::getMultiValuePlaceholder(),
-			*context.painter, item.rect);
+			*context.painter, item.rect, context.style());
 		return;
 	}
 
@@ -143,9 +143,8 @@ void QtnPropertyDelegateSlideBox::draw(
 
 	painter.restore();
 
-	boxRect.adjust(context.widget->valueLeftMargin(), 0, 0, 0);
-
-	qtnDrawValueText(valuePartToStr(valuePart), painter, boxRect);
+	qtnDrawValueText(
+		valuePartToStr(valuePart), painter, boxRect, context.style());
 }
 
 bool QtnPropertyDelegateSlideBox::event(

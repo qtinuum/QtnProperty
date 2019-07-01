@@ -276,13 +276,21 @@ QString qtnElidedText(const QPainter &painter, const QString &text,
 	return newText;
 }
 
-void qtnDrawValueText(const QString &text, QPainter &painter, const QRect &rect)
+void qtnDrawValueText(
+	const QString &text, QPainter &painter, const QRect &rect, QStyle *style)
 {
 	if (text.isEmpty())
 		return;
 
-	painter.drawText(rect, Qt::AlignLeading | Qt::AlignVCenter,
-		qtnElidedText(painter, text, rect, nullptr));
+	auto textRect = rect;
+	if (style)
+	{
+		textRect.adjust(
+			style->pixelMetric(QStyle::PM_CheckBoxLabelSpacing), 0, 0, 0);
+	}
+
+	painter.drawText(textRect, Qt::AlignLeading | Qt::AlignVCenter,
+		qtnElidedText(painter, text, textRect, nullptr));
 }
 
 QtnPropertyToEdit::QtnPropertyToEdit()
