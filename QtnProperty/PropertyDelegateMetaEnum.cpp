@@ -110,7 +110,7 @@ QString QtnPropertyDelegateMetaEnum::valueToStr(int value) const
 QString QtnPropertyDelegateMetaEnum::keyToStr(const char *key) const
 {
 	return mShouldTranslate
-		? QCoreApplication::translate(mMetaEnum.scope(), key)
+		? QCoreApplication::translate(mMetaEnum.scope(), key, mMetaEnum.name())
 		: QString(QLatin1String(key));
 }
 
