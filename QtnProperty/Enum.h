@@ -95,6 +95,7 @@ public:
 	QtnEnumInfo(
 		const QString &name, const QVector<QtnEnumValueInfo> &staticValues);
 
+	inline bool isValid() const;
 	inline const QString &name() const;
 
 	static QtnEnumInfo withMetaEnum(
@@ -137,6 +138,11 @@ private:
 	QString m_name;
 	QVector<QtnEnumValueInfo> m_values;
 };
+
+bool QtnEnumInfo::isValid() const
+{
+	return !m_name.isEmpty() && !m_values.isEmpty();
+}
 
 const QString &QtnEnumInfo::name() const
 {
