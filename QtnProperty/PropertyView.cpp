@@ -1000,7 +1000,7 @@ void QtnPropertyView::updateStyleStuff()
 	m_propertySetBackdroundColor = m_linesColor =
 		palette().color(QPalette::Button);
 
-	m_valueLeftMargin = style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
+	m_valueLeftMargin = style()->pixelMetric(QStyle::PM_ButtonMargin);
 }
 
 bool QtnPropertyView::ensureVisibleItemByIndex(int index)

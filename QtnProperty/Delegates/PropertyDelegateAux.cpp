@@ -285,8 +285,7 @@ void qtnDrawValueText(
 	auto textRect = rect;
 	if (style)
 	{
-		textRect.adjust(
-			style->pixelMetric(QStyle::PM_CheckBoxLabelSpacing), 0, 0, 0);
+		textRect.adjust(style->pixelMetric(QStyle::PM_ButtonMargin), 0, 0, 0);
 	}
 
 	painter.drawText(textRect, Qt::AlignLeading | Qt::AlignVCenter,
