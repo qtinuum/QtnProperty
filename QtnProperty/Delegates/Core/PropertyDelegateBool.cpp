@@ -21,6 +21,7 @@ limitations under the License.
 #include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
 #include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/PropertyView.h"
 #include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
 
 #include <QStyleOption>
@@ -77,6 +78,7 @@ bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(
 								   const QtnSubItem &item) {
 		QStyleOptionButton opt;
 		opt.rect = item.rect;
+		opt.rect.adjust(context.widget->valueLeftMargin(), 0, 0, 0);
 		opt.state = state(context.isActive, item);
 
 		if (stateProperty()->isMultiValue())

@@ -32,7 +32,7 @@ void regLayerDelegates()
 }
 
 static void drawLayer(
-	const LayerInfo &layer, QPainter &painter, const QRect &rect)
+	QStyle *style, const LayerInfo &layer, QPainter &painter, const QRect &rect)
 {
 	QRect textRect = rect;
 
@@ -48,7 +48,7 @@ static void drawLayer(
 
 	if (textRect.isValid())
 	{
-		qtnDrawValueText(layer.name, painter, textRect);
+		qtnDrawValueText(layer.name, painter, textRect, style);
 	}
 }
 
@@ -64,11 +64,11 @@ public:
 	{
 		m_layers = m_property->layers();
 		setLineEdit(nullptr);
-		setItemDelegate(new ItemDelegate(m_layers));
+		setItemDelegate(new ItemDelegate(m_layers, this));
 		for (const auto &layer : m_layers)
 		{
 			Q_UNUSED(layer);
-			addItem("");
+			addItem(QString());
 		}
 
 		updateEditor();
@@ -92,7 +92,7 @@ protected:
 		if (index != -1)
 		{
 			Q_ASSERT(index < m_layers.size());
-			drawLayer(m_layers[index], painter, event->rect());
+			drawLayer(style(), m_layers[index], painter, event->rect());
 		}
 	}
 
@@ -131,8 +131,9 @@ private:
 	class ItemDelegate : public QStyledItemDelegate
 	{
 	public:
-		ItemDelegate(const QList<LayerInfo> &layers)
+		ItemDelegate(const QList<LayerInfo> &layers, QComboBox *owner)
 			: m_layers(layers)
+			, m_owner(owner)
 		{
 		}
 
@@ -142,11 +143,13 @@ private:
 			QStyledItemDelegate::paint(painter, option, index);
 
 			Q_ASSERT(index.row() < m_layers.size());
-			drawLayer(m_layers[index.row()], *painter, option.rect);
+			drawLayer(
+				m_owner->style(), m_layers[index.row()], *painter, option.rect);
 		}
 
 	private:
 		const QList<LayerInfo> &m_layers;
+		QComboBox *m_owner;
 	};
 };
 
@@ -155,7 +158,7 @@ void QtnPropertyDelegateLayer::drawValueImpl(
 {
 	auto layer = owner().valueLayer();
 	if (layer)
-		drawLayer(*layer, painter, rect);
+		drawLayer(painter.style(), *layer, painter, rect);
 }
 
 QWidget *QtnPropertyDelegateLayer::createValueEditorImpl(

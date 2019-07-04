@@ -33,7 +33,8 @@ void regPenWidthDelegates()
 			QtnPropertyPenWidthBase>);
 }
 
-static void drawPenWidth(PenWidth penWidth, QPainter &painter, QRect rect)
+static void drawPenWidth(
+	QStyle *style, PenWidth penWidth, QPainter &painter, QRect rect)
 {
 	rect.adjust(2, 2, -2, -2);
 
@@ -42,7 +43,7 @@ static void drawPenWidth(PenWidth penWidth, QPainter &painter, QRect rect)
 	switch (penWidth)
 	{
 		case PenWidth::Default:
-			qtnDrawValueText("Default", painter, rect);
+			qtnDrawValueText("Default", painter, rect, style);
 			return;
 		case PenWidth::Thin:
 			pen.setWidth(1);
@@ -74,12 +75,12 @@ public:
 		, m_updating(0)
 	{
 		setLineEdit(nullptr);
-		setItemDelegate(new ItemDelegate());
+		setItemDelegate(new ItemDelegate(this));
 
-		addItem("", QVariant::fromValue(PenWidth::Default));
-		addItem("", QVariant::fromValue(PenWidth::Thin));
-		addItem("", QVariant::fromValue(PenWidth::Middle));
-		addItem("", QVariant::fromValue(PenWidth::Thick));
+		addItem(QString(), QVariant::fromValue(PenWidth::Default));
+		addItem(QString(), QVariant::fromValue(PenWidth::Thin));
+		addItem(QString(), QVariant::fromValue(PenWidth::Middle));
+		addItem(QString(), QVariant::fromValue(PenWidth::Thick));
 
 		updateEditor();
 
@@ -103,7 +104,7 @@ protected:
 		if (index != -1)
 		{
 			auto penWidth = currentData().value<PenWidth>();
-			drawPenWidth(penWidth, painter,
+			drawPenWidth(style(), penWidth, painter,
 				event->rect().adjusted(0, 0, -event->rect().height(), 0));
 		}
 	}
@@ -111,7 +112,7 @@ protected:
 	void updateEditor()
 	{
 		m_updating++;
-		setEnabled(m_property.isEditableByUser());
+		setEnabled(m_delegate->stateProperty()->isEditableByUser());
 		for (int i = 0; i < count(); ++i)
 		{
 			if (itemData(i).value<PenWidth>() == m_property.value())
@@ -142,14 +143,20 @@ private:
 
 	class ItemDelegate : public QStyledItemDelegate
 	{
+		QComboBox *m_owner;
+
 	public:
-		ItemDelegate() {}
+		ItemDelegate(QComboBox *owner)
+			: m_owner(owner)
+		{
+		}
 
 		void paint(QPainter *painter, const QStyleOptionViewItem &option,
 			const QModelIndex &index) const override
 		{
 			QStyledItemDelegate::paint(painter, option, index);
-			drawPenWidth(index.data(Qt::UserRole).value<PenWidth>(), *painter,
+			drawPenWidth(m_owner->style(),
+				index.data(Qt::UserRole).value<PenWidth>(), *painter,
 				option.rect);
 		}
 	};
@@ -164,7 +171,7 @@ bool QtnPropertyDelegatePenWidth::propertyValueToStrImpl(
 void QtnPropertyDelegatePenWidth::drawValueImpl(
 	QStylePainter &painter, const QRect &rect) const
 {
-	drawPenWidth(owner().value(), painter, rect);
+	drawPenWidth(painter.style(), owner().value(), painter, rect);
 }
 
 QWidget *QtnPropertyDelegatePenWidth::createValueEditorImpl(

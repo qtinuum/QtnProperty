@@ -188,8 +188,8 @@ void QtnPropertyComboBox::paintEvent(QPaintEvent *event)
 		{
 			painter.setPen(palette().color(QPalette::Disabled, QPalette::Text));
 		}
-		qtnDrawValueText(
-			QtnMultiProperty::getMultiValuePlaceholder(), painter, rect);
+		qtnDrawValueText(QtnMultiProperty::getMultiValuePlaceholder(), painter,
+			rect, style());
 	} else if (currentIndex() >= 0)
 	{
 		customPaint(painter, rect);

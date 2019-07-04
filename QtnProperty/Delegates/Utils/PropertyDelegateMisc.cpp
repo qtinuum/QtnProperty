@@ -402,7 +402,7 @@ void QtnPropertyDelegateWithValues::addSubItemValues(
 	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
 	auto rect = context.rect.marginsRemoved(context.margins);
-	rect.setLeft(context.splitPos + context.widget->valueLeftMargin());
+	rect.setLeft(context.splitPos);
 
 	if (stateProperty()->isResettable() && stateProperty()->isEditableByUser())
 	{
@@ -523,15 +523,15 @@ void QtnPropertyDelegateWithValueEditor::drawValueImpl(
 {
 	if (stateProperty()->isMultiValue())
 	{
-		qtnDrawValueText(
-			QtnMultiProperty::getMultiValuePlaceholder(), painter, rect);
+		qtnDrawValueText(QtnMultiProperty::getMultiValuePlaceholder(), painter,
+			rect, painter.style());
 		return;
 	}
 
 	QString strValue;
 	if (propertyValueToStrImpl(strValue))
 	{
-		qtnDrawValueText(strValue, painter, rect);
+		qtnDrawValueText(strValue, painter, rect, painter.style());
 	}
 }
 
@@ -580,7 +580,7 @@ bool QtnPropertyDelegateError::createSubItemValueImpl(
 								   const QtnSubItem &item) {
 		QPen oldPen = context.painter->pen();
 		context.painter->setPen(Qt::red);
-		qtnDrawValueText(m_error, *context.painter, item.rect);
+		qtnDrawValueText(m_error, *context.painter, item.rect, context.style());
 		context.painter->setPen(oldPen);
 	};
 
