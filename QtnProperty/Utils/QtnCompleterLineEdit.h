@@ -19,6 +19,11 @@ public:
 	QAbstractItemModel *completerModel() const;
 	void setCompleterModel(QAbstractItemModel *model);
 
+	void complete();
+
+signals:
+	void escaped();
+
 protected:
 	virtual bool event(QEvent *e) override;
 
