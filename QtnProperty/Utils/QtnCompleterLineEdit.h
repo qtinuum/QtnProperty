@@ -19,6 +19,7 @@ public:
 	QAbstractItemModel *completerModel() const;
 	void setCompleterModel(QAbstractItemModel *model);
 
+public slots:
 	void complete();
 
 signals:

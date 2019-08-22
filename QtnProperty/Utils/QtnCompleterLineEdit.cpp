@@ -51,6 +51,34 @@ QAbstractItemModel *QtnCompleterLineEdit::completerModel() const
 
 void QtnCompleterLineEdit::setCompleterModel(QAbstractItemModel *model)
 {
+	auto oldModel = completerModel();
+	if (oldModel == model)
+		return;
+
+	if (oldModel)
+	{
+		QObject::disconnect(oldModel, &QAbstractItemModel::modelReset, this,
+			&QtnCompleterLineEdit::complete);
+		QObject::disconnect(oldModel, &QAbstractItemModel::dataChanged, this,
+			&QtnCompleterLineEdit::complete);
+		QObject::disconnect(oldModel, &QAbstractItemModel::rowsInserted, this,
+			&QtnCompleterLineEdit::complete);
+		QObject::disconnect(oldModel, &QAbstractItemModel::rowsRemoved, this,
+			&QtnCompleterLineEdit::complete);
+	}
+
+	if (model)
+	{
+		QObject::connect(model, &QAbstractItemModel::modelReset, this,
+			&QtnCompleterLineEdit::complete);
+		QObject::connect(model, &QAbstractItemModel::dataChanged, this,
+			&QtnCompleterLineEdit::complete);
+		QObject::connect(model, &QAbstractItemModel::rowsInserted, this,
+			&QtnCompleterLineEdit::complete);
+		QObject::connect(model, &QAbstractItemModel::rowsRemoved, this,
+			&QtnCompleterLineEdit::complete);
+	}
+
 	completer()->setModel(model);
 }
 
@@ -61,8 +89,24 @@ void QtnCompleterLineEdit::complete()
 	auto unselectedPrefix = text();
 	if (selectionLength() > 0)
 		unselectedPrefix.resize(selectionStart());
+	auto model = completer->model();
+	bool hasMatch = false;
+	for (int i = 0, count = model->rowCount(); i < count; i++)
+	{
+		if (model->data(model->index(i, 0))
+				.toString()
+				.contains(unselectedPrefix, Qt::CaseInsensitive))
+		{
+			hasMatch = true;
+			break;
+		}
+	}
+	if (!hasMatch)
+		unselectedPrefix.clear();
 	if (unselectedPrefix != completer->completionPrefix())
+	{
 		completer->setCompletionPrefix(unselectedPrefix);
+	}
 	completer->complete();
 }
 
@@ -236,8 +280,13 @@ bool QtnCompleterLineEdit::Completer::eventFilter(
 	{
 		auto index = currentIndex();
 		if (index.isValid())
+		{
 			emit activated(index);
-		emit mLineEdit->editingFinished();
+		} else
+		{
+			QMetaObject::invokeMethod(
+				mLineEdit, "editingFinished", Qt::QueuedConnection);
+		}
 	} else if (escapePressed)
 	{
 		if (watched != mLineEdit && mListView->selectionModel()->hasSelection())
