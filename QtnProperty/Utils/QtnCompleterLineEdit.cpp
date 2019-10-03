@@ -202,13 +202,13 @@ bool QtnCompleterLineEdit::Completer::eventFilter(
 				}
 				if (watched != mLineEdit)
 				{
-					if (event->type() == QEvent::MouseButtonRelease ||
-						(!(mListView->isVisible() &&
-							 mListView->rect().contains(
-								 mListView->mapFromGlobal(
-									 static_cast<QMouseEvent *>(event)
-										 ->globalPos()))) &&
-							event->type() == QEvent::MouseButtonPress))
+					bool outside = !mListView->isVisible() ||
+						!mListView->rect().contains(mListView->mapFromGlobal(
+							static_cast<QMouseEvent *>(event)->globalPos()));
+
+					if ((event->type() == QEvent::MouseButtonRelease &&
+							!outside) ||
+						(event->type() == QEvent::MouseButtonPress && outside))
 					{
 						acceptEvent = true;
 						finishEdit = true;
