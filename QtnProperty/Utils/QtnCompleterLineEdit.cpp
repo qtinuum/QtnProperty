@@ -1,4 +1,5 @@
 #include "QtnCompleterLineEdit.h"
+#include "QtnCompleterItemDelegate.h"
 
 #include <QCompleter>
 #include <QFocusEvent>
@@ -41,7 +42,14 @@ public:
 QtnCompleterLineEdit::QtnCompleterLineEdit(QWidget *parent)
 	: QLineEdit(parent)
 {
+	mDefaultItemDelegate = new QtnCompleterItemDelegate(this);
 	setCompleter(new Completer(this));
+}
+
+QtnCompleterLineEdit::~QtnCompleterLineEdit()
+{
+	setCompleter(nullptr);
+	delete mDefaultItemDelegate;
 }
 
 QAbstractItemModel *QtnCompleterLineEdit::completerModel() const
@@ -80,6 +88,7 @@ void QtnCompleterLineEdit::setCompleterModel(QAbstractItemModel *model)
 	}
 
 	completer()->setModel(model);
+	completer()->popup()->setItemDelegate(mDefaultItemDelegate);
 }
 
 void QtnCompleterLineEdit::complete()

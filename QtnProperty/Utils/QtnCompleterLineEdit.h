@@ -5,6 +5,7 @@
 #include <QLineEdit>
 
 class QAbstractItemModel;
+class QtnCompleterItemDelegate;
 
 class QTN_IMPORT_EXPORT QtnCompleterLineEdit : public QLineEdit
 {
@@ -12,9 +13,11 @@ class QTN_IMPORT_EXPORT QtnCompleterLineEdit : public QLineEdit
 
 	class ListView;
 	class Completer;
+	QtnCompleterItemDelegate *mDefaultItemDelegate;
 
 public:
 	explicit QtnCompleterLineEdit(QWidget *parent = nullptr);
+	virtual ~QtnCompleterLineEdit() override;
 
 	QAbstractItemModel *completerModel() const;
 	void setCompleterModel(QAbstractItemModel *model);
