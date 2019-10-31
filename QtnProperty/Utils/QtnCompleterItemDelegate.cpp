@@ -17,8 +17,9 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 	const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	auto updatedOption = option;
-	updatedOption.textElideMode = Qt::ElideNone;
-	bool contains = false;
+	updatedOption.text.clear();
+	mLineEdit->style()->drawControl(
+		QStyle::CE_ItemViewItem, &updatedOption, painter, nullptr);
 	auto completer = mLineEdit->completer();
 	Q_ASSERT(completer);
 	switch (completer->filterMode())
@@ -32,8 +33,21 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 			QFontMetrics fm(updatedOption.font);
 			auto textRect = mLineEdit->style()->subElementRect(
 				QStyle::SE_ItemViewItemText, &updatedOption);
+			if (option.displayAlignment & Qt::AlignRight)
+			{
+				textRect.setRight(textRect.right() -
+					mLineEdit->style()->pixelMetric(
+						QStyle::PM_FocusFrameHMargin));
+			} else
+			{
+				textRect.setLeft(textRect.left() +
+					mLineEdit->style()->pixelMetric(
+						QStyle::PM_FocusFrameHMargin));
+			}
 			int flags = Qt::TextSingleLine | int(option.displayAlignment);
-			painter->setFont(option.font);
+			painter->save();
+
+			bool contains = false;
 			auto highlightRect = textRect;
 			switch (completer->filterMode())
 			{
@@ -51,8 +65,9 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 						subString, completer->caseSensitivity());
 					if (i >= 0)
 					{
-						highlightRect.setLeft(fm.width(
-							QString::fromRawData(currentStr.constData(), i)));
+						highlightRect.setLeft(highlightRect.left() +
+							fm.width(QString::fromRawData(
+								currentStr.constData(), i)));
 						highlightRect.setWidth(fm.width(subString));
 						contains = true;
 					}
@@ -62,26 +77,26 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 					if (currentStr.endsWith(
 							subString, completer->caseSensitivity()))
 					{
-						highlightRect.setLeft(fm.width(
-							QString::fromRawData(currentStr.constData(),
-								currentStr.length() - subString.length())));
+						highlightRect.setLeft(highlightRect.left() +
+							fm.width(
+								QString::fromRawData(currentStr.constData(),
+									currentStr.length() - subString.length())));
 						contains = true;
 					}
 					break;
 			}
+			painter->setCompositionMode(QPainter::CompositionMode_Difference);
 			if (contains)
 			{
-				painter->save();
 				painter->setPen(Qt::transparent);
-				painter->setBrush(Qt::yellow);
+				painter->setBrush(Qt::blue);
 				painter->drawRect(highlightRect);
-				painter->setPen(Qt::white);
-				painter->setBrush(Qt::transparent);
-				painter->setCompositionMode(
-					QPainter::CompositionMode_Difference);
-				painter->drawText(textRect, flags, option.text);
-				painter->restore();
 			}
+			painter->setPen(Qt::white);
+			painter->setBrush(Qt::transparent);
+			painter->setFont(option.font);
+			painter->drawText(textRect, flags, currentStr);
+			painter->restore();
 			break;
 		}
 
@@ -89,7 +104,4 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 			qWarning("Unsupported filter mode");
 			break;
 	}
-
-	updatedOption.text.clear();
-	QStyledItemDelegate::paint(painter, updatedOption, index);
 }
