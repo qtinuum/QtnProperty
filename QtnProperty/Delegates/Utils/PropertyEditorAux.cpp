@@ -24,15 +24,21 @@ limitations under the License.
 #include <QKeyEvent>
 #include <QLocale>
 #include <QCoreApplication>
+#include <QCompleter>
 
-QtnLineEditBttn::QtnLineEditBttn(QWidget *parent, const QString &bttnText)
+QtnLineEditBttn::QtnLineEditBttn(
+	QWidget *parent, const QString &bttnText, QLineEdit *lineEdit)
 	: QWidget(parent)
 {
 	QHBoxLayout *layout = new QHBoxLayout(this);
 	layout->setMargin(0);
 	layout->setSpacing(0);
 
-	lineEdit = new QLineEdit(this);
+	if (!lineEdit)
+		lineEdit = new QLineEdit(this);
+	else
+		lineEdit->setParent(this);
+	this->lineEdit = lineEdit;
 	layout->addWidget(lineEdit);
 
 	toolButton = new QToolButton(this);
@@ -102,6 +108,10 @@ void qtnInitLineEdit(QLineEdit *lineEdit, QtnInplaceInfo *inplaceInfo)
 		if (qtnAcceptForLineEdit(keyEvent))
 		{
 			lineEdit->setText(keyEvent->text());
+			auto completer = lineEdit->completer();
+			if (completer)
+				completer->setCompletionPrefix(lineEdit->text());
+
 			return;
 		}
 	} else

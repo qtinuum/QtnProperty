@@ -68,6 +68,9 @@ public:
 protected:
 	QtnPropertyDelegate(QtnPropertyBase &ownerProperty);
 
+	void drawButton(const QtnDrawContext &context, const QtnSubItem &item,
+		const QIcon &icon, const QString &text);
+
 	virtual int subPropertyCountImpl() const;
 	virtual QtnPropertyBase *subPropertyImpl(int index);
 

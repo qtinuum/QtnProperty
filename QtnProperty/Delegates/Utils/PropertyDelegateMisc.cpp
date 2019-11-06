@@ -324,52 +324,21 @@ void QtnPropertyDelegateWithValues::addSubItemName(
 void QtnPropertyDelegateWithValues::addSubItemReset(
 	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
-	if (!stateProperty()->isResettable() ||
-		!stateProperty()->isEditableByUser())
+	if (!stateProperty()->isResettable())
 		return;
 
 	QtnSubItem resetItem(context.rect.marginsRemoved(context.margins));
 	resetItem.rect.setLeft(resetItem.rect.right() - resetItem.rect.height());
-	resetItem.setTextAsTooltip(QtnPropertyView::tr("Reset to default value"));
-	resetItem.trackState();
-
 	if (!resetItem.rect.isValid())
 		return;
 
+	resetItem.setTextAsTooltip(QtnPropertyView::tr("Reset to default value"));
+	resetItem.trackState();
+
 	resetItem.drawHandler = [this](QtnDrawContext &context,
 								const QtnSubItem &item) {
-
-		auto style = context.style();
-
-		QStyleOptionButton option;
-		context.initStyleOption(option);
-
-		option.state = state(context.isActive, item);
-		option.state &= ~QStyle::State_HasFocus;
-		if (0 == (option.state & QStyle::State_Sunken))
-		{
-			option.state |= QStyle::State_Raised;
-		}
-		// dont initialize styleObject from widget for QWindowsVistaStyle
-		// this disables buggous animations
-		if (style->inherits("QWindowsVistaStyle"))
-			option.styleObject = nullptr;
-#ifdef Q_OS_MAC
-		option.state &= ~QStyle::State_MouseOver;
-		option.features = QStyleOptionButton::Flat;
-#endif
-		option.rect = item.rect;
-		QIcon icon = resetIcon();
-		if (!icon.availableSizes().empty())
-		{
-			option.icon = icon;
-			option.iconSize = icon.actualSize(item.rect.size());
-		} else
-			option.text = "R";
-
-		// draw button
-		style->drawControl(
-			QStyle::CE_PushButton, &option, context.painter, context.widget);
+		drawButton(context, item, resetIcon(),
+			QtnPropertyView::tr("R", "Reset button text"));
 	};
 
 	resetItem.eventHandler = [this](QtnEventContext &context,
@@ -404,7 +373,7 @@ void QtnPropertyDelegateWithValues::addSubItemValues(
 	auto rect = context.rect.marginsRemoved(context.margins);
 	rect.setLeft(context.splitPos);
 
-	if (stateProperty()->isResettable() && stateProperty()->isEditableByUser())
+	if (stateProperty()->isResettable())
 	{
 		rect.setRight(rect.right() - rect.height());
 	}
@@ -596,4 +565,41 @@ QtnPropertyDelegate *qtnCreateDelegateError(
 QtnInplaceInfo::QtnInplaceInfo()
 	: activationEvent(0)
 {
+}
+
+void QtnPropertyDelegate::drawButton(const QtnDrawContext &context,
+	const QtnSubItem &item, const QIcon &icon, const QString &text)
+{
+	auto style = context.style();
+
+	QStyleOptionButton option;
+	context.initStyleOption(option);
+
+	option.state = state(context.isActive, item);
+	option.state &= ~QStyle::State_HasFocus;
+	if (0 == (option.state & QStyle::State_Sunken))
+	{
+		option.state |= QStyle::State_Raised;
+	}
+	// dont initialize styleObject from widget for QWindowsVistaStyle
+	// this disables buggous animations
+	if (style->inherits("QWindowsVistaStyle"))
+		option.styleObject = nullptr;
+#ifdef Q_OS_MAC
+	option.state &= ~QStyle::State_MouseOver;
+	option.features = QStyleOptionButton::Flat;
+#endif
+	option.rect = item.rect;
+	if (!icon.availableSizes().empty())
+	{
+		option.icon = icon;
+		option.iconSize = icon.actualSize(item.rect.size());
+	} else
+	{
+		option.text = text.isEmpty() ? QStringLiteral("*") : text;
+	}
+
+	// draw button
+	style->drawControl(
+		QStyle::CE_PushButton, &option, context.painter, context.widget);
 }

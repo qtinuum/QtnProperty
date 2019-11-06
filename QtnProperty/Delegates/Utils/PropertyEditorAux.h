@@ -31,7 +31,8 @@ class QtnInplaceInfo;
 class QTN_IMPORT_EXPORT QtnLineEditBttn : public QWidget
 {
 public:
-	QtnLineEditBttn(QWidget *parent, const QString &bttnText = "...");
+	QtnLineEditBttn(QWidget *parent, const QString &bttnText = "...",
+		QLineEdit *lineEdit = nullptr);
 
 	void setTextForProperty(QtnPropertyBase *property, const QString &text);
 

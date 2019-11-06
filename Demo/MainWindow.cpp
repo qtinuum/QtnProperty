@@ -156,5 +156,5 @@ QString MainWindow::createCandidate(QWidget *parent, QString candidate)
 		return text;
 	}
 
-	return {};
+	return QString();
 }
