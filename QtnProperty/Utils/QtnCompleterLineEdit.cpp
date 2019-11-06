@@ -96,7 +96,7 @@ void QtnCompleterLineEdit::complete()
 	Q_ASSERT(dynamic_cast<Completer *>(this->completer()));
 	auto completer = static_cast<Completer *>(this->completer());
 	auto unselectedPrefix = text();
-	if (selectionLength() > 0)
+	if (selectionStart() >= 0)
 		unselectedPrefix.resize(selectionStart());
 	auto model = completer->model();
 	bool hasMatch = false;
