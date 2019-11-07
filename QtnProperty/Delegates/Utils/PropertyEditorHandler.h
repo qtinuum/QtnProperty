@@ -80,7 +80,10 @@ private:
 
 QtnPropertyBase *QtnPropertyEditorHandlerBase::propertyBase() const
 {
-	return m_delegate->property();
+	if (m_delegate)
+		return m_delegate->property();
+
+	return nullptr;
 }
 
 QtnPropertyDelegate *QtnPropertyEditorHandlerBase::delegate() const
@@ -90,7 +93,10 @@ QtnPropertyDelegate *QtnPropertyEditorHandlerBase::delegate() const
 
 QtnPropertyBase *QtnPropertyEditorHandlerBase::stateProperty() const
 {
-	return m_delegate->stateProperty();
+	if (m_delegate)
+		return m_delegate->stateProperty();
+
+	return nullptr;
 }
 
 QWidget *QtnPropertyEditorHandlerBase::editorBase() const
