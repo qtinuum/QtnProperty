@@ -441,6 +441,9 @@ static const int TOLERANCE = 3;
 
 void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 {
+	if (e->button() != Qt::LeftButton)
+		return;
+
 	if (qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
 		Q_ASSERT(!m_rubberBand);
@@ -466,6 +469,9 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 
 void QtnPropertyView::mouseReleaseEvent(QMouseEvent *e)
 {
+	if (e->button() != Qt::LeftButton)
+		return;
+
 	if (m_rubberBand)
 	{
 		delete m_rubberBand;
@@ -485,6 +491,8 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)
 {
 	if (m_rubberBand)
 	{
+		if (e->buttons() != Qt::LeftButton)
+			return;
 		QRect rect = viewport()->rect();
 		rect.setLeft(e->x());
 		rect.setRight(e->x());
