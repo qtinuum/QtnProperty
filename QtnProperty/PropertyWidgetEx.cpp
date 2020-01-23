@@ -33,6 +33,7 @@ limitations under the License.
 QtnPropertyWidgetEx::QtnPropertyWidgetEx(QWidget *parent)
 	: QtnPropertyWidget(parent)
 	, draggedProperty(nullptr)
+	, mDrag(nullptr)
 	, dropAction(Qt::IgnoreAction)
 	, canRemove(false)
 {
@@ -265,6 +266,9 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 	{
 		case QEvent::MouseButtonPress:
 		{
+			if (draggedProperty)
+				break;
+
 			auto mevent = static_cast<QMouseEvent *>(event);
 
 			if (mevent->button() == Qt::LeftButton)
@@ -280,6 +284,9 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 
 		case QEvent::MouseMove:
 		{
+			if (mDrag)
+				break;
+
 			auto mevent = static_cast<QMouseEvent *>(event);
 
 			if (nullptr != draggedProperty &&
@@ -288,9 +295,7 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 				if ((mevent->pos() - dragStartPos).manhattanLength() <
 					QApplication::startDragDistance())
 				{
-					dropAction = Qt::IgnoreAction;
 					dragAndDrop();
-					draggedProperty = nullptr;
 					return true;
 				}
 			}
@@ -394,25 +399,34 @@ void QtnPropertyWidgetEx::dropEnd()
 	}
 }
 
+void QtnPropertyWidgetEx::onDropFinished(Qt::DropAction)
+{
+	dropEnd();
+	draggedProperty = nullptr;
+	mDrag = nullptr;
+}
+
 bool QtnPropertyWidgetEx::dragAndDrop()
 {
+	dropAction = Qt::IgnoreAction;
 	auto data = getPropertyDataForAction(draggedProperty, Qt::CopyAction);
 
 	if (nullptr != data)
 	{
-		auto drag = new QDrag(this);
+		mDrag = new QDrag(this);
 
-		drag->setMimeData(data);
+		mDrag->setMimeData(data);
 
 		// TODO generate cursor
 
-		drag->exec(Qt::CopyAction | Qt::MoveAction);
-
-		dropEnd();
+		QObject::connect(mDrag, &QDrag::finished, this,
+			&QtnPropertyWidgetEx::onDropFinished);
+		mDrag->exec(Qt::CopyAction | Qt::MoveAction);
 
 		return true;
 	}
 
+	draggedProperty = nullptr;
 	return false;
 }
 
