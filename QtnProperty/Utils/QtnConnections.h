@@ -22,7 +22,7 @@ limitations under the License.
 
 #include <vector>
 
-class QTN_IMPORT_EXPORT QtnConnections
+class QtnConnections
 	: public std::vector<QMetaObject::Connection>
 {
 	Q_DISABLE_COPY(QtnConnections)
