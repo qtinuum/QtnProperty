@@ -23,7 +23,18 @@ limitations under the License.
 
 QObjectPropertyWidget::QObjectPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
+	, mClassOrder(FromLastDescendant)
 {
+}
+
+void QObjectPropertyWidget::setClassOrder(ClassOrder value)
+{
+	if (value == mClassOrder)
+		return;
+
+	mClassOrder = value;
+	disconnectObjects();
+	connectObjects();
 }
 
 void QObjectPropertyWidget::deselectAllObjects()
@@ -123,10 +134,11 @@ QtnPropertyConnector *QObjectPropertyWidget::getPropertyConnector() const
 
 void QObjectPropertyWidget::connectObjects()
 {
+	bool backwards = mClassOrder != FromLastDescendant;
 	if (selectedObjects.size() == 1)
 	{
 		auto object = *selectedObjects.begin();
-		auto set = qtnCreateQObjectPropertySet(object, true);
+		auto set = qtnCreateQObjectPropertySet(object, backwards);
 
 		if (nullptr != set)
 			set->setParent(this);
@@ -136,7 +148,7 @@ void QObjectPropertyWidget::connectObjects()
 		connectObject(object);
 	} else if (selectedObjects.size() > 1)
 	{
-		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects, true);
+		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects, backwards);
 
 		if (nullptr != set)
 			set->setParent(this);

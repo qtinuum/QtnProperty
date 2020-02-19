@@ -36,6 +36,15 @@ public:
 
 	inline const Objects &getSelectedObjects() const;
 
+	enum ClassOrder
+	{
+		FromLastDescendant,
+		FromTopAncestor
+	};
+
+	inline ClassOrder classOrder() const;
+	void setClassOrder(ClassOrder value);
+
 public slots:
 	void deselectAllObjects();
 	void selectObject(QObject *object, bool addSelection = true);
@@ -55,6 +64,10 @@ protected:
 	void disconnectObject(QObject *object);
 	void connectObject(QObject *object);
 
+private:
+	ClassOrder mClassOrder;
+
+protected:
 	Objects selectedObjects;
 };
 
@@ -62,4 +75,9 @@ const QObjectPropertyWidget::Objects & //
 QObjectPropertyWidget::getSelectedObjects() const
 {
 	return selectedObjects;
+}
+
+QObjectPropertyWidget::ClassOrder QObjectPropertyWidget::classOrder() const
+{
+	return mClassOrder;
 }
