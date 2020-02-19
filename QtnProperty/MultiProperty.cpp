@@ -322,7 +322,7 @@ void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 	bool writable = source->isWritable();
 	if (writable)
 	{
-		state &= ~(QtnPropertyStateImmutable | QtnPropertyStateInvisible);
+		state &= ~QtnPropertyStateImmutable;
 	}
 
 	setState(state);
