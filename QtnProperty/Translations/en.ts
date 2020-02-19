@@ -168,6 +168,11 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation>List</translation>
     </message>
     <message>
+        <location filename="../CustomPropertyOptionsDialog.ui" line="152"/>
+        <source>Null</source>
+        <translation>Null</translation>
+    </message>
+    <message>
         <location filename="../CustomPropertyOptionsDialog.cpp" line="136"/>
         <source>Index:</source>
         <translation>Index:</translation>
@@ -242,48 +247,48 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnCustomPropertyWidget</name>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="132"/>
+        <location filename="../CustomPropertyWidget.cpp" line="130"/>
         <source>New Element</source>
         <translation>New Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="139"/>
+        <location filename="../CustomPropertyWidget.cpp" line="137"/>
         <source>New Property</source>
         <translation>New Property</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="179"/>
+        <location filename="../CustomPropertyWidget.cpp" line="177"/>
         <source>Duplicate Element</source>
         <translation>Duplicate Element</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="187"/>
+        <location filename="../CustomPropertyWidget.cpp" line="185"/>
         <source>Duplicate Property</source>
         <translation>Duplicate Property</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="219"/>
+        <location filename="../CustomPropertyWidget.cpp" line="217"/>
         <source>Property Options</source>
         <translation>Property Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="230"/>
+        <location filename="../CustomPropertyWidget.cpp" line="228"/>
         <source>Element Options</source>
         <translation>Element Options</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="480"/>
+        <location filename="../CustomPropertyWidget.cpp" line="478"/>
         <source>Do you want to insert new property from clipboard or to replace the selected one?</source>
         <translation>Do you want to insert new property from clipboard or to replace the selected one?</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="485"/>
+        <location filename="../CustomPropertyWidget.cpp" line="483"/>
         <source>Insert</source>
         <comment>Paste</comment>
         <translation>Insert</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="487"/>
+        <location filename="../CustomPropertyWidget.cpp" line="485"/>
         <source>Replace</source>
         <comment>Paste</comment>
         <translation>Replace</translation>
@@ -292,7 +297,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnMultiProperty</name>
     <message>
-        <location filename="../MultiProperty.cpp" line="135"/>
+        <location filename="../MultiProperty.cpp" line="125"/>
         <source>(Multiple Values)</source>
         <translation>(Multiple Values)</translation>
     </message>
