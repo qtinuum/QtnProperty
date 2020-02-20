@@ -107,10 +107,8 @@ void QtnPropertyConnector::onModifiedSetChanged()
 		if (nullptr != stateProvider)
 			state = stateProvider->getPropertyState(metaProperty);
 
-		if (property->isCollapsed())
-			state |= QtnPropertyStateCollapsed;
-		else
-			state &= ~QtnPropertyStateCollapsed;
+		state.setFlag(QtnPropertyStateCollapsed, property->isCollapsed());
+		state.setFlag(QtnPropertyStateResettable, property->isResettable());
 
 		state |= qtnPropertyStateToAdd(metaProperty);
 
