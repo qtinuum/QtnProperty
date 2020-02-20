@@ -547,7 +547,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     <message>
         <location filename="../Core/PropertyQRect.cpp" line="198"/>
         <source>Left</source>
-        <translation>Отступ слева</translation>
+        <translation>Левая</translation>
     </message>
     <message>
         <source>Left side of the %1</source>
@@ -556,7 +556,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     <message>
         <location filename="../Core/PropertyQRect.cpp" line="218"/>
         <source>Right</source>
-        <translation>Отступ справа</translation>
+        <translation>Правая</translation>
     </message>
     <message>
         <source>Right side of the %1</source>
@@ -565,7 +565,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     <message>
         <location filename="../Core/PropertyQRect.cpp" line="208"/>
         <source>Top</source>
-        <translation>Отступ сверху</translation>
+        <translation>Верхняя</translation>
     </message>
     <message>
         <source>Top of the %1</source>
@@ -574,7 +574,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     <message>
         <location filename="../Core/PropertyQRect.cpp" line="228"/>
         <source>Bottom</source>
-        <translation>Отступ снизу</translation>
+        <translation>Нижняя</translation>
     </message>
     <message>
         <source>Bottom of the %1</source>
