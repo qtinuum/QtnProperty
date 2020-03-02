@@ -151,6 +151,10 @@ void QtnPropertyEditorHandlerBase::onPropertyDestroyed()
 void QtnPropertyEditorHandlerBase::onPropertyDidChange(
 	QtnPropertyChangeReason reason)
 {
+	if (!sender())
+	{
+		return;
+	}
 	if (reason & (QtnPropertyChangeReasonValue | QtnPropertyChangeReasonState))
 	{
 		if (propertyBase() == sender() || stateProperty() == sender())
