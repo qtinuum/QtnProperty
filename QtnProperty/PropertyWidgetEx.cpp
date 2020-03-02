@@ -419,7 +419,7 @@ bool QtnPropertyWidgetEx::dragAndDrop()
 
 		// TODO generate cursor
 
-#ifdef __EMSCRIPTEN__
+#ifdef Q_OS_WASM
 		QObject::connect(mDrag, &QDrag::finished, this,
 			&QtnPropertyWidgetEx::onDropFinished);
 		mDrag->exec(Qt::CopyAction | Qt::MoveAction);
