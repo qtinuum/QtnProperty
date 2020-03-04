@@ -183,16 +183,17 @@ void QtnPropertyWidgetEx::contextMenuEvent(QContextMenuEvent *event)
 	if (!property->isResettable() || !property->isEditableByUser())
 		return;
 
-	QMenu menu;
+	auto menu = new QMenu;
+	menu->setAttribute(Qt::WA_DeleteOnClose);
 
-	auto action = menu.addAction(tr("Reset to default"));
+	auto action = menu->addAction(tr("Reset to default"));
 	action->setStatusTip(
 		tr("Reset value of %1 to default").arg(property->name()));
 
 	QObject::connect(action, &QAction::triggered, this,
 		&QtnPropertyWidgetEx::onResetTriggered);
 
-	menu.exec(event->globalPos());
+	menu->popup(event->globalPos());
 }
 
 void QtnPropertyWidgetEx::deleteProperty(QtnPropertyBase *)
