@@ -195,9 +195,9 @@ bool QtnCompleterLineEdit::Completer::eventFilter(
 				break;
 
 			case QEvent::MouseButtonPress:
-			case QEvent::MouseMove:
 			case QEvent::MouseButtonRelease:
 			case QEvent::MouseButtonDblClick:
+			case QEvent::MouseMove:
 				if (mLineEdit->rect().contains(mLineEdit->mapFromGlobal(
 						static_cast<QMouseEvent *>(event)->globalPos())))
 				{
@@ -232,14 +232,18 @@ bool QtnCompleterLineEdit::Completer::eventFilter(
 				{
 					case Qt::Key_Up:
 					case Qt::Key_Down:
+					case Qt::Key_PageDown:
+					case Qt::Key_PageUp:
 						break;
 
 					case Qt::Key_Left:
 					case Qt::Key_Right:
-					case Qt::Key_PageDown:
-					case Qt::Key_PageUp:
 					case Qt::Key_Home:
 					case Qt::Key_End:
+						acceptEvent = true;
+						shouldComplete = true;
+						break;
+
 					case Qt::Key_Tab:
 					case Qt::Key_Backtab:
 						acceptEvent = true;
@@ -247,7 +251,13 @@ bool QtnCompleterLineEdit::Completer::eventFilter(
 
 					case Qt::Key_Enter:
 					case Qt::Key_Return:
+					{
+						setCompletionPrefix(mLineEdit->text());
+						acceptEvent = true;
+						disableHide = true;
+						shouldComplete = true;
 						break;
+					}
 
 					case Qt::Key_Escape:
 						escapePressed = true;
@@ -323,7 +333,9 @@ void QtnCompleterLineEdit::Completer::complete()
 
 	auto popup = this->popup();
 	QRect rect(0, 0,
-		qMax(mLineEdit->width(), popup->sizeHintForColumn(0) + POPUP_MARGIN),
+		qMin(popup->maximumWidth(),
+			qMax(mLineEdit->width(),
+				popup->sizeHintForColumn(0) + POPUP_MARGIN)),
 		mLineEdit->height());
 
 	int h = popup->sizeHintForRow(0) *
