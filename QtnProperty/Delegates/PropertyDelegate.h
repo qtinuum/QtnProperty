@@ -62,6 +62,9 @@ public:
 	inline void createSubItems(
 		QtnDrawContext &context, QList<QtnSubItem> &subItems);
 
+	void addSubItemBranchNode(
+		QtnDrawContext &context, QList<QtnSubItem> &subItems);
+
 	void applySubPropertyInfo(
 		const QtnPropertyDelegateInfo &info, const QtnSubPropertyInfo &subInfo);
 

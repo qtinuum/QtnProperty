@@ -48,8 +48,7 @@ protected:
 		QtnDrawContext &context, QList<QtnSubItem> &subItems);
 	void addSubItemSelection(
 		QtnDrawContext &context, QList<QtnSubItem> &subItems);
-	void addSubItemBranchNode(
-		QtnDrawContext &context, QList<QtnSubItem> &subItems);
+
 	void addSubItemName(QtnDrawContext &context, QList<QtnSubItem> &subItems);
 	void addSubItemReset(QtnDrawContext &context, QList<QtnSubItem> &subItems);
 	void addSubItemValues(QtnDrawContext &context, QList<QtnSubItem> &subItems);
