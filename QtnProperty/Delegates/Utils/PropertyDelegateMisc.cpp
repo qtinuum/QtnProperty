@@ -502,7 +502,7 @@ void QtnPropertyDelegate::drawButton(const QtnDrawContext &context,
 {
 	auto style = context.style();
 
-	QStyleOptionButton option;
+	QStyleOptionToolButton option;
 	context.initStyleOption(option);
 
 	option.state = state(context.isActive, item);
@@ -517,9 +517,13 @@ void QtnPropertyDelegate::drawButton(const QtnDrawContext &context,
 		option.styleObject = nullptr;
 #ifdef Q_OS_MAC
 	option.state &= ~QStyle::State_MouseOver;
-	option.features = QStyleOptionButton::Flat;
 #endif
+	option.features = QStyleOptionToolButton::None;
+	option.subControls = QStyle::SC_ToolButton;
+	option.activeSubControls = QStyle::SC_ToolButton;
+	option.toolButtonStyle = Qt::ToolButtonIconOnly;
 	option.rect = item.rect;
+	option.arrowType = Qt::NoArrow;
 	if (!icon.availableSizes().empty())
 	{
 		option.icon = icon;
@@ -530,6 +534,6 @@ void QtnPropertyDelegate::drawButton(const QtnDrawContext &context,
 	}
 
 	// draw button
-	style->drawControl(
-		QStyle::CE_PushButton, &option, context.painter, context.widget);
+	style->drawComplexControl(
+		QStyle::CC_ToolButton, &option, context.painter, context.widget);
 }
