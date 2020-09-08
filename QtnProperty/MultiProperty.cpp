@@ -354,7 +354,7 @@ void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 			state |= QtnPropertyStateInvisible;
 		}
 
-		if (!property->isWritable())
+		if (!property->isWritable() && !property->isResettable())
 		{
 			state |= QtnPropertyStateImmutable;
 		}

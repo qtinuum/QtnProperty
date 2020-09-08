@@ -175,12 +175,13 @@ void QtnPropertyWidgetEx::pasteFromClipboard()
 
 void QtnPropertyWidgetEx::contextMenuEvent(QContextMenuEvent *event)
 {
-	auto property = getActiveProperty();
-
-	if (nullptr == property)
+	auto property = propertyView()->getPropertyAt(event->pos());
+	if (!property)
 		return;
 
-	if (!property->isResettable() || !property->isEditableByUser())
+	propertyView()->setActiveProperty(property, true);
+
+	if (!property->isResettable() || !property->isVisible())
 		return;
 
 	auto menu = new QMenu;

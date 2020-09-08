@@ -81,6 +81,8 @@ public:
 	inline void drawValue(QStylePainter &painter, const QRect &rect) const;
 	inline bool acceptKeyPressedForInplaceEdit(QKeyEvent *keyEvent) const;
 
+	bool propertyValueToStr(QString &strValue) const;
+
 protected:
 	QtnPropertyDelegateWithValueEditor(QtnPropertyBase &owner);
 
