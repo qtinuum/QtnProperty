@@ -324,8 +324,10 @@ void QtnPropertyDelegateWithValues::addSubItemName(
 void QtnPropertyDelegateWithValues::addSubItemReset(
 	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
-	if (!stateProperty()->isResettable())
+	if (!stateProperty()->isResettable() || stateProperty()->valueIsDefault())
+	{
 		return;
+	}
 
 	QtnSubItem resetItem(context.rect.marginsRemoved(context.margins));
 	resetItem.rect.setLeft(resetItem.rect.right() - resetItem.rect.height());
