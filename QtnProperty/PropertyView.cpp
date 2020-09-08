@@ -444,10 +444,7 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 	if (e->button() == Qt::RightButton)
 	{
 		auto property = getPropertyAt(e->pos());
-		if (property)
-		{
-			setActiveProperty(property, true);
-		}
+		setActiveProperty(property, true);
 		return;
 	}
 
