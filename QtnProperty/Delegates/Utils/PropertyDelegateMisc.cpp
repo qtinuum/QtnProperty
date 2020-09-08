@@ -397,6 +397,12 @@ void QtnPropertyDelegateWithValue::createSubItemValuesImpl(
 		subItems.append(subItem);
 }
 
+bool QtnPropertyDelegateWithValueEditor::propertyValueToStr(
+	QString &strValue) const
+{
+	return propertyValueToStrImpl(strValue);
+}
+
 QtnPropertyDelegateWithValueEditor::QtnPropertyDelegateWithValueEditor(
 	QtnPropertyBase &owner)
 	: QtnPropertyDelegateWithValue(owner)
