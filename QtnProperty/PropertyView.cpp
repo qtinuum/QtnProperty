@@ -299,7 +299,8 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 			1,
 		(m_visibleItems.size() - 1));
 
-	QRect itemRect = viewport()->rect();
+	auto viewPortRect = viewport()->rect();
+	QRect itemRect = viewPortRect;
 	itemRect.setTop(
 		firstVisibleItemIndex * m_itemHeight - verticalScrollBar()->value());
 	itemRect.setBottom(itemRect.top() + m_itemHeight);
@@ -312,6 +313,13 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 		drawItem(painter, itemRect, vItem);
 		itemRect.translate(0, m_itemHeight);
 	}
+
+	QPen pen;
+	pen.setColor(this->palette().color(QPalette::Mid));
+	pen.setStyle(Qt::DotLine);
+	painter.setPen(pen);
+	painter.drawLine(
+		splitPosition(), 0, splitPosition(), viewPortRect.bottom());
 }
 
 void QtnPropertyView::drawItem(
