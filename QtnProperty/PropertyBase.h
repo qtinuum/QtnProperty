@@ -81,6 +81,8 @@ public:
 
 	bool isWritable() const;
 
+	bool isUnlockable() const;
+
 	inline void expand();
 	inline void collapse();
 

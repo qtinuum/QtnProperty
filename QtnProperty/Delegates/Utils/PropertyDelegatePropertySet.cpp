@@ -145,6 +145,8 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 		}
 	}
 
+	addLockItem(context, subItems);
+
 	// property set name
 	{
 		QtnSubItem nameItem(context.rect.marginsRemoved(context.margins));

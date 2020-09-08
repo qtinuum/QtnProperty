@@ -37,7 +37,8 @@ enum QtnPropertyStateFlag
 	QtnPropertyStateMultiValue = 0x0020,
 	QtnPropertyStateModifiedValue = 0x0040,
 	QtnPropertyStateIgnoreDirectParentState = 0x80,
-	QtnPropertyStateResettable = 0x100
+	QtnPropertyStateResettable = 0x100,
+	QtnPropertyStateUnlockable = 0x200
 };
 
 Q_DECLARE_FLAGS(QtnPropertyState, QtnPropertyStateFlag)

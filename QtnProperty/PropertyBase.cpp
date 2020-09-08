@@ -820,6 +820,11 @@ bool QtnPropertyBase::isWritable() const
 	return (0 == (state() & QtnPropertyStateImmutable));
 }
 
+bool QtnPropertyBase::isUnlockable() const
+{
+	return (0 != (state() & QtnPropertyStateUnlockable));
+}
+
 bool QtnPropertyBase::isCollapsed() const
 {
 	return (0 != (m_stateLocal & QtnPropertyStateCollapsed));

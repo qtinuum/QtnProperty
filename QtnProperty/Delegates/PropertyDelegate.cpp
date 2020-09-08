@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "PropertyDelegate.h"
 #include "Utils/PropertyEditorHandler.h"
+#include "PropertyView.h"
 
 QtnPropertyDelegate::QtnPropertyDelegate(QtnPropertyBase &ownerProperty)
 	: m_ownerProperty(&ownerProperty)
@@ -90,4 +91,49 @@ QStyle::State QtnPropertyDelegate::state(
 		state |= QStyle::State_Sunken;
 
 	return state;
+}
+
+void QtnPropertyDelegate::addLockItem(
+	QtnDrawContext &context, QList<QtnSubItem> &subItems)
+{
+	if (!stateProperty()->isUnlockable())
+	{
+		return;
+	}
+
+	QtnSubItem item(context.rect.marginsRemoved(context.margins));
+	item.rect.setWidth(item.rect.height());
+	context.margins.setLeft(context.margins.left() + item.rect.height() +
+		context.widget->valueLeftMargin());
+
+	item.setTextAsTooltip(stateProperty()->isWritable()
+			? QtnPropertyView::tr("Lock")
+			: QtnPropertyView::tr("Unlock"));
+
+	item.trackState();
+
+	if (item.rect.isValid())
+	{
+		item.drawHandler = [this](QtnDrawContext &context,
+							   const QtnSubItem &item) {
+			drawButton(context, item, QIcon(),
+				stateProperty()->isWritable()
+					? QString::fromUtf8("\xF0\x9F\x94\x92")
+					: QString::fromUtf8("\xF0\x9F\x94\x93"));
+		};
+
+		item.eventHandler = [this](QtnEventContext &context, const QtnSubItem &,
+								QtnPropertyToEdit *) -> bool {
+			if ((context.eventType() == QEvent::MouseButtonPress) ||
+				(context.eventType() == QEvent::MouseButtonDblClick))
+			{
+				property()->toggleState(QtnPropertyStateImmutable);
+				return true;
+			}
+
+			return false;
+		};
+
+		subItems.append(item);
+	}
 }

@@ -82,6 +82,8 @@ protected:
 	// helper functions
 	QStyle::State state(bool isActive, const QtnSubItem &subItem) const;
 
+	void addLockItem(QtnDrawContext &context, QList<QtnSubItem> &subItems);
+
 protected:
 	QtnPropertyBase *m_ownerProperty;
 	QtnPropertyBase *m_stateProperty;

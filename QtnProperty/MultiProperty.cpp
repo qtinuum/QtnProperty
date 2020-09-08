@@ -345,7 +345,7 @@ void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 	state |= source->stateLocal() & ~unchangedState;
 
 	state &= ~(QtnPropertyStateImmutable | QtnPropertyStateResettable |
-		QtnPropertyStateInvisible);
+		QtnPropertyStateInvisible | QtnPropertyStateUnlockable);
 
 	for (auto property : properties)
 	{
@@ -362,6 +362,11 @@ void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 		if (property->isResettable())
 		{
 			state |= QtnPropertyStateResettable;
+		}
+
+		if (property->isUnlockable())
+		{
+			state |= QtnPropertyStateUnlockable;
 		}
 	}
 
