@@ -179,8 +179,11 @@ void QtnPropertyWidgetEx::contextMenuEvent(QContextMenuEvent *event)
 	if (!property)
 		return;
 
-	if (!property->isResettable() || !property->isVisible())
+	if (!property->isResettable() || !property->isVisible() ||
+		property->valueIsDefault())
+	{
 		return;
+	}
 
 	auto menu = new QMenu;
 	menu->setAttribute(Qt::WA_DeleteOnClose);
