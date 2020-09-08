@@ -370,7 +370,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnMultiProperty</name>
     <message>
-        <location filename="../MultiProperty.cpp" line="112"/>
+        <location filename="../MultiProperty.cpp" line="115"/>
         <source>(Multiple Values)</source>
         <translation>(Multiple Values)</translation>
     </message>
@@ -497,32 +497,32 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQColor</name>
     <message>
-        <location filename="../GUI/PropertyQColor.cpp" line="126"/>
+        <location filename="../GUI/PropertyQColor.cpp" line="124"/>
         <source>Red</source>
         <translation>Red</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQColor.cpp" line="131"/>
+        <location filename="../GUI/PropertyQColor.cpp" line="129"/>
         <source>Red component of %1</source>
         <translation>Red component of %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQColor.cpp" line="141"/>
+        <location filename="../GUI/PropertyQColor.cpp" line="139"/>
         <source>Green</source>
         <translation>Green</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQColor.cpp" line="146"/>
+        <location filename="../GUI/PropertyQColor.cpp" line="144"/>
         <source>Green component of %1</source>
         <translation>Green component of %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQColor.cpp" line="156"/>
+        <location filename="../GUI/PropertyQColor.cpp" line="154"/>
         <source>Blue</source>
         <translation>Blue</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQColor.cpp" line="161"/>
+        <location filename="../GUI/PropertyQColor.cpp" line="159"/>
         <source>Blue component of %1</source>
         <translation>Blue component of %1</translation>
     </message>
@@ -690,47 +690,47 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQPen</name>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="224"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="263"/>
         <source>(Pen)</source>
         <translation>(Pen)</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="234"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="273"/>
         <source>Color</source>
         <translation>Color</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="239"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="278"/>
         <source>Color of the %1</source>
         <translation>Color of the %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="249"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="288"/>
         <source>Style</source>
         <translation>Style</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="254"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="293"/>
         <source>Style of the %1</source>
         <translation>Style of the %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="264"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="303"/>
         <source>Cap Style</source>
         <translation>Cap Style</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="269"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="308"/>
         <source>Cap Style of the %1</source>
         <translation>Cap Style of the %1</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="279"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="318"/>
         <source>Join Style</source>
         <translation>Join Style</translation>
     </message>
     <message>
-        <location filename="../GUI/PropertyQPen.cpp" line="284"/>
+        <location filename="../GUI/PropertyQPen.cpp" line="323"/>
         <source>Join Style of the %1</source>
         <translation>Join Style of the %1</translation>
     </message>
@@ -797,7 +797,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQRect</name>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="157"/>
+        <location filename="../Core/PropertyQRect.cpp" line="155"/>
         <source>Left</source>
         <translation>Left</translation>
     </message>
@@ -806,7 +806,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Left offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="187"/>
+        <location filename="../Core/PropertyQRect.cpp" line="185"/>
         <source>Right</source>
         <translation>Right</translation>
     </message>
@@ -815,7 +815,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Right offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="172"/>
+        <location filename="../Core/PropertyQRect.cpp" line="170"/>
         <source>Top</source>
         <translation>Top</translation>
     </message>
@@ -824,7 +824,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Top offset of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="202"/>
+        <location filename="../Core/PropertyQRect.cpp" line="200"/>
         <source>Bottom</source>
         <translation>Bottom</translation>
     </message>
@@ -849,32 +849,32 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation type="vanished">Height of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="147"/>
+        <location filename="../Core/PropertyQRect.cpp" line="145"/>
         <source>[(%1, %2), (%3, %4)]</source>
         <translation>[(%1, %2), (%3, %4)]</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="147"/>
+        <location filename="../Core/PropertyQRect.cpp" line="145"/>
         <source>[(%1, %2) %3 x %4]</source>
         <translation>[(%1, %2) %3 x %4]</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="162"/>
+        <location filename="../Core/PropertyQRect.cpp" line="160"/>
         <source>Left position of the %1</source>
         <translation>Left position of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="177"/>
+        <location filename="../Core/PropertyQRect.cpp" line="175"/>
         <source>Top position of the %1</source>
         <translation>Top position of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="192"/>
+        <location filename="../Core/PropertyQRect.cpp" line="190"/>
         <source>Right position of the %1</source>
         <translation>Right position of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQRect.cpp" line="207"/>
+        <location filename="../Core/PropertyQRect.cpp" line="205"/>
         <source>Bottom position of the %1</source>
         <translation>Bottom position of the %1</translation>
     </message>
@@ -945,27 +945,27 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQSize</name>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="105"/>
+        <location filename="../Core/PropertyQSize.cpp" line="103"/>
         <source>Width</source>
         <translation>Width</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="110"/>
+        <location filename="../Core/PropertyQSize.cpp" line="108"/>
         <source>Width of the %1</source>
         <translation>Width of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="120"/>
+        <location filename="../Core/PropertyQSize.cpp" line="118"/>
         <source>Height</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="125"/>
+        <location filename="../Core/PropertyQSize.cpp" line="123"/>
         <source>Height of the %1</source>
         <translation>Height of the %1</translation>
     </message>
     <message>
-        <location filename="../Core/PropertyQSize.cpp" line="95"/>
+        <location filename="../Core/PropertyQSize.cpp" line="93"/>
         <source>[%1 x %2]</source>
         <translation>[%1 x %2]</translation>
     </message>
@@ -1031,19 +1031,35 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyView</name>
     <message>
-        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="278"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="110"/>
+        <source>Lock</source>
+        <translation>Lock</translation>
+    </message>
+    <message>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="111"/>
+        <source>Unlock</source>
+        <translation>Unlock</translation>
+    </message>
+    <message>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="226"/>
         <source>Click to expand</source>
         <translation>Click to expand</translation>
     </message>
     <message>
-        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="279"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="227"/>
         <source>Click to collapse</source>
         <translation>Click to collapse</translation>
     </message>
     <message>
-        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="331"/>
+        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="253"/>
         <source>Reset to default value</source>
         <translation>Reset to default value</translation>
+    </message>
+    <message>
+        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="259"/>
+        <source>R</source>
+        <comment>Reset button text</comment>
+        <translation>R</translation>
     </message>
     <message>
         <location filename="../Delegates/Utils/PropertyDelegateSliderBox.cpp" line="65"/>
@@ -1054,12 +1070,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyWidgetEx</name>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="187"/>
+        <location filename="../PropertyWidgetEx.cpp" line="191"/>
         <source>Reset to default</source>
         <translation>Reset to default value</translation>
     </message>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="189"/>
+        <location filename="../PropertyWidgetEx.cpp" line="193"/>
         <source>Reset value of %1 to default</source>
         <translation>Reset value of %1 to default</translation>
     </message>
