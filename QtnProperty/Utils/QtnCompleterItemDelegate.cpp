@@ -55,20 +55,22 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 					if (currentStr.startsWith(
 							subString, completer->caseSensitivity()))
 					{
-						highlightRect.setWidth(fm.width(subString));
+						highlightRect.setWidth(fm.width(QString::fromRawData(
+							currentStr.constData(), subString.length())));
 						contains = true;
 					}
 					break;
 				case Qt::MatchContains:
 				{
 					int i = currentStr.indexOf(
-						subString, completer->caseSensitivity());
+						subString, 0, completer->caseSensitivity());
 					if (i >= 0)
 					{
 						highlightRect.setLeft(highlightRect.left() +
 							fm.width(QString::fromRawData(
 								currentStr.constData(), i)));
-						highlightRect.setWidth(fm.width(subString));
+						highlightRect.setWidth(fm.width(QString::fromRawData(
+							&currentStr.constData()[i], subString.length())));
 						contains = true;
 					}
 					break;

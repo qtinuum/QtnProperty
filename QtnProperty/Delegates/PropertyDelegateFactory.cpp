@@ -48,6 +48,7 @@ limitations under the License.
 
 QtnPropertyDelegateFactory::QtnPropertyDelegateFactory(
 	QtnPropertyDelegateFactory *superFactory)
+	: m_superFactory(nullptr)
 {
 	setSuperFactory(superFactory);
 }
