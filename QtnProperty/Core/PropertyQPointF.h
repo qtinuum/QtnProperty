@@ -38,6 +38,11 @@ public:
 	QtnProperty *createXProperty();
 	QtnProperty *createYProperty();
 
+	virtual QString getXLabel() const;
+	virtual QString getXDescriptionFormat() const;
+	virtual QString getYLabel() const;
+	virtual QString getYDescriptionFormat() const;
+
 protected:
 	// string conversion implementation
 	bool fromStrImpl(

@@ -27,15 +27,33 @@ QtnPropertyQPointFBase::QtnPropertyQPointFBase(QObject *parent)
 QtnProperty *QtnPropertyQPointFBase::createXProperty()
 {
 	return createFieldProperty(&QPointF::x, &QPointF::setX,
-		QtnPropertyQPoint::xKey(), QtnPropertyQPoint::xDisplayName(),
-		QtnPropertyQPoint::xDescriptionFmt());
+		QtnPropertyQPoint::xKey(), getXLabel(), getXDescriptionFormat());
 }
 
 QtnProperty *QtnPropertyQPointFBase::createYProperty()
 {
 	return createFieldProperty(&QPointF::y, &QPointF::setY,
-		QtnPropertyQPoint::yKey(), QtnPropertyQPoint::yDisplayName(),
-		QtnPropertyQPoint::yDescriptionFmt());
+		QtnPropertyQPoint::yKey(), getYLabel(), getYDescriptionFormat());
+}
+
+QString QtnPropertyQPointFBase::getXLabel() const
+{
+	return QtnPropertyQPoint::xDisplayName();
+}
+
+QString QtnPropertyQPointFBase::getXDescriptionFormat() const
+{
+	return QtnPropertyQPoint::xDescriptionFmt();
+}
+
+QString QtnPropertyQPointFBase::getYLabel() const
+{
+	return QtnPropertyQPoint::yDisplayName();
+}
+
+QString QtnPropertyQPointFBase::getYDescriptionFormat() const
+{
+	return QtnPropertyQPoint::yDescriptionFmt();
 }
 
 bool QtnPropertyQPointFBase::fromStrImpl(
