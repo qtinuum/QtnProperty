@@ -58,7 +58,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 				context.painter->fillRect(item.rect,
 					(context.isActive)
 						? context.palette().color(QPalette::Highlight)
-						: context.palette().color(QPalette::Dark));
+						: context.alternateColor());
 
 			};
 

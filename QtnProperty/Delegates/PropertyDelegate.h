@@ -84,6 +84,8 @@ protected:
 
 	void addLockItem(QtnDrawContext &context, QList<QtnSubItem> &subItems);
 
+	static QColor disabledTextColor(const QStylePainter &painter);
+
 protected:
 	QtnPropertyBase *m_ownerProperty;
 	QtnPropertyBase *m_stateProperty;

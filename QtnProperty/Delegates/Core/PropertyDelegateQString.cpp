@@ -273,9 +273,9 @@ void QtnPropertyDelegateQString::drawValueImpl(
 	{
 		auto palette = painter.style()->standardPalette();
 		if (palette.currentColorGroup() != QPalette::Disabled &&
-			oldPen.color() != palette.color(QPalette::HighlightedText))
+			painter.brush().color() != palette.color(QPalette::Highlight))
 		{
-			painter.setPen(palette.color(QPalette::Disabled, QPalette::Text));
+			painter.setPen(disabledTextColor(painter));
 		}
 	}
 

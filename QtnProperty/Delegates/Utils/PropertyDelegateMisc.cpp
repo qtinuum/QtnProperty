@@ -430,6 +430,7 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(
 	subItemValue.drawHandler = [this](QtnDrawContext &context,
 								   const QtnSubItem &item) {
 		// draw property value
+		auto oldBrush = context.painter->brush();
 		auto oldPen = context.painter->pen();
 		auto cg = (stateProperty()->isEditableByUser() &&
 					  !stateProperty()->isMultiValue())
@@ -437,9 +438,14 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(
 			: QPalette::Disabled;
 		auto color = context.palette().color(
 			cg, context.isActive ? QPalette::HighlightedText : QPalette::Text);
+		auto bgColor = context.isActive
+			? context.palette().color(cg, QPalette::Highlight)
+			: context.alternateColor();
 
+		context.painter->setBrush(bgColor);
 		context.painter->setPen(color);
 		drawValueImpl(*context.painter, item.rect);
+		context.painter->setBrush(oldBrush);
 		context.painter->setPen(oldPen);
 	};
 

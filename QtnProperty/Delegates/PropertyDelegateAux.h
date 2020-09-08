@@ -167,6 +167,7 @@ public:
 	void initStyleOption(QStyleOption &option) const;
 	const QPalette &palette() const;
 	QPalette::ColorGroup colorGroup() const;
+	QColor alternateColor() const;
 };
 
 struct QTN_IMPORT_EXPORT QtnEventContext

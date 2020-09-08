@@ -247,6 +247,16 @@ QPalette::ColorGroup QtnDrawContext::colorGroup() const
 	return palette().currentColorGroup();
 }
 
+QColor QtnDrawContext::alternateColor() const
+{
+	auto color = palette().color(QPalette::Button);
+	if (color == palette().color(QPalette::Window))
+	{
+		color = color.darker(120);
+	}
+	return color;
+}
+
 void QtnEventContext::updateWidget()
 {
 	widget->viewport()->update();

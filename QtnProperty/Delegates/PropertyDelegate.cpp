@@ -137,3 +137,10 @@ void QtnPropertyDelegate::addLockItem(
 		subItems.append(item);
 	}
 }
+
+QColor QtnPropertyDelegate::disabledTextColor(const QStylePainter &painter)
+{
+	return painter.style()->standardPalette().color(
+		QPalette::Disabled, QPalette::Text);
+}
+
