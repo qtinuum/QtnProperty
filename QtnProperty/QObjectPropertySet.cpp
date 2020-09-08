@@ -56,7 +56,8 @@ QtnPropertyState qtnPropertyStateToAdd(const QMetaProperty &metaProperty)
 	if (!metaProperty.isDesignable())
 		toAdd |= QtnPropertyStateInvisible;
 
-	if (metaProperty.isConstant() || !metaProperty.isWritable())
+	if (metaProperty.isConstant() ||
+		(!metaProperty.isWritable() && !metaProperty.isResettable()))
 	{
 		toAdd |= QtnPropertyStateImmutable;
 	}

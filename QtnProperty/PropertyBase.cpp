@@ -794,7 +794,7 @@ void QtnPropertyBase::setExpanded(bool expanded)
 
 bool QtnPropertyBase::isResettable() const
 {
-	return isWritable() && 0 != (stateLocal() & QtnPropertyStateResettable);
+	return 0 != (stateLocal() & QtnPropertyStateResettable);
 }
 
 void QtnPropertyBase::reset(QtnPropertyChangeReason reason)
