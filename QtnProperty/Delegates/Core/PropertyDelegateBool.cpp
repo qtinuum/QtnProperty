@@ -71,6 +71,7 @@ bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(
 	QtnDrawContext &context, QtnSubItem &subItemValue)
 {
 	subItemValue.trackState();
+	subItemValue.rect.adjust(context.widget->valueLeftMargin(), 0, 0, 0);
 	subItemValue.rect.setWidth(
 		context.style()->pixelMetric(QStyle::PM_IndicatorWidth));
 
@@ -78,7 +79,6 @@ bool QtnPropertyDelegateBoolCheck::createSubItemValueImpl(
 								   const QtnSubItem &item) {
 		QStyleOptionButton opt;
 		opt.rect = item.rect;
-		opt.rect.adjust(context.widget->valueLeftMargin(), 0, 0, 0);
 		opt.state = state(context.isActive, item);
 
 		if (stateProperty()->isMultiValue())
