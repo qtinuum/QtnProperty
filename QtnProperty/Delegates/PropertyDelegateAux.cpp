@@ -52,7 +52,11 @@ void QtnSubItem::setPropertyDescriptionAsTooltip(
 {
 	tooltipHandler = [&property](
 						 QtnEventContext &, const QtnSubItem &) -> QString {
-		return property.description();
+		auto descr = property.description();
+		if (descr.isEmpty())
+			return property.displayName();
+
+		return descr;
 	};
 }
 
