@@ -118,8 +118,8 @@ void QtnPropertyDelegate::addLockItem(
 							   const QtnSubItem &item) {
 			drawButton(context, item, QIcon(),
 				stateProperty()->isWritable()
-					? QString::fromUtf8("\xF0\x9F\x94\x92")
-					: QString::fromUtf8("\xF0\x9F\x94\x93"));
+					? QString::fromUtf8("\xF0\x9F\x94\x93")
+					: QString::fromUtf8("\xF0\x9F\x94\x92"));
 		};
 
 		item.eventHandler = [this](QtnEventContext &context, const QtnSubItem &,
