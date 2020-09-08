@@ -58,7 +58,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 				context.painter->fillRect(item.rect,
 					(context.isActive)
 						? context.palette().color(QPalette::Highlight)
-						: context.palette().color(QPalette::Button));
+						: context.palette().color(QPalette::Dark));
 
 			};
 
@@ -96,7 +96,8 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 					branchPath.moveTo(
 						branchRect.left() + side, branchRect.top() + side);
 					branchPath.lineTo(branchRect.right() - side - 1,
-						branchRect.top() + branchRect.height() / static_cast<qreal>(2.0));
+						branchRect.top() +
+							branchRect.height() / static_cast<qreal>(2.0));
 					branchPath.lineTo(
 						branchRect.left() + side, branchRect.bottom() - side);
 					branchPath.closeSubpath();
@@ -106,8 +107,8 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 						branchRect.left() + side, branchRect.top() + side);
 					branchPath.lineTo(
 						branchRect.right() - side, branchRect.top() + side);
-					branchPath.lineTo(
-						branchRect.left() + branchRect.width() / static_cast<qreal>(2.0),
+					branchPath.lineTo(branchRect.left() +
+							branchRect.width() / static_cast<qreal>(2.0),
 						branchRect.bottom() - side - 1);
 					branchPath.closeSubpath();
 				}
