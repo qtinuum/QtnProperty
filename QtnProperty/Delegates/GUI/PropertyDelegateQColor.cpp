@@ -109,7 +109,11 @@ void QtnPropertyDelegateQColor::drawValueImpl(
 
 		if (m_shape == QtnColorDelegateShapeSquare)
 		{
-			painter.fillRect(colorRect, Qt::black);
+			painter.fillRect(colorRect,
+				painter.style()->standardPalette().color(
+					stateProperty()->isEditableByUser() ? QPalette::Active
+														: QPalette::Disabled,
+					QPalette::Text));
 			colorRect.adjust(1, 1, -1, -1);
 			painter.fillRect(colorRect, value);
 		} else if (m_shape == QtnColorDelegateShapeCircle)
