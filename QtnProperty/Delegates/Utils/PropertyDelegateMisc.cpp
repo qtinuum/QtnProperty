@@ -375,7 +375,7 @@ void QtnPropertyDelegateWithValues::addSubItemValues(
 	auto rect = context.rect.marginsRemoved(context.margins);
 	rect.setLeft(context.splitPos);
 
-	if (stateProperty()->isResettable())
+	if (stateProperty()->isResettable() && !stateProperty()->valueIsDefault())
 	{
 		rect.setRight(rect.right() - rect.height());
 	}
