@@ -138,7 +138,7 @@ void QtnPropertyDelegateWithValues::createSubItemsImpl(
 	addSubItemBackground(context, subItems);
 	addSubItemSelection(context, subItems);
 	addSubItemBranchNode(context, subItems);
-	addLockItem(context, subItems);
+	addSubItemLock(context, subItems);
 	addSubItemName(context, subItems);
 	addSubItemReset(context, subItems);
 	addSubItemValues(context, subItems);

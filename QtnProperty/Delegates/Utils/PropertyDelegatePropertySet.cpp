@@ -68,7 +68,7 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 	}
 
 	addSubItemBranchNode(context, subItems);
-	addLockItem(context, subItems);
+	addSubItemLock(context, subItems);
 
 	// property set name
 	{

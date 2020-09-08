@@ -93,7 +93,7 @@ QStyle::State QtnPropertyDelegate::state(
 	return state;
 }
 
-void QtnPropertyDelegate::addLockItem(
+void QtnPropertyDelegate::addSubItemLock(
 	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
 	if (!stateProperty()->isUnlockable())

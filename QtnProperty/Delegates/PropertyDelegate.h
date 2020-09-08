@@ -85,7 +85,7 @@ protected:
 	// helper functions
 	QStyle::State state(bool isActive, const QtnSubItem &subItem) const;
 
-	void addLockItem(QtnDrawContext &context, QList<QtnSubItem> &subItems);
+	void addSubItemLock(QtnDrawContext &context, QList<QtnSubItem> &subItems);
 
 	static QColor disabledTextColor(const QStylePainter &painter);
 
