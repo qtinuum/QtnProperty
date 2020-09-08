@@ -441,6 +441,16 @@ static const int TOLERANCE = 3;
 
 void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 {
+	if (e->button() == Qt::RightButton)
+	{
+		auto property = getPropertyAt(e->pos());
+		if (property)
+		{
+			setActiveProperty(property, true);
+		}
+		return;
+	}
+
 	if (e->button() != Qt::LeftButton)
 		return;
 
