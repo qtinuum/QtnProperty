@@ -168,6 +168,7 @@ public:
 	const QPalette &palette() const;
 	QPalette::ColorGroup colorGroup() const;
 	QColor alternateColor() const;
+	QColor textColorFor(bool normalText) const;
 };
 
 struct QTN_IMPORT_EXPORT QtnEventContext

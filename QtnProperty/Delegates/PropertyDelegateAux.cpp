@@ -257,6 +257,30 @@ QColor QtnDrawContext::alternateColor() const
 	return color;
 }
 
+QColor QtnDrawContext::textColorFor(bool normalText) const
+{
+	QPalette::ColorRole role;
+	QPalette::ColorGroup group =
+		normalText ? palette().currentColorGroup() : QPalette::Disabled;
+	if (isActive)
+	{
+		role = QPalette::HighlightedText;
+	} else if (normalText)
+	{
+		role = QPalette::Text;
+	} else
+	{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+		role = QPalette::PlaceholderText;
+#else
+		group = QPalette::Disabled;
+		role = QPalette::Text;
+#endif
+	}
+
+	return palette().color(group, role);
+}
+
 void QtnEventContext::updateWidget()
 {
 	widget->viewport()->update();

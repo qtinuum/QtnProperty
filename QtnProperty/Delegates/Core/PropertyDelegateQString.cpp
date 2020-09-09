@@ -337,7 +337,7 @@ void QtnPropertyDelegateQStringInvalidBase::drawValueImpl(
 	{
 		auto palette = painter.style()->standardPalette();
 		if (palette.currentColorGroup() != QPalette::Disabled &&
-			oldPen.color() != palette.color(QPalette::HighlightedText))
+			painter.brush().color() != palette.color(QPalette::Highlight))
 		{
 			painter.setPen(m_invalidColor.rgb());
 		}

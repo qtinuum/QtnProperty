@@ -79,10 +79,6 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 		{
 			nameItem.drawHandler = [this](QtnDrawContext &context,
 									   const QtnSubItem &item) {
-				QPalette::ColorGroup cg = stateProperty()->isEditableByUser()
-					? context.colorGroup()
-					: QPalette::Disabled;
-
 				QFont oldFont = context.painter->font();
 				QPen oldPen = context.painter->pen();
 
@@ -91,9 +87,8 @@ void QtnPropertyDelegatePropertySet::createSubItemsImpl(
 				font.setBold(true);
 				context.painter->setFont(font);
 
-				context.painter->setPen(context.palette().color(cg,
-					(context.isActive) ? QPalette::HighlightedText
-									   : QPalette::Text));
+				context.painter->setPen(
+					context.textColorFor(stateProperty()->isEditableByUser()));
 
 				QString elidedName = context.painter->fontMetrics().elidedText(
 					property()->displayName(), Qt::ElideRight,

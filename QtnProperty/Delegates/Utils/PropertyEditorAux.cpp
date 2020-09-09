@@ -196,7 +196,12 @@ void QtnPropertyComboBox::paintEvent(QPaintEvent *event)
 	{
 		if (isEnabled())
 		{
-			painter.setPen(palette().color(QPalette::Disabled, QPalette::Text));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+			auto color = palette().color(QPalette::PlaceholderText);
+#else
+			auto color = palette().color(QPalette::Disabled, QPalette::Text);
+#endif
+			painter.setPen(color);
 		}
 		qtnDrawValueText(QtnMultiProperty::getMultiValuePlaceholder(), painter,
 			rect, style());

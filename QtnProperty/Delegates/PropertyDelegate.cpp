@@ -142,8 +142,12 @@ void QtnPropertyDelegate::addSubItemLock(
 
 QColor QtnPropertyDelegate::disabledTextColor(const QStylePainter &painter)
 {
-	return painter.style()->standardPalette().color(
-		QPalette::Disabled, QPalette::Text);
+	auto palette = painter.style()->standardPalette();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+	return palette.color(QPalette::PlaceholderText);
+#else
+	return palette.color(QPalette::Disabled, QPalette::Text);
+#endif
 }
 
 void QtnPropertyDelegate::addSubItemBranchNode(

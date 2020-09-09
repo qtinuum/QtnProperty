@@ -88,7 +88,8 @@ QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(
 		return metaProperty.read(object);
 	});
 
-	setCallbackValueSet([object, metaProperty](QVariant value, QtnPropertyChangeReason /*reason*/) {
+	setCallbackValueSet([object, metaProperty](QVariant value,
+							QtnPropertyChangeReason /*reason*/) {
 		metaProperty.write(object, value);
 	});
 
@@ -211,9 +212,9 @@ void QtnPropertyDelegateQVariant::drawValueImpl(
 	{
 		auto palette = painter.style()->standardPalette();
 		if (palette.currentColorGroup() != QPalette::Disabled &&
-			oldPen.color() != palette.color(QPalette::HighlightedText))
+			painter.brush().color() != palette.color(QPalette::Highlight))
 		{
-			painter.setPen(palette.color(QPalette::Disabled, QPalette::Text));
+			painter.setPen(disabledTextColor(painter));
 		}
 	}
 

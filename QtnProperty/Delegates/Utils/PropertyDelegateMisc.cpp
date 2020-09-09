@@ -213,11 +213,8 @@ void QtnPropertyDelegateWithValues::addSubItemName(
 							   const QtnSubItem &item) {
 		context.painter->save();
 
-		auto cg = stateProperty()->isEditableByUser() ? context.colorGroup()
-													  : QPalette::Disabled;
-		auto color = context.palette().color(
-			cg, context.isActive ? QPalette::HighlightedText : QPalette::Text);
-		context.painter->setPen(color);
+		context.painter->setPen(
+			context.textColorFor(stateProperty()->isEditableByUser()));
 
 		if (!stateProperty()->valueIsDefault())
 		{
@@ -347,12 +344,10 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(
 		// draw property value
 		auto oldBrush = context.painter->brush();
 		auto oldPen = context.painter->pen();
-		auto cg = (stateProperty()->isEditableByUser() &&
-					  !stateProperty()->isMultiValue())
-			? context.colorGroup()
-			: QPalette::Disabled;
-		auto color = context.palette().color(
-			cg, context.isActive ? QPalette::HighlightedText : QPalette::Text);
+		auto isNormalText = stateProperty()->isEditableByUser() &&
+			!stateProperty()->isMultiValue();
+		auto cg = isNormalText ? context.colorGroup() : QPalette::Disabled;
+		auto color = context.textColorFor(isNormalText);
 		auto bgColor = context.isActive
 			? context.palette().color(cg, QPalette::Highlight)
 			: context.alternateColor();
