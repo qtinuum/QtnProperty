@@ -33,6 +33,7 @@ public:
 	explicit QtnPropertyConnector(QtnPropertyBase *property);
 
 	void connectProperty(QObject *object, const QMetaProperty &metaProperty);
+	void updatePropertyState();
 
 	bool isResettablePropertyValue() const;
 	void resetPropertyValue(QtnPropertyChangeReason reason);

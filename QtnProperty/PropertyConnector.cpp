@@ -34,10 +34,10 @@ QtnPropertyConnector::QtnPropertyConnector(QtnPropertyBase *property)
 void QtnPropertyConnector::connectProperty(
 	QObject *object, const QMetaProperty &metaProperty)
 {
-	property->switchState(
-		QtnPropertyStateResettable, metaProperty.isResettable());
 	this->object = object;
 	this->metaProperty = metaProperty;
+	property->switchState(
+		QtnPropertyStateResettable, metaProperty.isResettable());
 	auto metaObject = this->metaObject();
 	auto slot = metaObject->method(metaObject->indexOfSlot("onValueChanged()"));
 	QObject::connect(object, metaProperty.notifySignal(), this, slot);
@@ -55,6 +55,22 @@ void QtnPropertyConnector::connectProperty(
 			metaObject->indexOfSlot("onModifiedSetChanged()"));
 		QObject::connect(object, signal, this, slot);
 	}
+}
+
+void QtnPropertyConnector::updatePropertyState()
+{
+	if (!property || !object || !metaProperty.isValid())
+	{
+		return;
+	}
+
+	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
+	if (!stateProvider)
+	{
+		return;
+	}
+
+	stateProvider->setPropertyState(metaProperty, property->stateLocal());
 }
 
 bool QtnPropertyConnector::isResettablePropertyValue() const

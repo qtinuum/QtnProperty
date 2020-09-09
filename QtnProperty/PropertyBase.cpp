@@ -307,6 +307,12 @@ void QtnPropertyBase::setState(QtnPropertyState stateToSet, bool force)
 
 	m_stateLocal = stateToSet;
 
+	auto connector = getConnector();
+	if (connector)
+	{
+		connector->updatePropertyState();
+	}
+
 	emit propertyDidChange(QtnPropertyChangeReasonStateLocal);
 
 	updateStateInherited(force);

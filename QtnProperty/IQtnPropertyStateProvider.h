@@ -24,4 +24,7 @@ struct IQtnPropertyStateProvider
 
 	virtual QtnPropertyState getPropertyState(
 		const QMetaProperty &metaProperty) const = 0;
+
+	virtual void setPropertyState(
+		const QMetaProperty &metaProperty, QtnPropertyState state) = 0;
 };
