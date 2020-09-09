@@ -24,7 +24,20 @@ limitations under the License.
 
 QObjectPropertyWidget::QObjectPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
+	, mListInheritanceBackwards(true)
 {
+}
+
+void QObjectPropertyWidget::setListInheritanceBackwards(bool value)
+{
+	if (mListInheritanceBackwards == value)
+	{
+		return;
+	}
+
+	disconnectObjects();
+	mListInheritanceBackwards = value;
+	connectObjects();
 }
 
 void QObjectPropertyWidget::deselectAllObjects()
@@ -127,7 +140,8 @@ void QObjectPropertyWidget::connectObjects()
 	if (selectedObjects.size() == 1)
 	{
 		auto object = *selectedObjects.begin();
-		auto set = qtnCreateQObjectPropertySet(object, true);
+		auto set =
+			qtnCreateQObjectPropertySet(object, mListInheritanceBackwards);
 
 		if (nullptr != set)
 			set->setParent(this);
@@ -137,7 +151,8 @@ void QObjectPropertyWidget::connectObjects()
 		connectObject(object);
 	} else if (selectedObjects.size() > 1)
 	{
-		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects, true);
+		auto set = qtnCreateQObjectMultiPropertySet(
+			selectedObjects, mListInheritanceBackwards);
 
 		if (nullptr != set)
 			set->setParent(this);

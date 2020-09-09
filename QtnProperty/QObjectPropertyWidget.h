@@ -36,6 +36,9 @@ public:
 
 	inline const Objects &getSelectedObjects() const;
 
+	bool isListInheritanceBackwards() const;
+	void setListInheritanceBackwards(bool value);
+
 public slots:
 	void deselectAllObjects();
 	void selectObject(QObject *object, bool addSelection = true);
@@ -56,10 +59,16 @@ protected:
 	void connectObject(QObject *object);
 
 	Objects selectedObjects;
+	bool mListInheritanceBackwards;
 };
 
 const QObjectPropertyWidget::Objects & //
 QObjectPropertyWidget::getSelectedObjects() const
 {
 	return selectedObjects;
+}
+
+inline bool QObjectPropertyWidget::isListInheritanceBackwards() const
+{
+	return mListInheritanceBackwards;
 }
