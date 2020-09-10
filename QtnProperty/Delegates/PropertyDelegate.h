@@ -41,6 +41,8 @@ public:
 	virtual ~QtnPropertyDelegate();
 	virtual void init();
 
+	static QIcon resetIcon();
+
 	QtnPropertyChangeReason editReason() const;
 
 	inline QtnPropertyBase *stateProperty() const;

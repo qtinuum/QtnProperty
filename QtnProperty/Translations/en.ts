@@ -1041,12 +1041,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation>Unlock</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="234"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="235"/>
         <source>Click to expand</source>
         <translation>Click to expand</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="235"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="236"/>
         <source>Click to collapse</source>
         <translation>Click to collapse</translation>
     </message>
@@ -1070,14 +1070,34 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyWidgetEx</name>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="191"/>
+        <location filename="../PropertyWidgetEx.cpp" line="201"/>
         <source>Reset to default</source>
         <translation>Reset to default value</translation>
     </message>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="193"/>
+        <location filename="../PropertyWidgetEx.cpp" line="203"/>
         <source>Reset value of %1 to default</source>
         <translation>Reset value of %1 to default</translation>
+    </message>
+    <message>
+        <location filename="../PropertyWidgetEx.cpp" line="214"/>
+        <source>Unlock property</source>
+        <translation>🔓Unlock property</translation>
+    </message>
+    <message>
+        <location filename="../PropertyWidgetEx.cpp" line="214"/>
+        <source>Lock property</source>
+        <translation>🔒Lock property</translation>
+    </message>
+    <message>
+        <location filename="../PropertyWidgetEx.cpp" line="215"/>
+        <source>Unlock %1</source>
+        <translation>Unlock %1</translation>
+    </message>
+    <message>
+        <location filename="../PropertyWidgetEx.cpp" line="215"/>
+        <source>Lock %1</source>
+        <translation>Lock %1</translation>
     </message>
 </context>
 </TS>

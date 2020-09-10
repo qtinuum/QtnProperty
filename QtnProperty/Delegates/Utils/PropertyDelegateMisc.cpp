@@ -25,7 +25,7 @@ limitations under the License.
 
 static QIcon qtnResetIcon;
 
-static QIcon resetIcon()
+QIcon QtnPropertyDelegate::resetIcon()
 {
 	if (!qtnResetIcon.isNull())
 		return qtnResetIcon;

@@ -129,6 +129,19 @@ void QtnPropertyWidgetEx::onResetTriggered()
 	}
 }
 
+void QtnPropertyWidgetEx::onLockToggleTriggered()
+{
+	auto activeProperty = getActiveProperty();
+	if (activeProperty && activeProperty->isUnlockable() &&
+		activeProperty->isVisible())
+	{
+		QtnConnections connections;
+		propertyView()->connectPropertyToEdit(activeProperty, connections);
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonEdit;
+		activeProperty->toggleLock(reason);
+	}
+}
+
 bool QtnPropertyWidgetEx::dataHasSupportedFormats(const QMimeData *data)
 {
 	if (nullptr != data)
@@ -179,22 +192,44 @@ void QtnPropertyWidgetEx::contextMenuEvent(QContextMenuEvent *event)
 	if (!property)
 		return;
 
-	if (!property->isResettable() || !property->isVisible() ||
-		property->valueIsDefault())
+	auto menu = new QMenu;
+	int actionCount = 0;
+
+	if (property->isResettable() && property->isVisible() &&
+		!property->valueIsDefault() &&
+		(!property->isUnlockable() || !property->isLocked()))
 	{
+		auto action = menu->addAction(tr("Reset to default"));
+		action->setIcon(QtnPropertyDelegate::resetIcon());
+		action->setStatusTip(
+			tr("Reset value of %1 to default").arg(property->displayName()));
+
+		QObject::connect(action, &QAction::triggered, this,
+			&QtnPropertyWidgetEx::onResetTriggered);
+
+		actionCount++;
+	}
+
+	if (property->isUnlockable() && property->isVisible())
+	{
+		auto action = menu->addAction(
+			property->isLocked() ? tr("Unlock property") : tr("Lock property"));
+		auto statusFmt = property->isLocked() ? tr("Unlock %1") : tr("Lock %1");
+		action->setStatusTip(statusFmt.arg(property->displayName()));
+
+		QObject::connect(action, &QAction::triggered, this,
+			&QtnPropertyWidgetEx::onLockToggleTriggered);
+
+		actionCount++;
+	}
+
+	if (actionCount == 0)
+	{
+		delete menu;
 		return;
 	}
 
-	auto menu = new QMenu;
 	menu->setAttribute(Qt::WA_DeleteOnClose);
-
-	auto action = menu->addAction(tr("Reset to default"));
-	action->setStatusTip(
-		tr("Reset value of %1 to default").arg(property->name()));
-
-	QObject::connect(action, &QAction::triggered, this,
-		&QtnPropertyWidgetEx::onResetTriggered);
-
 	menu->popup(event->globalPos());
 }
 

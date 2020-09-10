@@ -76,6 +76,7 @@ public:
 private:
 	void onMouseReleased();
 	void onResetTriggered();
+	void onLockToggleTriggered();
 
 public slots:
 	void deleteActiveProperty();
