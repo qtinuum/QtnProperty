@@ -128,8 +128,6 @@ void QtnPropertyDelegate::addSubItemLock(
 				(context.eventType() == QEvent::MouseButtonDblClick))
 			{
 				stateProperty()->toggleState(QtnPropertyStateImmutable);
-				property()->switchState(
-					QtnPropertyStateImmutable, !stateProperty()->isWritable());
 				return true;
 			}
 
