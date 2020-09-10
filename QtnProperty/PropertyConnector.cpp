@@ -37,8 +37,6 @@ void QtnPropertyConnector::connectProperty(
 {
 	this->object = object;
 	this->metaProperty = metaProperty;
-	property->switchState(
-		QtnPropertyStateResettable, metaProperty.isResettable());
 	auto metaObject = this->metaObject();
 	auto slot = metaObject->method(metaObject->indexOfSlot("onValueChanged()"));
 	QObject::connect(object, metaProperty.notifySignal(), this, slot);
@@ -64,6 +62,10 @@ void QtnPropertyConnector::connectProperty(
 				"onPropertyStateChanged(QMetaProperty)"));
 			QObject::connect(object, signal, this, slot);
 		}
+	} else
+	{
+		property->switchState(
+			QtnPropertyStateResettable, metaProperty.isResettable());
 	}
 }
 
