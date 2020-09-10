@@ -19,8 +19,8 @@ limitations under the License.
 #include "Config.h"
 #include "Auxiliary/PropertyAux.h"
 
-#include <QObject>
 #include <QMetaProperty>
+#include <QObject>
 
 class QtnPropertyBase;
 class QtnPropertySet;
@@ -44,11 +44,13 @@ public:
 private slots:
 	void onValueChanged();
 	void onModifiedSetChanged();
+	void onPropertyStateChanged(const QMetaProperty &metaProperty);
 
 private:
 	QtnPropertyBase *property;
 	QObject *object;
 	QMetaProperty metaProperty;
+	unsigned ignoreStateChangeCounter;
 };
 
 QObject *QtnPropertyConnector::getObject() const

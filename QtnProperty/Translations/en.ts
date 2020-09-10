@@ -1014,12 +1014,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="137"/>
+        <location filename="../PropertyQVariant.cpp" line="138"/>
         <source>(Dictionary)</source>
         <translation>(Dictionary)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="140"/>
+        <location filename="../PropertyQVariant.cpp" line="141"/>
         <source>(List)</source>
         <translation>(List)</translation>
     </message>
@@ -1031,32 +1031,32 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyView</name>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="110"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="111"/>
         <source>Lock</source>
         <translation>Lock</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="111"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="112"/>
         <source>Unlock</source>
         <translation>Unlock</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="226"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="234"/>
         <source>Click to expand</source>
         <translation>Click to expand</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="227"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="235"/>
         <source>Click to collapse</source>
         <translation>Click to collapse</translation>
     </message>
     <message>
-        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="253"/>
+        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="250"/>
         <source>Reset to default value</source>
         <translation>Reset to default value</translation>
     </message>
     <message>
-        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="259"/>
+        <location filename="../Delegates/Utils/PropertyDelegateMisc.cpp" line="256"/>
         <source>R</source>
         <comment>Reset button text</comment>
         <translation>R</translation>

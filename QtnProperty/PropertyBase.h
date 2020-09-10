@@ -89,6 +89,10 @@ public:
 	inline QtnPropertyConnector *getConnector() const;
 	inline bool isQObjectProperty() const;
 
+	void setLocked(bool locked,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReason());
+	void toggleLock(QtnPropertyChangeReason reason = QtnPropertyChangeReason());
+
 	// states
 	QtnPropertyState state() const;
 	inline QtnPropertyState stateLocal() const;
@@ -106,6 +110,7 @@ public:
 	bool isMultiValue() const;
 	bool valueIsDefault() const;
 	bool isSimple() const;
+	bool isLocked() const;
 
 	// serialization
 	bool load(QDataStream &stream);
@@ -173,8 +178,13 @@ protected:
 	virtual void updateStateInherited(bool force);
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
+	void setStateInternal(QtnPropertyState stateToSet, bool force = false,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReason());
+
 	virtual void masterPropertyWillChange(QtnPropertyChangeReason reason);
 	virtual void masterPropertyDidChange(QtnPropertyChangeReason reason);
+
+	virtual void updatePropertyState();
 
 private:
 	QtnPropertyState masterPropertyState() const;

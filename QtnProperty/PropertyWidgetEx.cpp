@@ -124,7 +124,7 @@ void QtnPropertyWidgetEx::onResetTriggered()
 	{
 		QtnConnections connections;
 		propertyView()->connectPropertyToEdit(activeProperty, connections);
-		QtnPropertyChangeReason reason = QtnPropertyChangeReasonEditValue;
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonEdit;
 		activeProperty->reset(reason);
 	}
 }
@@ -257,7 +257,7 @@ bool QtnPropertyWidgetEx::applyPropertyData(
 		{
 			return false;
 		}
-		return destination->fromStr(str, QtnPropertyChangeReasonEditValue);
+		return destination->fromStr(str, QtnPropertyChangeReasonEdit);
 	}
 
 	return false;

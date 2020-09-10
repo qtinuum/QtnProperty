@@ -159,11 +159,12 @@ void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 
 	Q_ASSERT(nullptr != qobject_cast<QtnProperty *>(sender()));
 	auto changedProperty = static_cast<QtnProperty *>(sender());
-	if (edited && (reason & QtnPropertyChangeReasonEditValue))
+	if (edited && (reason & QtnPropertyChangeReasonEdit) &&
+		(reason & QtnPropertyChangeReasonValue))
 	{
 		auto value = changedProperty->valueAsVariant();
 
-		auto singleReason = reason & ~QtnPropertyChangeReasonEditMultiValue;
+		auto singleReason = reason & ~QtnPropertyChangeReasonMultiEdit;
 
 		m_subPropertyUpdates++;
 		for (auto property : properties)
@@ -185,9 +186,9 @@ void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 	emit propertyDidChange(reason);
 }
 
-void QtnMultiProperty::updateStateInherited(bool force)
+void QtnMultiProperty::updatePropertyState()
 {
-	QtnProperty::updateStateInherited(force);
+	QtnProperty::updatePropertyState();
 
 	if (m_subPropertyUpdates)
 	{

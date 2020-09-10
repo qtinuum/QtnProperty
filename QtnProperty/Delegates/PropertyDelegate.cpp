@@ -16,6 +16,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegate.h"
+#include "Utils/QtnConnections.h"
 #include "Utils/PropertyEditorHandler.h"
 #include "PropertyView.h"
 
@@ -38,9 +39,9 @@ void QtnPropertyDelegate::init()
 
 QtnPropertyChangeReason QtnPropertyDelegate::editReason() const
 {
-	QtnPropertyChangeReason result = QtnPropertyChangeReasonEditValue;
+	QtnPropertyChangeReason result = QtnPropertyChangeReasonEdit;
 	if (stateProperty()->isMultiValue())
-		result |= QtnPropertyChangeReasonEditMultiValue;
+		result |= QtnPropertyChangeReasonMultiEdit;
 	return result;
 }
 
@@ -117,9 +118,10 @@ void QtnPropertyDelegate::addSubItemLock(
 		item.drawHandler = [this](QtnDrawContext &context,
 							   const QtnSubItem &item) {
 			drawButton(context, item, QIcon(),
-				stateProperty()->isWritable()
-					? QString::fromUtf8("\xF0\x9F\x94\x93")
-					: QString::fromUtf8("\xF0\x9F\x94\x92"));
+				stateProperty()->stateLocal().testFlag(
+					QtnPropertyStateImmutable)
+					? QString::fromUtf8("\xF0\x9F\x94\x92")
+					: QString::fromUtf8("\xF0\x9F\x94\x93"));
 		};
 
 		item.eventHandler = [this](QtnEventContext &context, const QtnSubItem &,
@@ -127,7 +129,10 @@ void QtnPropertyDelegate::addSubItemLock(
 			if ((context.eventType() == QEvent::MouseButtonPress) ||
 				(context.eventType() == QEvent::MouseButtonDblClick))
 			{
-				stateProperty()->toggleState(QtnPropertyStateImmutable);
+				QtnConnections connections;
+				context.widget->connectPropertyToEdit(
+					stateProperty(), connections);
+				stateProperty()->toggleLock(editReason());
 				return true;
 			}
 

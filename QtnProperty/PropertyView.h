@@ -95,6 +95,9 @@ signals:
 		QtnPropertyBase *property, QtnPropertyValuePtr newValue, int typeId);
 	void propertyEdited(QtnPropertyBase *property);
 
+	void beforePropertyLockToggled(QtnPropertyBase *property);
+	void propertyLockToggled(QtnPropertyBase *property);
+
 private:
 	void onActivePropertyDestroyed();
 	void onEditedPropertyWillChange(QtnPropertyChangeReason reason,

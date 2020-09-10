@@ -116,23 +116,48 @@ void QtnPropertyView::onActivePropertyDestroyed()
 void QtnPropertyView::onEditedPropertyWillChange(
 	QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
 {
-	if (reason & QtnPropertyChangeReasonEditValue)
+	if (!(reason & QtnPropertyChangeReasonEdit))
 	{
-		Q_ASSERT(nullptr != qobject_cast<QtnPropertyBase *>(sender()));
+		return;
+	}
+
+	Q_ASSERT(nullptr != qobject_cast<QtnPropertyBase *>(sender()));
+
+	if (reason & QtnPropertyChangeReasonValue)
+	{
 		auto property = static_cast<QtnPropertyBase *>(sender());
 
 		emit beforePropertyEdited(property, newValue, typeId);
+	}
+
+	if (reason & QtnPropertyChangeReasonLockToggled)
+	{
+		auto property = static_cast<QtnPropertyBase *>(sender());
+		emit beforePropertyLockToggled(property);
 	}
 }
 
 void QtnPropertyView::onEditedPropertyDidChange(QtnPropertyChangeReason reason)
 {
-	if (0 != (reason & QtnPropertyChangeReasonEditValue))
+	if (!(reason & QtnPropertyChangeReasonEdit))
 	{
-		Q_ASSERT(nullptr != qobject_cast<QtnPropertyBase *>(sender()));
+		return;
+	}
+
+	Q_ASSERT(nullptr != qobject_cast<QtnPropertyBase *>(sender()));
+
+	if (reason & QtnPropertyChangeReasonValue)
+	{
 		auto property = static_cast<QtnPropertyBase *>(sender());
 
 		emit propertyEdited(property);
+	}
+
+	if (reason & QtnPropertyChangeReasonLockToggled)
+	{
+		auto property = static_cast<QtnPropertyBase *>(sender());
+
+		emit propertyLockToggled(property);
 	}
 }
 
