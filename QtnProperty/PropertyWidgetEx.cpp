@@ -258,7 +258,7 @@ QMimeData *QtnPropertyWidgetEx::getPropertyDataForAction(
 bool QtnPropertyWidgetEx::applyPropertyData(
 	const QMimeData *data, QtnPropertyBase *destination, QtnApplyPosition)
 {
-	if (nullptr != destination)
+	if (nullptr != destination && destination->isWritable())
 	{
 		QtnConnections connections;
 

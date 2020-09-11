@@ -478,11 +478,15 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 	{
 		auto property = getPropertyAt(e->pos());
 		setActiveProperty(property, true);
+		QAbstractScrollArea::mousePressEvent(e);
 		return;
 	}
 
 	if (e->button() != Qt::LeftButton)
+	{
+		QAbstractScrollArea::mousePressEvent(e);
 		return;
+	}
 
 	if (qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
@@ -502,15 +506,17 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 			changeActivePropertyByIndex(index);
 			handleMouseEvent(index, e, e->pos());
 		}
-
-		QAbstractScrollArea::mousePressEvent(e);
 	}
+	QAbstractScrollArea::mousePressEvent(e);
 }
 
 void QtnPropertyView::mouseReleaseEvent(QMouseEvent *e)
 {
 	if (e->button() != Qt::LeftButton)
+	{
+		QAbstractScrollArea::mouseReleaseEvent(e);
 		return;
+	}
 
 	if (m_rubberBand)
 	{
@@ -525,25 +531,28 @@ void QtnPropertyView::mouseReleaseEvent(QMouseEvent *e)
 		handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos());
 		emit mouseReleased(e);
 	}
+
+	QAbstractScrollArea::mouseReleaseEvent(e);
 }
 
 void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)
 {
 	if (m_rubberBand)
 	{
-		if (e->buttons() != Qt::LeftButton)
-			return;
-		QRect rect = viewport()->rect();
-		rect.setLeft(e->x());
-		rect.setRight(e->x());
-		m_rubberBand->setGeometry(rect);
-
-		if (m_style & QtnPropertyViewStyleLiveSplit)
+		if (e->buttons() == Qt::LeftButton)
 		{
-			// update split ratio
 			QRect rect = viewport()->rect();
-			updateSplitRatio(
-				(float) (e->x() - rect.left()) / (float) rect.width());
+			rect.setLeft(e->x());
+			rect.setRight(e->x());
+			m_rubberBand->setGeometry(rect);
+
+			if (m_style & QtnPropertyViewStyleLiveSplit)
+			{
+				// update split ratio
+				QRect rect = viewport()->rect();
+				updateSplitRatio(
+					(float) (e->x() - rect.left()) / (float) rect.width());
+			}
 		}
 	} else if (qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
@@ -567,6 +576,7 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)
 		//else
 		handleMouseEvent(index, e, e->pos());
 	}
+	QAbstractScrollArea::mouseMoveEvent(e);
 }
 
 void QtnPropertyView::mouseDoubleClickEvent(QMouseEvent *e)
