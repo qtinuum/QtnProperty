@@ -399,7 +399,10 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set,
 
 	if (nullptr != prop)
 	{
-		set->addChildProperty(prop);
+		if (set)
+		{
+			set->addChildProperty(prop);
+		}
 		auto varprop =
 			new VarProperty(prop, VarProperty::Value, name, index, value);
 
@@ -480,7 +483,10 @@ QtnPropertySet *VarProperty::NewExtraPropertySet(QtnPropertySet *parent,
 	int index, const RegisterPropertyCallback &registerProperty)
 {
 	auto set = new QtnPropertySet(parent);
-	parent->addChildProperty(set);
+	if (parent)
+	{
+		parent->addChildProperty(set);
+	}
 
 	auto varprop =
 		new VarProperty(set, VarProperty::Map, name, index, QVariant());
@@ -509,7 +515,10 @@ QtnPropertySet *VarProperty::NewExtraPropertyList(QtnPropertySet *parent,
 	int index, const RegisterPropertyCallback &registerProperty)
 {
 	auto set = new QtnPropertySet(parent);
-	parent->addChildProperty(set);
+	if (parent)
+	{
+		parent->addChildProperty(set);
+	}
 
 	auto varprop =
 		new VarProperty(set, VarProperty::List, name, index, QVariant());
