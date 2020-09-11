@@ -1033,12 +1033,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
     <message>
         <location filename="../Delegates/PropertyDelegate.cpp" line="111"/>
         <source>Lock</source>
-        <translation>Lock</translation>
+        <translation>📕Lock</translation>
     </message>
     <message>
         <location filename="../Delegates/PropertyDelegate.cpp" line="112"/>
         <source>Unlock</source>
-        <translation>Unlock</translation>
+        <translation>📖Unlock</translation>
     </message>
     <message>
         <location filename="../Delegates/PropertyDelegate.cpp" line="235"/>
@@ -1082,12 +1082,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
     <message>
         <location filename="../PropertyWidgetEx.cpp" line="214"/>
         <source>Unlock property</source>
-        <translation>🔓Unlock property</translation>
+        <translation>📖Unlock property</translation>
     </message>
     <message>
         <location filename="../PropertyWidgetEx.cpp" line="214"/>
         <source>Lock property</source>
-        <translation>🔒Lock property</translation>
+        <translation>📕Lock property</translation>
     </message>
     <message>
         <location filename="../PropertyWidgetEx.cpp" line="215"/>
