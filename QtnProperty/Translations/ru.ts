@@ -320,48 +320,48 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnCustomPropertyWidget</name>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="129"/>
+        <location filename="../CustomPropertyWidget.cpp" line="145"/>
         <source>New Element</source>
         <translation>Новый элемент</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="136"/>
+        <location filename="../CustomPropertyWidget.cpp" line="152"/>
         <source>New Property</source>
         <translation>Новое свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="176"/>
+        <location filename="../CustomPropertyWidget.cpp" line="192"/>
         <source>Duplicate Element</source>
         <translation>Дублировать элемент</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="184"/>
+        <location filename="../CustomPropertyWidget.cpp" line="200"/>
         <source>Duplicate Property</source>
         <translation>Дублировать свойство</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="216"/>
+        <location filename="../CustomPropertyWidget.cpp" line="232"/>
         <source>Property Options</source>
         <translation>Настройки свойства</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="227"/>
+        <location filename="../CustomPropertyWidget.cpp" line="243"/>
         <source>Element Options</source>
         <translation>Настройки элемента</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="477"/>
+        <location filename="../CustomPropertyWidget.cpp" line="493"/>
         <source>Do you want to insert new property from clipboard or to replace the selected one?</source>
         <translation>Хотите вставить новое свойство или заменить выбранное?</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="482"/>
+        <location filename="../CustomPropertyWidget.cpp" line="498"/>
         <source>Insert</source>
         <comment>Paste</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../CustomPropertyWidget.cpp" line="484"/>
+        <location filename="../CustomPropertyWidget.cpp" line="500"/>
         <source>Replace</source>
         <comment>Paste</comment>
         <translation>Заменить</translation>
@@ -1031,22 +1031,22 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnPropertyView</name>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="111"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="112"/>
         <source>Lock</source>
         <translation>📕Заблокировать</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="112"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="111"/>
         <source>Unlock</source>
         <translation>📖Разблокировать</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="235"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="234"/>
         <source>Click to expand</source>
         <translation>Щёлкните, чтобы развернуть</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="236"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="235"/>
         <source>Click to collapse</source>
         <translation>Щёлкните, чтобы свернуть</translation>
     </message>
@@ -1070,32 +1070,32 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnPropertyWidgetEx</name>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="201"/>
+        <location filename="../PropertyWidgetEx.cpp" line="202"/>
         <source>Reset to default</source>
         <translation>Сбросить значение</translation>
     </message>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="203"/>
+        <location filename="../PropertyWidgetEx.cpp" line="205"/>
         <source>Reset value of %1 to default</source>
         <translation>%1: Установить значение по умолчанию</translation>
     </message>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="214"/>
+        <location filename="../PropertyWidgetEx.cpp" line="216"/>
         <source>Unlock property</source>
         <translation>📖Разблокировать свойство</translation>
     </message>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="214"/>
+        <location filename="../PropertyWidgetEx.cpp" line="216"/>
         <source>Lock property</source>
         <translation>📕Заблокировать свойство</translation>
     </message>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="215"/>
+        <location filename="../PropertyWidgetEx.cpp" line="217"/>
         <source>Unlock %1</source>
         <translation>Разблокировать %1</translation>
     </message>
     <message>
-        <location filename="../PropertyWidgetEx.cpp" line="215"/>
+        <location filename="../PropertyWidgetEx.cpp" line="217"/>
         <source>Lock %1</source>
         <translation>Заблокировать %1</translation>
     </message>

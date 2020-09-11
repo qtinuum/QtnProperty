@@ -98,7 +98,11 @@ QtnPropertySet *QtnPropertyWidget::propertySet()
 
 void QtnPropertyWidget::setPropertySet(QtnPropertySet *newPropertySet)
 {
+	if (newPropertySet == propertySet())
+		return;
+
 	m_propertyView->setPropertySet(newPropertySet);
+	emit propertySetChanged();
 }
 
 void QtnPropertyWidget::updateParts()

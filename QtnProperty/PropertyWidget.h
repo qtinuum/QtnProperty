@@ -56,6 +56,9 @@ public:
 
 	inline QtnPropertyView *propertyView() const;
 
+signals:
+	void propertySetChanged();
+
 private:
 	void updateParts();
 	void setActiveProperty(const QtnPropertyBase *activeProperty);
