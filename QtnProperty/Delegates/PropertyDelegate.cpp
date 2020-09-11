@@ -107,9 +107,9 @@ void QtnPropertyDelegate::addSubItemLock(
 	context.margins.setLeft(context.margins.left() + item.rect.height() +
 		context.widget->valueLeftMargin());
 
-	item.setTextAsTooltip(stateProperty()->isWritable()
-			? QtnPropertyView::tr("Lock")
-			: QtnPropertyView::tr("Unlock"));
+	item.setTextAsTooltip(stateProperty()->isLocked()
+			? QtnPropertyView::tr("Unlock")
+			: QtnPropertyView::tr("Lock"));
 
 	item.trackState();
 
@@ -118,10 +118,9 @@ void QtnPropertyDelegate::addSubItemLock(
 		item.drawHandler = [this](QtnDrawContext &context,
 							   const QtnSubItem &item) {
 			drawButton(context, item, QIcon(),
-				stateProperty()->stateLocal().testFlag(
-					QtnPropertyStateImmutable)
-					? QString::fromUtf8("\xF0\x9F\x94\x92")
-					: QString::fromUtf8("\xF0\x9F\x94\x93"));
+				stateProperty()->isLocked()
+					? QString::fromUtf8("\xF0\x9F\x93\x95")
+					: QString::fromUtf8("\xF0\x9F\x93\x96"));
 		};
 
 		item.eventHandler = [this](QtnEventContext &context, const QtnSubItem &,
