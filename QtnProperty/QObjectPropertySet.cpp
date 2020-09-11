@@ -112,7 +112,7 @@ QtnProperty *qtnCreateQObjectProperty(QObject *object,
 
 	qtnUpdatePropertyState(property, metaProperty);
 
-	if (connect && metaProperty.hasNotifySignal())
+	if (connect)
 	{
 		auto connector = new QtnPropertyConnector(property);
 		connector->connectProperty(object, metaProperty);

@@ -38,8 +38,12 @@ void QtnPropertyConnector::connectProperty(
 	this->object = object;
 	this->metaProperty = metaProperty;
 	auto metaObject = this->metaObject();
-	auto slot = metaObject->method(metaObject->indexOfSlot("onValueChanged()"));
-	QObject::connect(object, metaProperty.notifySignal(), this, slot);
+	if (metaProperty.hasNotifySignal())
+	{
+		auto slot =
+			metaObject->method(metaObject->indexOfSlot("onValueChanged()"));
+		QObject::connect(object, metaProperty.notifySignal(), this, slot);
+	}
 
 	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
 
@@ -48,17 +52,18 @@ void QtnPropertyConnector::connectProperty(
 		auto srcMetaObject = object->metaObject();
 		auto signal = srcMetaObject->method(
 			srcMetaObject->indexOfSignal("modifiedSetChanged()"));
-		Q_ASSERT(signal.isValid());
-
-		slot = metaObject->method(
-			metaObject->indexOfSlot("onModifiedSetChanged()"));
-		QObject::connect(object, signal, this, slot);
+		if (signal.isValid())
+		{
+			auto slot = metaObject->method(
+				metaObject->indexOfSlot("onModifiedSetChanged()"));
+			QObject::connect(object, signal, this, slot);
+		}
 
 		signal = srcMetaObject->method(srcMetaObject->indexOfSignal(
 			"propertyStateChanged(QMetaProperty)"));
 		if (signal.isValid())
 		{
-			slot = metaObject->method(metaObject->indexOfSlot(
+			auto slot = metaObject->method(metaObject->indexOfSlot(
 				"onPropertyStateChanged(QMetaProperty)"));
 			QObject::connect(object, signal, this, slot);
 		}
