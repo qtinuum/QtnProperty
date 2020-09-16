@@ -146,7 +146,7 @@ QColor QtnPropertyDelegate::disabledTextColor(const QStylePainter &painter)
 {
 	auto palette = painter.style()->standardPalette();
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-	return palette.color(QPalette::PlaceholderText);
+	return palette.color(QPalette::Active, QPalette::PlaceholderText);
 #else
 	return palette.color(QPalette::Disabled, QPalette::Text);
 #endif

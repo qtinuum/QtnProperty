@@ -271,6 +271,7 @@ QColor QtnDrawContext::textColorFor(bool normalText) const
 	} else
 	{
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+		group = QPalette::Active;
 		role = QPalette::PlaceholderText;
 #else
 		group = QPalette::Disabled;
