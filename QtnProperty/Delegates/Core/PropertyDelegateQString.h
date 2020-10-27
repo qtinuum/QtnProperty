@@ -53,6 +53,7 @@ protected:
 protected:
 	int m_maxLength;
 	bool m_multiline;
+	QString m_placeholder;
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringInvalidBase

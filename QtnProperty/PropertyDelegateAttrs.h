@@ -22,6 +22,7 @@ limitations under the License.
 
 QTN_IMPORT_EXPORT QByteArray qtnMultiLineEditAttr();
 QTN_IMPORT_EXPORT QByteArray qtnMaxLengthAttr();
+QTN_IMPORT_EXPORT QByteArray qtnPlaceholderAttr();
 QTN_IMPORT_EXPORT QByteArray qtnItemsAttr();
 QTN_IMPORT_EXPORT QByteArray qtnEditableAttr();
 QTN_IMPORT_EXPORT QByteArray qtnInvalidColorAttr();
