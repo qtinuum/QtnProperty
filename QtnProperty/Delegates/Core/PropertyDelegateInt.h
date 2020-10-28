@@ -27,11 +27,17 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateInt
 	Q_DISABLE_COPY(QtnPropertyDelegateInt)
 
 	QString m_suffix;
+	QVariant m_min;
+	QVariant m_max;
 
 public:
 	QtnPropertyDelegateInt(QtnPropertyIntBase &owner);
 
 	static void Register(QtnPropertyDelegateFactory &factory);
+
+	int minValue() const;
+	int maxValue() const;
+	int currentValue() const;
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,

@@ -57,11 +57,11 @@ QByteArray qtnToolTipAttr()
 
 QtnPropertyDelegateSlideBox::QtnPropertyDelegateSlideBox(QtnPropertyBase &owner)
 	: QtnPropertyDelegateWithValue(owner)
-	, m_boxFillColor(QColor::fromRgb(200, 200, 255))
 	, m_liveUpdate(false)
 	, m_drawBorder(true)
 	, m_updateByScroll(true)
 	, m_animate(false)
+	, m_boxFillColor(QColor::fromRgb(200, 200, 255))
 	, m_itemToolTip(QtnPropertyView::tr("Drag/Scroll mouse to change value"))
 	, m_dragValuePart(0.0)
 	, m_oldValuePart(0.0)
@@ -83,6 +83,8 @@ void QtnPropertyDelegateSlideBox::applyAttributesImpl(
 	info.loadAttribute(qtnUpdateByScrollAttr(), m_updateByScroll);
 	info.loadAttribute(qtnAnimateAttr(), m_animate);
 	info.loadAttribute(qtnToolTipAttr(), m_itemToolTip);
+	m_min = info.attributes.value(qtnMinAttr());
+	m_max = info.attributes.value(qtnMaxAttr());
 }
 
 bool QtnPropertyDelegateSlideBox::createSubItemValueImpl(

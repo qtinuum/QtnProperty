@@ -19,6 +19,7 @@ limitations under the License.
 #define QTN_PROPERTY_DELEGATE_SLIDER_BOX_H
 
 #include "PropertyDelegateMisc.h"
+#include "Delegates/PropertyDelegateAux.h"
 
 class QVariantAnimation;
 
@@ -49,12 +50,14 @@ protected:
 	void prepareAnimate();
 	void startAnimate();
 
-	QColor m_boxFillColor;
 	bool m_liveUpdate;
 	bool m_drawBorder;
 	bool m_updateByScroll;
 	bool m_animate;
+	QColor m_boxFillColor;
 	QString m_itemToolTip;
+	QVariant m_min;
+	QVariant m_max;
 
 private:
 	void incrementPropertyValueInternal(int steps);
@@ -63,11 +66,11 @@ private:
 	void onAnimationChanged(const QVariant &value);
 
 	double m_dragValuePart;
-	QCursor m_oldCursor;
-
-	QScopedPointer<QVariantAnimation> m_animation;
 	double m_oldValuePart;
+
 	QWidget *m_animateWidget;
+	QCursor m_oldCursor;
+	QScopedPointer<QVariantAnimation> m_animation;
 };
 
 double QtnPropertyDelegateSlideBox::dragValuePart() const
@@ -82,27 +85,52 @@ class QtnPropertyDelegateSlideBoxTyped
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateSlideBoxTyped)
 
-	typedef typename PropertyClass::ValueTypeStore ValueTypeStore;
+	using ValueTypeStore = typename PropertyClass::ValueTypeStore;
+
+	using ParentClass =
+		QtnPropertyDelegateTyped<PropertyClass, QtnPropertyDelegateSlideBox>;
 
 public:
 	QtnPropertyDelegateSlideBoxTyped(PropertyClass &owner)
-		: QtnPropertyDelegateTyped<PropertyClass, QtnPropertyDelegateSlideBox>(
-			  owner)
+		: ParentClass(owner)
 	{
 	}
 
 protected:
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateInfo &info) override
+	{
+		ParentClass::applyAttributesImpl(info);
+		fixMinMaxVariant<ValueTypeStore>(this->m_min, this->m_max);
+	}
+
+	ValueTypeStore minValue() const
+	{
+		const QVariant &mv = this->m_min;
+		return mv.isValid() ? mv.value<ValueTypeStore>() : owner().minValue();
+	}
+
+	ValueTypeStore maxValue() const
+	{
+		const QVariant &mv = this->m_max;
+		return mv.isValid() ? mv.value<ValueTypeStore>() : owner().maxValue();
+	}
+
+	ValueTypeStore currentValue() const
+	{
+		return std::min(maxValue(), std::max(minValue(), owner().value()));
+	}
+
 	inline double interval(ValueTypeStore to) const
 	{
-		auto &p = this->owner();
 		using IntervalType = typename PropertyClass::IntervalType;
-		return double(IntervalType(to - p.minValue()));
+		return double(IntervalType(to - minValue()));
 	}
 
 	virtual double propertyValuePart() const override
 	{
 		auto &p = this->owner();
-		return interval(p.value()) / interval(p.maxValue());
+		return interval(currentValue()) / interval(maxValue());
 	}
 
 	template <typename T,
@@ -140,10 +168,7 @@ protected:
 		Q_ASSERT(valuePart >= 0.0);
 		Q_ASSERT(valuePart <= 1.0);
 
-		auto &p = this->owner();
-
-		return ValueTypeStore(valuePart * interval(p.maxValue())) +
-			p.minValue();
+		return ValueTypeStore(valuePart * interval(maxValue())) + minValue();
 	}
 };
 

@@ -23,6 +23,7 @@ limitations under the License.
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QEvent>
+#include <QVariant>
 
 class QtnPropertyBase;
 class QtnPropertyView;
@@ -202,5 +203,69 @@ QTN_IMPORT_EXPORT QString qtnElidedText(const QPainter &painter,
 	const QString &text, const QRect &rect, bool *elided = 0);
 QTN_IMPORT_EXPORT void qtnDrawValueText(const QString &text, QPainter &painter,
 	const QRect &rect, QStyle *style = nullptr);
+
+template <typename T,
+	typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
+{
+	auto min = T(0);
+	auto max = T(0);
+	bool minOk = minv.canConvert(qMetaTypeId<T>());
+	bool maxOk = maxv.canConvert(qMetaTypeId<T>());
+	if (minOk)
+	{
+		min = minv.value<T>();
+	}
+	if (maxOk)
+	{
+		max = maxv.value<T>();
+	}
+	if (!minOk || max <= min || !qIsFinite(min))
+	{
+		minv = QVariant();
+	} else
+	{
+		minv = min;
+	}
+	if (!maxOk || max <= min || !qIsFinite(max))
+	{
+		maxv = QVariant();
+	} else
+	{
+		maxv = max;
+	}
+}
+
+template <typename T,
+	typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
+void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
+{
+	auto min = T(0);
+	auto max = T(0);
+	bool minOk = minv.canConvert(qMetaTypeId<T>());
+	bool maxOk = maxv.canConvert(qMetaTypeId<T>());
+	if (minOk)
+	{
+		min = minv.value<T>();
+	}
+	if (maxOk)
+	{
+		max = maxv.value<T>();
+	}
+	if (!minOk || max <= min)
+	{
+		minv = QVariant();
+	} else
+	{
+		minv = min;
+	}
+	if (!maxOk || max <= min)
+	{
+		maxv = QVariant();
+	} else
+	{
+		maxv = max;
+	}
+}
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H

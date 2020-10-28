@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -32,15 +32,23 @@ class QtnPropertyFloatSpinBoxHandler
 {
 public:
 	QtnPropertyFloatSpinBoxHandler(
-		QtnPropertyDelegate *delegate, QDoubleSpinBox &editor);
+		QtnPropertyDelegateFloat *delegate, QDoubleSpinBox &editor);
 
 protected:
 	virtual void updateEditor() override;
-	void onValueChanged(double value);
+	virtual void updateValue() override;
+
+	void onDoubleValueChanged(double value);
+
+private:
+	QtnPropertyDelegateFloat *m_delegate;
 };
 
 QtnPropertyDelegateFloat::QtnPropertyDelegateFloat(QtnPropertyFloatBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyFloatBase>(owner)
+	, m_multiplier(1.0)
+	, m_min(qInf())
+	, m_max(qInf())
 {
 }
 
@@ -61,7 +69,7 @@ QWidget *QtnPropertyDelegateFloat::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnDoubleSpinBox(parent);
-	spinBox->setDecimals(6);
+	spinBox->setDecimals(5);
 	spinBox->setSuffix(m_suffix);
 	spinBox->setGeometry(rect);
 
@@ -90,7 +98,7 @@ bool QtnPropertyDelegateFloat::acceptKeyPressedForInplaceEditImpl(
 bool QtnPropertyDelegateFloat::propertyValueToStrImpl(QString &strValue) const
 {
 	QLocale locale;
-	strValue = locale.toString(owner().value() * m_multiplier, 'g', 5);
+	strValue = locale.toString(currentValue(), 'g', 5);
 	strValue.append(m_suffix);
 	return true;
 }
@@ -110,21 +118,39 @@ void QtnPropertyDelegateFloat::applyAttributesImpl(
 	if (m_max <= m_min)
 	{
 		m_min = qInf();
+	}
+	if (m_max <= m_min)
+	{
 		m_max = qInf();
 	}
 }
 
-QtnPropertyFloatSpinBoxHandler::QtnPropertyFloatSpinBoxHandler(
-	QtnPropertyDelegate *delegate, QDoubleSpinBox &editor)
-	: QtnPropertyEditorHandlerVT(delegate, editor)
+float QtnPropertyDelegateFloat::minValue() const
 {
-	if (!stateProperty()->isEditableByUser())
-		editor.setReadOnly(true);
+	return (qIsFinite(m_min) ? m_min : owner().minValue()) * m_multiplier;
+}
 
-	auto &p = property();
-	editor.setRange(p.minValue(), p.maxValue());
-	editor.setSingleStep(p.stepValue());
+float QtnPropertyDelegateFloat::maxValue() const
+{
+	return (qIsFinite(m_max) ? m_max : owner().maxValue()) * m_multiplier;
+}
 
+float QtnPropertyDelegateFloat::multiplier() const
+{
+	return m_multiplier;
+}
+
+float QtnPropertyDelegateFloat::currentValue() const
+{
+	return std::min(
+		maxValue(), std::max(minValue(), owner().value() * m_multiplier));
+}
+
+QtnPropertyFloatSpinBoxHandler::QtnPropertyFloatSpinBoxHandler(
+	QtnPropertyDelegateFloat *delegate, QDoubleSpinBox &editor)
+	: QtnPropertyEditorHandlerVT(delegate, editor)
+	, m_delegate(delegate)
+{
 	updateEditor();
 
 	editor.setKeyboardTracking(false);
@@ -132,12 +158,16 @@ QtnPropertyFloatSpinBoxHandler::QtnPropertyFloatSpinBoxHandler(
 	QObject::connect(&editor,
 		static_cast<void (QDoubleSpinBox::*)(double)>(
 			&QDoubleSpinBox::valueChanged),
-		this, &QtnPropertyFloatSpinBoxHandler::onValueChanged);
+		this, &QtnPropertyFloatSpinBoxHandler::onDoubleValueChanged);
 }
 
 void QtnPropertyFloatSpinBoxHandler::updateEditor()
 {
 	updating++;
+
+	editor().setSingleStep(property().stepValue());
+	editor().setReadOnly(!stateProperty()->isEditableByUser());
+	editor().setRange(m_delegate->minValue(), m_delegate->maxValue());
 
 	if (stateProperty()->isMultiValue())
 	{
@@ -146,7 +176,7 @@ void QtnPropertyFloatSpinBoxHandler::updateEditor()
 			QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
-		editor().setValue(property().value());
+		editor().setValue(m_delegate->currentValue());
 		editor().setSpecialValueText(QString());
 	}
 
@@ -155,7 +185,16 @@ void QtnPropertyFloatSpinBoxHandler::updateEditor()
 	updating--;
 }
 
-void QtnPropertyFloatSpinBoxHandler::onValueChanged(double value)
+void QtnPropertyFloatSpinBoxHandler::updateValue()
 {
-	QtnPropertyEditorHandlerVT::onValueChanged(ValueTypeStore(value));
+	if (this->propertyBase())
+	{
+		this->property().setValue(newValue / m_delegate->multiplier(),
+			this->delegate()->editReason());
+	}
+}
+
+void QtnPropertyFloatSpinBoxHandler::onDoubleValueChanged(double value)
+{
+	onValueChanged(float(value));
 }
