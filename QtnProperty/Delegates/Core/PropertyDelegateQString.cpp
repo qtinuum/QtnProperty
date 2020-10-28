@@ -251,7 +251,7 @@ QWidget *QtnPropertyDelegateQString::createValueEditorImpl(
 	lineEdit->setPlaceholderText(m_placeholder);
 	lineEdit->setGeometry(rect);
 
-	new QtnPropertyQStringLineEditHandler(this, *lineEdit);
+	new QtnPropertyQStringLineEditHandler(this, *lineEdit, m_placeholder);
 
 	qtnInitLineEdit(lineEdit, inplaceInfo);
 
@@ -261,8 +261,10 @@ QWidget *QtnPropertyDelegateQString::createValueEditorImpl(
 bool QtnPropertyDelegateQString::propertyValueToStrImpl(QString &strValue) const
 {
 	strValue = owner().value();
-	auto placeholder =
-		QtnPropertyQString::getPlaceholderStr(strValue, m_multiline);
+
+	auto placeholder = strValue.isEmpty() && !m_placeholder.isEmpty()
+		? m_placeholder
+		: QtnPropertyQString::getPlaceholderStr(strValue, m_multiline);
 
 	if (!placeholder.isEmpty())
 		strValue.swap(placeholder);
@@ -297,9 +299,15 @@ void QtnPropertyDelegateQString::drawValueImpl(
 
 bool QtnPropertyDelegateQString::isPlaceholderColor() const
 {
+	auto text = owner().value();
+	if (text.isEmpty() && !m_placeholder.isEmpty())
+	{
+		return true;
+	}
+
 	return stateProperty()->isEditableByUser() &&
 		(stateProperty()->isMultiValue() ||
-			!QtnPropertyQString::getPlaceholderStr(owner().value(), m_multiline)
+			!QtnPropertyQString::getPlaceholderStr(text, m_multiline)
 				 .isEmpty());
 }
 
