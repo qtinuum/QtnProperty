@@ -69,6 +69,8 @@ public:
 
 	void applySubPropertyInfo(
 		const QtnPropertyDelegateInfo &info, const QtnSubPropertyInfo &subInfo);
+	void applySubPropertyInfos(const QtnPropertyDelegateInfo &info,
+		const QtnSubPropertyInfo *subInfo, int count);
 
 protected:
 	QtnPropertyDelegate(QtnPropertyBase &ownerProperty);

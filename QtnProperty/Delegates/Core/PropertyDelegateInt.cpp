@@ -42,6 +42,21 @@ QByteArray qtnSuffixAttr()
 	return QByteArrayLiteral("suffix");
 }
 
+QByteArray qtnMultiplierAttr()
+{
+	return QByteArrayLiteral("multiplier");
+}
+
+QByteArray qtnMinAttr()
+{
+	return QByteArrayLiteral("min");
+}
+
+QByteArray qtnMaxAttr()
+{
+	return QByteArrayLiteral("max");
+}
+
 void qtnInitPercentSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
 {
 	delegate.name = qtnSpinBoxDelegate();

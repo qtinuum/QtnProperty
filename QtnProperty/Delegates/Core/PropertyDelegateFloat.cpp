@@ -90,7 +90,7 @@ bool QtnPropertyDelegateFloat::acceptKeyPressedForInplaceEditImpl(
 bool QtnPropertyDelegateFloat::propertyValueToStrImpl(QString &strValue) const
 {
 	QLocale locale;
-	strValue = locale.toString(owner().value(), 'g', 6);
+	strValue = locale.toString(owner().value() * m_multiplier, 'g', 5);
 	strValue.append(m_suffix);
 	return true;
 }
@@ -99,6 +99,19 @@ void QtnPropertyDelegateFloat::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
+	info.loadAttribute(qtnMinAttr(), m_min);
+	info.loadAttribute(qtnMinAttr(), m_max);
+
+	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.f))
+	{
+		m_multiplier = 1;
+	}
+	if (m_max <= m_min)
+	{
+		m_min = qInf();
+		m_max = qInf();
+	}
 }
 
 QtnPropertyFloatSpinBoxHandler::QtnPropertyFloatSpinBoxHandler(

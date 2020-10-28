@@ -144,34 +144,33 @@ void qtnApplyQRectDelegateAttributes(QtnPropertyDelegate *to,
 		TOTAL
 	};
 	Q_ASSERT(to->subPropertyCount() == TOTAL);
-	static const QtnSubPropertyInfo LTRB[TOTAL] = {
-		{ LEFT, QtnPropertyQRect::leftKey(), qtnLeftDisplayNameAttr(),
-			qtnLeftDescriptionAttr() },
-		{ TOP, QtnPropertyQRect::topKey(), qtnTopDisplayNameAttr(),
-			qtnTopDescriptionAttr() },
-		{ RIGHT, QtnPropertyQRect::rightKey(), qtnRightDisplayNameAttr(),
-			qtnRightDescriptionAttr() },
-		{ BOTTOM, QtnPropertyQRect::bottomKey(), qtnBottomDisplayNameAttr(),
-			qtnBottomDescriptionAttr() },
-	};
-
-	static const QtnSubPropertyInfo LTWH[TOTAL] = {
-		{ LEFT, QtnPropertyQRect::leftKey(), qtnLeftDisplayNameAttr(),
-			qtnLeftDescriptionAttr() },
-		{ TOP, QtnPropertyQRect::topKey(), qtnTopDisplayNameAttr(),
-			qtnTopDescriptionAttr() },
-		{ WIDTH, QtnPropertyQSize::widthKey(), qtnWidthDisplayNameAttr(),
-			qtnWidthDescriptionAttr() },
-		{ HEIGHT, QtnPropertyQSize::heightKey(), qtnHeightDisplayNameAttr(),
-			qtnHeightDescriptionAttr() },
-	};
-
-	const QtnSubPropertyInfo *KEYS = coordinates ? LTRB : LTWH;
-	for (int i = 0; i < TOTAL; i++)
+	if (coordinates)
 	{
-		auto &keys = KEYS[i];
+		static const QtnSubPropertyInfo LTRB[TOTAL] = {
+			{ LEFT, QtnPropertyQRect::leftKey(), qtnLeftDisplayNameAttr(),
+				qtnLeftDescriptionAttr() },
+			{ TOP, QtnPropertyQRect::topKey(), qtnTopDisplayNameAttr(),
+				qtnTopDescriptionAttr() },
+			{ RIGHT, QtnPropertyQRect::rightKey(), qtnRightDisplayNameAttr(),
+				qtnRightDescriptionAttr() },
+			{ BOTTOM, QtnPropertyQRect::bottomKey(), qtnBottomDisplayNameAttr(),
+				qtnBottomDescriptionAttr() },
+		};
+		to->applySubPropertyInfos(info, LTRB, TOTAL);
+	} else
+	{
+		static const QtnSubPropertyInfo LTWH[TOTAL] = {
+			{ LEFT, QtnPropertyQRect::leftKey(), qtnLeftDisplayNameAttr(),
+				qtnLeftDescriptionAttr() },
+			{ TOP, QtnPropertyQRect::topKey(), qtnTopDisplayNameAttr(),
+				qtnTopDescriptionAttr() },
+			{ WIDTH, QtnPropertyQSize::widthKey(), qtnWidthDisplayNameAttr(),
+				qtnWidthDescriptionAttr() },
+			{ HEIGHT, QtnPropertyQSize::heightKey(), qtnHeightDisplayNameAttr(),
+				qtnHeightDescriptionAttr() },
 
-		to->applySubPropertyInfo(info, keys);
+		};
+		to->applySubPropertyInfos(info, LTWH, TOTAL);
 	}
 }
 

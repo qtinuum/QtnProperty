@@ -26,6 +26,7 @@ limitations under the License.
 QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
 	QtnPropertyQPointFBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointFBase>(owner)
+	, m_multiplier(1.0)
 {
 	addSubProperty(owner.createXProperty());
 	addSubProperty(owner.createYProperty());
@@ -45,6 +46,11 @@ void QtnPropertyDelegateQPointF::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
+	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.0))
+	{
+		m_multiplier = 1;
+	}
 
 	qtnApplyQPointDelegateAttributes(this, info);
 }
@@ -61,8 +67,8 @@ bool QtnPropertyDelegateQPointF::propertyValueToStrImpl(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-		locale.toString(value.x(), 'g', 15) + m_suffix,
-		locale.toString(value.y(), 'g', 15) + m_suffix);
+		locale.toString(value.x() * m_multiplier, 'g', 5) + m_suffix,
+		locale.toString(value.y() * m_multiplier, 'g', 5) + m_suffix);
 
 	return true;
 }

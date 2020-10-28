@@ -29,6 +29,7 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQPointF
 	Q_DISABLE_COPY(QtnPropertyDelegateQPointF)
 
 	QString m_suffix;
+	double m_multiplier;
 
 public:
 	QtnPropertyDelegateQPointF(QtnPropertyQPointFBase &owner);

@@ -27,6 +27,9 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateDouble
 	Q_DISABLE_COPY(QtnPropertyDelegateDouble)
 
 	QString m_suffix;
+	double m_multiplier;
+	double m_min;
+	double m_max;
 
 public:
 	QtnPropertyDelegateDouble(QtnPropertyDoubleBase &owner);

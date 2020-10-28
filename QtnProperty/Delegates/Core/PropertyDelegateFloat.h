@@ -27,6 +27,9 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateFloat
 	Q_DISABLE_COPY(QtnPropertyDelegateFloat)
 
 	QString m_suffix;
+	float m_multiplier;
+	float m_min;
+	float m_max;
 
 public:
 	QtnPropertyDelegateFloat(QtnPropertyFloatBase &owner);

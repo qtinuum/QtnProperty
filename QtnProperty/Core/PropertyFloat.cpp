@@ -38,7 +38,7 @@ bool QtnPropertyFloatBase::fromStrImpl(
 
 bool QtnPropertyFloatBase::toStrImpl(QString &str) const
 {
-	str = QString::number(value(), 'g', 6);
+	str = QString::number(value(), 'g', 5);
 	return true;
 }
 

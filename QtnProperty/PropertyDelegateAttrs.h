@@ -20,6 +20,9 @@ limitations under the License.
 
 #include <QByteArray>
 
+QTN_IMPORT_EXPORT QByteArray qtnMinAttr();
+QTN_IMPORT_EXPORT QByteArray qtnMaxAttr();
+QTN_IMPORT_EXPORT QByteArray qtnMultiplierAttr();
 QTN_IMPORT_EXPORT QByteArray qtnMultiLineEditAttr();
 QTN_IMPORT_EXPORT QByteArray qtnMaxLengthAttr();
 QTN_IMPORT_EXPORT QByteArray qtnPlaceholderAttr();

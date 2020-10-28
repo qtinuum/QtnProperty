@@ -106,19 +106,11 @@ protected:
 	}
 
 	template <typename T,
-		typename std::enable_if<std::is_floating_point<T>::value &&
-			sizeof(T) == 4>::type * = nullptr>
+		typename std::enable_if<std::is_floating_point<T>::value>::type * =
+			nullptr>
 	static QString valueToStr(T value)
 	{
-		return QLocale().toString(value, 'g', 6);
-	}
-
-	template <typename T,
-		typename std::enable_if<std::is_floating_point<T>::value &&
-			sizeof(T) == 8>::type * = nullptr>
-	static QString valueToStr(T value)
-	{
-		return QLocale().toString(value, 'g', 15);
+		return QLocale().toString(value, 'g', 5);
 	}
 
 	template <typename T,

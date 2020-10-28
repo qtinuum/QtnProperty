@@ -31,16 +31,25 @@ class QtnPropertyDoubleSpinBoxHandler
 	: public QtnPropertyEditorHandlerVT<QtnPropertyDoubleBase, QDoubleSpinBox>
 {
 public:
-	QtnPropertyDoubleSpinBoxHandler(
-		QtnPropertyDelegate *delegate, QDoubleSpinBox &editor);
+	QtnPropertyDoubleSpinBoxHandler(QtnPropertyDelegate *delegate,
+		QDoubleSpinBox &editor, double multiplier, double min, double max);
 
 protected:
 	virtual void updateEditor() override;
+	virtual void updateValue() override;
+
+private:
+	double m_multiplier;
+	double m_min;
+	double m_max
 };
 
 QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(
 	QtnPropertyDoubleBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyDoubleBase>(owner)
+	, m_multiplier(1.0)
+	, m_min(qInf())
+	, m_max(qInf())
 {
 }
 
@@ -61,11 +70,11 @@ QWidget *QtnPropertyDelegateDouble::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnDoubleSpinBox(parent);
-	spinBox->setDecimals(15);
+	spinBox->setDecimals(5);
 	spinBox->setSuffix(m_suffix);
 	spinBox->setGeometry(rect);
 
-	new QtnPropertyDoubleSpinBoxHandler(this, *spinBox);
+	new QtnPropertyDoubleSpinBoxHandler(this, *spinBox, m_multiplier);
 
 	spinBox->selectAll();
 
@@ -90,7 +99,7 @@ bool QtnPropertyDelegateDouble::acceptKeyPressedForInplaceEditImpl(
 bool QtnPropertyDelegateDouble::propertyValueToStrImpl(QString &strValue) const
 {
 	QLocale locale;
-	strValue = locale.toString(owner().value(), 'g', 15);
+	strValue = locale.toString(owner().value() * m_multiplier, 'g', 5);
 	strValue.append(m_suffix);
 	return true;
 }
@@ -99,17 +108,36 @@ void QtnPropertyDelegateDouble::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
+	info.loadAttribute(qtnMinAttr(), m_min);
+	info.loadAttribute(qtnMinAttr(), m_max);
+
+	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.0))
+	{
+		m_multiplier = 1;
+	}
+	if (m_max <= m_min || !qIsFinite(m_min))
+	{
+		m_min = qInf();
+	}
+	if (m_max <= m_min || !qIsFinite(m_max))
+	{
+		m_max = qInf();
+	}
 }
 
 QtnPropertyDoubleSpinBoxHandler::QtnPropertyDoubleSpinBoxHandler(
-	QtnPropertyDelegate *delegate, QDoubleSpinBox &editor)
+	QtnPropertyDelegate *delegate, QDoubleSpinBox &editor, double multiplier,
+	double min, double max)
 	: QtnPropertyEditorHandlerVT(delegate, editor)
+	, m_multiplier(multiplier)
+	, m_min(min)
+	, m_max(max)
 {
 	if (!stateProperty()->isEditableByUser())
 		editor.setReadOnly(true);
 
 	auto &p = property();
-	editor.setRange(p.minValue(), p.maxValue());
 	editor.setSingleStep(p.stepValue());
 
 	updateEditor();
@@ -126,6 +154,10 @@ void QtnPropertyDoubleSpinBoxHandler::updateEditor()
 {
 	updating++;
 
+	editor().setRange(
+		(qIsFinite(m_min) ? m_min : property().minValue()) * m_multiplier,
+		(qIsFinite(m_max) ? m_max : property().maxValue()) * m_multiplier);
+
 	if (stateProperty()->isMultiValue())
 	{
 		editor().setValue(editor().minimum());
@@ -133,11 +165,20 @@ void QtnPropertyDoubleSpinBoxHandler::updateEditor()
 			QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
-		editor().setValue(property().value());
+		editor().setValue(property().value() * m_multiplier);
 		editor().setSpecialValueText(QString());
 	}
 
 	editor().selectAll();
 
 	updating--;
+}
+
+void QtnPropertyDoubleSpinBoxHandler::updateValue()
+{
+	if (this->propertyBase())
+	{
+		this->property().setValue(
+			newValue / m_multiplier, this->delegate()->editReason());
+	}
 }

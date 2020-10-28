@@ -52,10 +52,7 @@ void qtnApplyQSizeDelegateAttributes(
 			qtnHeightDescriptionAttr() },
 	};
 
-	for (auto &keys : KEYS)
-	{
-		to->applySubPropertyInfo(info, keys);
-	}
+	to->applySubPropertyInfos(info, KEYS, TOTAL);
 }
 
 void QtnPropertyDelegateQSize::applyAttributesImpl(

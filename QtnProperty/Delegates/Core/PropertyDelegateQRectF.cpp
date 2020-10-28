@@ -82,12 +82,12 @@ bool QtnPropertyDelegateQRectF::propertyValueToStrImpl(QString &strValue) const
 	QLocale locale;
 	strValue =
 		QtnPropertyQRect::getToStringFormat(m_coordinates)
-			.arg(locale.toString(value.left(), 'g', 15),
-				locale.toString(value.top(), 'g', 15),
+			.arg(locale.toString(value.left(), 'g', 5),
+				locale.toString(value.top(), 'g', 5),
 				locale.toString(
-					m_coordinates ? value.right() : value.width(), 'g', 15),
+					m_coordinates ? value.right() : value.width(), 'g', 5),
 				locale.toString(
-					m_coordinates ? value.bottom() : value.height(), 'g', 15));
+					m_coordinates ? value.bottom() : value.height(), 'g', 5));
 
 	return true;
 }
