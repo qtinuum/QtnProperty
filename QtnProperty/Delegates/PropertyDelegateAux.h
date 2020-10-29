@@ -251,7 +251,7 @@ void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
 		bool minOk;
 		qint64 min = minv.toLongLong(&minOk);
 		if (min < qint64(std::numeric_limits<T>::min()) ||
-			(min >= 0 && quint64(min) > std::numeric_limits<T>::max()))
+			(min >= 0 && quint64(min) > quint64(std::numeric_limits<T>::max())))
 		{
 			minv = QVariant();
 		} else
@@ -275,7 +275,7 @@ void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
 		bool maxOk;
 		qint64 max = maxv.toLongLong(&maxOk);
 		if (max < qint64(std::numeric_limits<T>::min()) ||
-			(max >= 0 && quint64(max) > std::numeric_limits<T>::max()))
+			(max >= 0 && quint64(max) > quint64(std::numeric_limits<T>::max())))
 		{
 			maxv = QVariant();
 		} else
