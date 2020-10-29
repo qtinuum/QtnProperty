@@ -162,7 +162,7 @@ void QtnPropertyGeoCoordLineEditHandler::updateEditor()
 {
 	updating++;
 
-	editor().setEnabled(stateProperty()->isEditableByUser());
+	editor().setReadOnly(!stateProperty()->isEditableByUser());
 	if (stateProperty()->isMultiValue())
 	{
 		editor().clear();
