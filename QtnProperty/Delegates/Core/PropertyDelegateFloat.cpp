@@ -27,6 +27,16 @@ limitations under the License.
 #include <QCoreApplication>
 #include <QLocale>
 
+QByteArray qtnMultiplierAttr()
+{
+	return QByteArrayLiteral("multiplier");
+}
+
+QByteArray qtnPrecisionAttr()
+{
+	return QByteArrayLiteral("precision");
+}
+
 class QtnPropertyFloatSpinBoxHandler
 	: public QtnPropertyEditorHandlerVT<QtnPropertyFloatBase, QDoubleSpinBox>
 {
@@ -46,9 +56,8 @@ private:
 
 QtnPropertyDelegateFloat::QtnPropertyDelegateFloat(QtnPropertyFloatBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyFloatBase>(owner)
-	, m_multiplier(1.0)
-	, m_min(qInf())
-	, m_max(qInf())
+	, m_multiplier(1.f)
+	, m_precision(std::numeric_limits<float>::digits10)
 {
 }
 
@@ -65,11 +74,16 @@ void QtnPropertyDelegateFloat::Register(QtnPropertyDelegateFactory &factory)
 		qtnSliderBoxDelegate());
 }
 
+float QtnPropertyDelegateFloat::stepValue() const
+{
+	return m_step.isValid() ? m_step.toFloat() : owner().stepValue();
+}
+
 QWidget *QtnPropertyDelegateFloat::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnDoubleSpinBox(parent);
-	spinBox->setDecimals(5);
+	spinBox->setDecimals(m_precision);
 	spinBox->setSuffix(m_suffix);
 	spinBox->setGeometry(rect);
 
@@ -97,8 +111,7 @@ bool QtnPropertyDelegateFloat::acceptKeyPressedForInplaceEditImpl(
 
 bool QtnPropertyDelegateFloat::propertyValueToStrImpl(QString &strValue) const
 {
-	QLocale locale;
-	strValue = locale.toString(currentValue(), 'g', 5);
+	strValue = QLocale().toString(currentValue(), 'g', m_precision);
 	strValue.append(m_suffix);
 	return true;
 }
@@ -108,31 +121,44 @@ void QtnPropertyDelegateFloat::applyAttributesImpl(
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
 	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
-	info.loadAttribute(qtnMinAttr(), m_min);
-	info.loadAttribute(qtnMinAttr(), m_max);
+	info.loadAttribute(qtnPrecisionAttr(), m_precision);
+
+	m_step = info.attributes.value(qtnStepAttr());
+	if (m_step.isValid())
+	{
+		bool ok;
+		float step = m_step.toFloat(&ok);
+		if (!ok)
+		{
+			m_step = QVariant();
+		} else
+		{
+			m_step = step;
+		}
+	}
+
+	m_precision = qBound(0, m_precision, std::numeric_limits<float>::digits10);
+
+	m_min = info.attributes.value(qtnMinAttr());
+	m_max = info.attributes.value(qtnMaxAttr());
 
 	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.f))
 	{
-		m_multiplier = 1;
+		m_multiplier = 1.f;
 	}
-	if (m_max <= m_min)
-	{
-		m_min = qInf();
-	}
-	if (m_max <= m_min)
-	{
-		m_max = qInf();
-	}
+	fixMinMaxVariant<float>(m_min, m_max);
 }
 
 float QtnPropertyDelegateFloat::minValue() const
 {
-	return (qIsFinite(m_min) ? m_min : owner().minValue()) * m_multiplier;
+	return (m_min.isValid() ? m_min.toFloat() : owner().minValue()) *
+		m_multiplier;
 }
 
 float QtnPropertyDelegateFloat::maxValue() const
 {
-	return (qIsFinite(m_max) ? m_max : owner().maxValue()) * m_multiplier;
+	return (m_max.isValid() ? m_max.toFloat() : owner().maxValue()) *
+		m_multiplier;
 }
 
 float QtnPropertyDelegateFloat::multiplier() const
@@ -142,8 +168,7 @@ float QtnPropertyDelegateFloat::multiplier() const
 
 float QtnPropertyDelegateFloat::currentValue() const
 {
-	return std::min(
-		maxValue(), std::max(minValue(), owner().value() * m_multiplier));
+	return qBound(minValue(), owner().value() * m_multiplier, maxValue());
 }
 
 QtnPropertyFloatSpinBoxHandler::QtnPropertyFloatSpinBoxHandler(
@@ -165,8 +190,8 @@ void QtnPropertyFloatSpinBoxHandler::updateEditor()
 {
 	updating++;
 
-	editor().setSingleStep(property().stepValue());
 	editor().setReadOnly(!stateProperty()->isEditableByUser());
+	editor().setSingleStep(m_delegate->stepValue());
 	editor().setRange(m_delegate->minValue(), m_delegate->maxValue());
 
 	if (stateProperty()->isMultiValue())

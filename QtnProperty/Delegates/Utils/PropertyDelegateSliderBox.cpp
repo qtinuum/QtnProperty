@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -83,8 +83,17 @@ void QtnPropertyDelegateSlideBox::applyAttributesImpl(
 	info.loadAttribute(qtnUpdateByScrollAttr(), m_updateByScroll);
 	info.loadAttribute(qtnAnimateAttr(), m_animate);
 	info.loadAttribute(qtnToolTipAttr(), m_itemToolTip);
+	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	info.loadAttribute(qtnPrecisionAttr(), m_precision);
+	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
 	m_min = info.attributes.value(qtnMinAttr());
 	m_max = info.attributes.value(qtnMaxAttr());
+
+	m_precision = qBound(0, m_precision, std::numeric_limits<double>::digits10);
+	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.0))
+	{
+		m_multiplier = 1.0;
+	}
 }
 
 bool QtnPropertyDelegateSlideBox::createSubItemValueImpl(

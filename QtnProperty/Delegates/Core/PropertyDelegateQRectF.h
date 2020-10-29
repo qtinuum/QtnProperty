@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQRectF
 	Q_DISABLE_COPY(QtnPropertyDelegateQRectF)
 
 	bool m_coordinates;
+	int m_precision;
 
 public:
 	QtnPropertyDelegateQRectF(

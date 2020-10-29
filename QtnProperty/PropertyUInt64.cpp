@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ limitations under the License.
 #include "QObjectPropertySet.h"
 #include "Delegates/Utils/PropertyEditorAux.h"
 #include "Delegates/PropertyDelegateFactory.h"
+#include "Delegates/Utils/PropertyDelegateSliderBox.h"
 #include "PropertyDelegateAttrs.h"
 
 #include <QLocale>
@@ -75,6 +76,27 @@ void QtnPropertyDelegateUInt64::Register(QtnPropertyDelegateFactory &factory)
 	factory.registerDelegateDefault(&QtnPropertyUInt64Base::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateUInt64, QtnPropertyUInt64Base>,
 		qtnLineEditDelegate());
+
+	factory.registerDelegate(&QtnPropertyUInt64Base::staticMetaObject,
+		&qtnCreateDelegate<
+			QtnPropertyDelegateSlideBoxTyped<QtnPropertyUInt64Base>,
+			QtnPropertyUInt64Base>,
+		qtnSliderBoxDelegate());
+}
+
+quint64 QtnPropertyDelegateUInt64::minValue() const
+{
+	return m_min.isValid() ? m_min.toULongLong() : owner().minValue();
+}
+
+quint64 QtnPropertyDelegateUInt64::maxValue() const
+{
+	return m_max.isValid() ? m_max.toULongLong() : owner().maxValue();
+}
+
+quint64 QtnPropertyDelegateUInt64::currentValue() const
+{
+	return qBound(minValue(), owner().value(), maxValue());
 }
 
 QtnPropertyDelegateUInt64::QtnPropertyDelegateUInt64(
@@ -141,9 +163,18 @@ QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(
 
 bool QtnPropertyDelegateUInt64::propertyValueToStrImpl(QString &strValue) const
 {
-	auto value = owner().value();
-	strValue = QLocale().toString(value);
+	strValue = QLocale().toString(currentValue());
+	strValue.append(m_suffix);
 	return true;
+}
+
+void QtnPropertyDelegateUInt64::applyAttributesImpl(
+	const QtnPropertyDelegateInfo &info)
+{
+	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	m_min = info.attributes.value(qtnMinAttr());
+	m_max = info.attributes.value(qtnMaxAttr());
+	fixMinMaxVariant<quint64>(m_min, m_max);
 }
 
 void QtnPropertyDelegateUInt64::onEditingFinished()
@@ -152,8 +183,17 @@ void QtnPropertyDelegateUInt64::onEditingFinished()
 
 	if (!reverted && (applied || !stateProperty()->isMultiValue()))
 	{
-		auto value = QLocale().toULongLong(editor->text(), &ok);
-		ok = ok && value >= owner().minValue() && value <= owner().maxValue();
+		auto str = editor->text().trimmed();
+		if (str.endsWith(m_suffix))
+		{
+			str = str.left(str.length() - 1).trimmed();
+		}
+		auto value = QLocale().toULongLong(str, &ok);
+		if (!ok)
+		{
+			value = str.toULongLong(&ok);
+		}
+		ok = ok && value >= minValue() && value <= maxValue();
 
 		if (ok)
 			owner().setValue(value, editReason());

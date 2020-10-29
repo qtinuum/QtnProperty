@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ limitations under the License.
 QtnPropertyDelegateQSizeF::QtnPropertyDelegateQSizeF(
 	QtnPropertyQSizeFBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQSizeFBase>(owner)
+	, m_precision(std::numeric_limits<qreal>::digits10)
 {
 	addSubProperty(owner.createWidthProperty());
 	addSubProperty(owner.createHeightProperty());
@@ -43,6 +44,8 @@ extern void qtnApplyQSizeDelegateAttributes(
 void QtnPropertyDelegateQSizeF::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
+	info.loadAttribute(qtnMultiplierAttr(), m_precision);
+	m_precision = qBound(0, m_precision, std::numeric_limits<qreal>::digits10);
 	qtnApplyQSizeDelegateAttributes(this, info);
 }
 
@@ -58,8 +61,8 @@ bool QtnPropertyDelegateQSizeF::propertyValueToStrImpl(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQSize::getToStringFormat().arg(
-		locale.toString(value.width(), 'g', 5),
-		locale.toString(value.height(), 'g', 5));
+		locale.toString(value.width(), 'g', m_precision),
+		locale.toString(value.height(), 'g', m_precision));
 
 	return true;
 }

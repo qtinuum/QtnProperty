@@ -208,31 +208,27 @@ template <typename T,
 	typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
 {
-	auto min = T(0);
-	auto max = T(0);
-	bool minOk = minv.canConvert(qMetaTypeId<T>());
-	bool maxOk = maxv.canConvert(qMetaTypeId<T>());
-	if (minOk)
-	{
-		min = minv.value<T>();
-	}
-	if (maxOk)
-	{
-		max = maxv.value<T>();
-	}
-	if (!minOk || max <= min || !qIsFinite(min))
+	bool minOk;
+	bool maxOk;
+	double min = minv.toDouble(&minOk);
+	double max = maxv.toDouble(&maxOk);
+	if (!minOk || max < min || !qIsFinite(min) ||
+		min < std::numeric_limits<T>::lowest() ||
+		min > std::numeric_limits<T>::max())
 	{
 		minv = QVariant();
 	} else
 	{
-		minv = min;
+		minv = T(min);
 	}
-	if (!maxOk || max <= min || !qIsFinite(max))
+	if (!maxOk || max < min || !qIsFinite(max) ||
+		max < std::numeric_limits<T>::lowest() ||
+		max > std::numeric_limits<T>::max())
 	{
 		maxv = QVariant();
 	} else
 	{
-		maxv = max;
+		maxv = T(max);
 	}
 }
 
@@ -240,31 +236,58 @@ template <typename T,
 	typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
 void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
 {
-	auto min = T(0);
-	auto max = T(0);
-	bool minOk = minv.canConvert(qMetaTypeId<T>());
-	bool maxOk = maxv.canConvert(qMetaTypeId<T>());
-	if (minOk)
+	if (minv.type() == QVariant::ULongLong)
 	{
-		min = minv.value<T>();
-	}
-	if (maxOk)
+		quint64 min = minv.toULongLong();
+		if (min > quint64(std::numeric_limits<T>::max()))
+		{
+			minv = QVariant();
+		} else
+		{
+			minv = T(min);
+		}
+	} else
 	{
-		max = maxv.value<T>();
+		bool minOk;
+		qint64 min = minv.toLongLong(&minOk);
+		if (min < qint64(std::numeric_limits<T>::min()) ||
+			(min >= 0 && quint64(min) > std::numeric_limits<T>::max()))
+		{
+			minv = QVariant();
+		} else
+		{
+			minv = T(min);
+		}
 	}
-	if (!minOk || max <= min)
+
+	if (maxv.type() == QVariant::ULongLong)
+	{
+		quint64 max = maxv.toULongLong();
+		if (max > quint64(std::numeric_limits<T>::max()))
+		{
+			maxv = QVariant();
+		} else
+		{
+			maxv = T(max);
+		}
+	} else
+	{
+		bool maxOk;
+		qint64 max = maxv.toLongLong(&maxOk);
+		if (max < qint64(std::numeric_limits<T>::min()) ||
+			(max >= 0 && quint64(max) > std::numeric_limits<T>::max()))
+		{
+			maxv = QVariant();
+		} else
+		{
+			maxv = T(max);
+		}
+	}
+
+	if (minv.isValid() && maxv.isValid() && maxv < minv)
 	{
 		minv = QVariant();
-	} else
-	{
-		minv = min;
-	}
-	if (!maxOk || max <= min)
-	{
 		maxv = QVariant();
-	} else
-	{
-		maxv = max;
 	}
 }
 

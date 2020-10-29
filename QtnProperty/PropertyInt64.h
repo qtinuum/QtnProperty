@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -81,11 +81,19 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateInt64
 	Q_DISABLE_COPY(QtnPropertyDelegateInt64)
 
 	QString m_suffix;
+	QVariant m_min;
+	QVariant m_max;
+	QVariant m_step;
 
 public:
 	QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner);
 
 	static void Register(QtnPropertyDelegateFactory &factory);
+
+	qint64 stepValue() const;
+	qint64 minValue() const;
+	qint64 maxValue() const;
+	qint64 currentValue() const;
 
 protected:
 	virtual bool acceptKeyPressedForInplaceEditImpl(

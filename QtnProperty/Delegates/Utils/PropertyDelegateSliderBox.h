@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ limitations under the License.
 
 #include "PropertyDelegateMisc.h"
 #include "Delegates/PropertyDelegateAux.h"
+#include "PropertyDelegateAttrs.h"
 
 class QVariantAnimation;
 
@@ -54,10 +55,13 @@ protected:
 	bool m_drawBorder;
 	bool m_updateByScroll;
 	bool m_animate;
+	int m_precision;
+	double m_multiplier;
 	QColor m_boxFillColor;
 	QString m_itemToolTip;
 	QVariant m_min;
 	QVariant m_max;
+	QString m_suffix;
 
 private:
 	void incrementPropertyValueInternal(int steps);
@@ -107,18 +111,20 @@ protected:
 	ValueTypeStore minValue() const
 	{
 		const QVariant &mv = this->m_min;
-		return mv.isValid() ? mv.value<ValueTypeStore>() : owner().minValue();
+		return mv.isValid() ? mv.value<ValueTypeStore>()
+							: this->owner().minValue();
 	}
 
 	ValueTypeStore maxValue() const
 	{
 		const QVariant &mv = this->m_max;
-		return mv.isValid() ? mv.value<ValueTypeStore>() : owner().maxValue();
+		return mv.isValid() ? mv.value<ValueTypeStore>()
+							: this->owner().maxValue();
 	}
 
 	ValueTypeStore currentValue() const
 	{
-		return std::min(maxValue(), std::max(minValue(), owner().value()));
+		return qBound(minValue(), this->owner().value(), maxValue());
 	}
 
 	inline double interval(ValueTypeStore to) const
@@ -129,23 +135,39 @@ protected:
 
 	virtual double propertyValuePart() const override
 	{
-		auto &p = this->owner();
 		return interval(currentValue()) / interval(maxValue());
 	}
 
 	template <typename T,
 		typename std::enable_if<std::is_floating_point<T>::value>::type * =
 			nullptr>
-	static QString valueToStr(T value)
+	QString valueToStr(T value) const
 	{
-		return QLocale().toString(value, 'g', 5);
+		if (this->m_multiplier == 1.0)
+		{
+			return QLocale().toString(value, 'g',
+					   qBound(0, this->m_precision,
+						   std::numeric_limits<T>::digits10)) +
+				this->m_suffix;
+		}
+
+		return QLocale().toString(
+				   double(value) * this->m_multiplier, 'g', this->m_precision) +
+			this->m_suffix;
 	}
 
 	template <typename T,
 		typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
-	static QString valueToStr(T value)
+	QString valueToStr(T value) const
 	{
-		return QLocale().toString(value);
+		if (this->m_multiplier == 1.0)
+		{
+			return QLocale().toString(value) + this->m_suffix;
+		}
+
+		return QLocale().toString(
+				   double(value) * this->m_multiplier, 'g', this->m_precision) +
+			this->m_suffix;
 	}
 
 	virtual QString valuePartToStr(double valuePart) const override

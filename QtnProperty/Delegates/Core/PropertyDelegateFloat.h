@@ -26,14 +26,17 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateFloat
 
 	QString m_suffix;
 	float m_multiplier;
-	float m_min;
-	float m_max;
+	int m_precision;
+	QVariant m_min;
+	QVariant m_max;
+	QVariant m_step;
 
 public:
 	QtnPropertyDelegateFloat(QtnPropertyFloatBase &owner);
 
 	static void Register(QtnPropertyDelegateFactory &factory);
 
+	float stepValue() const;
 	float minValue() const;
 	float maxValue() const;
 	float multiplier() const;

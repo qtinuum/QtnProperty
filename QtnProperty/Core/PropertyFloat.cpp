@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyFloat.h"
-
-#include <QLocale>
 
 QtnPropertyFloatBase::QtnPropertyFloatBase(QObject *parent)
 	: QtnNumericPropertyBase<QtnSinglePropertyBase<float>>(parent)
@@ -38,7 +36,7 @@ bool QtnPropertyFloatBase::fromStrImpl(
 
 bool QtnPropertyFloatBase::toStrImpl(QString &str) const
 {
-	str = QString::number(value(), 'g', 5);
+	str = QString::number(value(), 'g', std::numeric_limits<float>::digits10);
 	return true;
 }
 

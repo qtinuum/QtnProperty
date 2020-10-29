@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -32,11 +32,14 @@ class QtnPropertyUIntSpinBoxHandler
 {
 public:
 	QtnPropertyUIntSpinBoxHandler(
-		QtnPropertyDelegate *delegate, QtnInt64SpinBox &editor);
+		QtnPropertyDelegateUInt *delegate, QtnInt64SpinBox &editor);
 
 protected:
 	virtual void updateEditor() override;
 	void onValueChanged(qint64 value);
+
+private:
+	QtnPropertyDelegateUInt *m_delegate;
 };
 
 QtnPropertyDelegateUInt::QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner)
@@ -55,6 +58,26 @@ void QtnPropertyDelegateUInt::Register(QtnPropertyDelegateFactory &factory)
 			QtnPropertyDelegateSlideBoxTyped<QtnPropertyUIntBase>,
 			QtnPropertyUIntBase>,
 		qtnSliderBoxDelegate());
+}
+
+uint QtnPropertyDelegateUInt::stepValue() const
+{
+	return m_step.isValid() ? m_step.toUInt() : owner().stepValue();
+}
+
+uint QtnPropertyDelegateUInt::minValue() const
+{
+	return m_min.isValid() ? m_min.toUInt() : owner().minValue();
+}
+
+uint QtnPropertyDelegateUInt::maxValue() const
+{
+	return m_max.isValid() ? m_max.toUInt() : owner().maxValue();
+}
+
+uint QtnPropertyDelegateUInt::currentValue() const
+{
+	return qBound(minValue(), owner().value(), maxValue());
 }
 
 QWidget *QtnPropertyDelegateUInt::createValueEditorImpl(
@@ -88,25 +111,36 @@ void QtnPropertyDelegateUInt::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	m_min = info.attributes.value(qtnMinAttr());
+	m_max = info.attributes.value(qtnMaxAttr());
+	m_step = info.attributes.value(qtnStepAttr());
+	if (m_step.isValid())
+	{
+		bool ok;
+		uint step = m_step.toUInt(&ok);
+		if (!ok)
+		{
+			m_step = QVariant();
+		} else
+		{
+			m_step = step;
+		}
+	}
+	fixMinMaxVariant<uint>(m_min, m_max);
 }
 
 bool QtnPropertyDelegateUInt::propertyValueToStrImpl(QString &strValue) const
 {
-	strValue = QLocale().toString(owner().value());
+	strValue = QLocale().toString(currentValue());
+	strValue.append(m_suffix);
 	return true;
 }
 
 QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(
-	QtnPropertyDelegate *delegate, QtnInt64SpinBox &editor)
+	QtnPropertyDelegateUInt *delegate, QtnInt64SpinBox &editor)
 	: QtnPropertyEditorHandlerVT(delegate, editor)
+	, m_delegate(delegate)
 {
-	if (!stateProperty()->isEditableByUser())
-		editor.setReadOnly(true);
-
-	auto &p = property();
-	editor.setRange(p.minValue(), p.maxValue());
-	editor.setSingleStep(p.stepValue());
-
 	updateEditor();
 
 	editor.setKeyboardTracking(false);
@@ -121,6 +155,10 @@ void QtnPropertyUIntSpinBoxHandler::updateEditor()
 {
 	updating++;
 
+	editor().setReadOnly(!stateProperty()->isEditableByUser());
+	editor().setSingleStep(m_delegate->stepValue());
+	editor().setRange(m_delegate->minValue(), m_delegate->maxValue());
+
 	if (stateProperty()->isMultiValue())
 	{
 		editor().setValue(editor().minimum());
@@ -128,7 +166,7 @@ void QtnPropertyUIntSpinBoxHandler::updateEditor()
 			QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
-		editor().setValue(property().value());
+		editor().setValue(m_delegate->currentValue());
 		editor().setSpecialValueText(QString());
 	}
 

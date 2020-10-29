@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
 	QtnPropertyQPointFBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointFBase>(owner)
 	, m_multiplier(1.0)
+	, m_precision(std::numeric_limits<qreal>::digits10)
 {
 	addSubProperty(owner.createXProperty());
 	addSubProperty(owner.createYProperty());
@@ -47,6 +48,8 @@ void QtnPropertyDelegateQPointF::applyAttributesImpl(
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
 	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
+	info.loadAttribute(qtnMultiplierAttr(), m_precision);
+	m_precision = qBound(0, m_precision, std::numeric_limits<qreal>::digits10);
 	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.0))
 	{
 		m_multiplier = 1;
@@ -67,8 +70,8 @@ bool QtnPropertyDelegateQPointF::propertyValueToStrImpl(QString &strValue) const
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-		locale.toString(value.x() * m_multiplier, 'g', 5) + m_suffix,
-		locale.toString(value.y() * m_multiplier, 'g', 5) + m_suffix);
+		locale.toString(value.x() * m_multiplier, 'g', m_precision) + m_suffix,
+		locale.toString(value.y() * m_multiplier, 'g', m_precision) + m_suffix);
 
 	return true;
 }

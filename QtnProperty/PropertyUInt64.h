@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -83,10 +83,18 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateUInt64
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyDelegateUInt64)
 
+	QString m_suffix;
+	QVariant m_min;
+	QVariant m_max;
+
 public:
 	QtnPropertyDelegateUInt64(QtnPropertyUInt64Base &owner);
 
 	static void Register(QtnPropertyDelegateFactory &factory);
+
+	quint64 minValue() const;
+	quint64 maxValue() const;
+	quint64 currentValue() const;
 
 protected:
 	virtual bool eventFilter(QObject *obj, QEvent *event) override;
@@ -96,6 +104,9 @@ protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 	virtual bool propertyValueToStrImpl(QString &strValue) const override;
+
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateInfo &info) override;
 
 private:
 	void onEditingFinished();

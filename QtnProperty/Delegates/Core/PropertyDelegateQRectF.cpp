@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(
 	QtnPropertyQRectFBase &owner, bool useCoordinates)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQRectFBase>(owner)
 	, m_coordinates(useCoordinates)
+	, m_precision(std::numeric_limits<qreal>::digits10)
 {
 	addSubProperty(owner.createLeftProperty(!m_coordinates));
 	addSubProperty(owner.createTopProperty(!m_coordinates));
@@ -66,6 +67,8 @@ extern void qtnApplyQRectDelegateAttributes(QtnPropertyDelegate *to,
 void QtnPropertyDelegateQRectF::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
+	info.loadAttribute(qtnMultiplierAttr(), m_precision);
+	m_precision = qBound(0, m_precision, std::numeric_limits<qreal>::digits10);
 	qtnApplyQRectDelegateAttributes(this, info, m_coordinates);
 }
 
@@ -82,12 +85,12 @@ bool QtnPropertyDelegateQRectF::propertyValueToStrImpl(QString &strValue) const
 	QLocale locale;
 	strValue =
 		QtnPropertyQRect::getToStringFormat(m_coordinates)
-			.arg(locale.toString(value.left(), 'g', 5),
-				locale.toString(value.top(), 'g', 5),
-				locale.toString(
-					m_coordinates ? value.right() : value.width(), 'g', 5),
-				locale.toString(
-					m_coordinates ? value.bottom() : value.height(), 'g', 5));
+			.arg(locale.toString(value.left(), 'g', m_precision),
+				locale.toString(value.top(), 'g', m_precision),
+				locale.toString(m_coordinates ? value.right() : value.width(),
+					'g', m_precision),
+				locale.toString(m_coordinates ? value.bottom() : value.height(),
+					'g', m_precision));
 
 	return true;
 }

@@ -42,11 +42,6 @@ QByteArray qtnSuffixAttr()
 	return QByteArrayLiteral("suffix");
 }
 
-QByteArray qtnMultiplierAttr()
-{
-	return QByteArrayLiteral("multiplier");
-}
-
 QByteArray qtnMinAttr()
 {
 	return QByteArrayLiteral("min");
@@ -55,6 +50,11 @@ QByteArray qtnMinAttr()
 QByteArray qtnMaxAttr()
 {
 	return QByteArrayLiteral("max");
+}
+
+QByteArray qtnStepAttr()
+{
+	return QByteArrayLiteral("step");
 }
 
 void qtnInitPercentSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
@@ -100,6 +100,11 @@ void QtnPropertyDelegateInt::Register(QtnPropertyDelegateFactory &factory)
 		qtnSliderBoxDelegate());
 }
 
+int QtnPropertyDelegateInt::stepValue() const
+{
+	return m_step.isValid() ? m_step.toInt() : owner().stepValue();
+}
+
 int QtnPropertyDelegateInt::minValue() const
 {
 	return m_min.isValid() ? m_min.toInt() : owner().minValue();
@@ -112,7 +117,7 @@ int QtnPropertyDelegateInt::maxValue() const
 
 int QtnPropertyDelegateInt::currentValue() const
 {
-	return std::min(maxValue(), std::max(minValue(), owner().value()));
+	return qBound(minValue(), owner().value(), maxValue());
 }
 
 QWidget *QtnPropertyDelegateInt::createValueEditorImpl(
@@ -150,12 +155,26 @@ void QtnPropertyDelegateInt::applyAttributesImpl(
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
 	m_min = info.attributes.value(qtnMinAttr());
 	m_max = info.attributes.value(qtnMaxAttr());
+	m_step = info.attributes.value(qtnStepAttr());
+	if (m_step.isValid())
+	{
+		bool ok;
+		int step = m_step.toInt(&ok);
+		if (!ok)
+		{
+			m_step = QVariant();
+		} else
+		{
+			m_step = step;
+		}
+	}
 	fixMinMaxVariant<int>(m_min, m_max);
 }
 
 bool QtnPropertyDelegateInt::propertyValueToStrImpl(QString &strValue) const
 {
 	strValue = QLocale().toString(currentValue());
+	strValue.append(m_suffix);
 	return true;
 }
 
@@ -178,7 +197,7 @@ void QtnPropertyIntSpinBoxHandler::updateEditor()
 	updating++;
 
 	editor().setReadOnly(!stateProperty()->isEditableByUser());
-	editor().setSingleStep(property().stepValue());
+	editor().setSingleStep(m_delegate->stepValue());
 	editor().setRange(m_delegate->minValue(), m_delegate->maxValue());
 
 	if (stateProperty()->isMultiValue())

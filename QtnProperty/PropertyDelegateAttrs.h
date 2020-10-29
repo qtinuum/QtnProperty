@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright 2017-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License")();
 you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ limitations under the License.
 
 #include <QByteArray>
 
+QTN_IMPORT_EXPORT QByteArray qtnPrecisionAttr();
 QTN_IMPORT_EXPORT QByteArray qtnMinAttr();
 QTN_IMPORT_EXPORT QByteArray qtnMaxAttr();
+QTN_IMPORT_EXPORT QByteArray qtnStepAttr();
 QTN_IMPORT_EXPORT QByteArray qtnMultiplierAttr();
 QTN_IMPORT_EXPORT QByteArray qtnMultiLineEditAttr();
 QTN_IMPORT_EXPORT QByteArray qtnMaxLengthAttr();

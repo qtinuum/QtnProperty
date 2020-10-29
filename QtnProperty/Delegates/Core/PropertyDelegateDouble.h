@@ -26,14 +26,17 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateDouble
 
 	QString m_suffix;
 	double m_multiplier;
+	int m_precision;
 	QVariant m_min;
 	QVariant m_max;
+	QVariant m_step;
 
 public:
 	QtnPropertyDelegateDouble(QtnPropertyDoubleBase &owner);
 
 	static void Register(QtnPropertyDelegateFactory &factory);
 
+	double stepValue() const;
 	double minValue() const;
 	double maxValue() const;
 	double multiplier() const;
