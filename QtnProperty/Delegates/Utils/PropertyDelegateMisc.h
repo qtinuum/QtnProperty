@@ -93,6 +93,8 @@ protected:
 	bool createSubItemValueImpl(
 		QtnDrawContext &context, QtnSubItem &subItemValue) override;
 
+	static bool isNormalPainterState(const QStylePainter &painter);
+	virtual bool isPlaceholderColor() const;
 	// override to draw property value or override propertyValueToStrImpl to draw value as text
 	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect) const;
 	// override to filter key events that will activate property Editor

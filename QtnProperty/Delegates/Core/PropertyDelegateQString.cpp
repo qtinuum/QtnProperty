@@ -272,31 +272,6 @@ bool QtnPropertyDelegateQString::propertyValueToStrImpl(QString &strValue) const
 	return true;
 }
 
-void QtnPropertyDelegateQString::drawValueImpl(
-	QStylePainter &painter, const QRect &rect) const
-{
-	if (stateProperty()->isMultiValue())
-	{
-		QtnPropertyDelegateTyped::drawValueImpl(painter, rect);
-		return;
-	}
-
-	QPen oldPen = painter.pen();
-
-	if (isPlaceholderColor())
-	{
-		auto palette = painter.style()->standardPalette();
-		if (palette.currentColorGroup() != QPalette::Disabled &&
-			painter.brush().color() != palette.color(QPalette::Highlight))
-		{
-			painter.setPen(disabledTextColor(painter));
-		}
-	}
-
-	Inherited::drawValueImpl(painter, rect);
-	painter.setPen(oldPen);
-}
-
 bool QtnPropertyDelegateQString::isPlaceholderColor() const
 {
 	auto text = owner().value();
@@ -352,15 +327,11 @@ void QtnPropertyDelegateQStringInvalidBase::drawValueImpl(
 {
 	QPen oldPen = painter.pen();
 
-	if ((m_invalidColor.alpha() != 0) && !isPlaceholderColor() &&
-		!isPropertyValid() && stateProperty()->isEditableByUser())
+	if ((m_invalidColor.alpha() != 0) && isNormalPainterState(painter) &&
+		!isPlaceholderColor() && !isPropertyValid() &&
+		stateProperty()->isEditableByUser())
 	{
-		auto palette = painter.style()->standardPalette();
-		if (palette.currentColorGroup() != QPalette::Disabled &&
-			painter.brush().color() != palette.color(QPalette::Highlight))
-		{
-			painter.setPen(m_invalidColor.rgb());
-		}
+		painter.setPen(m_invalidColor.rgb());
 	}
 
 	QtnPropertyDelegateQString::drawValueImpl(painter, rect);
