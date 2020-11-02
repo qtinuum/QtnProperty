@@ -330,7 +330,7 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 			if (nullptr != draggedProperty &&
 				0 != (mevent->buttons() & Qt::LeftButton))
 			{
-				if ((mevent->pos() - dragStartPos).manhattanLength() <
+				if ((mevent->pos() - dragStartPos).manhattanLength() >=
 					QApplication::startDragDistance())
 				{
 					dragAndDrop();
