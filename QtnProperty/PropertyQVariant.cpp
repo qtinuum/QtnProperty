@@ -203,7 +203,9 @@ bool QtnPropertyQVariant::variantIsObject(QVariant::Type type)
 {
 	switch (type)
 	{
+		case QVariant::Hash:
 		case QVariant::Map:
+		case QVariant::StringList:
 		case QVariant::List:
 			return true;
 
@@ -218,9 +220,11 @@ QString QtnPropertyQVariant::getPlaceholderStr(QVariant::Type type)
 {
 	switch (type)
 	{
+		case QVariant::Hash:
 		case QVariant::Map:
 			return tr("(Dictionary)");
 
+		case QVariant::StringList:
 		case QVariant::List:
 			return tr("(List)");
 
