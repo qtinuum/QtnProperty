@@ -48,7 +48,7 @@ void QtnPropertyDelegateQPointF::applyAttributesImpl(
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
 	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
-	info.loadAttribute(qtnMultiplierAttr(), m_precision);
+	info.loadAttribute(qtnPrecisionAttr(), m_precision);
 	m_precision = qBound(0, m_precision, std::numeric_limits<qreal>::digits10);
 	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.0))
 	{

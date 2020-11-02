@@ -44,7 +44,7 @@ extern void qtnApplyQSizeDelegateAttributes(
 void QtnPropertyDelegateQSizeF::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
-	info.loadAttribute(qtnMultiplierAttr(), m_precision);
+	info.loadAttribute(qtnPrecisionAttr(), m_precision);
 	m_precision = qBound(0, m_precision, std::numeric_limits<qreal>::digits10);
 	qtnApplyQSizeDelegateAttributes(this, info);
 }
