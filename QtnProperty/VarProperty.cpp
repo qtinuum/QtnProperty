@@ -126,10 +126,12 @@ VarProperty::Type VarProperty::GetTypeFromValue(const QVariant &value)
 
 	switch (value.type())
 	{
+		case QVariant::Hash:
 		case QVariant::Map:
 			type = Map;
 			break;
 
+		case QVariant::StringList:
 		case QVariant::List:
 			type = List;
 			break;
@@ -327,12 +329,14 @@ QtnPropertyBase *VarProperty::NewExtraProperty(QtnPropertySet *set,
 
 	switch (type)
 	{
+		case QVariant::Hash:
 		case QVariant::Map:
 		{
 			return NewExtraPropertySet(
 				set, value.toMap(), mapParent, name, index, registerProperty);
 		}
 
+		case QVariant::StringList:
 		case QVariant::List:
 		{
 			return NewExtraPropertyList(
