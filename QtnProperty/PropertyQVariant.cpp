@@ -284,30 +284,9 @@ bool QtnPropertyDelegateQVariant::propertyValueToStrImpl(
 	return true;
 }
 
-void QtnPropertyDelegateQVariant::drawValueImpl(
-	QStylePainter &painter, const QRect &rect) const
+bool QtnPropertyDelegateQVariant::isPlaceholderColor() const
 {
-	if (stateProperty()->isMultiValue())
-	{
-		QtnPropertyDelegateTyped::drawValueImpl(painter, rect);
-		return;
-	}
-
-	QPen oldPen = painter.pen();
-
-	if (stateProperty()->isEditableByUser() &&
-		QtnPropertyQVariant::valueToString(owner().value()).isEmpty())
-	{
-		auto palette = painter.style()->standardPalette();
-		if (palette.currentColorGroup() != QPalette::Disabled &&
-			painter.brush().color() != palette.color(QPalette::Highlight))
-		{
-			painter.setPen(disabledTextColor(painter));
-		}
-	}
-
-	Inherited::drawValueImpl(painter, rect);
-	painter.setPen(oldPen);
+	return QtnPropertyQVariant::valueToString(owner().value()).isEmpty();
 }
 
 QtnPropertyQVariantEditBttnHandler::QtnPropertyQVariantEditBttnHandler(

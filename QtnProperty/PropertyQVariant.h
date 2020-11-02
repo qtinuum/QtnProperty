@@ -93,7 +93,8 @@ protected:
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 	virtual bool propertyValueToStrImpl(QString &strValue) const override;
-
-	virtual void drawValueImpl(
-		QStylePainter &painter, const QRect &rect) const override;
+	virtual bool isPlaceholderColor() const override;
 };
+
+QTN_IMPORT_EXPORT bool qtnCompareQVariants(
+	const QVariant &left, const QVariant &right);

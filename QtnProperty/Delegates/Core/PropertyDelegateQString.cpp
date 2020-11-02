@@ -280,10 +280,7 @@ bool QtnPropertyDelegateQString::isPlaceholderColor() const
 		return true;
 	}
 
-	return stateProperty()->isEditableByUser() &&
-		(stateProperty()->isMultiValue() ||
-			!QtnPropertyQString::getPlaceholderStr(text, m_multiline)
-				 .isEmpty());
+	return !QtnPropertyQString::getPlaceholderStr(text, m_multiline).isEmpty();
 }
 
 class QtnPropertyQStringFileLineEditBttnHandler

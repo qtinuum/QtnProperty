@@ -413,8 +413,18 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(
 }
 
 bool QtnPropertyDelegateWithValueEditor::isNormalPainterState(
-	const QStylePainter &painter)
+	const QStylePainter &painter) const
 {
+	if (!stateProperty())
+	{
+		return false;
+	}
+
+	if (!stateProperty()->isEditableByUser())
+	{
+		return false;
+	}
+
 	auto palette = painter.style()->standardPalette();
 	return palette.currentColorGroup() != QPalette::Disabled &&
 		painter.brush().color() != palette.color(QPalette::Highlight);
