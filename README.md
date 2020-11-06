@@ -37,7 +37,7 @@ Some screenshots of the Demo application:
 # How to build
 **Requirements:**
 
-1. Qt 5.2 framework or later
+1. Qt 5.9 framework or later
 2. Flex 2.6.4 and Bison 3.1.1 (for Windows can be found [here](https://github.com/lexxmark/winflexbison)) if you build QtnPEG tool
 
 **To build:**
