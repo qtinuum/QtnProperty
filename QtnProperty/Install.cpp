@@ -38,6 +38,7 @@ limitations under the License.
 #include "Delegates/GUI/PropertyDelegateQFont.h"
 #include "Delegates/GUI/PropertyDelegateQPen.h"
 #include "Delegates/GUI/PropertyDelegateQBrush.h"
+#include "Delegates/GUI/PropertyDelegateQVector3D.h"
 #include "MultiProperty.h"
 #include "QObjectPropertySet.h"
 #include "Utils/AccessibilityProxy.h"
@@ -71,7 +72,8 @@ static QtnProperty *createRealNumberProperty(
 				});
 
 			property->setCallbackValueSet(
-				[object, metaProperty](ValueTypeStore value, QtnPropertyChangeReason /*reason*/) {
+				[object, metaProperty](
+					ValueTypeStore value, QtnPropertyChangeReason /*reason*/) {
 					metaProperty.write(object, value / ValueTypeStore(100.0));
 				});
 
@@ -91,7 +93,8 @@ static QtnProperty *createRealNumberProperty(
 		return ValueTypeStore(metaProperty.read(object).toDouble());
 	});
 
-	property->setCallbackValueSet([object, metaProperty](ValueTypeStore value, QtnPropertyChangeReason /*reason*/) {
+	property->setCallbackValueSet([object, metaProperty](ValueTypeStore value,
+									  QtnPropertyChangeReason /*reason*/) {
 		metaProperty.write(object, value);
 	});
 
@@ -138,6 +141,8 @@ static void qtnRegisterDefaultMetaPropertyFactory()
 		qtnCreateFactory<QtnPropertyQPenStyleCallback>());
 	qtnRegisterMetaPropertyFactory(qMetaTypeId<Qt::BrushStyle>(),
 		qtnCreateFactory<QtnPropertyQBrushStyleCallback>());
+	qtnRegisterMetaPropertyFactory(qMetaTypeId<QVector3D>(),
+		qtnCreateFactory<QtnPropertyQVector3DCallback>());
 	qtnRegisterMetaPropertyFactory(QMetaType::QVariant,
 		[](QObject *object,
 			const QMetaProperty &metaProperty) -> QtnProperty * {
