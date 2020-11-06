@@ -194,7 +194,6 @@ private:
 	QtnPropertyChangeReason m_lastChangeReason;
 	unsigned m_stopInvalidate;
 	bool m_mouseAtSplitter;
-	QCursor m_oldCursor;
 
 	friend class QtnAccessibilityProxy;
 	QtnAccessibilityProxy *m_accessibilityProxy;
