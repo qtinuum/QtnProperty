@@ -61,6 +61,8 @@ QtnPropertyDelegateSlideBox::QtnPropertyDelegateSlideBox(QtnPropertyBase &owner)
 	, m_drawBorder(true)
 	, m_updateByScroll(true)
 	, m_animate(false)
+	, m_precision(std::numeric_limits<double>::digits10)
+	, m_multiplier(1.0)
 	, m_boxFillColor(QColor::fromRgb(200, 200, 255))
 	, m_itemToolTip(QtnPropertyView::tr("Drag/Scroll mouse to change value"))
 	, m_dragValuePart(0.0)
@@ -241,8 +243,9 @@ bool QtnPropertyDelegateSlideBox::event(
 					m_dragValuePart = dragValuePart;
 					context.updateWidget();
 				}
+				return true;
 			}
-			return true;
+			break;
 		}
 
 		case QtnSubItemEvent::ReleaseMouse:
@@ -258,8 +261,9 @@ bool QtnPropertyDelegateSlideBox::event(
 		}
 
 		default:
-			return false;
+			break;
 	}
+	return false;
 }
 
 void QtnPropertyDelegateSlideBox::incrementPropertyValueInternal(int steps)
