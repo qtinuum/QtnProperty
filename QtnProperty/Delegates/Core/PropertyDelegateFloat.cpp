@@ -86,9 +86,7 @@ double QtnPropertyDelegateFloat::stepValue() const
 	}
 
 	float sv = owner().stepValue();
-	auto str =
-		QByteArray::number(sv, 'g', std::numeric_limits<float>::digits10);
-	return str.toDouble();
+	return qint64(sv * 100000.0) / 100000.0;
 }
 
 QWidget *QtnPropertyDelegateFloat::createValueEditorImpl(
