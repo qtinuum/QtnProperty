@@ -219,7 +219,7 @@ void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
 		minv = QVariant();
 	} else
 	{
-		minv = T(min);
+		minv = min;
 	}
 	if (!maxOk || max < min || !qIsFinite(max) ||
 		max < std::numeric_limits<T>::lowest() ||
@@ -228,7 +228,7 @@ void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
 		maxv = QVariant();
 	} else
 	{
-		maxv = T(max);
+		maxv = max;
 	}
 }
 

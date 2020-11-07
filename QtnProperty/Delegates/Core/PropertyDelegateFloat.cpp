@@ -38,25 +38,29 @@ QByteArray qtnPrecisionAttr()
 }
 
 class QtnPropertyFloatSpinBoxHandler
-	: public QtnPropertyEditorHandlerVT<QtnPropertyFloatBase, QDoubleSpinBox>
+	: public QtnPropertyEditorHandler<QtnPropertyFloatBase, QDoubleSpinBox>
 {
 public:
+	using Inherited =
+		QtnPropertyEditorHandler<QtnPropertyFloatBase, QDoubleSpinBox>;
+
 	QtnPropertyFloatSpinBoxHandler(
 		QtnPropertyDelegateFloat *delegate, QDoubleSpinBox &editor);
 
-protected:
-	virtual void updateEditor() override;
-	virtual void updateValue() override;
+	void onValueChanged(double value);
 
-	void onDoubleValueChanged(double value);
+	virtual void updateEditor() override;
+	void updateValue();
 
 private:
 	QtnPropertyDelegateFloat *m_delegate;
+	double newValue;
+	unsigned updating;
 };
 
 QtnPropertyDelegateFloat::QtnPropertyDelegateFloat(QtnPropertyFloatBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyFloatBase>(owner)
-	, m_multiplier(1.f)
+	, m_multiplier(1.0)
 	, m_precision(std::numeric_limits<float>::digits10)
 {
 }
@@ -74,9 +78,17 @@ void QtnPropertyDelegateFloat::Register(QtnPropertyDelegateFactory &factory)
 		qtnSliderBoxDelegate());
 }
 
-float QtnPropertyDelegateFloat::stepValue() const
+double QtnPropertyDelegateFloat::stepValue() const
 {
-	return m_step.isValid() ? m_step.toFloat() : owner().stepValue();
+	if (m_step.isValid())
+	{
+		return m_step.toDouble();
+	}
+
+	float sv = owner().stepValue();
+	auto str =
+		QByteArray::number(sv, 'g', std::numeric_limits<float>::digits10);
+	return str.toDouble();
 }
 
 QWidget *QtnPropertyDelegateFloat::createValueEditorImpl(
@@ -127,7 +139,7 @@ void QtnPropertyDelegateFloat::applyAttributesImpl(
 	if (m_step.isValid())
 	{
 		bool ok;
-		float step = m_step.toFloat(&ok);
+		float step = m_step.toDouble(&ok);
 		if (!ok)
 		{
 			m_step = QVariant();
@@ -142,40 +154,42 @@ void QtnPropertyDelegateFloat::applyAttributesImpl(
 	m_min = info.attributes.value(qtnMinAttr());
 	m_max = info.attributes.value(qtnMaxAttr());
 
-	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.f))
+	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.0))
 	{
-		m_multiplier = 1.f;
+		m_multiplier = 1.0;
 	}
 	fixMinMaxVariant<float>(m_min, m_max);
 }
 
-float QtnPropertyDelegateFloat::minValue() const
+double QtnPropertyDelegateFloat::minValue() const
 {
 	return (m_min.isValid() ? m_min.toFloat() : owner().minValue()) *
 		m_multiplier;
 }
 
-float QtnPropertyDelegateFloat::maxValue() const
+double QtnPropertyDelegateFloat::maxValue() const
 {
 	return (m_max.isValid() ? m_max.toFloat() : owner().maxValue()) *
 		m_multiplier;
 }
 
-float QtnPropertyDelegateFloat::multiplier() const
+double QtnPropertyDelegateFloat::multiplier() const
 {
 	return m_multiplier;
 }
 
-float QtnPropertyDelegateFloat::currentValue() const
+double QtnPropertyDelegateFloat::currentValue() const
 {
 	return qBound(minValue(), owner().value() * m_multiplier, maxValue());
 }
 
 QtnPropertyFloatSpinBoxHandler::QtnPropertyFloatSpinBoxHandler(
 	QtnPropertyDelegateFloat *delegate, QDoubleSpinBox &editor)
-	: QtnPropertyEditorHandlerVT(delegate, editor)
+	: Inherited(delegate, editor)
 	, m_delegate(delegate)
+	, updating(0)
 {
+	newValue = this->property().value();
 	updateEditor();
 
 	editor.setKeyboardTracking(false);
@@ -183,7 +197,15 @@ QtnPropertyFloatSpinBoxHandler::QtnPropertyFloatSpinBoxHandler(
 	QObject::connect(&editor,
 		static_cast<void (QDoubleSpinBox::*)(double)>(
 			&QDoubleSpinBox::valueChanged),
-		this, &QtnPropertyFloatSpinBoxHandler::onDoubleValueChanged);
+		this, &QtnPropertyFloatSpinBoxHandler::onValueChanged);
+}
+
+void QtnPropertyFloatSpinBoxHandler::onValueChanged(double value)
+{
+	if (updating > 0)
+		return;
+	newValue = value;
+	updateValue();
 }
 
 void QtnPropertyFloatSpinBoxHandler::updateEditor()
@@ -217,9 +239,4 @@ void QtnPropertyFloatSpinBoxHandler::updateValue()
 		this->property().setValue(newValue / m_delegate->multiplier(),
 			this->delegate()->editReason());
 	}
-}
-
-void QtnPropertyFloatSpinBoxHandler::onDoubleValueChanged(double value)
-{
-	onValueChanged(float(value));
 }

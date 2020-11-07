@@ -238,6 +238,7 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , QPointFProperty(*qtnCreateProperty<QtnPropertyQPointF>(this))
     , QSizeFProperty(*qtnCreateProperty<QtnPropertyQSizeF>(this))
     , QRectFProperty(*qtnCreateProperty<QtnPropertyQRectF>(this))
+    , QVector3DProperty(*qtnCreateProperty<QtnPropertyQVector3D>(this))
     , QColorProperty(*qtnCreateProperty<QtnPropertyQColor>(this))
     , QFontProperty(*qtnCreateProperty<QtnPropertyQFont>(this))
     , FreqProperty(*qtnCreateProperty<QtnPropertyFreq>(this))
@@ -285,6 +286,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     QPointFProperty = other.QPointFProperty;
     QSizeFProperty = other.QSizeFProperty;
     QRectFProperty = other.QRectFProperty;
+    QVector3DProperty = other.QVector3DProperty;
     QColorProperty = other.QColorProperty;
     QFontProperty = other.QFontProperty;
     FreqProperty = other.FreqProperty;
@@ -424,6 +426,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->QRectFProperty.state() & ignoreMask))
     {
         QRectFProperty = theCopyFrom->QRectFProperty;
+    }
+
+    if (!(theCopyFrom->QVector3DProperty.state() & ignoreMask))
+    {
+        QVector3DProperty = theCopyFrom->QVector3DProperty;
     }
 
     if (!(theCopyFrom->QColorProperty.state() & ignoreMask))
@@ -614,6 +621,11 @@ void QtnPropertySetSamplePS::init()
     static QString QRectFProperty_description = "Property to hold QRectF value.";
     QRectFProperty.setDescription(QRectFProperty_description);
     QRectFProperty.setValue(QRectF(10.23, 10.4, 200.2, 200.6));
+    static QString QVector3DProperty_name = QStringLiteral("QVector3DProperty");
+    QVector3DProperty.setName(QVector3DProperty_name);
+    static QString QVector3DProperty_description = "Property to hold QVector3D value.";
+    QVector3DProperty.setDescription(QVector3DProperty_description);
+    QVector3DProperty.setValue(QVector3D(5, 6, 7));
     static QString QColorProperty_name = QStringLiteral("QColorProperty");
     QColorProperty.setName(QColorProperty_name);
     static QString QColorProperty_description = "Property to hold QColor value.";
@@ -726,6 +738,16 @@ void QtnPropertySetSamplePS::connectDelegates()
         QtnPropertyDelegateInfo info;
         info.name = "IntList";
         info.attributes["values"] = QVariant::fromValue(QList<int>() << 10 << 12 << 15);
+        return info;
+    });
+    QVector3DProperty.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.attributes["max"] = 255;
+        info.attributes["min"] = 0;
+        info.attributes["multiplier"] = 100.f / 255.f;
+        info.attributes["precision"] = 5;
+        info.attributes["suffix"] = "%";
+        info.attributes["z"] = QVariantMap({{QString("name"), QString("SliderBox")}});
         return info;
     });
     PenProperty.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {

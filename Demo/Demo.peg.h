@@ -108,6 +108,7 @@ public:
     QtnPropertyQPointF& QPointFProperty;
     QtnPropertyQSizeF& QSizeFProperty;
     QtnPropertyQRectF& QRectFProperty;
+    QtnPropertyQVector3D& QVector3DProperty;
     QtnPropertyQColor& QColorProperty;
     QtnPropertyQFont& QFontProperty;
     QtnPropertyFreq& FreqProperty;

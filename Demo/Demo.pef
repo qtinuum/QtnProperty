@@ -268,6 +268,20 @@ property_set SamplePS
         value = QRectF(10.23, 10.4, 200.2, 200.6);
     }
 
+    QVector3D QVector3DProperty
+    {
+    	description = "Property to hold QVector3D value.";
+    	value = QVector3D(5, 6, 7);
+    	delegate {
+    		multiplier = 100.f / 255.f;
+    		min = 0;
+    		max = 255;
+    		precision = 5;
+    		suffix = "%";
+    		z = QVariantMap({{QString("name"), QString("SliderBox")}});
+    	}
+    }
+
     QColor QColorProperty
     {
         description = "Property to hold QColor value.";

@@ -25,7 +25,7 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateFloat
 	Q_DISABLE_COPY(QtnPropertyDelegateFloat)
 
 	QString m_suffix;
-	float m_multiplier;
+	double m_multiplier;
 	int m_precision;
 	QVariant m_min;
 	QVariant m_max;
@@ -36,11 +36,11 @@ public:
 
 	static void Register(QtnPropertyDelegateFactory &factory);
 
-	float stepValue() const;
-	float minValue() const;
-	float maxValue() const;
-	float multiplier() const;
-	float currentValue() const;
+	double stepValue() const;
+	double minValue() const;
+	double maxValue() const;
+	double multiplier() const;
+	double currentValue() const;
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,

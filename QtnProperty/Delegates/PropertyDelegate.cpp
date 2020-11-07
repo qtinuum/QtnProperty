@@ -59,7 +59,6 @@ void QtnPropertyDelegate::applySubPropertyInfo(
 		{
 			auto vmap = vSubDelegate.toMap();
 			static const auto sNameKey = QStringLiteral("name");
-			subAttributes.clear();
 			for (auto it = vmap.cbegin(); it != vmap.cend(); ++it)
 			{
 				if (it.key() == sNameKey)

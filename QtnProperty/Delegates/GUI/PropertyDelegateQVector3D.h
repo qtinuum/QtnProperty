@@ -26,7 +26,7 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQVector3D
 	Q_DISABLE_COPY(QtnPropertyDelegateQVector3D)
 
 	QString m_suffix;
-	float m_multiplier;
+	double m_multiplier;
 	int m_precision;
 
 public:

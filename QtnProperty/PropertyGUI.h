@@ -23,6 +23,7 @@ limitations under the License.
 #include "GUI/PropertyQFont.h"
 #include "GUI/PropertyQPen.h"
 #include "GUI/PropertyQBrush.h"
+#include "GUI/PropertyQVector3D.h"
 #include "GUI/PropertyButton.h"
 
 #endif // PROPERTYGUI_H

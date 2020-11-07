@@ -22,10 +22,20 @@ limitations under the License.
 #include <QLineEdit>
 #include <QLocale>
 
+QByteArray qtnZDisplayNameAttr()
+{
+	return QByteArrayLiteral("zDisplayName");
+}
+
+QByteArray qtnZDescriptionAttr()
+{
+	return QByteArrayLiteral("zDescription");
+}
+
 QtnPropertyDelegateQVector3D::QtnPropertyDelegateQVector3D(
 	QtnPropertyQVector3DBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQVector3DBase>(owner)
-	, m_multiplier(1.f)
+	, m_multiplier(1.0)
 	, m_precision(std::numeric_limits<float>::digits10)
 {
 	addSubProperty(owner.createXProperty());
@@ -51,12 +61,29 @@ void QtnPropertyDelegateQVector3D::applyAttributesImpl(
 	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
 	info.loadAttribute(qtnPrecisionAttr(), m_precision);
 	m_precision = qBound(0, m_precision, std::numeric_limits<float>::digits10);
-	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.f))
+	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.0))
 	{
-		m_multiplier = 1.f;
+		m_multiplier = 1.0;
 	}
 
-	qtnApplyQPointDelegateAttributes(this, info);
+	enum
+	{
+		X,
+		Y,
+		Z,
+		TOTAL
+	};
+	Q_ASSERT(subPropertyCount() == TOTAL);
+	static const QtnSubPropertyInfo KEYS[TOTAL] = {
+		{ X, QtnPropertyQPoint::xKey(), qtnXDisplayNameAttr(),
+			qtnXDescriptionAttr() },
+		{ Y, QtnPropertyQPoint::yKey(), qtnYDisplayNameAttr(),
+			qtnYDescriptionAttr() },
+		{ Z, QtnPropertyQVector3D::zKey(), qtnZDisplayNameAttr(),
+			qtnZDescriptionAttr() },
+	};
+
+	applySubPropertyInfos(info, KEYS, TOTAL);
 }
 
 QWidget *QtnPropertyDelegateQVector3D::createValueEditorImpl(

@@ -61,6 +61,8 @@ QTN_IMPORT_EXPORT QByteArray qtnXDisplayNameAttr();
 QTN_IMPORT_EXPORT QByteArray qtnXDescriptionAttr();
 QTN_IMPORT_EXPORT QByteArray qtnYDisplayNameAttr();
 QTN_IMPORT_EXPORT QByteArray qtnYDescriptionAttr();
+QTN_IMPORT_EXPORT QByteArray qtnZDisplayNameAttr();
+QTN_IMPORT_EXPORT QByteArray qtnZDescriptionAttr();
 
 QTN_IMPORT_EXPORT QByteArray qtnLeftDisplayNameAttr();
 QTN_IMPORT_EXPORT QByteArray qtnLeftDescriptionAttr();
