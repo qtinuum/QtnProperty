@@ -273,12 +273,15 @@ property_set SamplePS
     	description = "Property to hold QVector3D value.";
     	value = QVector3D(5, 6, 7);
     	delegate {
-    		multiplier = 100.f / 255.f;
+    		multiplier = 100.0 / 255.0;
     		min = 0;
     		max = 255;
     		precision = 5;
     		suffix = "%";
-    		z = QVariantMap({{QString("name"), QString("SliderBox")}});
+    		z = QVariantMap({
+    			{ QString("name"), QString("SliderBox")},
+    			{ QString("precision"), 3 },
+    		});
     	}
     }
 

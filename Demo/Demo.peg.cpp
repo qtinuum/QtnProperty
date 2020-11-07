@@ -744,10 +744,13 @@ void QtnPropertySetSamplePS::connectDelegates()
         QtnPropertyDelegateInfo info;
         info.attributes["max"] = 255;
         info.attributes["min"] = 0;
-        info.attributes["multiplier"] = 100.f / 255.f;
+        info.attributes["multiplier"] = 100.0 / 255.0;
         info.attributes["precision"] = 5;
         info.attributes["suffix"] = "%";
-        info.attributes["z"] = QVariantMap({{QString("name"), QString("SliderBox")}});
+        info.attributes["z"] = QVariantMap({
+    			{ QString("name"), QString("SliderBox")},
+    			{ QString("precision"), 3 },
+    		});
         return info;
     });
     PenProperty.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
