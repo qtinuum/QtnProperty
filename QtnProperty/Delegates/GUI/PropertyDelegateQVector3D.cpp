@@ -18,6 +18,7 @@ limitations under the License.
 #include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "QtnProperty/Core/PropertyQPoint.h"
 #include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Utils/DoubleSpinBox.h"
 
 #include <QLineEdit>
 #include <QLocale>
@@ -36,7 +37,7 @@ QtnPropertyDelegateQVector3D::QtnPropertyDelegateQVector3D(
 	QtnPropertyQVector3DBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQVector3DBase>(owner)
 	, m_multiplier(1.0)
-	, m_precision(std::numeric_limits<float>::digits10)
+	, m_precision(std::numeric_limits<float>::digits10 - 1)
 {
 	addSubProperty(owner.createXProperty());
 	addSubProperty(owner.createYProperty());
@@ -97,11 +98,16 @@ bool QtnPropertyDelegateQVector3D::propertyValueToStrImpl(
 {
 	auto value = owner().value();
 
-	QLocale locale;
 	strValue = QtnPropertyQVector3D::getToStringFormat().arg(
-		locale.toString(value.x() * m_multiplier, 'g', m_precision) + m_suffix,
-		locale.toString(value.y() * m_multiplier, 'g', m_precision) + m_suffix,
-		locale.toString(value.z() * m_multiplier, 'g', m_precision) + m_suffix);
+		QtnDoubleSpinBox::valueToText(
+			value.x() * m_multiplier, QLocale(), m_precision, true) +
+			m_suffix,
+		QtnDoubleSpinBox::valueToText(
+			value.y() * m_multiplier, QLocale(), m_precision, true) +
+			m_suffix,
+		QtnDoubleSpinBox::valueToText(
+			value.z() * m_multiplier, QLocale(), m_precision, true) +
+			m_suffix);
 
 	return true;
 }

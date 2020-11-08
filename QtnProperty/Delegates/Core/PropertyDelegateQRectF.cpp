@@ -19,6 +19,7 @@ limitations under the License.
 #include "QtnProperty/Core/PropertyQRect.h"
 #include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Utils/DoubleSpinBox.h"
 
 #include <QLineEdit>
 
@@ -26,7 +27,7 @@ QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(
 	QtnPropertyQRectFBase &owner, bool useCoordinates)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQRectFBase>(owner)
 	, m_coordinates(useCoordinates)
-	, m_precision(std::numeric_limits<qreal>::digits10)
+	, m_precision(std::numeric_limits<qreal>::digits10 - 1)
 {
 	addSubProperty(owner.createLeftProperty(!m_coordinates));
 	addSubProperty(owner.createTopProperty(!m_coordinates));
@@ -82,15 +83,17 @@ bool QtnPropertyDelegateQRectF::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 
-	QLocale locale;
-	strValue =
-		QtnPropertyQRect::getToStringFormat(m_coordinates)
-			.arg(locale.toString(value.left(), 'g', m_precision),
-				locale.toString(value.top(), 'g', m_precision),
-				locale.toString(m_coordinates ? value.right() : value.width(),
-					'g', m_precision),
-				locale.toString(m_coordinates ? value.bottom() : value.height(),
-					'g', m_precision));
+	strValue = QtnPropertyQRect::getToStringFormat(m_coordinates)
+				   .arg(QtnDoubleSpinBox::valueToText(
+							value.left(), QLocale(), m_precision, true),
+					   QtnDoubleSpinBox::valueToText(
+						   value.top(), QLocale(), m_precision, true),
+					   QtnDoubleSpinBox::valueToText(
+						   m_coordinates ? value.right() : value.width(),
+						   QLocale(), m_precision, true),
+					   QtnDoubleSpinBox::valueToText(
+						   m_coordinates ? value.bottom() : value.height(),
+						   QLocale(), m_precision, true));
 
 	return true;
 }

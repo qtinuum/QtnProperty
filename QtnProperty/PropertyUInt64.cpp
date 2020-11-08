@@ -151,6 +151,7 @@ QWidget *QtnPropertyDelegateUInt64::createValueEditorImpl(
 	editor = createValueEditorLineEdit(
 		parent, rect, !stateProperty()->isEditableByUser(), inplaceInfo);
 
+	updateEditor();
 	reverted = false;
 	applied = false;
 
@@ -184,11 +185,13 @@ void QtnPropertyDelegateUInt64::onEditingFinished()
 	if (!reverted && (applied || !stateProperty()->isMultiValue()))
 	{
 		auto str = editor->text().trimmed();
-		if (str.endsWith(m_suffix))
+		if (!m_suffix.isEmpty() && str.endsWith(m_suffix))
 		{
-			str = str.left(str.length() - 1).trimmed();
+			str = str.left(str.length() - m_suffix.length()).trimmed();
 		}
-		auto value = QLocale().toULongLong(str, &ok);
+		QLocale locale;
+		str.remove(locale.groupSeparator());
+		auto value = locale.toULongLong(str, &ok);
 		if (!ok)
 		{
 			value = str.toULongLong(&ok);

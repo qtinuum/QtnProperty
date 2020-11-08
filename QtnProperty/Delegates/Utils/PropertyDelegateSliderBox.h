@@ -21,6 +21,7 @@ limitations under the License.
 #include "PropertyDelegateMisc.h"
 #include "Delegates/PropertyDelegateAux.h"
 #include "PropertyDelegateAttrs.h"
+#include "Utils/DoubleSpinBox.h"
 
 class QVariantAnimation;
 
@@ -127,10 +128,89 @@ protected:
 		return qBound(minValue(), this->owner().value(), maxValue());
 	}
 
-	inline double interval(ValueTypeStore to) const
+	template <typename T,
+		typename std::enable_if<sizeof(T) < 8>::type * = nullptr>
+	inline bool isHugeInterval() const
+	{
+		return false;
+	}
+
+	template <typename T,
+		typename std::enable_if<std::is_integral<T>::value &&
+			sizeof(T) == 8>::type * = nullptr>
+	inline bool isHugeInterval() const
+	{
+		using IntervalType = typename PropertyClass::IntervalType;
+		const quint64 originalInterval = IntervalType(maxValue() - minValue());
+		const auto maxInterval = quint64(std::numeric_limits<qint64>::max());
+		return originalInterval > maxInterval;
+	}
+
+	template <typename T,
+		typename std::enable_if<std::is_floating_point<T>::value &&
+			sizeof(T) >= 8>::type * = nullptr>
+	inline bool isHugeInterval() const
+	{
+		const auto originalInterval = maxValue() - minValue();
+		const auto maxInterval = double(std::numeric_limits<qint64>::max());
+		return originalInterval > maxInterval;
+	}
+
+	template <typename T,
+		typename std::enable_if<sizeof(T) < 8>::type * = nullptr>
+	inline double interval(T to) const
 	{
 		using IntervalType = typename PropertyClass::IntervalType;
 		return double(IntervalType(to - minValue()));
+	}
+
+	template <typename T,
+		typename std::enable_if<std::is_integral<T>::value &&
+			sizeof(T) == 8>::type * = nullptr>
+	inline double interval(T to) const
+	{
+		quint64 currentInterval = quint64(to - minValue());
+		if (isHugeInterval<T>())
+		{
+			if (to == maxValue())
+			{
+				return 1.0;
+			}
+			using IntervalType = typename PropertyClass::IntervalType;
+			const quint64 originalInterval =
+				IntervalType(maxValue() - minValue());
+
+			auto halfCurrent = double(currentInterval / 2);
+			auto halfOriginal = double(originalInterval / 2);
+			return halfCurrent / halfOriginal;
+		}
+
+		return double(currentInterval);
+	}
+
+	template <typename T,
+		typename std::enable_if<std::is_floating_point<T>::value &&
+			sizeof(T) >= 8>::type * = nullptr>
+	inline double interval(T to) const
+	{
+		if (isHugeInterval<T>())
+		{
+			if (to == maxValue())
+			{
+				return 1.0;
+			}
+			auto halfMin = minValue() * 0.5;
+			auto halfMax = maxValue() * 0.5;
+			auto halfTo = to * 0.5;
+
+			const auto halfOriginal = halfMax - halfMin;
+
+			auto halfCurrent = halfTo - halfMin;
+
+			return halfCurrent / halfOriginal;
+		}
+
+		return double(to) - double(minValue());
 	}
 
 	virtual double propertyValuePart() const override
@@ -145,14 +225,15 @@ protected:
 	{
 		if (this->m_multiplier == 1.0)
 		{
-			return QLocale().toString(value, 'g',
+			return QtnDoubleSpinBox::valueToText(value, QLocale(),
 					   qBound(0, this->m_precision,
-						   std::numeric_limits<T>::digits10)) +
+						   std::numeric_limits<T>::digits10),
+					   true) +
 				this->m_suffix;
 		}
 
-		return QLocale().toString(
-				   double(value) * this->m_multiplier, 'g', this->m_precision) +
+		return QtnDoubleSpinBox::valueToText(double(value) * this->m_multiplier,
+				   QLocale(), this->m_precision, true) +
 			this->m_suffix;
 	}
 
@@ -165,14 +246,14 @@ protected:
 			return QLocale().toString(value) + this->m_suffix;
 		}
 
-		return QLocale().toString(
-				   double(value) * this->m_multiplier, 'g', this->m_precision) +
+		return QtnDoubleSpinBox::valueToText(double(value) * this->m_multiplier,
+				   QLocale(), this->m_precision, true) +
 			this->m_suffix;
 	}
 
 	virtual QString valuePartToStr(double valuePart) const override
 	{
-		return valueToStr(partToValue(valuePart));
+		return valueToStr(partToValue<ValueTypeStore>(valuePart));
 	}
 
 	virtual void incrementPropertyValue(int steps) override
@@ -182,15 +263,74 @@ protected:
 
 	virtual void setPropertyValuePart(double valuePart) override
 	{
-		this->owner().setValue(partToValue(valuePart), this->editReason());
+		this->owner().setValue(
+			partToValue<ValueTypeStore>(valuePart), this->editReason());
 	}
 
+	template <typename T,
+		typename std::enable_if<std::is_floating_point<T>::value &&
+			sizeof(T) >= 8>::type * = nullptr>
 	ValueTypeStore partToValue(double valuePart) const
 	{
 		Q_ASSERT(valuePart >= 0.0);
 		Q_ASSERT(valuePart <= 1.0);
 
-		return ValueTypeStore(valuePart * interval(maxValue())) + minValue();
+		if (isHugeInterval<T>())
+		{
+			if (valuePart == 1.0)
+			{
+				return maxValue();
+			}
+
+			const auto originalInterval = maxValue() - minValue();
+
+			auto halfOriginal = originalInterval * 0.5;
+			auto halfMin = minValue() * 0.5;
+			auto value = ValueTypeStore(valuePart * halfOriginal);
+			return (value + halfMin) * 2.0;
+		}
+		auto value = ValueTypeStore(valuePart * interval(maxValue()));
+		return value + minValue();
+	}
+
+	template <typename T,
+		typename std::enable_if<std::is_integral<T>::value &&
+			sizeof(T) == 8>::type * = nullptr>
+	ValueTypeStore partToValue(double valuePart) const
+	{
+		Q_ASSERT(valuePart >= 0.0);
+		Q_ASSERT(valuePart <= 1.0);
+
+		ValueTypeStore value;
+		if (isHugeInterval<T>())
+		{
+			if (valuePart == 1.0)
+			{
+				return maxValue();
+			}
+
+			using IntervalType = typename PropertyClass::IntervalType;
+			const quint64 originalInterval =
+				IntervalType(maxValue() - minValue());
+
+			auto dividedInterval = originalInterval / 2;
+			value = ValueTypeStore(valuePart * dividedInterval) * 2;
+		} else
+		{
+			value = ValueTypeStore(valuePart * interval(maxValue()));
+		}
+		return value + minValue();
+	}
+
+	template <typename T,
+		typename std::enable_if<sizeof(T) < 8>::type * = nullptr>
+	ValueTypeStore partToValue(double valuePart) const
+	{
+		Q_ASSERT(valuePart >= 0.0);
+		Q_ASSERT(valuePart <= 1.0);
+
+		auto value = ValueTypeStore(valuePart * interval(maxValue()));
+		return value + minValue();
 	}
 };
 

@@ -222,11 +222,17 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , RGBColor(*qtnCreateProperty<QtnPropertyABColor>(this))
     , ColorSolidDelegate(*qtnCreateProperty<QtnPropertyQColor>(this))
     , FloatPropertySliderBox(*qtnCreateProperty<QtnPropertyFloat>(this))
+    , FloatIntRangeSliderBox(*qtnCreateProperty<QtnPropertyFloat>(this))
+    , DoubleFullRangeSliderBox(*qtnCreateProperty<QtnPropertyDouble>(this))
     , DoubleProperty(*qtnCreateProperty<QtnPropertyDouble>(this))
     , FloatProperty(*qtnCreateProperty<QtnPropertyFloat>(this))
     , IntProperty(*qtnCreateProperty<QtnPropertyInt>(this))
     , IntPropertyComboBox(*qtnCreateProperty<QtnPropertyInt>(this))
     , UIntProperty(*qtnCreateProperty<QtnPropertyUInt>(this))
+    , Int64Property(*qtnCreateProperty<QtnPropertyInt64>(this))
+    , UInt64Property(*qtnCreateProperty<QtnPropertyUInt64>(this))
+    , Int64SliderBox(*qtnCreateProperty<QtnPropertyInt64>(this))
+    , UInt64SliderBox(*qtnCreateProperty<QtnPropertyUInt64>(this))
     , EnumProperty(*qtnCreateProperty<QtnPropertyEnum>(this))
     , EnumFlagsProperty(*qtnCreateProperty<QtnPropertyEnumFlags>(this))
     , QStringValue(*qtnCreateProperty<QtnPropertyQString>(this))
@@ -270,11 +276,17 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     RGBColor = other.RGBColor;
     ColorSolidDelegate = other.ColorSolidDelegate;
     FloatPropertySliderBox = other.FloatPropertySliderBox;
+    FloatIntRangeSliderBox = other.FloatIntRangeSliderBox;
+    DoubleFullRangeSliderBox = other.DoubleFullRangeSliderBox;
     DoubleProperty = other.DoubleProperty;
     FloatProperty = other.FloatProperty;
     IntProperty = other.IntProperty;
     IntPropertyComboBox = other.IntPropertyComboBox;
     UIntProperty = other.UIntProperty;
+    Int64Property = other.Int64Property;
+    UInt64Property = other.UInt64Property;
+    Int64SliderBox = other.Int64SliderBox;
+    UInt64SliderBox = other.UInt64SliderBox;
     EnumProperty = other.EnumProperty;
     EnumFlagsProperty = other.EnumFlagsProperty;
     QStringValue = other.QStringValue;
@@ -351,6 +363,16 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
         FloatPropertySliderBox = theCopyFrom->FloatPropertySliderBox;
     }
 
+    if (!(theCopyFrom->FloatIntRangeSliderBox.state() & ignoreMask))
+    {
+        FloatIntRangeSliderBox = theCopyFrom->FloatIntRangeSliderBox;
+    }
+
+    if (!(theCopyFrom->DoubleFullRangeSliderBox.state() & ignoreMask))
+    {
+        DoubleFullRangeSliderBox = theCopyFrom->DoubleFullRangeSliderBox;
+    }
+
     if (!(theCopyFrom->DoubleProperty.state() & ignoreMask))
     {
         DoubleProperty = theCopyFrom->DoubleProperty;
@@ -374,6 +396,26 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->UIntProperty.state() & ignoreMask))
     {
         UIntProperty = theCopyFrom->UIntProperty;
+    }
+
+    if (!(theCopyFrom->Int64Property.state() & ignoreMask))
+    {
+        Int64Property = theCopyFrom->Int64Property;
+    }
+
+    if (!(theCopyFrom->UInt64Property.state() & ignoreMask))
+    {
+        UInt64Property = theCopyFrom->UInt64Property;
+    }
+
+    if (!(theCopyFrom->Int64SliderBox.state() & ignoreMask))
+    {
+        Int64SliderBox = theCopyFrom->Int64SliderBox;
+    }
+
+    if (!(theCopyFrom->UInt64SliderBox.state() & ignoreMask))
+    {
+        UInt64SliderBox = theCopyFrom->UInt64SliderBox;
     }
 
     if (!(theCopyFrom->EnumProperty.state() & ignoreMask))
@@ -529,6 +571,20 @@ void QtnPropertySetSamplePS::init()
     FloatPropertySliderBox.setMinValue(0);
     FloatPropertySliderBox.setStepValue(0.1f);
     FloatPropertySliderBox.setValue(1.f);
+    static QString FloatIntRangeSliderBox_name = QStringLiteral("FloatIntRangeSliderBox");
+    FloatIntRangeSliderBox.setName(FloatIntRangeSliderBox_name);
+    static QString FloatIntRangeSliderBox_description = "Property to hold float values in full range.";
+    FloatIntRangeSliderBox.setDescription(FloatIntRangeSliderBox_description);
+    FloatIntRangeSliderBox.setMaxValue(float(1 << std::numeric_limits<float>::digits));
+    FloatIntRangeSliderBox.setMinValue(-float(1 << std::numeric_limits<float>::digits));
+    FloatIntRangeSliderBox.setValue(111.f);
+    static QString DoubleFullRangeSliderBox_name = QStringLiteral("DoubleFullRangeSliderBox");
+    DoubleFullRangeSliderBox.setName(DoubleFullRangeSliderBox_name);
+    static QString DoubleFullRangeSliderBox_description = "Property to hold double values in full range.";
+    DoubleFullRangeSliderBox.setDescription(DoubleFullRangeSliderBox_description);
+    DoubleFullRangeSliderBox.setMaxValue(double(1LL << std::numeric_limits<double>::digits));
+    DoubleFullRangeSliderBox.setMinValue(-double(1LL << std::numeric_limits<double>::digits));
+    DoubleFullRangeSliderBox.setValue(1111.0);
     static QString DoubleProperty_name = QStringLiteral("DoubleProperty");
     DoubleProperty.setName(DoubleProperty_name);
     static QString DoubleProperty_description = "Property to hold double values in range [10, 20].";
@@ -564,6 +620,26 @@ void QtnPropertySetSamplePS::init()
     UIntProperty.setMaxValue(200);
     UIntProperty.setMinValue(100);
     UIntProperty.setValue(100);
+    static QString Int64Property_name = QStringLiteral("Int64Property");
+    Int64Property.setName(Int64Property_name);
+    static QString Int64Property_description = "Property to hold signed integer 64-bit value";
+    Int64Property.setDescription(Int64Property_description);
+    Int64Property.setValue(-1LL << 35);
+    static QString UInt64Property_name = QStringLiteral("UInt64Property");
+    UInt64Property.setName(UInt64Property_name);
+    static QString UInt64Property_description = "Property to hold signed integer 64-bit value";
+    UInt64Property.setDescription(UInt64Property_description);
+    UInt64Property.setValue(1ULL << 63);
+    static QString Int64SliderBox_name = QStringLiteral("Int64SliderBox");
+    Int64SliderBox.setName(Int64SliderBox_name);
+    static QString Int64SliderBox_description = "Property to hold signed integer 64-bit value with slider box";
+    Int64SliderBox.setDescription(Int64SliderBox_description);
+    Int64SliderBox.setValue(-1LL << 34);
+    static QString UInt64SliderBox_name = QStringLiteral("UInt64SliderBox");
+    UInt64SliderBox.setName(UInt64SliderBox_name);
+    static QString UInt64SliderBox_description = "Property to hold unsigned integer 64-bit value with slider box";
+    UInt64SliderBox.setDescription(UInt64SliderBox_description);
+    UInt64SliderBox.setValue(1ULL << 58);
     static QString EnumProperty_name = QStringLiteral("EnumProperty");
     EnumProperty.setName(EnumProperty_name);
     static QString EnumProperty_description = "Property to hold enum value (color).";
@@ -734,10 +810,39 @@ void QtnPropertySetSamplePS::connectDelegates()
         info.attributes["fillColor"] = QColor::fromRgb(170, 170, 255);
         return info;
     });
+    FloatIntRangeSliderBox.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.name = "SliderBox";
+        info.attributes["drawBorder"] = false;
+        info.attributes["fillColor"] = QColor::fromRgb(170, 170, 255);
+        return info;
+    });
+    DoubleFullRangeSliderBox.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.name = "SliderBox";
+        info.attributes["drawBorder"] = false;
+        info.attributes["fillColor"] = QColor::fromRgb(170, 170, 255);
+        return info;
+    });
     IntPropertyComboBox.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
         QtnPropertyDelegateInfo info;
         info.name = "IntList";
         info.attributes["values"] = QVariant::fromValue(QList<int>() << 10 << 12 << 15);
+        return info;
+    });
+    Int64Property.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.attributes["step"] = 100000;
+        return info;
+    });
+    Int64SliderBox.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.name = "SliderBox";
+        return info;
+    });
+    UInt64SliderBox.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.name = "SliderBox";
         return info;
     });
     QVector3DProperty.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {

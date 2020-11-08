@@ -61,7 +61,7 @@ private:
 QtnPropertyDelegateFloat::QtnPropertyDelegateFloat(QtnPropertyFloatBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyFloatBase>(owner)
 	, m_multiplier(1.0)
-	, m_precision(std::numeric_limits<float>::digits10)
+	, m_precision(std::numeric_limits<float>::digits10 - 1)
 {
 }
 
@@ -121,7 +121,8 @@ bool QtnPropertyDelegateFloat::acceptKeyPressedForInplaceEditImpl(
 
 bool QtnPropertyDelegateFloat::propertyValueToStrImpl(QString &strValue) const
 {
-	strValue = QLocale().toString(currentValue(), 'g', m_precision);
+	strValue = QtnDoubleSpinBox::valueToText(
+		currentValue(), QLocale(), m_precision, true);
 	strValue.append(m_suffix);
 	return true;
 }

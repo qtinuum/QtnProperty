@@ -3,6 +3,8 @@
 
 #include "QtnProperty/PropertyCore.h"
 #include "QtnProperty/PropertyGUI.h"
+#include "QtnProperty/PropertyInt64.h"
+#include "QtnProperty/PropertyUInt64.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
 #include "PenWidth/PropertyPenWidth.h"
@@ -92,11 +94,17 @@ public:
     QtnPropertyABColor& RGBColor;
     QtnPropertyQColor& ColorSolidDelegate;
     QtnPropertyFloat& FloatPropertySliderBox;
+    QtnPropertyFloat& FloatIntRangeSliderBox;
+    QtnPropertyDouble& DoubleFullRangeSliderBox;
     QtnPropertyDouble& DoubleProperty;
     QtnPropertyFloat& FloatProperty;
     QtnPropertyInt& IntProperty;
     QtnPropertyInt& IntPropertyComboBox;
     QtnPropertyUInt& UIntProperty;
+    QtnPropertyInt64& Int64Property;
+    QtnPropertyUInt64& UInt64Property;
+    QtnPropertyInt64& Int64SliderBox;
+    QtnPropertyUInt64& UInt64SliderBox;
     QtnPropertyEnum& EnumProperty;
     QtnPropertyEnumFlags& EnumFlagsProperty;
     QtnPropertyQString& QStringValue;

@@ -1,5 +1,7 @@
 #include "QtnProperty/PropertyCore.h"
 #include "QtnProperty/PropertyGUI.h"
+#include "QtnProperty/PropertyInt64.h"
+#include "QtnProperty/PropertyUInt64.h"
 #include "AB/PropertyABColor.h"
 #include "Layer/PropertyLayer.h"
 #include "PenWidth/PropertyPenWidth.h"
@@ -87,6 +89,34 @@ property_set SamplePS
         }
     }
 
+    Float FloatIntRangeSliderBox
+    {
+        description = "Property to hold float values in full range.";
+        value = 111.f;
+        minValue = -float(1 << std::numeric_limits<float>::digits);
+        maxValue = float(1 << std::numeric_limits<float>::digits);
+        
+        delegate SliderBox
+        {
+            fillColor = QColor::fromRgb(170, 170, 255);
+            drawBorder = false;
+        }
+    }
+
+    Double DoubleFullRangeSliderBox
+    {
+        description = "Property to hold double values in full range.";
+        value = 1111.0;
+        minValue = -double(1LL << std::numeric_limits<double>::digits);
+        maxValue = double(1LL << std::numeric_limits<double>::digits);
+        
+        delegate SliderBox
+        {
+            fillColor = QColor::fromRgb(170, 170, 255);
+            drawBorder = false;
+        }
+    }
+
     Double DoubleProperty
     {
         description = "Property to hold double values in range [10, 20].";
@@ -129,6 +159,40 @@ property_set SamplePS
         value = 100;
         minValue = 100;
         maxValue = 200;
+    }
+
+    Int64 Int64Property
+    {
+    	description = "Property to hold signed integer 64-bit value";
+    	value = -1LL << 35;
+    	delegate
+    	{
+    		step = 100000;
+    	}
+    }
+
+    UInt64 UInt64Property
+    {
+    	description = "Property to hold signed integer 64-bit value";
+    	value = 1ULL << 63;
+    }
+
+    Int64 Int64SliderBox
+    {
+    	description = "Property to hold signed integer 64-bit value with slider box";
+    	value = -1LL << 34;
+    	delegate SliderBox
+    	{
+    	}
+    }
+
+    UInt64 UInt64SliderBox
+    {
+    	description = "Property to hold unsigned integer 64-bit value with slider box";
+    	value = 1ULL << 58;
+    	delegate SliderBox
+    	{
+    	}
     }
 
     Enum EnumProperty

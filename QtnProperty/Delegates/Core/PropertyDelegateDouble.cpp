@@ -46,7 +46,7 @@ QtnPropertyDelegateDouble::QtnPropertyDelegateDouble(
 	QtnPropertyDoubleBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyDoubleBase>(owner)
 	, m_multiplier(1.0)
-	, m_precision(std::numeric_limits<double>::digits10)
+	, m_precision(std::numeric_limits<double>::digits10 - 1)
 {
 }
 
@@ -100,7 +100,8 @@ bool QtnPropertyDelegateDouble::acceptKeyPressedForInplaceEditImpl(
 
 bool QtnPropertyDelegateDouble::propertyValueToStrImpl(QString &strValue) const
 {
-	strValue = QLocale().toString(currentValue(), 'g', m_precision);
+	strValue = QtnDoubleSpinBox::valueToText(
+		currentValue(), QLocale(), m_precision, true);
 	strValue.append(m_suffix);
 	return true;
 }

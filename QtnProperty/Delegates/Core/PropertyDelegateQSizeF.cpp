@@ -18,6 +18,7 @@ limitations under the License.
 #include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "QtnProperty/Core/PropertyQSize.h"
 #include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Utils/DoubleSpinBox.h"
 
 #include <QLineEdit>
 #include <QLocale>
@@ -25,7 +26,7 @@ limitations under the License.
 QtnPropertyDelegateQSizeF::QtnPropertyDelegateQSizeF(
 	QtnPropertyQSizeFBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQSizeFBase>(owner)
-	, m_precision(std::numeric_limits<qreal>::digits10)
+	, m_precision(std::numeric_limits<qreal>::digits10 - 1)
 {
 	addSubProperty(owner.createWidthProperty());
 	addSubProperty(owner.createHeightProperty());
@@ -59,10 +60,11 @@ bool QtnPropertyDelegateQSizeF::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 
-	QLocale locale;
 	strValue = QtnPropertyQSize::getToStringFormat().arg(
-		locale.toString(value.width(), 'g', m_precision),
-		locale.toString(value.height(), 'g', m_precision));
+		QtnDoubleSpinBox::valueToText(
+			value.width(), QLocale(), m_precision, true),
+		QtnDoubleSpinBox::valueToText(
+			value.height(), QLocale(), m_precision, true));
 
 	return true;
 }

@@ -556,29 +556,27 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)
 		}
 	} else
 	{
+		bool atSplitterPos = qAbs(e->x() - splitPosition()) < TOLERANCE;
 		int index = visibleItemIndexByPoint(e->pos());
 		if (!handleMouseEvent(index, e, e->pos()))
 		{
-			if (qAbs(e->x() - splitPosition()) < TOLERANCE)
+			if (atSplitterPos)
 			{
 				if (!m_mouseAtSplitter)
 				{
 					m_mouseAtSplitter = true;
 					setCursor(Qt::SplitHCursor);
 				}
-			} else
-			{
-				if (m_mouseAtSplitter)
-				{
-					m_mouseAtSplitter = false;
-					unsetCursor();
-				}
 			}
 
 			if (e->buttons() & Qt::LeftButton)
 				changeActivePropertyByIndex(index);
 		}
-		//else
+		if (!atSplitterPos && m_mouseAtSplitter)
+		{
+			m_mouseAtSplitter = false;
+			unsetCursor();
+		}
 	}
 	QAbstractScrollArea::mouseMoveEvent(e);
 }
