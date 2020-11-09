@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,11 +27,19 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateUInt
 	Q_DISABLE_COPY(QtnPropertyDelegateUInt)
 
 	QString m_suffix;
+	QVariant m_min;
+	QVariant m_max;
+	QVariant m_step;
 
 public:
 	QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner);
 
 	static void Register(QtnPropertyDelegateFactory &factory);
+
+	uint stepValue() const;
+	uint minValue() const;
+	uint maxValue() const;
+	uint currentValue() const;
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,

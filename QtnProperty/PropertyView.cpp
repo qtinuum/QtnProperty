@@ -554,27 +554,29 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)
 					(float) (e->x() - rect.left()) / (float) rect.width());
 			}
 		}
-	} else if (qAbs(e->x() - splitPosition()) < TOLERANCE)
-	{
-		if (!m_mouseAtSplitter)
-		{
-			m_mouseAtSplitter = true;
-			m_oldCursor = cursor();
-			setCursor(Qt::SplitHCursor);
-		}
 	} else
 	{
-		if (m_mouseAtSplitter)
+		bool atSplitterPos = qAbs(e->x() - splitPosition()) < TOLERANCE;
+		int index = visibleItemIndexByPoint(e->pos());
+		if (!handleMouseEvent(index, e, e->pos()))
+		{
+			if (atSplitterPos)
+			{
+				if (!m_mouseAtSplitter)
+				{
+					m_mouseAtSplitter = true;
+					setCursor(Qt::SplitHCursor);
+				}
+			}
+
+			if (e->buttons() & Qt::LeftButton)
+				changeActivePropertyByIndex(index);
+		}
+		if (!atSplitterPos && m_mouseAtSplitter)
 		{
 			m_mouseAtSplitter = false;
-			setCursor(m_oldCursor);
+			unsetCursor();
 		}
-
-		int index = visibleItemIndexByPoint(e->pos());
-		if (e->buttons() & Qt::LeftButton)
-			changeActivePropertyByIndex(index);
-		//else
-		handleMouseEvent(index, e, e->pos());
 	}
 	QAbstractScrollArea::mouseMoveEvent(e);
 }
@@ -914,31 +916,11 @@ QtnPropertyView::Item *QtnPropertyView::createItemsTree(
 
 	connections.push_back(
 		QObject::connect(rootProperty, &QtnPropertyBase::propertyDidChange,
-			this, &QtnPropertyView::onPropertyDidChange));
+			this, [item, this](QtnPropertyChangeReason reason) {
+				onPropertyDidChange(reason, item);
+			}));
 
-	auto delegate = m_delegateFactory.createDelegate(*rootProperty);
-	item->delegate.reset(delegate);
-
-	if (delegate)
-	{
-		// apply attributes
-		auto delegateInfo = rootProperty->delegateInfo();
-		if (delegateInfo)
-		{
-			delegate->applyAttributes(*delegateInfo);
-		}
-
-		// process delegate subproperties
-		for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
-		{
-			auto child = delegate->subProperty(i);
-			Q_ASSERT(child);
-
-			auto childItem = createItemsTree(child);
-			childItem->parent = item;
-			item->children.emplace_back(childItem);
-		}
-	}
+	setupItemDelegate(item);
 
 	return item;
 }
@@ -1142,10 +1124,16 @@ void QtnPropertyView::disconnectActiveProperty()
 	}
 }
 
-void QtnPropertyView::onPropertyDidChange(QtnPropertyChangeReason reason)
+void QtnPropertyView::onPropertyDidChange(
+	QtnPropertyChangeReason reason, Item *item)
 {
 	if (!reason)
 		return;
+
+	if (reason & QtnPropertyChangeReasonUpdateDelegate)
+	{
+		setupItemDelegate(item);
+	}
 
 	if (m_stopInvalidate)
 	{
@@ -1178,6 +1166,35 @@ QtnPropertyView::Item *QtnPropertyView::findItem(
 	return nullptr;
 }
 
+void QtnPropertyView::setupItemDelegate(Item *item)
+{
+	auto property = item->property;
+	auto delegate = m_delegateFactory.createDelegate(*property);
+	item->delegate.reset(delegate);
+	item->children.clear();
+
+	if (delegate)
+	{
+		// apply attributes
+		auto delegateInfo = property->delegateInfo();
+		if (delegateInfo)
+		{
+			delegate->applyAttributes(*delegateInfo);
+		}
+
+		// process delegate subproperties
+		for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
+		{
+			auto child = delegate->subProperty(i);
+			Q_ASSERT(child);
+
+			auto childItem = createItemsTree(child);
+			childItem->parent = item;
+			item->children.emplace_back(childItem);
+		}
+	}
+}
+
 QtnPropertyView::VisibleItem::VisibleItem()
 	: item(nullptr)
 	, level(0)
@@ -1197,7 +1214,8 @@ void QtnPropertyView::updateWithReason(QtnPropertyChangeReason reason)
 	if (reason & QtnPropertyChangeReasonChildren)
 	{
 		updateItemsTree();
-	} else if (reason & QtnPropertyChangeReasonState)
+	} else if (reason &
+		(QtnPropertyChangeReasonState | QtnPropertyChangeReasonUpdateDelegate))
 	{
 		invalidateVisibleItems();
 	} else

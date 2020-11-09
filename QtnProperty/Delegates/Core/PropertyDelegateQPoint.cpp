@@ -77,10 +77,7 @@ void qtnApplyQPointDelegateAttributes(
 			qtnYDescriptionAttr() },
 	};
 
-	for (auto &keys : KEYS)
-	{
-		to->applySubPropertyInfo(info, keys);
-	}
+	to->applySubPropertyInfos(info, KEYS, TOTAL);
 }
 
 void QtnPropertyDelegateQPoint::applyAttributesImpl(

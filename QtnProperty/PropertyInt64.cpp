@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ limitations under the License.
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Delegates/Utils/PropertyEditorAux.h"
 #include "Delegates/Utils/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyDelegateSliderBox.h"
 #include "Utils/QtnInt64SpinBox.h"
 #include "MultiProperty.h"
 #include "PropertyDelegateAttrs.h"
@@ -33,10 +34,13 @@ class QtnPropertyInt64SpinBoxHandler
 {
 public:
 	QtnPropertyInt64SpinBoxHandler(
-		QtnPropertyDelegate *delegate, QtnInt64SpinBox &editor);
+		QtnPropertyDelegateInt64 *delegate, QtnInt64SpinBox &editor);
 
 private:
 	virtual void updateEditor() override;
+
+private:
+	QtnPropertyDelegateInt64 *m_delegate;
 };
 
 QtnPropertyInt64Base::QtnPropertyInt64Base(QObject *parent)
@@ -84,6 +88,32 @@ void QtnPropertyDelegateInt64::Register(QtnPropertyDelegateFactory &factory)
 	factory.registerDelegateDefault(&QtnPropertyInt64Base::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateInt64, QtnPropertyInt64Base>,
 		qtnSpinBoxDelegate());
+
+	factory.registerDelegate(&QtnPropertyInt64Base::staticMetaObject,
+		&qtnCreateDelegate<
+			QtnPropertyDelegateSlideBoxTyped<QtnPropertyInt64Base>,
+			QtnPropertyInt64Base>,
+		qtnSliderBoxDelegate());
+}
+
+qint64 QtnPropertyDelegateInt64::stepValue() const
+{
+	return m_step.isValid() ? m_step.toLongLong() : owner().stepValue();
+}
+
+qint64 QtnPropertyDelegateInt64::minValue() const
+{
+	return m_min.isValid() ? m_min.toLongLong() : owner().minValue();
+}
+
+qint64 QtnPropertyDelegateInt64::maxValue() const
+{
+	return m_max.isValid() ? m_max.toLongLong() : owner().maxValue();
+}
+
+qint64 QtnPropertyDelegateInt64::currentValue() const
+{
+	return qBound(minValue(), owner().value(), maxValue());
 }
 
 QtnPropertyDelegateInt64::QtnPropertyDelegateInt64(QtnPropertyInt64Base &owner)
@@ -122,12 +152,28 @@ void QtnPropertyDelegateInt64::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	m_min = info.attributes.value(qtnMinAttr());
+	m_max = info.attributes.value(qtnMaxAttr());
+	m_step = info.attributes.value(qtnStepAttr());
+	if (m_step.isValid())
+	{
+		bool ok;
+		qint64 step = m_step.toLongLong(&ok);
+		if (!ok)
+		{
+			m_step = QVariant();
+		} else
+		{
+			m_step = step;
+		}
+	}
+	fixMinMaxVariant<qint64>(m_min, m_max);
 }
 
 bool QtnPropertyDelegateInt64::propertyValueToStrImpl(QString &strValue) const
 {
-	auto value = owner().value();
-	strValue = QLocale().toString(value);
+	strValue = QLocale().toString(currentValue());
+	strValue.append(m_suffix);
 	return true;
 }
 
@@ -137,16 +183,10 @@ QtnPropertyInt64Callback::QtnPropertyInt64Callback(QObject *parent)
 }
 
 QtnPropertyInt64SpinBoxHandler::QtnPropertyInt64SpinBoxHandler(
-	QtnPropertyDelegate *delegate, QtnInt64SpinBox &editor)
+	QtnPropertyDelegateInt64 *delegate, QtnInt64SpinBox &editor)
 	: QtnPropertyEditorHandlerVT(delegate, editor)
+	, m_delegate(delegate)
 {
-	if (!stateProperty()->isEditableByUser())
-		editor.setReadOnly(true);
-
-	auto &p = property();
-	editor.setRange(p.minValue(), p.maxValue());
-	editor.setSingleStep(p.stepValue());
-
 	updateEditor();
 
 	editor.setKeyboardTracking(false);
@@ -161,6 +201,10 @@ void QtnPropertyInt64SpinBoxHandler::updateEditor()
 {
 	updating++;
 
+	editor().setReadOnly(!stateProperty()->isEditableByUser());
+	editor().setSingleStep(m_delegate->stepValue());
+	editor().setRange(m_delegate->minValue(), m_delegate->maxValue());
+
 	if (stateProperty()->isMultiValue())
 	{
 		editor().setValue(editor().minimum());
@@ -168,7 +212,7 @@ void QtnPropertyInt64SpinBoxHandler::updateEditor()
 			QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
-		editor().setValue(property().value());
+		editor().setValue(m_delegate->currentValue());
 		editor().setSpecialValueText(QString());
 	}
 

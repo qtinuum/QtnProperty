@@ -1,6 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 
-#include "PropertyDelegateQPointF.h"
+#include "PropertyDelegateQVector3D.h"
 #include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "QtnProperty/Core/PropertyQPoint.h"
 #include "QtnProperty/PropertyDelegateAttrs.h"
@@ -24,57 +23,90 @@ limitations under the License.
 #include <QLineEdit>
 #include <QLocale>
 
-QtnPropertyDelegateQPointF::QtnPropertyDelegateQPointF(
-	QtnPropertyQPointFBase &owner)
-	: QtnPropertyDelegateTypedEx<QtnPropertyQPointFBase>(owner)
+QByteArray qtnZDisplayNameAttr()
+{
+	return QByteArrayLiteral("zDisplayName");
+}
+
+QByteArray qtnZDescriptionAttr()
+{
+	return QByteArrayLiteral("zDescription");
+}
+
+QtnPropertyDelegateQVector3D::QtnPropertyDelegateQVector3D(
+	QtnPropertyQVector3DBase &owner)
+	: QtnPropertyDelegateTypedEx<QtnPropertyQVector3DBase>(owner)
 	, m_multiplier(1.0)
-	, m_precision(std::numeric_limits<qreal>::digits10 - 1)
+	, m_precision(std::numeric_limits<float>::digits10 - 1)
 {
 	addSubProperty(owner.createXProperty());
 	addSubProperty(owner.createYProperty());
+	addSubProperty(owner.createZProperty());
 }
 
-void QtnPropertyDelegateQPointF::Register(QtnPropertyDelegateFactory &factory)
+void QtnPropertyDelegateQVector3D::Register(QtnPropertyDelegateFactory &factory)
 {
-	factory.registerDelegateDefault(&QtnPropertyQPointFBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQPointF, QtnPropertyQPointFBase>,
-		"QPointF");
+	factory.registerDelegateDefault(&QtnPropertyQVector3DBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQVector3D,
+			QtnPropertyQVector3DBase>,
+		QByteArrayLiteral("QVector3D"));
 }
 
 extern void qtnApplyQPointDelegateAttributes(
 	QtnPropertyDelegate *to, const QtnPropertyDelegateInfo &info);
 
-void QtnPropertyDelegateQPointF::applyAttributesImpl(
+void QtnPropertyDelegateQVector3D::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
 	info.loadAttribute(qtnMultiplierAttr(), m_multiplier);
 	info.loadAttribute(qtnPrecisionAttr(), m_precision);
-	m_precision = qBound(0, m_precision, std::numeric_limits<qreal>::digits10);
+	m_precision = qBound(0, m_precision, std::numeric_limits<float>::digits10);
 	if (!qIsFinite(m_multiplier) || qFuzzyCompare(m_multiplier, 0.0))
 	{
-		m_multiplier = 1;
+		m_multiplier = 1.0;
 	}
 
-	qtnApplyQPointDelegateAttributes(this, info);
+	enum
+	{
+		X,
+		Y,
+		Z,
+		TOTAL
+	};
+	Q_ASSERT(subPropertyCount() == TOTAL);
+	static const QtnSubPropertyInfo KEYS[TOTAL] = {
+		{ X, QtnPropertyQPoint::xKey(), qtnXDisplayNameAttr(),
+			qtnXDescriptionAttr() },
+		{ Y, QtnPropertyQPoint::yKey(), qtnYDisplayNameAttr(),
+			qtnYDescriptionAttr() },
+		{ Z, QtnPropertyQVector3D::zKey(), qtnZDisplayNameAttr(),
+			qtnZDescriptionAttr() },
+	};
+
+	applySubPropertyInfos(info, KEYS, TOTAL);
 }
 
-QWidget *QtnPropertyDelegateQPointF::createValueEditorImpl(
+QWidget *QtnPropertyDelegateQVector3D::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool QtnPropertyDelegateQPointF::propertyValueToStrImpl(QString &strValue) const
+bool QtnPropertyDelegateQVector3D::propertyValueToStrImpl(
+	QString &strValue) const
 {
 	auto value = owner().value();
 
-	strValue = QtnPropertyQPoint::getToStringFormat().arg(
+	strValue = QtnPropertyQVector3D::getToStringFormat().arg(
 		QtnDoubleSpinBox::valueToText(
 			value.x() * m_multiplier, QLocale(), m_precision, true) +
 			m_suffix,
 		QtnDoubleSpinBox::valueToText(
 			value.y() * m_multiplier, QLocale(), m_precision, true) +
+			m_suffix,
+		QtnDoubleSpinBox::valueToText(
+			value.z() * m_multiplier, QLocale(), m_precision, true) +
 			m_suffix);
 
 	return true;

@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDouble.h"
-
-#include <QLocale>
 
 QtnPropertyDoubleBase::QtnPropertyDoubleBase(QObject *parent)
 	: QtnNumericPropertyBase<QtnSinglePropertyBase<double>>(parent)
@@ -38,7 +36,7 @@ bool QtnPropertyDoubleBase::fromStrImpl(
 
 bool QtnPropertyDoubleBase::toStrImpl(QString &str) const
 {
-	str = QString::number(value(), 'g', 15);
+	str = QString::number(value(), 'f', std::numeric_limits<double>::digits10);
 	return true;
 }
 

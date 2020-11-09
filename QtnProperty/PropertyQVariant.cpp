@@ -28,6 +28,90 @@ limitations under the License.
 #include <QEvent>
 #include <QKeyEvent>
 
+bool qtnCompareQVariants(const QVariant &left, const QVariant &right)
+{
+	if (left.userType() != right.userType())
+	{
+		return false;
+	}
+
+	switch (left.type())
+	{
+		case QVariant::Hash:
+		{
+			const auto leftMap = left.toHash();
+			const auto rightMap = right.toHash();
+			if (leftMap.size() != rightMap.size())
+			{
+				return false;
+			}
+			auto leftIt = leftMap.cbegin();
+			for (; leftIt != leftMap.cend(); ++leftIt)
+			{
+				auto rightIt = rightMap.find(leftIt.key());
+				if (rightIt == rightMap.end())
+				{
+					return false;
+				}
+
+				if (!qtnCompareQVariants(leftIt.value(), rightIt.value()))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		case QVariant::Map:
+		{
+			const auto leftMap = left.toMap();
+			const auto rightMap = right.toMap();
+			if (leftMap.size() != rightMap.size())
+			{
+				return false;
+			}
+			auto leftIt = leftMap.cbegin();
+			auto rightIt = rightMap.cbegin();
+			for (; leftIt != leftMap.cend(); ++leftIt, ++rightIt)
+			{
+				if (leftIt.key() != rightIt.key())
+				{
+					return false;
+				}
+
+				if (!qtnCompareQVariants(leftIt.value(), rightIt.value()))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		case QVariant::List:
+		{
+			const auto leftList = left.toList();
+			const auto rightList = left.toList();
+			int count = leftList.size();
+			if (count != rightList.size())
+			{
+				return false;
+			}
+			for (int i = 0; i < count; i++)
+			{
+				if (!qtnCompareQVariants(leftList.at(i), rightList.at(i)))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		default:
+			break;
+	}
+	return left == right;
+}
+
 class QtnPropertyQVariantEditBttnHandler
 	: public QtnPropertyEditorBttnHandler<QtnPropertyQVariantBase,
 		  QtnLineEditBttn>
@@ -96,7 +180,7 @@ QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(
 	setCallbackValueEqual([object, metaProperty](QVariant value) -> bool {
 		auto thisValue = metaProperty.read(object);
 
-		return thisValue.userType() == value.userType() && thisValue == value;
+		return qtnCompareQVariants(thisValue, value);
 	});
 }
 
@@ -119,7 +203,9 @@ bool QtnPropertyQVariant::variantIsObject(QVariant::Type type)
 {
 	switch (type)
 	{
+		case QVariant::Hash:
 		case QVariant::Map:
+		case QVariant::StringList:
 		case QVariant::List:
 			return true;
 
@@ -134,9 +220,11 @@ QString QtnPropertyQVariant::getPlaceholderStr(QVariant::Type type)
 {
 	switch (type)
 	{
+		case QVariant::Hash:
 		case QVariant::Map:
 			return tr("(Dictionary)");
 
+		case QVariant::StringList:
 		case QVariant::List:
 			return tr("(List)");
 
@@ -196,30 +284,9 @@ bool QtnPropertyDelegateQVariant::propertyValueToStrImpl(
 	return true;
 }
 
-void QtnPropertyDelegateQVariant::drawValueImpl(
-	QStylePainter &painter, const QRect &rect) const
+bool QtnPropertyDelegateQVariant::isPlaceholderColor() const
 {
-	if (stateProperty()->isMultiValue())
-	{
-		QtnPropertyDelegateTyped::drawValueImpl(painter, rect);
-		return;
-	}
-
-	QPen oldPen = painter.pen();
-
-	if (stateProperty()->isEditableByUser() &&
-		QtnPropertyQVariant::valueToString(owner().value()).isEmpty())
-	{
-		auto palette = painter.style()->standardPalette();
-		if (palette.currentColorGroup() != QPalette::Disabled &&
-			painter.brush().color() != palette.color(QPalette::Highlight))
-		{
-			painter.setPen(disabledTextColor(painter));
-		}
-	}
-
-	Inherited::drawValueImpl(painter, rect);
-	painter.setPen(oldPen);
+	return QtnPropertyQVariant::valueToString(owner().value()).isEmpty();
 }
 
 QtnPropertyQVariantEditBttnHandler::QtnPropertyQVariantEditBttnHandler(

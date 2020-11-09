@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ limitations under the License.
 #include "QtnProperty/Core/PropertyQRect.h"
 #include "QtnProperty/Delegates/PropertyDelegateFactory.h"
 #include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Utils/DoubleSpinBox.h"
 
 #include <QLineEdit>
 
@@ -26,6 +27,7 @@ QtnPropertyDelegateQRectF::QtnPropertyDelegateQRectF(
 	QtnPropertyQRectFBase &owner, bool useCoordinates)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQRectFBase>(owner)
 	, m_coordinates(useCoordinates)
+	, m_precision(std::numeric_limits<qreal>::digits10 - 1)
 {
 	addSubProperty(owner.createLeftProperty(!m_coordinates));
 	addSubProperty(owner.createTopProperty(!m_coordinates));
@@ -66,6 +68,8 @@ extern void qtnApplyQRectDelegateAttributes(QtnPropertyDelegate *to,
 void QtnPropertyDelegateQRectF::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
+	info.loadAttribute(qtnPrecisionAttr(), m_precision);
+	m_precision = qBound(0, m_precision, std::numeric_limits<qreal>::digits10);
 	qtnApplyQRectDelegateAttributes(this, info, m_coordinates);
 }
 
@@ -79,15 +83,17 @@ bool QtnPropertyDelegateQRectF::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 
-	QLocale locale;
-	strValue =
-		QtnPropertyQRect::getToStringFormat(m_coordinates)
-			.arg(locale.toString(value.left(), 'g', 15),
-				locale.toString(value.top(), 'g', 15),
-				locale.toString(
-					m_coordinates ? value.right() : value.width(), 'g', 15),
-				locale.toString(
-					m_coordinates ? value.bottom() : value.height(), 'g', 15));
+	strValue = QtnPropertyQRect::getToStringFormat(m_coordinates)
+				   .arg(QtnDoubleSpinBox::valueToText(
+							value.left(), QLocale(), m_precision, true),
+					   QtnDoubleSpinBox::valueToText(
+						   value.top(), QLocale(), m_precision, true),
+					   QtnDoubleSpinBox::valueToText(
+						   m_coordinates ? value.right() : value.width(),
+						   QLocale(), m_precision, true),
+					   QtnDoubleSpinBox::valueToText(
+						   m_coordinates ? value.bottom() : value.height(),
+						   QLocale(), m_precision, true));
 
 	return true;
 }

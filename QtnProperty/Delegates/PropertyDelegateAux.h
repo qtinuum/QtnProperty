@@ -23,6 +23,7 @@ limitations under the License.
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QEvent>
+#include <QVariant>
 
 class QtnPropertyBase;
 class QtnPropertyView;
@@ -202,5 +203,92 @@ QTN_IMPORT_EXPORT QString qtnElidedText(const QPainter &painter,
 	const QString &text, const QRect &rect, bool *elided = 0);
 QTN_IMPORT_EXPORT void qtnDrawValueText(const QString &text, QPainter &painter,
 	const QRect &rect, QStyle *style = nullptr);
+
+template <typename T,
+	typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
+{
+	bool minOk;
+	bool maxOk;
+	double min = minv.toDouble(&minOk);
+	double max = maxv.toDouble(&maxOk);
+	if (!minOk || max < min || !qIsFinite(min) ||
+		min < std::numeric_limits<T>::lowest() ||
+		min > std::numeric_limits<T>::max())
+	{
+		minv = QVariant();
+	} else
+	{
+		minv = min;
+	}
+	if (!maxOk || max < min || !qIsFinite(max) ||
+		max < std::numeric_limits<T>::lowest() ||
+		max > std::numeric_limits<T>::max())
+	{
+		maxv = QVariant();
+	} else
+	{
+		maxv = max;
+	}
+}
+
+template <typename T,
+	typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
+void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
+{
+	if (minv.type() == QVariant::ULongLong)
+	{
+		quint64 min = minv.toULongLong();
+		if (min > quint64(std::numeric_limits<T>::max()))
+		{
+			minv = QVariant();
+		} else
+		{
+			minv = T(min);
+		}
+	} else
+	{
+		bool minOk;
+		qint64 min = minv.toLongLong(&minOk);
+		if (!minOk || min < qint64(std::numeric_limits<T>::min()) ||
+			(min >= 0 && quint64(min) > quint64(std::numeric_limits<T>::max())))
+		{
+			minv = QVariant();
+		} else
+		{
+			minv = T(min);
+		}
+	}
+
+	if (maxv.type() == QVariant::ULongLong)
+	{
+		quint64 max = maxv.toULongLong();
+		if (max > quint64(std::numeric_limits<T>::max()))
+		{
+			maxv = QVariant();
+		} else
+		{
+			maxv = T(max);
+		}
+	} else
+	{
+		bool maxOk;
+		qint64 max = maxv.toLongLong(&maxOk);
+		if (!maxOk || max < qint64(std::numeric_limits<T>::min()) ||
+			(max >= 0 && quint64(max) > quint64(std::numeric_limits<T>::max())))
+		{
+			maxv = QVariant();
+		} else
+		{
+			maxv = T(max);
+		}
+	}
+
+	if (minv.isValid() && maxv.isValid() && maxv < minv)
+	{
+		minv = QVariant();
+		maxv = QVariant();
+	}
+}
 
 #endif // QTN_PROPERTY_DELEGATE_AUX_H

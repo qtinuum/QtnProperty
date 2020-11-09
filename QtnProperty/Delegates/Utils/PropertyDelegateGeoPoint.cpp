@@ -98,15 +98,13 @@ void QtnPropertyDelegateGeoPoint::applyAttributesImpl(
 		TOTAL
 	};
 	Q_ASSERT(subPropertyCount() == TOTAL);
+
 	static const QtnSubPropertyInfo KEYS[TOTAL] = {
 		{ X, longitudeKey(), qtnXDisplayNameAttr(), qtnXDescriptionAttr() },
 		{ Y, latitudeKey(), qtnYDisplayNameAttr(), qtnYDescriptionAttr() },
 	};
 
-	for (auto &keys : KEYS)
-	{
-		applySubPropertyInfo(info, keys);
-	}
+	applySubPropertyInfos(info, KEYS, TOTAL);
 }
 
 QWidget *QtnPropertyDelegateGeoPoint::createValueEditorImpl(

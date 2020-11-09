@@ -1014,12 +1014,12 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="138"/>
+        <location filename="../PropertyQVariant.cpp" line="225"/>
         <source>(Dictionary)</source>
         <translation>(Dictionary)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="141"/>
+        <location filename="../PropertyQVariant.cpp" line="229"/>
         <source>(List)</source>
         <translation>(List)</translation>
     </message>
@@ -1029,24 +1029,42 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
     </message>
 </context>
 <context>
+    <name>QtnPropertyQVector3D</name>
+    <message>
+        <location filename="../GUI/PropertyQVector3D.cpp" line="111"/>
+        <source>Z</source>
+        <translation>Z</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQVector3D.cpp" line="116"/>
+        <source>Z of the %1</source>
+        <translation>Z of the %1</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQVector3D.cpp" line="121"/>
+        <source>[%1, %2, %3]</source>
+        <translation>[%1, %2, %3]</translation>
+    </message>
+</context>
+<context>
     <name>QtnPropertyView</name>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="112"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="153"/>
         <source>Lock</source>
         <translation>📕Lock</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="111"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="152"/>
         <source>Unlock</source>
         <translation>📖Unlock</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="234"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="275"/>
         <source>Click to expand</source>
         <translation>Click to expand</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="235"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="276"/>
         <source>Click to collapse</source>
         <translation>Click to collapse</translation>
     </message>
@@ -1062,7 +1080,7 @@ If you press &apos;No&apos;, selected property will be replaced.</translation>
         <translation>R</translation>
     </message>
     <message>
-        <location filename="../Delegates/Utils/PropertyDelegateSliderBox.cpp" line="65"/>
+        <location filename="../Delegates/Utils/PropertyDelegateSliderBox.cpp" line="67"/>
         <source>Drag/Scroll mouse to change value</source>
         <translation>Drag/Scroll mouse to change value</translation>
     </message>

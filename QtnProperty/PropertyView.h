@@ -161,11 +161,12 @@ private:
 	void connectActiveProperty();
 	void disconnectActiveProperty();
 
-	void onPropertyDidChange(QtnPropertyChangeReason reason);
+	void onPropertyDidChange(QtnPropertyChangeReason reason, Item *item);
 	void onPropertySetDestroyed();
 	void updateWithReason(QtnPropertyChangeReason reason);
 
 	Item *findItem(Item *currentItem, const QtnPropertyBase *property) const;
+	void setupItemDelegate(Item *item);
 
 private:
 	QtnPropertySet *m_propertySet;
@@ -193,7 +194,6 @@ private:
 	QtnPropertyChangeReason m_lastChangeReason;
 	unsigned m_stopInvalidate;
 	bool m_mouseAtSplitter;
-	QCursor m_oldCursor;
 
 	friend class QtnAccessibilityProxy;
 	QtnAccessibilityProxy *m_accessibilityProxy;

@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -42,6 +42,21 @@ QByteArray qtnSuffixAttr()
 	return QByteArrayLiteral("suffix");
 }
 
+QByteArray qtnMinAttr()
+{
+	return QByteArrayLiteral("min");
+}
+
+QByteArray qtnMaxAttr()
+{
+	return QByteArrayLiteral("max");
+}
+
+QByteArray qtnStepAttr()
+{
+	return QByteArrayLiteral("step");
+}
+
 void qtnInitPercentSpinBoxDelegate(QtnPropertyDelegateInfo &delegate)
 {
 	delegate.name = qtnSpinBoxDelegate();
@@ -59,10 +74,13 @@ class QtnPropertyIntSpinBoxHandler
 {
 public:
 	QtnPropertyIntSpinBoxHandler(
-		QtnPropertyDelegate *delegate, QSpinBox &editor);
+		QtnPropertyDelegateInt *delegate, QSpinBox &editor);
 
 protected:
 	virtual void updateEditor() override;
+
+private:
+	QtnPropertyDelegateInt *m_delegate;
 };
 
 QtnPropertyDelegateInt::QtnPropertyDelegateInt(QtnPropertyIntBase &owner)
@@ -80,6 +98,26 @@ void QtnPropertyDelegateInt::Register(QtnPropertyDelegateFactory &factory)
 		&qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyIntBase>,
 			QtnPropertyIntBase>,
 		qtnSliderBoxDelegate());
+}
+
+int QtnPropertyDelegateInt::stepValue() const
+{
+	return m_step.isValid() ? m_step.toInt() : owner().stepValue();
+}
+
+int QtnPropertyDelegateInt::minValue() const
+{
+	return m_min.isValid() ? m_min.toInt() : owner().minValue();
+}
+
+int QtnPropertyDelegateInt::maxValue() const
+{
+	return m_max.isValid() ? m_max.toInt() : owner().maxValue();
+}
+
+int QtnPropertyDelegateInt::currentValue() const
+{
+	return qBound(minValue(), owner().value(), maxValue());
 }
 
 QWidget *QtnPropertyDelegateInt::createValueEditorImpl(
@@ -115,25 +153,36 @@ void QtnPropertyDelegateInt::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
 	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	m_min = info.attributes.value(qtnMinAttr());
+	m_max = info.attributes.value(qtnMaxAttr());
+	m_step = info.attributes.value(qtnStepAttr());
+	if (m_step.isValid())
+	{
+		bool ok;
+		int step = m_step.toInt(&ok);
+		if (!ok)
+		{
+			m_step = QVariant();
+		} else
+		{
+			m_step = step;
+		}
+	}
+	fixMinMaxVariant<int>(m_min, m_max);
 }
 
 bool QtnPropertyDelegateInt::propertyValueToStrImpl(QString &strValue) const
 {
-	strValue = QLocale().toString(owner().value());
+	strValue = QLocale().toString(currentValue());
+	strValue.append(m_suffix);
 	return true;
 }
 
 QtnPropertyIntSpinBoxHandler::QtnPropertyIntSpinBoxHandler(
-	QtnPropertyDelegate *delegate, QSpinBox &editor)
+	QtnPropertyDelegateInt *delegate, QSpinBox &editor)
 	: QtnPropertyEditorHandlerVT(delegate, editor)
+	, m_delegate(delegate)
 {
-	if (!stateProperty()->isEditableByUser())
-		editor.setReadOnly(true);
-
-	auto &p = property();
-	editor.setRange(p.minValue(), p.maxValue());
-	editor.setSingleStep(p.stepValue());
-
 	updateEditor();
 
 	editor.setKeyboardTracking(false);
@@ -147,6 +196,10 @@ void QtnPropertyIntSpinBoxHandler::updateEditor()
 {
 	updating++;
 
+	editor().setReadOnly(!stateProperty()->isEditableByUser());
+	editor().setSingleStep(m_delegate->stepValue());
+	editor().setRange(m_delegate->minValue(), m_delegate->maxValue());
+
 	if (stateProperty()->isMultiValue())
 	{
 		editor().setValue(editor().minimum());
@@ -154,7 +207,7 @@ void QtnPropertyIntSpinBoxHandler::updateEditor()
 			QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
-		editor().setValue(property().value());
+		editor().setValue(m_delegate->currentValue());
 		editor().setSpecialValueText(QString());
 	}
 

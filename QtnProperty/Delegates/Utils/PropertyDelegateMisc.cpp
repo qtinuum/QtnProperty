@@ -412,6 +412,29 @@ bool QtnPropertyDelegateWithValueEditor::createSubItemValueImpl(
 	return true;
 }
 
+bool QtnPropertyDelegateWithValueEditor::isNormalPainterState(
+	const QStylePainter &painter) const
+{
+	if (!stateProperty())
+	{
+		return false;
+	}
+
+	if (!stateProperty()->isEditableByUser())
+	{
+		return false;
+	}
+
+	auto palette = painter.style()->standardPalette();
+	return palette.currentColorGroup() != QPalette::Disabled &&
+		painter.brush().color() != palette.color(QPalette::Highlight);
+}
+
+bool QtnPropertyDelegateWithValueEditor::isPlaceholderColor() const
+{
+	return false;
+}
+
 void QtnPropertyDelegateWithValueEditor::drawValueImpl(
 	QStylePainter &painter, const QRect &rect) const
 {
@@ -425,7 +448,19 @@ void QtnPropertyDelegateWithValueEditor::drawValueImpl(
 	QString strValue;
 	if (propertyValueToStrImpl(strValue))
 	{
+		QPen oldPen;
+		bool penChanged = false;
+		if (isNormalPainterState(painter) && isPlaceholderColor())
+		{
+			oldPen = painter.pen();
+			penChanged = true;
+			painter.setPen(disabledTextColor(painter));
+		}
 		qtnDrawValueText(strValue, painter, rect, painter.style());
+		if (penChanged)
+		{
+			painter.setPen(oldPen);
+		}
 	}
 }
 

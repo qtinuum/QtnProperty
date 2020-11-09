@@ -48,12 +48,53 @@ QtnPropertyChangeReason QtnPropertyDelegate::editReason() const
 void QtnPropertyDelegate::applySubPropertyInfo(
 	const QtnPropertyDelegateInfo &info, const QtnSubPropertyInfo &subInfo)
 {
+	QtnPropertyDelegateInfo subDelegateInfo;
+	auto &subAttributes = subDelegateInfo.attributes;
+	subAttributes = info.attributes;
+	auto vSubDelegate = subAttributes.value(subInfo.key.toUtf8());
+	switch (vSubDelegate.type())
+	{
+		case QVariant::Map:
+		case QVariant::Hash:
+		{
+			auto vmap = vSubDelegate.toMap();
+			static const auto sNameKey = QStringLiteral("name");
+			for (auto it = vmap.cbegin(); it != vmap.cend(); ++it)
+			{
+				if (it.key() == sNameKey)
+				{
+					auto vname = vmap.value(sNameKey);
+					subDelegateInfo.name = vname.type() == QVariant::ByteArray
+						? vname.toByteArray()
+						: vname.toString().toUtf8();
+				} else
+				{
+					subAttributes[it.key().toUtf8()] = it.value();
+				}
+			}
+		}
+
+		default:
+			break;
+	}
+
 	auto p = subProperty(subInfo.id);
 	p->setName(subInfo.key);
 	info.storeAttributeValue(subInfo.displayNameAttr, p,
 		&QtnPropertyBase::displayName, &QtnPropertyBase::setDisplayName);
 	info.storeAttributeValue(subInfo.descriptionAttr, p,
 		&QtnPropertyBase::description, &QtnPropertyBase::setDescription);
+	p->setDelegateInfo(subDelegateInfo);
+}
+
+void QtnPropertyDelegate::applySubPropertyInfos(
+	const QtnPropertyDelegateInfo &info, const QtnSubPropertyInfo *subInfos,
+	int count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		applySubPropertyInfo(info, subInfos[i]);
+	}
 }
 
 int QtnPropertyDelegate::subPropertyCountImpl() const
