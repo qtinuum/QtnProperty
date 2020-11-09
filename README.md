@@ -2,7 +2,7 @@
 
 # QtnProperty
 This is user and programmist friendly properties for Qt framework.
-See [wiki](https://github.com/lexxmark/QtnProperty/wiki) for some details.
+See [wiki](https://github.com/qtinuum/QtnProperty/wiki) for some details.
 
 # Overview
 There are some limitations of standard Qt property system.
@@ -21,7 +21,7 @@ The key features are:
 * PEG (property/enum generator) - it's optional tool like Qt moc which generates properties hierarchy from QML like files into C++ code.
 
 New Features in v2.0.0
-* **Multi-properties with QtnMultipleProperty.** It is useful when you want to show properties of multiple objects at once. When values of objects's properties differ it shows grayed (**Multiple properties**). When you set a new property value, it will be changed in every dependent object. Multi-property set can be created with qtnCreateQObjectMultiPropertySet function defined in [QObjectPropertySet.h](https://github.com/kusharami/QtnProperty/blob/master/QtnProperty/QObjectPropertySet.h) or from custom property sets in a loop with qtnPropertiesToMultiSet function where target argument is a multi-property set, and source argument is a source property set you want to join.
+* **Multi-properties with QtnMultipleProperty.** It is useful when you want to show properties of multiple objects at once. When values of objects's properties differ it shows grayed (**Multiple properties**). When you set a new property value, it will be changed in every dependent object. Multi-property set can be created with qtnCreateQObjectMultiPropertySet function defined in [QObjectPropertySet.h](https://github.com/qtinuum/QtnProperty/blob/master/QtnProperty/QObjectPropertySet.h) or from custom property sets in a loop with qtnPropertiesToMultiSet function where target argument is a multi-property set, and source argument is a source property set you want to join.
 * **QVariant properties with QtnCustomPropertyWidget.** You can edit QVariant as property set / add/remove subproperties in QVariantMap or QVariantList, copy/paste variant properties.
 * **Integer 64 properties** QtnPropertyInt64 QtnPropertyUInt64
 * **Floating point variants of QPoint, QSize, QRect properties**
@@ -156,7 +156,7 @@ PEG_SOURCES += TextEditor.pef
 ```
 
 ## Step 5.
-Write *.pef file with propertyset declaration. See [wiki](https://github.com/lexxmark/QtnProperty/wiki/Property-Enum-file-format-(*.pef)) for more info. For example TextEditor.pef:
+Write *.pef file with propertyset declaration. See [wiki](https://github.com/qtinuum/QtnProperty/wiki/Property-Enum-file-format-(*.pef)) for more info. For example TextEditor.pef:
   
 ```C++
 #include "QtnProperty/PropertyCore.h"
