@@ -89,7 +89,7 @@ bool QtnPropertyQVector3DBase::fromStrImpl(
 bool QtnPropertyQVector3DBase::toStrImpl(QString &str) const
 {
 	QVector3D v = value();
-	str = QStringLiteral("QVector3D(%1, %2, %2)")
+	str = QStringLiteral("QVector3D(%1, %2, %3)")
 			  .arg(v.x())
 			  .arg(v.y())
 			  .arg(v.z());
