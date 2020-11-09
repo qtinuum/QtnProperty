@@ -745,12 +745,12 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     <message>
         <location filename="../Core/PropertyQPoint.cpp" line="107"/>
         <source>X of the %1</source>
-        <translation>Координата X точки &quot;%1&quot;</translation>
+        <translation>Координата X от &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../Core/PropertyQPoint.cpp" line="122"/>
         <source>Y of the %1</source>
-        <translation>Координата Y точки &quot;%1&quot;</translation>
+        <translation>Координата Y от &quot;%1&quot;</translation>
     </message>
     <message>
         <source>X coordinate of the %1</source>
@@ -768,7 +768,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     <message>
         <location filename="../Core/PropertyQPoint.cpp" line="92"/>
         <source>[%1, %2]</source>
-        <translation>[%1;  %2]</translation>
+        <translation>[%1; %2]</translation>
     </message>
     <message>
         <source>%1, %2</source>
@@ -1014,12 +1014,12 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
 <context>
     <name>QtnPropertyQVariant</name>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="138"/>
+        <location filename="../PropertyQVariant.cpp" line="225"/>
         <source>(Dictionary)</source>
         <translation>(Словарь)</translation>
     </message>
     <message>
-        <location filename="../PropertyQVariant.cpp" line="141"/>
+        <location filename="../PropertyQVariant.cpp" line="229"/>
         <source>(List)</source>
         <translation>(Список)</translation>
     </message>
@@ -1029,24 +1029,42 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
     </message>
 </context>
 <context>
+    <name>QtnPropertyQVector3D</name>
+    <message>
+        <location filename="../GUI/PropertyQVector3D.cpp" line="111"/>
+        <source>Z</source>
+        <translation>Z</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQVector3D.cpp" line="116"/>
+        <source>Z of the %1</source>
+        <translation>Координата Z от &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../GUI/PropertyQVector3D.cpp" line="121"/>
+        <source>[%1, %2, %3]</source>
+        <translation>[%1; %2; %3]</translation>
+    </message>
+</context>
+<context>
     <name>QtnPropertyView</name>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="112"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="153"/>
         <source>Lock</source>
         <translation>📕Заблокировать</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="111"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="152"/>
         <source>Unlock</source>
         <translation>📖Разблокировать</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="234"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="275"/>
         <source>Click to expand</source>
         <translation>Щёлкните, чтобы развернуть</translation>
     </message>
     <message>
-        <location filename="../Delegates/PropertyDelegate.cpp" line="235"/>
+        <location filename="../Delegates/PropertyDelegate.cpp" line="276"/>
         <source>Click to collapse</source>
         <translation>Щёлкните, чтобы свернуть</translation>
     </message>
@@ -1062,7 +1080,7 @@ If you press &apos;No&apos;, selected property will be replaced.</source>
         <translation>С</translation>
     </message>
     <message>
-        <location filename="../Delegates/Utils/PropertyDelegateSliderBox.cpp" line="65"/>
+        <location filename="../Delegates/Utils/PropertyDelegateSliderBox.cpp" line="67"/>
         <source>Drag/Scroll mouse to change value</source>
         <translation>Меняйте значение с помощью колёсика или левой кнопки мыши</translation>
     </message>
