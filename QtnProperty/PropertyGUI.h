@@ -1,5 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,5 +21,9 @@ limitations under the License.
 #include "PropertySet.h"
 #include "GUI/PropertyQColor.h"
 #include "GUI/PropertyQFont.h"
+#include "GUI/PropertyQPen.h"
+#include "GUI/PropertyQBrush.h"
+#include "GUI/PropertyQVector3D.h"
+#include "GUI/PropertyButton.h"
 
 #endif // PROPERTYGUI_H

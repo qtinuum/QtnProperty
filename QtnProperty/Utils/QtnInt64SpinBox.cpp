@@ -117,6 +117,8 @@ void QtnInt64SpinBox::setRange(qint64 min, qint64 max)
 		return;
 	}
 
+	mMinimum = min;
+	mMaximum = max;
 	updateEdit(true, true);
 }
 
@@ -404,16 +406,17 @@ void QtnInt64SpinBox::stepBy(int steps)
 	{
 		qint64 step = mSingleStep * steps;
 
-		qint64 newValue = mValue + step;
+		qint64 newValue;
 
-		if (step < 0)
+		if (step < 0 && quint64(-step) >= quint64(mValue - mMinimum))
 		{
-			if (newValue < mMinimum || newValue > mValue)
-				newValue = mMinimum;
-		} else if (step > 0)
+			newValue = mMinimum;
+		} else if (step > 0 && quint64(step) >= quint64(mMaximum - mValue))
 		{
-			if (newValue > mMaximum || newValue < mValue)
-				newValue = mMaximum;
+			newValue = mMaximum;
+		} else
+		{
+			newValue = mValue + step;
 		}
 
 		setValue(newValue, ep);
@@ -623,8 +626,7 @@ void QtnInt64SpinBox::onCursorPositionChanged(int oldPos, int newPos)
 	}
 }
 
-void QtnInt64SpinBox::setValue(
-	qint64 value, QtnInt64SpinBox::EmitPolicy ep, bool updateEdit)
+void QtnInt64SpinBox::setValue(qint64 value, EmitPolicy ep, bool updateEdit)
 {
 	Q_ASSERT(value >= mMinimum);
 	Q_ASSERT(value <= mMaximum);

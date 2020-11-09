@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_ACCESSIBILITY_PROXY_H
 #define QTN_ACCESSIBILITY_PROXY_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 #include "QtnProperty/PropertySet.h"
 #include <QObject>
 #include <QRect>
@@ -32,7 +32,6 @@ class QTN_IMPORT_EXPORT QtnAccessibilityProxy : public QObject
 
 public:
 	explicit QtnAccessibilityProxy(QtnPropertyView *owner = 0);
-	virtual ~QtnAccessibilityProxy() override;
 
 public slots:
 	QtnPropertyView *owner();

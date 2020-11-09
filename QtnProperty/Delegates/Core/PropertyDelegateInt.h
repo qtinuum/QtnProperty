@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,21 +18,28 @@ limitations under the License.
 #ifndef PROPERTY_DELEGATE_INT_H
 #define PROPERTY_DELEGATE_INT_H
 
-#include "QtnProperty/Delegates/PropertyDelegate.h"
-
-class QtnPropertyIntBase;
+#include "QtnProperty/Delegates/Utils/PropertyDelegateMisc.h"
+#include "QtnProperty/Core/PropertyInt.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateInt
 	: public QtnPropertyDelegateTyped<QtnPropertyIntBase>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateInt)
 
-	QString suffix;
+	QString m_suffix;
+	QVariant m_min;
+	QVariant m_max;
+	QVariant m_step;
 
 public:
 	QtnPropertyDelegateInt(QtnPropertyIntBase &owner);
 
-	static bool Register();
+	static void Register(QtnPropertyDelegateFactory &factory);
+
+	int stepValue() const;
+	int minValue() const;
+	int maxValue() const;
+	int currentValue() const;
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
@@ -42,9 +49,9 @@ protected:
 		QKeyEvent *keyEvent) const override;
 
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
+		const QtnPropertyDelegateInfo &info) override;
 
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 };
 
 #endif // PROPERTY_DELEGATE_INT_H

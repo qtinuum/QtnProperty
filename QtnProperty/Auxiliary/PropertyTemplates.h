@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 
-#ifndef PROPERTYBASIS_H
-#define PROPERTYBASIS_H
+#ifndef PROPERTY_TEMPLATES_H
+#define PROPERTY_TEMPLATES_H
 
 #include "QtnProperty/Property.h"
 #include "PropertyMacro.h"
@@ -30,36 +30,29 @@ class QtnSinglePropertyBase : public QtnProperty
 {
 public:
 	typedef T ValueType;
-	using ValueTypeStore = typename std::remove_const<
-		typename std::remove_reference<ValueType>::type>::type;
+	using ValueTypeStore = typename std::decay<ValueType>::type;
 
 	inline ValueType value() const
 	{
 		return valueImpl();
 	}
 
-	inline bool edit(ValueType newValue)
+	bool setValue(ValueType newValue,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReason())
 	{
-		return setValue(newValue, true);
-	}
-
-	bool setValue(ValueType newValue, bool edit = false)
-	{
-		QtnPropertyChangeReason reason;
-
-		if (edit)
-			reason |= QtnPropertyChangeReasonEditValue;
-
-		return setValueWithReason(newValue, reason);
-	}
-
-	bool setValueWithReason(ValueType newValue, QtnPropertyChangeReason reason)
-	{
-		if (!valueIsHidden() && isValueEqualImpl(newValue))
-			return true;
-
-		if (!isValueAcceptedImpl(newValue))
+		if ((reason & QtnPropertyChangeReasonEdit) && !isEditableByUser())
+		{
 			return false;
+		}
+
+		if (!isWritable() || !isValueAcceptedImpl(newValue))
+			return false;
+
+		if (!(reason & QtnPropertyChangeReasonMultiEdit) &&
+			isValueEqualImpl(newValue))
+		{
+			return true;
+		}
 
 		bool accept = true;
 		emit propertyValueAccept(QtnPropertyValuePtr(&newValue), &accept);
@@ -67,11 +60,14 @@ public:
 		if (!accept)
 			return false;
 
-		reason |= QtnPropertyChangeReasonNewValue;
+		if (!(reason & QtnPropertyChangeReasonValue))
+		{
+			reason |= QtnPropertyChangeReasonNewValue;
+		}
 
 		emit propertyWillChange(reason, QtnPropertyValuePtr(&newValue),
 			qMetaTypeId<ValueTypeStore>());
-		setValueImpl(newValue);
+		setValueImpl(newValue, reason);
 		emit propertyDidChange(reason);
 
 		return true;
@@ -95,31 +91,33 @@ public:
 		return *this;
 	}
 
+	inline bool readDefaultValue(ValueTypeStore &to) const
+	{
+		return defaultValueImpl(to);
+	}
+
 protected:
 	explicit QtnSinglePropertyBase(QObject *parent)
 		: QtnProperty(parent)
 	{
 	}
 
-	virtual void doReset(bool edit) override
+	virtual void doReset(QtnPropertyChangeReason reason) override
 	{
+		Q_ASSERT(reason & QtnPropertyChangeReasonResetValue);
 		ValueTypeStore defaultValue;
 		if (defaultValueImpl(defaultValue))
 		{
-			QtnPropertyChangeReason reason = QtnPropertyChangeReasonResetValue;
-
-			if (edit)
-				reason |= QtnPropertyChangeReasonEditValue;
-
-			setValueWithReason(defaultValue, reason);
+			setValue(defaultValue, reason);
 		} else
 		{
-			QtnProperty::doReset(edit);
+			QtnProperty::doReset(reason);
 		}
 	}
 
 	virtual ValueType valueImpl() const = 0;
-	virtual void setValueImpl(ValueType newValue) = 0;
+	virtual void setValueImpl(
+		ValueType newValue, QtnPropertyChangeReason reason) = 0;
 	virtual bool isValueAcceptedImpl(ValueType)
 	{
 		return true;
@@ -142,16 +140,13 @@ protected:
 		if (!QtnProperty::loadImpl(stream))
 			return false;
 
-		auto newValue = ValueTypeStore();
+		ValueTypeStore newValue;
 		stream >> newValue;
 
 		if (stream.status() != QDataStream::Ok)
 			return false;
 
-		emit propertyWillChange(QtnPropertyChangeReasonLoadedValue,
-			QtnPropertyValuePtr(&newValue), qMetaTypeId<ValueTypeStore>());
-		setValueImpl(newValue);
-		emit propertyDidChange(QtnPropertyChangeReasonLoadedValue);
+		setValue(newValue, QtnPropertyChangeReasonLoadedValue);
 
 		return stream.status() == QDataStream::Ok;
 	}
@@ -167,12 +162,13 @@ protected:
 	}
 
 	// variant conversion implementation
-	virtual bool fromVariantImpl(const QVariant &var, bool edit) override
+	virtual bool fromVariantImpl(
+		const QVariant &var, QtnPropertyChangeReason reason) override
 	{
 		if (var.canConvert<ValueTypeStore>())
-			return setValue(var.value<ValueTypeStore>(), edit);
-		else
-			return false;
+			return setValue(var.value<ValueTypeStore>(), reason);
+
+		return QtnProperty::fromVariantImpl(var, reason);
 	}
 
 	virtual bool toVariantImpl(QVariant &var) const override
@@ -204,7 +200,8 @@ protected:
 		return m_value;
 	}
 
-	void setValueImpl(ValueType newValue) override
+	void setValueImpl(
+		ValueType newValue, QtnPropertyChangeReason /*reason*/) override
 	{
 		m_value = newValue;
 	}
@@ -222,8 +219,9 @@ public:
 	typedef typename QtnSinglePropertyType::ValueType ValueType;
 	typedef typename QtnSinglePropertyType::ValueTypeStore ValueTypeStore;
 
-	typedef std::function<ValueType()> CallbackValueGet;
-	typedef std::function<void(ValueType)> CallbackValueSet;
+	typedef std::function<ValueTypeStore()> CallbackValueGet;
+	typedef std::function<void(ValueType, QtnPropertyChangeReason)>
+		CallbackValueSet;
 	typedef std::function<bool(ValueType)> CallbackValueAccepted;
 	typedef std::function<bool(ValueType)> CallbackValueEqual;
 
@@ -255,6 +253,7 @@ public:
 	inline void setCallbackValueDefault(const CallbackValueGet &callback)
 	{
 		m_callbackValueDefault = callback;
+		this->switchState(QtnPropertyStateResettable, callback != nullptr);
 	}
 
 	inline void setCallbackValueGet(const CallbackValueGet &callback)
@@ -265,6 +264,7 @@ public:
 	inline void setCallbackValueSet(const CallbackValueSet &callback)
 	{
 		m_callbackValueSet = callback;
+		this->switchState(QtnPropertyStateImmutable, callback == nullptr);
 	}
 
 	inline void setCallbackValueAccepted(const CallbackValueAccepted &callback)
@@ -289,10 +289,11 @@ protected:
 		return m_callbackValueGet();
 	}
 
-	virtual void setValueImpl(ValueType newValue) override
+	virtual void setValueImpl(
+		ValueType newValue, QtnPropertyChangeReason reason) override
 	{
 		Q_ASSERT(m_callbackValueSet);
-		m_callbackValueSet(newValue);
+		m_callbackValueSet(newValue, reason);
 	}
 
 	virtual bool isValueAcceptedImpl(ValueType valueToAccept) override
@@ -335,17 +336,36 @@ private:
 template <typename QtnSinglePropertyType>
 class QtnNumericPropertyBase : public QtnSinglePropertyType
 {
+	template <class T, class Enable = void>
+	struct interval_t
+	{
+	};
+
+	template <class T>
+	struct interval_t<T,
+		typename std::enable_if<std::is_floating_point<T>::value>::type>
+	{
+		using type = double;
+		using maxsigned = double;
+	};
+
+	template <class T>
+	struct interval_t<T,
+		typename std::enable_if<std::is_integral<T>::value>::type>
+	{
+		using type = typename std::make_unsigned<T>::type;
+		using maxsigned = qint64;
+	};
+
 public:
-	typedef typename QtnSinglePropertyType::ValueType ValueType;
+	using ValueType = typename QtnSinglePropertyType::ValueType;
+	using IntervalType = typename interval_t<ValueType>::type;
+	using SignedMaxType = typename interval_t<ValueType>::maxsigned;
+	using MaxIntervalType = typename interval_t<SignedMaxType>::type;
 
-	inline ValueType defaultValue() const
+	inline ValueType value() const
 	{
-		return m_defaultValue;
-	}
-
-	inline void setDefaultValue(ValueType defaultValue)
-	{
-		m_defaultValue = defaultValue;
+		return correctValue(QtnSinglePropertyType::value());
 	}
 
 	inline ValueType minValue() const
@@ -355,9 +375,14 @@ public:
 
 	inline void setMinValue(ValueType minValue)
 	{
+		if (m_minValue == minValue)
+			return;
+
+		emit this->propertyWillChange(
+			QtnPropertyChangeReasonNewValue, nullptr, 0);
 		m_minValue = minValue;
-		m_maxValue = std::max(m_maxValue, m_minValue);
-		correctValue();
+		m_maxValue = std::max(m_minValue, m_maxValue);
+		emit this->propertyDidChange(QtnPropertyChangeReasonNewValue);
 	}
 
 	inline ValueType maxValue() const
@@ -367,9 +392,25 @@ public:
 
 	inline void setMaxValue(ValueType maxValue)
 	{
+		if (maxValue == m_maxValue)
+			return;
+
+		emit this->propertyWillChange(
+			QtnPropertyChangeReasonNewValue, nullptr, 0);
 		m_maxValue = maxValue;
 		m_minValue = std::min(m_minValue, m_maxValue);
-		correctValue();
+		emit this->propertyDidChange(QtnPropertyChangeReasonNewValue);
+	}
+
+	inline ValueType correctValue(ValueType value) const
+	{
+		if (value < m_minValue)
+			value = m_minValue;
+
+		if (value > m_maxValue)
+			value = m_maxValue;
+
+		return value;
 	}
 
 	inline ValueType stepValue() const
@@ -379,19 +420,40 @@ public:
 
 	inline void setStepValue(ValueType stepValue)
 	{
+		if (stepValue == m_stepValue)
+			return;
+
+		emit this->propertyWillChange(
+			QtnPropertyChangeReasonStateLocal, nullptr, 0);
 		m_stepValue = stepValue;
+		emit this->propertyDidChange(QtnPropertyChangeReasonStateLocal);
 	}
 
-	inline void incrementValue(int steps = 1)
+	inline void incrementValue(
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonNewValue,
+		int steps = 1)
 	{
-		ValueType newValue = this->value() + (stepValue() * (ValueType) steps);
-		this->setValue(newValue);
+		auto oldValue = this->value();
+		ValueType newValue;
+		auto step = SignedMaxType(m_stepValue) * steps;
+		if (step < SignedMaxType(0) &&
+			MaxIntervalType(-step) >= IntervalType(oldValue - m_minValue))
+		{
+			newValue = m_minValue;
+		} else if (step > SignedMaxType(0) &&
+			MaxIntervalType(step) >= IntervalType(m_maxValue - oldValue))
+		{
+			newValue = m_maxValue;
+		} else
+		{
+			newValue = oldValue + step;
+		}
+		this->setValue(newValue, reason);
 	}
 
 protected:
 	explicit QtnNumericPropertyBase(QObject *parent)
 		: QtnSinglePropertyType(parent)
-		, m_defaultValue(ValueType(0))
 		, m_minValue(std::numeric_limits<ValueType>::lowest())
 		, m_maxValue(std::numeric_limits<ValueType>::max())
 		, m_stepValue(ValueType(1))
@@ -409,23 +471,7 @@ protected:
 		return true;
 	}
 
-	inline void correctValue()
-	{
-		ValueType oldValue = this->value();
-		ValueType newValue = oldValue;
-
-		if (newValue < m_minValue)
-			newValue = m_minValue;
-
-		if (newValue > m_maxValue)
-			newValue = m_maxValue;
-
-		if (newValue != oldValue)
-			this->setValue(newValue);
-	}
-
 private:
-	ValueType m_defaultValue;
 	ValueType m_minValue;
 	ValueType m_maxValue;
 	ValueType m_stepValue;
@@ -459,7 +505,9 @@ inline void qtnMakePercentProperty(T *dProp,
 	if (prevSet)
 	{
 		dProp->setCallbackValueSet(
-			[prevSet](ValueType value) { prevSet(value / 100.0); });
+			[prevSet](ValueType value, QtnPropertyChangeReason reason) {
+				prevSet(value / 100.0, reason);
+			});
 	}
 
 	auto prevDefault = dProp->callbackValueDefault();
@@ -478,34 +526,62 @@ inline void qtnMakePercentProperty(T *dProp,
 }
 
 template <typename QtnSinglePropertyType>
-class QtnNumericPropertyValue
-	: public QtnNumericPropertyBase<QtnSinglePropertyType>
+class QtnNumericPropertyValue : public QtnSinglePropertyType
 {
 public:
-	using ValueType =
-		typename QtnNumericPropertyBase<QtnSinglePropertyType>::ValueType;
+	using ValueType = typename QtnSinglePropertyType::ValueType;
+
+	inline ValueType defaultValue() const
+	{
+		return m_defaultValue;
+	}
+
+	inline void setDefaultValue(ValueType defaultValue)
+	{
+		m_defaultValue = defaultValue;
+	}
 
 protected:
 	explicit QtnNumericPropertyValue(QObject *parent)
-		: QtnNumericPropertyBase<QtnSinglePropertyType>(parent)
+		: QtnSinglePropertyType(parent)
 		, m_value(ValueType(0))
+		, m_defaultValue(ValueType(0))
 	{
+		this->addState(QtnPropertyStateResettable);
 	}
 
-	inline ValueType valueImpl() const override
+	virtual bool defaultValueImpl(ValueType &to) const override
+	{
+		to = this->correctValue(m_defaultValue);
+		return true;
+	}
+
+	virtual ValueType valueImpl() const override
 	{
 		return m_value;
 	}
 
-	inline void setValueImpl(ValueType newValue) override
+	virtual void setValueImpl(
+		ValueType newValue, QtnPropertyChangeReason /*reason*/) override
 	{
 		m_value = newValue;
 	}
 
 private:
 	ValueType m_value;
+	ValueType m_defaultValue;
 
 	Q_DISABLE_COPY(QtnNumericPropertyValue)
 };
 
-#endif // PROPERTYBASIS_H
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<bool>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<qint32>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<quint32>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<qint64>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<quint64>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<float>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<double>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<QString>;
+template class QTN_IMPORT_EXPORT QtnSinglePropertyBase<QVariant>;
+
+#endif // PROPERTY_TEMPLATES_H

@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertySet.h"
+
 #include <QRegularExpression>
+#include <QJsonObject>
+#include <QDebug>
 
 void qtnAddPropertyAsChild(
 	QObject *parent, QtnPropertyBase *child, bool moveOwnership)
@@ -161,7 +164,14 @@ void QtnPropertySet::clearChildProperties()
 	emit propertyWillChange(
 		QtnPropertyChangeReasonChildPropertyRemove, nullptr, 0);
 
-	m_childProperties.clear();
+	// Original list is cleared to avoid interference with property destructors,
+	// where properties are removed from the parent's list.
+	auto childProperties = std::move(m_childProperties);
+	for (auto p : childProperties)
+	{
+		if (p->parent() == this)
+			delete p;
+	}
 
 	emit propertyDidChange(QtnPropertyChangeReasonChildPropertyRemove);
 }
@@ -259,11 +269,12 @@ const QtnPropertySet *QtnPropertySet::asPropertySet() const
 	return this;
 }
 
-void QtnPropertySet::doReset(bool edit)
+void QtnPropertySet::doReset(QtnPropertyChangeReason reason)
 {
+	Q_ASSERT(reason & QtnPropertyChangeReasonResetValue);
 	for (auto &p : childProperties())
 	{
-		p->reset(edit);
+		p->reset(reason);
 	}
 }
 
@@ -295,7 +306,8 @@ bool QtnPropertySet::copyValuesImpl(
 	return false;
 }
 
-bool QtnPropertySet::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertySet::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	static QRegExp parserLine(QStringLiteral("^\\s*([^=]+)=(.*)$"));
 
@@ -304,37 +316,206 @@ bool QtnPropertySet::fromStrImpl(const QString &str, bool edit)
 	if (lines.isEmpty())
 		return true;
 
-	bool anySuccess = false;
+	bool ok = true;
 
 	for (const auto &line : lines)
 	{
 		if (!parserLine.exactMatch(line))
+		{
+			qDebug() << "Cannot parse string: " << line;
+			ok = false;
 			continue;
+		}
 
 		QStringList params = parserLine.capturedTexts();
-
 		if (params.size() != 3)
+		{
+			qDebug() << "Cannot parse string: " << line;
+			ok = false;
 			continue;
+		}
 
 		QString propertyPath = params[1];
 		QString propertyStrValue = params[2];
 
 		QList<QtnPropertyBase *> subProperties =
 			findChildProperties(propertyPath, Qt::FindChildrenRecursively);
-
 		if (subProperties.size() != 1)
+		{
+			qDebug() << "Ambiguous property path: " << propertyPath;
+			ok = false;
+			continue;
+		}
+
+		if (subProperties[0]->state() & QtnPropertyStateNonSerialized)
 			continue;
 
-		if (subProperties[0]->fromStr(propertyStrValue, edit))
-			anySuccess = true;
+		propertyStrValue = propertyStrValue.trimmed();
+		if (propertyStrValue.startsWith('"') && propertyStrValue.endsWith('"'))
+		{
+			propertyStrValue =
+				propertyStrValue.mid(1, propertyStrValue.length() - 2);
+		}
+
+		if (!subProperties[0]->fromStr(propertyStrValue, reason))
+		{
+			qDebug() << QString(
+				"Cannot convert property %1<%2> from string \"%3\"")
+							.arg(subProperties[0]->name(),
+								subProperties[0]->metaObject()->className(),
+								propertyStrValue);
+			ok = false;
+			continue;
+		}
 	}
 
-	return anySuccess;
+	return ok;
+}
+
+bool QtnPropertySet::fromJson(
+	const QJsonObject &jsonObject, QtnPropertyChangeReason reason)
+{
+	bool ok = true;
+
+	for (auto it = jsonObject.begin(), end = jsonObject.end(); it != end; ++it)
+	{
+		if (it.value().type() != QJsonValue::Object)
+		{
+			qDebug() << "Json object expected";
+			ok = false;
+			continue;
+		}
+
+		QString cppName = it.key();
+		auto childProperties =
+			findChildProperties(cppName, Qt::FindDirectChildrenOnly);
+		if (childProperties.isEmpty())
+		{
+			qDebug() << "Cannot find property " << cppName;
+			ok = false;
+			continue;
+		} else if (childProperties.size() > 1)
+		{
+			qDebug() << "Ambiguous property " << cppName;
+			ok = false;
+			continue;
+		}
+
+		if (childProperties[0]->state() & QtnPropertyStateNonSerialized)
+			continue;
+
+		auto childPropertySet = childProperties[0]->asPropertySet();
+		if (childPropertySet)
+		{
+			if (!childPropertySet->fromJson(it.value().toObject(), reason))
+			{
+				qDebug() << "Cannot load \"" << childPropertySet->name()
+						 << "\" from JSON";
+				ok = false;
+			}
+		} else
+		{
+			auto childProperty = childProperties[0]->asProperty();
+			if (childProperty)
+			{
+				auto jsonProperty = it.value().toObject();
+				if (!jsonProperty.contains("value"))
+				{
+					qDebug() << "Cannot parse \"value\" attribute";
+					ok = false;
+					continue;
+				}
+
+				QString propertyValue = jsonProperty.value("value").toString();
+				if (!childProperty->fromStr(propertyValue, reason))
+				{
+					qDebug() << "Cannot convert value" << propertyValue
+							 << "to property" << childProperty->name();
+					ok = false;
+				}
+			} else
+			{
+				Q_ASSERT(false && "Cannot recognize property type");
+				ok = false;
+			}
+		}
+	}
+
+	return ok;
+}
+
+bool QtnPropertySet::toJson(QJsonObject &jsonObject) const
+{
+	bool ok = true;
+
+	for (auto childPropertyBase : childProperties())
+	{
+		if (childPropertyBase->state() & QtnPropertyStateNonSerialized)
+			continue;
+
+		QJsonObject jsonSubObject;
+
+		auto childPropertySet = childPropertyBase->asPropertySet();
+		if (childPropertySet)
+		{
+			if (!childPropertySet->toJson(jsonSubObject))
+			{
+				qDebug() << "Cannot save \"" << childPropertySet->name()
+						 << "\" to JSON";
+				ok = false;
+				continue;
+			}
+		} else
+		{
+			auto childProperty = childPropertyBase->asProperty();
+			if (childProperty)
+			{
+				QString value;
+				if (!childProperty->toStr(value))
+				{
+					qDebug() << "Cannot convert property \""
+							 << childProperty->name() << "\" to QString";
+					ok = false;
+					continue;
+				}
+
+				jsonSubObject.insert("value", value);
+			} else
+			{
+				Q_ASSERT(false && "Cannot recognize property type");
+				ok = false;
+				continue;
+			}
+		}
+
+		jsonObject.insert(childPropertyBase->name(), jsonSubObject);
+	}
+
+	return ok;
 }
 
 bool QtnPropertySet::toStrImpl(QString &str) const
 {
 	return toStrWithPrefix(str, QString());
+}
+
+bool QtnPropertySet::fromVariantImpl(
+	const QVariant &v, QtnPropertyChangeReason reason)
+{
+	if (!v.isValid() || v.type() == QVariant::Map)
+	{
+		return fromJson(QJsonObject::fromVariantMap(v.toMap()), reason);
+	}
+	return false;
+}
+
+bool QtnPropertySet::toVariantImpl(QVariant &v) const
+{
+	QJsonObject json;
+	bool ok = toJson(json);
+	if (ok)
+		v = json.toVariantMap();
+	return ok;
 }
 
 bool QtnPropertySet::loadImpl(QDataStream &stream)
@@ -347,9 +528,8 @@ bool QtnPropertySet::loadImpl(QDataStream &stream)
 
 	quint8 version = 0;
 	stream >> version;
-
 	// version incorrect
-	if (version != 1)
+	if (version != STORAGE_VERSION)
 		return false;
 
 	forever
@@ -362,13 +542,11 @@ bool QtnPropertySet::loadImpl(QDataStream &stream)
 			break;
 
 		QtnPropertyBase *childProperty = findChildProperty(id);
-
 		if (!childProperty)
 		{
 			// cannot find subproperty -> skip
 			if (!skipLoad(stream))
 				return false;
-
 			continue;
 		}
 
@@ -377,7 +555,6 @@ bool QtnPropertySet::loadImpl(QDataStream &stream)
 			// should not load such subproperty
 			if (!skipLoad(stream))
 				return false;
-
 			continue;
 		}
 
@@ -397,8 +574,7 @@ bool QtnPropertySet::saveImpl(QDataStream &stream) const
 		return false;
 
 	// for compatibility
-	quint8 version = 1;
-	stream << version;
+	stream << STORAGE_VERSION;
 
 	for (auto childProperty : m_childProperties)
 	{
@@ -414,7 +590,6 @@ bool QtnPropertySet::saveImpl(QDataStream &stream) const
 
 		// save child property id
 		stream << childProperty->id();
-
 		// save child property
 		if (!childProperty->save(stream))
 			return false;
@@ -460,6 +635,8 @@ bool QtnPropertySet::toStrWithPrefix(QString &str, const QString &prefix) const
 {
 	for (auto childPropertyBase : m_childProperties)
 	{
+		if (childPropertyBase->state() & QtnPropertyStateNonSerialized)
+			continue;
 		QtnProperty *childProperty = childPropertyBase->asProperty();
 
 		if (childProperty)

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@ limitations under the License.
 
 #pragma once
 
-#include "QtnProperty/Delegates/PropertyDelegate.h"
+#include "QtnProperty/Delegates/Utils/PropertyDelegateMisc.h"
 
 #include <QMetaEnum>
 
 class QtnPropertyDelegateFactory;
-class QTN_IMPORT_EXPORT QtnPropertyDelegateMetaEnum : public QtnPropertyDelegate
+class QTN_IMPORT_EXPORT QtnPropertyDelegateMetaEnum
+	: public QtnPropertyDelegateWithValueEditor
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateMetaEnum)
 
@@ -31,7 +32,7 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateMetaEnum : public QtnPropertyDelegate
 
 public:
 	explicit QtnPropertyDelegateMetaEnum(const QMetaEnum &metaEnum,
-		QtnProperty *property, bool translate = false);
+		QtnPropertyBase *property, bool translate = false);
 
 	static void Register(QMetaEnum metaEnum,
 		QtnPropertyDelegateFactory *factory, bool translate = false);
@@ -59,16 +60,14 @@ public:
 
 	int currentValue() const;
 
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 
 	QString valueToStr(int value) const;
 	QString keyToStr(const char *key) const;
-
-	static QByteArray translateAttribute();
 
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
+		const QtnPropertyDelegateInfo &info) override;
 };

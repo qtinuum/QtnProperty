@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 
-#ifndef PROPERTYCOLOR_H
-#define PROPERTYCOLOR_H
+#ifndef PROPERTY_COLOR_H
+#define PROPERTY_COLOR_H
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
+#include "QtnProperty/StructPropertyBase.h"
+#include "QtnProperty/Core/PropertyInt.h"
 #include <QColor>
 
 enum QtnColorDelegateShape
@@ -29,7 +31,7 @@ enum QtnColorDelegateShape
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyQColorBase
-	: public QtnSinglePropertyBase<QColor>
+	: public QtnStructPropertyBase<QColor, QtnPropertyIntCallback>
 {
 	Q_OBJECT
 
@@ -37,14 +39,16 @@ private:
 	QtnPropertyQColorBase(const QtnPropertyQColorBase &other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQColorBase(QObject *parent)
-		: QtnSinglePropertyBase<QColor>(parent)
-	{
-	}
+	explicit QtnPropertyQColorBase(QObject *parent);
+
+	QtnProperty *createRedProperty();
+	QtnProperty *createGreenProperty();
+	QtnProperty *createBlueProperty();
 
 protected:
 	// string conversion implementation
-	bool fromStrImpl(const QString &str, bool edit) override;
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQColorBase)
@@ -62,7 +66,7 @@ private:
 		const QtnPropertyQColorCallback &other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQColorCallback(QObject *parent);
+	explicit QtnPropertyQColorCallback(QObject *parent = nullptr);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(
 		QtnPropertyQColorCallback, QtnPropertyQColorBase)
@@ -77,9 +81,22 @@ private:
 	QtnPropertyQColor(const QtnPropertyQColor &other) Q_DECL_EQ_DELETE;
 
 public:
-	explicit QtnPropertyQColor(QObject *parent);
+	explicit QtnPropertyQColor(QObject *parent = nullptr);
+
+	static QString redKey();
+	static QString redDisplayName();
+	static QString redDescriptionFmt();
+	static QString greenKey();
+	static QString greenDisplayName();
+	static QString greenDescriptionFmt();
+	static QString blueKey();
+	static QString blueDisplayName();
+	static QString blueDescriptionFmt();
+
+	static bool colorFromStr(const QString &str, QColor &color);
+	static bool strFromColor(const QColor &color, QString &str);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQColor, QtnPropertyQColorBase)
 };
 
-#endif // PROPERTYCOLOR_H
+#endif // PROPERTY_COLOR_H

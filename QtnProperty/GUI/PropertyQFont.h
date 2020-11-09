@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
 
-#ifndef PROPERTYFONT_H
-#define PROPERTYFONT_H
+#ifndef PROPERTY_FONT_H
+#define PROPERTY_FONT_H
 
 #include "QtnProperty/Auxiliary/PropertyTemplates.h"
 #include <QFont>
@@ -34,7 +34,8 @@ public:
 
 protected:
 	// string conversion implementation
-	bool fromStrImpl(const QString &str, bool edit) override;
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	bool toStrImpl(QString &str) const override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyQFontBase)
@@ -98,4 +99,4 @@ public:
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyQFont, QtnPropertyQFontBase)
 };
 
-#endif // PROPERTYFONT_H
+#endif // PROPERTY_FONT_H

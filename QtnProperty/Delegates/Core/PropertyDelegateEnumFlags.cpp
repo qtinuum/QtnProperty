@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateEnumFlags.h"
-#include "Core/PropertyEnumFlags.h"
-#include "Core/PropertyBool.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorHandler.h"
-#include "MultiProperty.h"
+#include "QtnProperty/Core/PropertyBool.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/MultiProperty.h"
 
 #include <QLineEdit>
 
@@ -45,7 +44,7 @@ static QString enumFlagsProperty2Str(const QtnPropertyEnumFlagsBase &property)
 			if (!text.isEmpty())
 				text += "|";
 
-			text += e.name();
+			text += e.displayName();
 		}
 	}
 
@@ -57,7 +56,7 @@ class QtnPropertyEnumFlagsLineEditHandler
 {
 public:
 	QtnPropertyEnumFlagsLineEditHandler(
-		QtnPropertyEnumFlagsBase &property, QLineEdit &editor);
+		QtnPropertyDelegate *delegate, QLineEdit &editor);
 
 protected:
 	virtual void updateEditor() override;
@@ -78,21 +77,22 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(
 				QtnEnumValueType enumValue = e.value();
 
 				auto flagProperty = new QtnPropertyBoolCallback;
+				flagProperty->setDisplayName(e.displayName());
 				flagProperty->setName(e.name());
 				flagProperty->setDescription(
 					QtnPropertyEnumFlags::getFlagLabelDescription(
-						e.name(), owner.name()));
+						e.displayName(), owner.displayName()));
 
 				flagProperty->setCallbackValueGet(
 					[&owner, enumValue]() -> bool {
 						return owner.value() & enumValue;
 					});
 				flagProperty->setCallbackValueSet(
-					[&owner, enumValue](bool value) {
+					[&owner, enumValue](bool value, QtnPropertyChangeReason reason) {
 						if (value)
-							owner.setValue(owner.value() | enumValue);
+							owner.setValue(owner.value() | enumValue, reason);
 						else
-							owner.setValue(owner.value() & ~enumValue);
+							owner.setValue(owner.value() & ~enumValue, reason);
 					});
 
 				addSubProperty(flagProperty);
@@ -101,10 +101,9 @@ QtnPropertyDelegateEnumFlags::QtnPropertyDelegateEnumFlags(
 	}
 }
 
-bool QtnPropertyDelegateEnumFlags::Register()
+void QtnPropertyDelegateEnumFlags::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyEnumFlagsBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyEnumFlagsBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateEnumFlags,
 			QtnPropertyEnumFlagsBase>,
 		QByteArrayLiteral("FlagsList"));
@@ -116,7 +115,7 @@ QWidget *QtnPropertyDelegateEnumFlags::createValueEditorImpl(
 	QLineEdit *lineEdit = new QLineEdit(parent);
 	lineEdit->setGeometry(rect);
 
-	new QtnPropertyEnumFlagsLineEditHandler(owner(), *lineEdit);
+	new QtnPropertyEnumFlagsLineEditHandler(this, *lineEdit);
 
 	if (inplaceInfo)
 	{
@@ -126,15 +125,16 @@ QWidget *QtnPropertyDelegateEnumFlags::createValueEditorImpl(
 	return lineEdit;
 }
 
-bool QtnPropertyDelegateEnumFlags::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateEnumFlags::propertyValueToStrImpl(
+	QString &strValue) const
 {
 	strValue = enumFlagsProperty2Str(owner());
 	return true;
 }
 
 QtnPropertyEnumFlagsLineEditHandler::QtnPropertyEnumFlagsLineEditHandler(
-	QtnPropertyEnumFlagsBase &property, QLineEdit &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
+	QtnPropertyDelegate *delegate, QLineEdit &editor)
+	: QtnPropertyEditorHandlerType(delegate, editor)
 {
 	editor.setReadOnly(true);
 
@@ -143,7 +143,7 @@ QtnPropertyEnumFlagsLineEditHandler::QtnPropertyEnumFlagsLineEditHandler(
 
 void QtnPropertyEnumFlagsLineEditHandler::updateEditor()
 {
-	if (property().valueIsHidden())
+	if (stateProperty()->isMultiValue())
 	{
 		editor().clear();
 		editor().setPlaceholderText(

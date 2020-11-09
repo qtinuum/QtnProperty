@@ -3,7 +3,7 @@
 
 QtnPropertySetA::QtnPropertySetA(QObject* parent)
     : QtnPropertySet(parent)
-    , b(*new QtnPropertyBool(this))
+    , b(*qtnCreateProperty<QtnPropertyBool>(this))
 {
     init();
     connectSlots();
@@ -17,6 +17,8 @@ QtnPropertySetA::~QtnPropertySetA()
 
 QtnPropertySetA& QtnPropertySetA::operator=(const QtnPropertySetA& other)
 {
+    Q_UNUSED(other);
+
     b = other.b;
 
     return *this;
@@ -36,7 +38,9 @@ QtnPropertySet* QtnPropertySetA::createCopyImpl(QObject* parentForCopy) const
 
 bool QtnPropertySetA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    QtnPropertySetA* theCopyFrom = qobject_cast<QtnPropertySetA*>(propertySetCopyFrom);
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetA*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -50,14 +54,16 @@ bool QtnPropertySetA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPro
 
 void QtnPropertySetA::init()
 {
-    static QString A_name = tr("A");
+    static QString A_name = QStringLiteral("A");
     setName(A_name);
+    setId(50);
     
     // start children initialization
-    static QString b_name = tr("b");
+    static QString b_name = QStringLiteral("b");
     b.setName(b_name);
     static QString b_description = "b property";
     b.setDescription(b_description);
+    b.setId(51);
     b.setValue(true);
     // end children initialization
 }
@@ -72,12 +78,12 @@ void QtnPropertySetA::disconnectSlots()
 
 void QtnPropertySetA::connectDelegates()
 {
-    b.setDelegateCallback([] () -> const QtnPropertyDelegateInfo * {
-        QScopedPointer<QtnPropertyDelegateInfo> info(new QtnPropertyDelegateInfo());
-        info->name = "Combobox";
-        info->attributes["labelFalse"] = "Off";
-        info->attributes["labelTrue"] = "On";
-        return info.take();
+    b.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.name = "Combobox";
+        info.attributes["labelFalse"] = "Off";
+        info.attributes["labelTrue"] = "On";
+        return info;
     });
 }
 

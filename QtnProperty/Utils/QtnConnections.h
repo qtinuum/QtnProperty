@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@ limitations under the License.
 
 #pragma once
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 
 #include <QMetaObject>
 
 #include <vector>
 
-class QtnConnections
+class QTN_IMPORT_EXPORT QtnConnections
 	: public std::vector<QMetaObject::Connection>
 {
 	Q_DISABLE_COPY(QtnConnections)

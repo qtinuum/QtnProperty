@@ -1,5 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,12 +22,16 @@ limitations under the License.
 #include "Core/PropertyBool.h"
 #include "Core/PropertyInt.h"
 #include "Core/PropertyUInt.h"
+#include "Core/PropertyFloat.h"
 #include "Core/PropertyDouble.h"
 #include "Core/PropertyEnum.h"
 #include "Core/PropertyEnumFlags.h"
 #include "Core/PropertyQString.h"
 #include "Core/PropertyQRect.h"
+#include "Core/PropertyQRectF.h"
 #include "Core/PropertyQPoint.h"
+#include "Core/PropertyQPointF.h"
 #include "Core/PropertyQSize.h"
+#include "Core/PropertyQSizeF.h"
 
 #endif // PROPERTYCORE_H

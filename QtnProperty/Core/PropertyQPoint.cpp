@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,31 +16,31 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyQPoint.h"
-#include "PropertyInt.h"
 
 QtnPropertyQPointBase::QtnPropertyQPointBase(QObject *parent)
 	: ParentClass(parent)
 {
-	addState(QtnPropertyStateCollapsed);
 }
 
 QtnProperty *QtnPropertyQPointBase::createXProperty()
 {
-	return createFieldProperty(QtnPropertyQPoint::xString(),
-		QtnPropertyQPoint::xDescription(), &QPoint::x, &QPoint::setX);
+	return createFieldProperty(&QPoint::x, &QPoint::setX,
+		QtnPropertyQPoint::xKey(), QtnPropertyQPoint::xDisplayName(),
+		QtnPropertyQPoint::xDescriptionFmt());
 }
 
 QtnProperty *QtnPropertyQPointBase::createYProperty()
 {
-	return createFieldProperty(QtnPropertyQPoint::yString(),
-		QtnPropertyQPoint::yDescription(), &QPoint::y, &QPoint::setY);
+	return createFieldProperty(&QPoint::y, &QPoint::setY,
+		QtnPropertyQPoint::yKey(), QtnPropertyQPoint::yDisplayName(),
+		QtnPropertyQPoint::yDescriptionFmt());
 }
 
-bool QtnPropertyQPointBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyQPointBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	static QRegExp parserPoint(
-		QStringLiteral("^\\s*QPoint\\s*\\(([^\\)]+)\\)\\s*$"),
-		Qt::CaseInsensitive);
+		"^\\s*QPoint\\s*\\(([^\\)]+)\\)\\s*$", Qt::CaseInsensitive);
 
 	if (!parserPoint.exactMatch(str))
 		return false;
@@ -51,8 +51,7 @@ bool QtnPropertyQPointBase::fromStrImpl(const QString &str, bool edit)
 		return false;
 
 	static QRegExp parserParams(
-		QStringLiteral("^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$"),
-		Qt::CaseInsensitive);
+		"^\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*$", Qt::CaseInsensitive);
 
 	if (!parserParams.exactMatch(params[1]))
 		return false;
@@ -73,7 +72,7 @@ bool QtnPropertyQPointBase::fromStrImpl(const QString &str, bool edit)
 	if (!ok)
 		return false;
 
-	return setValue(QPoint(x, y), edit);
+	return setValue(QPoint(x, y), reason);
 }
 
 bool QtnPropertyQPointBase::toStrImpl(QString &str) const
@@ -93,22 +92,32 @@ QString QtnPropertyQPoint::getToStringFormat()
 	return tr("[%1, %2]");
 }
 
-QString QtnPropertyQPoint::xString()
+QString QtnPropertyQPoint::xKey()
+{
+	return QStringLiteral("x");
+}
+
+QString QtnPropertyQPoint::xDisplayName()
 {
 	return tr("X");
 }
 
-QString QtnPropertyQPoint::xDescription()
+QString QtnPropertyQPoint::xDescriptionFmt()
 {
 	return tr("X of the %1");
 }
 
-QString QtnPropertyQPoint::yString()
+QString QtnPropertyQPoint::yKey()
+{
+	return QStringLiteral("y");
+}
+
+QString QtnPropertyQPoint::yDisplayName()
 {
 	return tr("Y");
 }
 
-QString QtnPropertyQPoint::yDescription()
+QString QtnPropertyQPoint::yDescriptionFmt()
 {
 	return tr("Y of the %1");
 }

@@ -4,8 +4,8 @@
 
 QtnPropertySetTest1::QtnPropertySetTest1(QObject* parent)
     : QtnPropertySet(parent)
-    , a(*new QtnPropertyInt(this))
-    , text(*new QtnPropertyQString(this))
+    , a(*qtnCreateProperty<QtnPropertyInt>(this))
+    , text(*qtnCreateProperty<QtnPropertyQString>(this))
 {
     init();
     connectSlots();
@@ -19,6 +19,8 @@ QtnPropertySetTest1::~QtnPropertySetTest1()
 
 QtnPropertySetTest1& QtnPropertySetTest1::operator=(const QtnPropertySetTest1& other)
 {
+    Q_UNUSED(other);
+
     a = other.a;
     text = other.text;
 
@@ -39,7 +41,9 @@ QtnPropertySet* QtnPropertySetTest1::createCopyImpl(QObject* parentForCopy) cons
 
 bool QtnPropertySetTest1::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    QtnPropertySetTest1* theCopyFrom = qobject_cast<QtnPropertySetTest1*>(propertySetCopyFrom);
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetTest1*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -58,26 +62,29 @@ bool QtnPropertySetTest1::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 
 void QtnPropertySetTest1::init()
 {
-    static QString Test1_name = tr("Test1");
+    static QString Test1_name = QStringLiteral("Test1");
     setName(Test1_name);
     static QString description = "Test property_set description";
     setDescription(description);
+    setId(1);
     setState(0);
     
     // start children initialization
-    static QString a_name = tr("a");
+    static QString a_name = QStringLiteral("a");
     a.setName(a_name);
     static QString a_description = "Descripion";
     a.setDescription(a_description);
+    a.setId(2);
     a.setMaxValue(10);
     a.setStepValue(-1);
     a.setValue(5);
-    static QString text_name = tr("text");
+    static QString text_name = QStringLiteral("text");
     text.setName(text_name);
     static QString text_description = "defrf\"sde\"""deerf3rf"
     "derf r g\r\nreg r{}""dfrgerg"
     "fwrewre";
     text.setDescription(text_description);
+    text.setId(3);
     text.setValue(QString("#^{};"));
     // end children initialization
 }
@@ -109,6 +116,8 @@ QtnPropertySetTest2::~QtnPropertySetTest2()
 
 QtnPropertySetTest2& QtnPropertySetTest2::operator=(const QtnPropertySetTest2& other)
 {
+    Q_UNUSED(other);
+
 
     return *this;
 }
@@ -127,7 +136,9 @@ QtnPropertySet* QtnPropertySetTest2::createCopyImpl(QObject* parentForCopy) cons
 
 bool QtnPropertySetTest2::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    QtnPropertySetTest2* theCopyFrom = qobject_cast<QtnPropertySetTest2*>(propertySetCopyFrom);
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetTest2*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -136,8 +147,9 @@ bool QtnPropertySetTest2::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 
 void QtnPropertySetTest2::init()
 {
-    static QString Test2_name = tr("Test2");
+    static QString Test2_name = QStringLiteral("Test2");
     setName(Test2_name);
+    setId(4);
 }
 
 void QtnPropertySetTest2::connectSlots()
@@ -154,8 +166,8 @@ void QtnPropertySetTest2::connectDelegates()
 
 QtnPropertySetYY::QtnPropertySetYY(QObject* parent)
     : QtnPropertySet(parent)
-    , rect(*new QtnPropertyQRect(this))
-    , s(*new QtnPropertyQString(this))
+    , rect(*qtnCreateProperty<QtnPropertyQRect>(this))
+    , s(*qtnCreateProperty<QtnPropertyQString>(this))
 {
     init();
     connectSlots();
@@ -169,6 +181,8 @@ QtnPropertySetYY::~QtnPropertySetYY()
 
 QtnPropertySetYY& QtnPropertySetYY::operator=(const QtnPropertySetYY& other)
 {
+    Q_UNUSED(other);
+
     rect = other.rect;
     s = other.s;
 
@@ -189,7 +203,9 @@ QtnPropertySet* QtnPropertySetYY::createCopyImpl(QObject* parentForCopy) const
 
 bool QtnPropertySetYY::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    QtnPropertySetYY* theCopyFrom = qobject_cast<QtnPropertySetYY*>(propertySetCopyFrom);
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetYY*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -208,16 +224,17 @@ bool QtnPropertySetYY::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 
 void QtnPropertySetYY::init()
 {
-    static QString yy_name = tr("yy");
+    static QString yy_name = QStringLiteral("yy");
     setName(yy_name);
-    static QString description = tr("ss")+tr("ss");
+    static QString description = QString("ss")+QString("ss");
     setDescription(description);
+    setId(6);
     
     // start children initialization
-    static QString rect_name = tr("rect");
+    static QString rect_name = QStringLiteral("rect");
     rect.setName(rect_name);
     rect.setValue(QRect(10, 10, 10, 10));
-    static QString s_name = tr("s");
+    static QString s_name = QStringLiteral("s");
     s.setName(s_name);
     // end children initialization
 }
@@ -249,6 +266,8 @@ QtnPropertySetAA::~QtnPropertySetAA()
 
 QtnPropertySetAA& QtnPropertySetAA::operator=(const QtnPropertySetAA& other)
 {
+    Q_UNUSED(other);
+
 
     return *this;
 }
@@ -267,7 +286,9 @@ QtnPropertySet* QtnPropertySetAA::createCopyImpl(QObject* parentForCopy) const
 
 bool QtnPropertySetAA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    QtnPropertySetAA* theCopyFrom = qobject_cast<QtnPropertySetAA*>(propertySetCopyFrom);
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetAA*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -276,8 +297,9 @@ bool QtnPropertySetAA::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 
 void QtnPropertySetAA::init()
 {
-    static QString aa_name = tr("aa");
+    static QString aa_name = QStringLiteral("aa");
     setName(aa_name);
+    setId(9);
 }
 
 void QtnPropertySetAA::connectSlots()
@@ -297,8 +319,8 @@ void QtnPropertySetAA::connectDelegates()
 
 QtnPropertySetSS::QtnPropertySetSS(QObject* parent)
     : QtnPropertySet(parent)
-    , a(*new QtnPropertyBool(this))
-    , aa(*new QtnPropertySetAA(this))
+    , a(*qtnCreateProperty<QtnPropertyBool>(this))
+    , aa(*qtnCreateProperty<QtnPropertySetAA>(this))
 {
     init();
     connectSlots();
@@ -312,6 +334,8 @@ QtnPropertySetSS::~QtnPropertySetSS()
 
 QtnPropertySetSS& QtnPropertySetSS::operator=(const QtnPropertySetSS& other)
 {
+    Q_UNUSED(other);
+
     a = other.a;
     aa = other.aa;
 
@@ -332,7 +356,9 @@ QtnPropertySet* QtnPropertySetSS::createCopyImpl(QObject* parentForCopy) const
 
 bool QtnPropertySetSS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    QtnPropertySetSS* theCopyFrom = qobject_cast<QtnPropertySetSS*>(propertySetCopyFrom);
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetSS*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -348,15 +374,18 @@ bool QtnPropertySetSS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPr
 
 void QtnPropertySetSS::init()
 {
-    static QString iis_name = tr("iis");
+    static QString iis_name = QStringLiteral("iis");
     setName(iis_name);
+    setId(7);
     
     // start children initialization
-    static QString a_name = tr("a");
+    static QString a_name = QStringLiteral("a");
     a.setName(a_name);
+    a.setId(8);
     a.setValue(true);
-    static QString aa_name = tr("aa");
+    static QString aa_name = QStringLiteral("aa");
     aa.setName(aa_name);
+    aa.setId(9);
     // end children initialization
 }
 
@@ -374,14 +403,14 @@ void QtnPropertySetSS::connectDelegates()
 
 QtnPropertySetTest3::QtnPropertySetTest3(QObject* parent)
     : QtnPropertySet(parent)
-    , yy(*new QtnPropertySetYY(this))
-    , iis(*new QtnPropertySetSS(this))
-    , u(*new QtnPropertyBool(this))
-    , xx(*new QtnPropertySetTest2(this))
-    , tt(*new QtnPropertySetTest2(this))
-    , s(*new QtnPropertySetSS(this))
-    , ww(*new QtnPropertyBool(this))
-    , bc(*new QtnPropertyBoolCallback(this))
+    , yy(*qtnCreateProperty<QtnPropertySetYY>(this))
+    , iis(*qtnCreateProperty<QtnPropertySetSS>(this))
+    , u(*qtnCreateProperty<QtnPropertyBool>(this))
+    , xx(*qtnCreateProperty<QtnPropertySetTest2>(this))
+    , tt(*qtnCreateProperty<QtnPropertySetTest2>(this))
+    , s(*qtnCreateProperty<QtnPropertySetSS>(this))
+    , ww(*qtnCreateProperty<QtnPropertyBool>(this))
+    , bc(*qtnCreateProperty<QtnPropertyBoolCallback>(this))
 {
     init();
     connectSlots();
@@ -395,6 +424,8 @@ QtnPropertySetTest3::~QtnPropertySetTest3()
 
 QtnPropertySetTest3& QtnPropertySetTest3::operator=(const QtnPropertySetTest3& other)
 {
+    Q_UNUSED(other);
+
     yy = other.yy;
     iis = other.iis;
     u = other.u;
@@ -421,7 +452,9 @@ QtnPropertySet* QtnPropertySetTest3::createCopyImpl(QObject* parentForCopy) cons
 
 bool QtnPropertySetTest3::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    QtnPropertySetTest3* theCopyFrom = qobject_cast<QtnPropertySetTest3*>(propertySetCopyFrom);
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetTest3*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -455,29 +488,34 @@ bool QtnPropertySetTest3::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, Qt
 
 void QtnPropertySetTest3::init()
 {
-    static QString Test3_name = tr("Test3");
+    static QString Test3_name = QStringLiteral("Test3");
     setName(Test3_name);
+    setId(5);
     
     // start children initialization
-    static QString yy_name = tr("yy");
+    static QString yy_name = QStringLiteral("yy");
     yy.setName(yy_name);
-    static QString yy_description = tr("ss")+tr("ss");
+    static QString yy_description = QString("ss")+QString("ss");
     yy.setDescription(yy_description);
-    static QString iis_name = tr("iis");
+    yy.setId(6);
+    static QString iis_name = QStringLiteral("iis");
     iis.setName(iis_name);
-    static QString u_name = tr("u");
+    iis.setId(7);
+    static QString u_name = QStringLiteral("u");
     u.setName(u_name);
+    u.setId(10);
     u.setValue(true);
-    static QString xx_name = tr("xx");
+    static QString xx_name = QStringLiteral("xx");
     xx.setName(xx_name);
-    static QString tt_name = tr("tt");
+    static QString tt_name = QStringLiteral("tt");
     tt.setName(tt_name);
-    static QString s_name = tr("s");
+    static QString s_name = QStringLiteral("s");
     s.setName(s_name);
     s.a.setValue(false);
-    static QString ww_name = tr("ww");
+    static QString ww_name = QStringLiteral("ww");
     ww.setName(ww_name);
-    static QString bc_name = tr("bc");
+    ww.setId(11);
+    static QString bc_name = QStringLiteral("bc");
     bc.setName(bc_name);
     bc.setCallbackValueAccepted([](bool value)->bool {
             if (value) {
@@ -486,13 +524,14 @@ void QtnPropertySetTest3::init()
                 return false;
             }
         });
-    bc.setCallbackValueEqual([](bool value)->bool { return false; });
+    bc.setCallbackValueEqual([](bool)->bool { return false; });
     bc.setCallbackValueGet([this]()->bool {
                 return ww;
         });
-    bc.setCallbackValueSet([this](bool value) {
+    bc.setCallbackValueSet([this](bool value, QtnPropertyChangeReason /*reason*/) {
             m_s = value;
         });
+    bc.setId(12);
     // end children initialization
 }
 
@@ -502,7 +541,7 @@ void QtnPropertySetTest3::connectSlots()
     QObject::connect(&u, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_u_propertyWillChange);
     QObject::connect(&u, &QtnProperty::propertyDidChange, this, &QtnPropertySetTest3::on_u_propertyDidChange);
     QObject::connect(&s.a, &QtnProperty::propertyValueAccept, this, &QtnPropertySetTest3::on_s_a_propertyValueAccept);
-    QObject::connect(&s, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_s_propertyWillChange);
+    QObject::connect(&s.a, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_s_a_propertyWillChange);
 }
 
 void QtnPropertySetTest3::disconnectSlots()
@@ -511,39 +550,44 @@ void QtnPropertySetTest3::disconnectSlots()
     QObject::disconnect(&u, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_u_propertyWillChange);
     QObject::disconnect(&u, &QtnProperty::propertyDidChange, this, &QtnPropertySetTest3::on_u_propertyDidChange);
     QObject::disconnect(&s.a, &QtnProperty::propertyValueAccept, this, &QtnPropertySetTest3::on_s_a_propertyValueAccept);
-    QObject::disconnect(&s, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_s_propertyWillChange);
+    QObject::disconnect(&s.a, &QtnProperty::propertyWillChange, this, &QtnPropertySetTest3::on_s_a_propertyWillChange);
 }
 
-void QtnPropertySetTest3::on_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertySetTest3::on_propertyDidChange(QtnPropertyChangeReason reason)
 {
+    Q_UNUSED(reason);
     
         // this propertyDidChange
     
 }
 
-void QtnPropertySetTest3::on_u_propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue)
+void QtnPropertySetTest3::on_u_propertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
 {
+    Q_UNUSED(reason); Q_UNUSED(newValue);Q_UNUSED(typeId);
     
         // u.propertyWillChange code
     
 }
 
-void QtnPropertySetTest3::on_u_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason)
+void QtnPropertySetTest3::on_u_propertyDidChange(QtnPropertyChangeReason reason)
 {
+    Q_UNUSED(reason);
     
             // sub u propertyDidChange
         
 }
 
-void QtnPropertySetTest3::on_s_a_propertyValueAccept(const QtnProperty *property, QtnPropertyValuePtr valueToAccept, bool* accept)
+void QtnPropertySetTest3::on_s_a_propertyValueAccept(QtnPropertyValuePtr valueToAccept, bool* accept)
 {
+    Q_UNUSED(valueToAccept); Q_UNUSED(accept);
     
             // s.a.propertyValueAccept
         
 }
 
-void QtnPropertySetTest3::on_s_propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue)
+void QtnPropertySetTest3::on_s_a_propertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
 {
+    Q_UNUSED(reason); Q_UNUSED(newValue);Q_UNUSED(typeId);
     
             yy.rect = QRect(1, 1, 1, 1);
             // ss propertyWillChange
@@ -562,7 +606,7 @@ void QtnPropertySetTest3::connectDelegates()
 static QtnEnumInfo& create_LANGUAGE_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
-    staticValues.append(QtnEnumValueInfo(LANGUAGE::ENG, "English"));
+    staticValues.append(QtnEnumValueInfo(LANGUAGE::ENG, "ENG", "English"));
     
     static QtnEnumInfo enumInfo("LANGUAGE", staticValues);
     return enumInfo;
@@ -589,9 +633,9 @@ const QtnEnumInfo& TYPE::info()
 static QtnEnumInfo& create_COLOR_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
-    staticValues.append(QtnEnumValueInfo(COLOR::RED, "Red"));
-    staticValues.append(QtnEnumValueInfo(COLOR::BLUE, "Blue", QtnEnumValueStateHidden | QtnEnumValueStateObsolete));
-    staticValues.append(QtnEnumValueInfo(COLOR::YELLOW, "Yellow"));
+    staticValues.append(QtnEnumValueInfo(COLOR::RED, "RED", "Red"));
+    staticValues.append(QtnEnumValueInfo(COLOR::BLUE, "BLUE", "Blue", QtnEnumValueStateHidden | QtnEnumValueStateObsolete));
+    staticValues.append(QtnEnumValueInfo(COLOR::YELLOW, "YELLOW", "Yellow"));
     
     static QtnEnumInfo enumInfo("COLOR", staticValues);
     return enumInfo;
@@ -605,9 +649,9 @@ const QtnEnumInfo& COLOR::info()
 static QtnEnumInfo& create_MASK_info()
 {
     QVector<QtnEnumValueInfo> staticValues;
-    staticValues.append(QtnEnumValueInfo(MASK::ONE, "One"));
-    staticValues.append(QtnEnumValueInfo(MASK::TWO, "Two"));
-    staticValues.append(QtnEnumValueInfo(MASK::FOUR, "Four"));
+    staticValues.append(QtnEnumValueInfo(MASK::ONE, "ONE", "One"));
+    staticValues.append(QtnEnumValueInfo(MASK::TWO, "TWO", "Two"));
+    staticValues.append(QtnEnumValueInfo(MASK::FOUR, "FOUR", "Four"));
     
     static QtnEnumInfo enumInfo("MASK", staticValues);
     return enumInfo;
@@ -621,32 +665,39 @@ const QtnEnumInfo& MASK::info()
 
 QtnPropertySetAllPropertyTypes::QtnPropertySetAllPropertyTypes(QObject* parent)
     : QtnPropertySet(parent)
-    , bp(*new QtnPropertyBool(this))
-    , bpc(*new QtnPropertyBoolCallback(this))
-    , ip(*new QtnPropertyInt(this))
-    , ipc(*new QtnPropertyIntCallback(this))
-    , up(*new QtnPropertyUInt(this))
-    , upc(*new QtnPropertyUIntCallback(this))
-    , fp(*new QtnPropertyFloat(this))
-    , fpc(*new QtnPropertyFloatCallback(this))
-    , dp(*new QtnPropertyDouble(this))
-    , dpc(*new QtnPropertyDoubleCallback(this))
-    , sp(*new QtnPropertyQString(this))
-    , spc(*new QtnPropertyQStringCallback(this))
-    , rp(*new QtnPropertyQRect(this))
-    , rpc(*new QtnPropertyQRectCallback(this))
-    , pp(*new QtnPropertyQPoint(this))
-    , ppc(*new QtnPropertyQPointCallback(this))
-    , szp(*new QtnPropertyQSize(this))
-    , szpc(*new QtnPropertyQSizeCallback(this))
-    , ep(*new QtnPropertyEnum(this))
-    , epc(*new QtnPropertyEnumCallback(this))
-    , efp(*new QtnPropertyEnumFlags(this))
-    , efpc(*new QtnPropertyEnumFlagsCallback(this))
-    , cp(*new QtnPropertyQColor(this))
-    , cpc(*new QtnPropertyQColorCallback(this))
-    , fnp(*new QtnPropertyQFont(this))
-    , fnpc(*new QtnPropertyQFontCallback(this))
+    , bp(*qtnCreateProperty<QtnPropertyBool>(this))
+    , bpc(*qtnCreateProperty<QtnPropertyBoolCallback>(this))
+    , ip(*qtnCreateProperty<QtnPropertyInt>(this))
+    , ipc(*qtnCreateProperty<QtnPropertyIntCallback>(this))
+    , up(*qtnCreateProperty<QtnPropertyUInt>(this))
+    , upc(*qtnCreateProperty<QtnPropertyUIntCallback>(this))
+    , fp(*qtnCreateProperty<QtnPropertyFloat>(this))
+    , fpc(*qtnCreateProperty<QtnPropertyFloatCallback>(this))
+    , dp(*qtnCreateProperty<QtnPropertyDouble>(this))
+    , dpc(*qtnCreateProperty<QtnPropertyDoubleCallback>(this))
+    , sp(*qtnCreateProperty<QtnPropertyQString>(this))
+    , spc(*qtnCreateProperty<QtnPropertyQStringCallback>(this))
+    , rp(*qtnCreateProperty<QtnPropertyQRect>(this))
+    , rpc(*qtnCreateProperty<QtnPropertyQRectCallback>(this))
+    , pp(*qtnCreateProperty<QtnPropertyQPoint>(this))
+    , ppc(*qtnCreateProperty<QtnPropertyQPointCallback>(this))
+    , szp(*qtnCreateProperty<QtnPropertyQSize>(this))
+    , szpc(*qtnCreateProperty<QtnPropertyQSizeCallback>(this))
+    , ep(*qtnCreateProperty<QtnPropertyEnum>(this))
+    , epc(*qtnCreateProperty<QtnPropertyEnumCallback>(this))
+    , efp(*qtnCreateProperty<QtnPropertyEnumFlags>(this))
+    , efpc(*qtnCreateProperty<QtnPropertyEnumFlagsCallback>(this))
+    , cp(*qtnCreateProperty<QtnPropertyQColor>(this))
+    , cpc(*qtnCreateProperty<QtnPropertyQColorCallback>(this))
+    , fnp(*qtnCreateProperty<QtnPropertyQFont>(this))
+    , fnpc(*qtnCreateProperty<QtnPropertyQFontCallback>(this))
+    , bttn(*qtnCreateProperty<QtnPropertyButton>(this))
+    , ppf(*qtnCreateProperty<QtnPropertyQPointF>(this))
+    , ppfc(*qtnCreateProperty<QtnPropertyQPointFCallback>(this))
+    , rpf(*qtnCreateProperty<QtnPropertyQRectF>(this))
+    , rpfc(*qtnCreateProperty<QtnPropertyQRectFCallback>(this))
+    , szpf(*qtnCreateProperty<QtnPropertyQSizeF>(this))
+    , szpfc(*qtnCreateProperty<QtnPropertyQSizeFCallback>(this))
     , _b(true)
 {
     
@@ -656,8 +707,11 @@ QtnPropertySetAllPropertyTypes::QtnPropertySetAllPropertyTypes(QObject* parent)
         _d = 32.4;
         _s = "name";
         _r = QRect(10, 10, 10, 10);
+        _rf = QRectF(10.1, 10.2, 10.3, 10.4);
         _p = QPoint(9, 2);
+        _pf = QPointF(9.9, 2.2);
         _sz = QSize(33, 21);
+        _szf = QSizeF(33.0, 21.9);
         _e = COLOR::RED;
         _ef = MASK::ONE|MASK::FOUR;
         _cl = QColor(Qt::red);
@@ -678,6 +732,8 @@ QtnPropertySetAllPropertyTypes::~QtnPropertySetAllPropertyTypes()
 
 QtnPropertySetAllPropertyTypes& QtnPropertySetAllPropertyTypes::operator=(const QtnPropertySetAllPropertyTypes& other)
 {
+    Q_UNUSED(other);
+
     bp = other.bp;
     bpc = other.bpc;
     ip = other.ip;
@@ -704,6 +760,13 @@ QtnPropertySetAllPropertyTypes& QtnPropertySetAllPropertyTypes::operator=(const 
     cpc = other.cpc;
     fnp = other.fnp;
     fnpc = other.fnpc;
+    bttn = other.bttn;
+    ppf = other.ppf;
+    ppfc = other.ppfc;
+    rpf = other.rpf;
+    rpfc = other.rpfc;
+    szpf = other.szpf;
+    szpfc = other.szpfc;
 
     return *this;
 }
@@ -722,7 +785,9 @@ QtnPropertySet* QtnPropertySetAllPropertyTypes::createCopyImpl(QObject* parentFo
 
 bool QtnPropertySetAllPropertyTypes::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
 {
-    QtnPropertySetAllPropertyTypes* theCopyFrom = qobject_cast<QtnPropertySetAllPropertyTypes*>(propertySetCopyFrom);
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetAllPropertyTypes*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
 
@@ -856,127 +921,190 @@ bool QtnPropertySetAllPropertyTypes::copyValuesImpl(QtnPropertySet* propertySetC
         fnpc = theCopyFrom->fnpc;
     }
 
+    if (!(theCopyFrom->bttn.state() & ignoreMask))
+    {
+        bttn = theCopyFrom->bttn;
+    }
+
+    if (!(theCopyFrom->ppf.state() & ignoreMask))
+    {
+        ppf = theCopyFrom->ppf;
+    }
+
+    if (!(theCopyFrom->ppfc.state() & ignoreMask))
+    {
+        ppfc = theCopyFrom->ppfc;
+    }
+
+    if (!(theCopyFrom->rpf.state() & ignoreMask))
+    {
+        rpf = theCopyFrom->rpf;
+    }
+
+    if (!(theCopyFrom->rpfc.state() & ignoreMask))
+    {
+        rpfc = theCopyFrom->rpfc;
+    }
+
+    if (!(theCopyFrom->szpf.state() & ignoreMask))
+    {
+        szpf = theCopyFrom->szpf;
+    }
+
+    if (!(theCopyFrom->szpfc.state() & ignoreMask))
+    {
+        szpfc = theCopyFrom->szpfc;
+    }
+
     return true;
 }
 
 void QtnPropertySetAllPropertyTypes::init()
 {
-    static QString AllPropertyTypes_name = tr("AllPropertyTypes");
+    static QString AllPropertyTypes_name = QStringLiteral("AllPropertyTypes");
     setName(AllPropertyTypes_name);
+    setId(13);
     
     // start children initialization
-    static QString bp_name = tr("bp");
+    static QString bp_name = QStringLiteral("bp");
     bp.setName(bp_name);
-    bp.setId(1);
-    static QString bpc_name = tr("bpc");
+    bp.setId(14);
+    static QString bpc_name = QStringLiteral("bpc");
     bpc.setName(bpc_name);
     bpc.setCallbackValueGet([this]() { return _b; });
-    bpc.setCallbackValueSet([this](bool v) { _b = v; });
-    bpc.setId(2);
-    static QString ip_name = tr("ip");
+    bpc.setCallbackValueSet([this](bool v, QtnPropertyChangeReason /*reason*/) { _b = v; });
+    bpc.setId(15);
+    static QString ip_name = QStringLiteral("ip");
     ip.setName(ip_name);
-    ip.setId(3);
-    static QString ipc_name = tr("ipc");
+    ip.setId(16);
+    static QString ipc_name = QStringLiteral("ipc");
     ipc.setName(ipc_name);
     ipc.setCallbackValueGet([this]() { return _i; });
-    ipc.setCallbackValueSet([this](qint32 v) { _i =v; });
-    ipc.setId(4);
-    static QString up_name = tr("up");
+    ipc.setCallbackValueSet([this](qint32 v, QtnPropertyChangeReason /*reason*/) { _i =v; });
+    ipc.setId(17);
+    static QString up_name = QStringLiteral("up");
     up.setName(up_name);
-    up.setId(5);
-    static QString upc_name = tr("upc");
+    up.setId(18);
+    static QString upc_name = QStringLiteral("upc");
     upc.setName(upc_name);
     upc.setCallbackValueGet([this]() { return _ui; });
-    upc.setCallbackValueSet([this](quint32 v) { _ui = v; });
-    upc.setId(6);
-    static QString fp_name = tr("fp");
+    upc.setCallbackValueSet([this](quint32 v, QtnPropertyChangeReason /*reason*/) { _ui = v; });
+    upc.setId(19);
+    static QString fp_name = QStringLiteral("fp");
     fp.setName(fp_name);
-    fp.setId(7);
-    static QString fpc_name = tr("fpc");
+    fp.setId(20);
+    static QString fpc_name = QStringLiteral("fpc");
     fpc.setName(fpc_name);
     fpc.setCallbackValueGet([this]() { return _f; });
-    fpc.setCallbackValueSet([this](float v) { _f = v; });
-    fpc.setId(8);
-    static QString dp_name = tr("dp");
+    fpc.setCallbackValueSet([this](float v, QtnPropertyChangeReason /*reason*/) { _f = v; });
+    fpc.setId(21);
+    static QString dp_name = QStringLiteral("dp");
     dp.setName(dp_name);
-    dp.setId(9);
-    static QString dpc_name = tr("dpc");
+    dp.setId(22);
+    static QString dpc_name = QStringLiteral("dpc");
     dpc.setName(dpc_name);
     dpc.setCallbackValueGet([this]() { return _d; });
-    dpc.setCallbackValueSet([this](double v) { _d = v; });
-    dpc.setId(10);
-    static QString sp_name = tr("sp");
+    dpc.setCallbackValueSet([this](double v, QtnPropertyChangeReason /*reason*/) { _d = v; });
+    dpc.setId(23);
+    static QString sp_name = QStringLiteral("sp");
     sp.setName(sp_name);
-    sp.setId(11);
-    static QString spc_name = tr("spc");
+    sp.setId(24);
+    static QString spc_name = QStringLiteral("spc");
     spc.setName(spc_name);
     spc.setCallbackValueGet([this]() { return _s; });
-    spc.setCallbackValueSet([this](QString v) { _s = v; });
-    spc.setId(12);
-    static QString rp_name = tr("rp");
+    spc.setCallbackValueSet([this](QString v, QtnPropertyChangeReason /*reason*/) { _s = v; });
+    spc.setId(25);
+    static QString rp_name = QStringLiteral("rp");
     rp.setName(rp_name);
-    rp.setId(13);
-    static QString rpc_name = tr("rpc");
+    rp.setId(26);
+    static QString rpc_name = QStringLiteral("rpc");
     rpc.setName(rpc_name);
     rpc.setCallbackValueGet([this]() { return _r; });
-    rpc.setCallbackValueSet([this](QRect v) { _r = v; });
-    rpc.setId(14);
-    static QString pp_name = tr("pp");
+    rpc.setCallbackValueSet([this](QRect v, QtnPropertyChangeReason /*reason*/) { _r = v; });
+    rpc.setId(27);
+    static QString pp_name = QStringLiteral("pp");
     pp.setName(pp_name);
-    pp.setId(15);
-    static QString ppc_name = tr("ppc");
+    pp.setId(28);
+    static QString ppc_name = QStringLiteral("ppc");
     ppc.setName(ppc_name);
     ppc.setCallbackValueGet([this]() { return _p; });
-    ppc.setCallbackValueSet([this](QPoint v) { _p = v; });
-    ppc.setId(16);
-    static QString szp_name = tr("szp");
+    ppc.setCallbackValueSet([this](QPoint v, QtnPropertyChangeReason /*reason*/) { _p = v; });
+    ppc.setId(29);
+    static QString szp_name = QStringLiteral("szp");
     szp.setName(szp_name);
-    szp.setId(17);
-    static QString szpc_name = tr("szpc");
+    szp.setId(30);
+    static QString szpc_name = QStringLiteral("szpc");
     szpc.setName(szpc_name);
     szpc.setCallbackValueGet([this]() { return _sz; });
-    szpc.setCallbackValueSet([this](QSize v) { _sz = v; });
-    szpc.setId(18);
-    static QString ep_name = tr("ep");
+    szpc.setCallbackValueSet([this](QSize v, QtnPropertyChangeReason /*reason*/) { _sz = v; });
+    szpc.setId(31);
+    static QString ep_name = QStringLiteral("ep");
     ep.setName(ep_name);
     ep.setEnumInfo(&COLOR::info());
-    ep.setId(19);
+    ep.setId(32);
     ep.setValue(COLOR::BLUE);
-    static QString epc_name = tr("epc");
+    static QString epc_name = QStringLiteral("epc");
     epc.setName(epc_name);
     epc.setCallbackValueGet([this]() { return _e; });
-    epc.setCallbackValueSet([this](QtnEnumValueType v) { _e = v; });
+    epc.setCallbackValueSet([this](QtnEnumValueType v, QtnPropertyChangeReason /*reason*/) { _e = v; });
     epc.setEnumInfo(&COLOR::info());
-    epc.setId(20);
-    static QString efp_name = tr("efp");
+    epc.setId(33);
+    static QString efp_name = QStringLiteral("efp");
     efp.setName(efp_name);
     efp.setEnumInfo(&MASK::info());
-    efp.setId(21);
+    efp.setId(34);
     efp.setValue(MASK::ONE|MASK::FOUR);
-    static QString efpc_name = tr("efpc");
+    static QString efpc_name = QStringLiteral("efpc");
     efpc.setName(efpc_name);
     efpc.setCallbackValueGet([this]() { return _ef; });
-    efpc.setCallbackValueSet([this](QtnEnumFlagsValueType v) { _ef = v; });
+    efpc.setCallbackValueSet([this](QtnEnumFlagsValueType v, QtnPropertyChangeReason /*reason*/) { _ef = v; });
     efpc.setEnumInfo(&MASK::info());
-    efpc.setId(22);
-    static QString cp_name = tr("cp");
+    efpc.setId(35);
+    static QString cp_name = QStringLiteral("cp");
     cp.setName(cp_name);
-    cp.setId(23);
+    cp.setId(36);
     cp.setValue(QColor(Qt::blue));
-    static QString cpc_name = tr("cpc");
+    static QString cpc_name = QStringLiteral("cpc");
     cpc.setName(cpc_name);
     cpc.setCallbackValueGet([this]() { return _cl; });
-    cpc.setCallbackValueSet([this](QColor v) { _cl = v; });
-    cpc.setId(24);
-    static QString fnp_name = tr("fnp");
+    cpc.setCallbackValueSet([this](QColor v, QtnPropertyChangeReason /*reason*/) { _cl = v; });
+    cpc.setId(37);
+    static QString fnp_name = QStringLiteral("fnp");
     fnp.setName(fnp_name);
-    fnp.setId(25);
+    fnp.setId(38);
     fnp.setValue(QFont("Courier", 10));
-    static QString fnpc_name = tr("fnpc");
+    static QString fnpc_name = QStringLiteral("fnpc");
     fnpc.setName(fnpc_name);
     fnpc.setCallbackValueGet([this]() { return _fn; });
-    fnpc.setCallbackValueSet([this](QFont v) { _fn = v; });
-    fnpc.setId(26);
+    fnpc.setCallbackValueSet([this](QFont v, QtnPropertyChangeReason /*reason*/) { _fn = v; });
+    fnpc.setId(39);
+    static QString bttn_name = QStringLiteral("bttn");
+    bttn.setName(bttn_name);
+    bttn.setId(40);
+    static QString ppf_name = QStringLiteral("ppf");
+    ppf.setName(ppf_name);
+    ppf.setId(41);
+    static QString ppfc_name = QStringLiteral("ppfc");
+    ppfc.setName(ppfc_name);
+    ppfc.setCallbackValueGet([this]() { return _pf; });
+    ppfc.setCallbackValueSet([this](QPointF v, QtnPropertyChangeReason /*reason*/) { _pf = v; });
+    ppfc.setId(42);
+    static QString rpf_name = QStringLiteral("rpf");
+    rpf.setName(rpf_name);
+    rpf.setId(43);
+    static QString rpfc_name = QStringLiteral("rpfc");
+    rpfc.setName(rpfc_name);
+    rpfc.setCallbackValueGet([this]() { return _rf; });
+    rpfc.setCallbackValueSet([this](QRectF v, QtnPropertyChangeReason /*reason*/) { _rf = v; });
+    rpfc.setId(44);
+    static QString szpf_name = QStringLiteral("szpf");
+    szpf.setName(szpf_name);
+    szpf.setId(45);
+    static QString szpfc_name = QStringLiteral("szpfc");
+    szpfc.setName(szpfc_name);
+    szpfc.setCallbackValueGet([this]() { return _szf; });
+    szpfc.setCallbackValueSet([this](QSizeF v, QtnPropertyChangeReason /*reason*/) { _szf = v; });
+    szpfc.setId(46);
     // end children initialization
 }
 
@@ -989,5 +1117,96 @@ void QtnPropertySetAllPropertyTypes::disconnectSlots()
 }
 
 void QtnPropertySetAllPropertyTypes::connectDelegates()
+{
+}
+static QtnEnumInfo& create_MY_TYPE_info()
+{
+    QVector<QtnEnumValueInfo> staticValues;
+    staticValues.append(QtnEnumValueInfo(MY_TYPE::MY_TYPE1, "MY_TYPE1", "My type 1"));
+    staticValues.append(QtnEnumValueInfo(MY_TYPE::MY_TYPE2, "MY_TYPE2", "My type 2"));
+    
+    static QtnEnumInfo enumInfo("MY_TYPE", staticValues);
+    return enumInfo;
+}
+
+const QtnEnumInfo& MY_TYPE::info()
+{
+    static QtnEnumInfo& enumInfo = create_MY_TYPE_info();
+    return enumInfo;
+}
+
+QtnPropertySetTest12::QtnPropertySetTest12(QObject* parent)
+    : QtnPropertySet(parent)
+    , p(*qtnCreateProperty<QtnPropertyEnum>(this))
+{
+    init();
+    connectSlots();
+    connectDelegates();
+}
+
+QtnPropertySetTest12::~QtnPropertySetTest12()
+{
+    disconnectSlots();
+}
+
+QtnPropertySetTest12& QtnPropertySetTest12::operator=(const QtnPropertySetTest12& other)
+{
+    Q_UNUSED(other);
+
+    p = other.p;
+
+    return *this;
+}
+
+QtnPropertySet* QtnPropertySetTest12::createNewImpl(QObject* parentForNew) const
+{
+    return new QtnPropertySetTest12(parentForNew);
+}
+
+QtnPropertySet* QtnPropertySetTest12::createCopyImpl(QObject* parentForCopy) const
+{
+    QtnPropertySetTest12* p = new QtnPropertySetTest12(parentForCopy);
+    *p = *this;
+    return p;
+}
+
+bool QtnPropertySetTest12::copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask)
+{
+    Q_UNUSED(ignoreMask);
+
+    auto theCopyFrom = qobject_cast<QtnPropertySetTest12*>(propertySetCopyFrom);
+    if (!theCopyFrom)
+        return false;
+
+    if (!(theCopyFrom->p.state() & ignoreMask))
+    {
+        p = theCopyFrom->p;
+    }
+
+    return true;
+}
+
+void QtnPropertySetTest12::init()
+{
+    static QString Test12_name = QStringLiteral("Test12");
+    setName(Test12_name);
+    
+    // start children initialization
+    static QString p_name = QStringLiteral("p");
+    p.setName(p_name);
+    p.setEnumInfo(&MY_TYPE::info());
+    p.setValue(MY_TYPE::MY_TYPE1);
+    // end children initialization
+}
+
+void QtnPropertySetTest12::connectSlots()
+{
+}
+
+void QtnPropertySetTest12::disconnectSlots()
+{
+}
+
+void QtnPropertySetTest12::connectDelegates()
 {
 }

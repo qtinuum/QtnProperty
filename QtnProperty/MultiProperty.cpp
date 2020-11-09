@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@ limitations under the License.
 
 #include "MultiProperty.h"
 
-#include "Config.h"
+#include "Install.h"
 #include "Property.h"
 #include "PropertySet.h"
 #include "PropertyConnector.h"
-#include "QObjectPropertySet.h"
 #include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/Core/PropertyDelegateBool.h"
 #include "Utils/QtnConnections.h"
 
 #include <QStyleOption>
@@ -40,10 +38,12 @@ QtnMultiProperty::QtnMultiProperty(
 	const QMetaObject *propertyMetaObject, QObject *parent)
 	: QtnProperty(parent)
 	, mPropertyMetaObject(propertyMetaObject)
-	, mutablePropertyIndex(-1)
+	, m_subPropertyUpdates(0)
+	, edited(false)
 	, calculateMultipleValues(true)
 	, multipleValues(false)
 {
+	setDelegateInfo(QtnPropertyDelegateInfo());
 }
 
 QtnMultiProperty::~QtnMultiProperty()
@@ -80,6 +80,8 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 
 	properties.push_back(property);
 
+	if (property->isCollapsed())
+		collapse();
 	updateStateFrom(property);
 
 	QObject::connect(property, &QtnProperty::propertyValueAccept, this,
@@ -90,34 +92,22 @@ void QtnMultiProperty::addProperty(QtnProperty *property, bool own)
 		&QtnMultiProperty::onPropertyDidChange);
 }
 
-void QtnMultiProperty::doReset(bool edit)
+void QtnMultiProperty::doReset(QtnPropertyChangeReason reason)
 {
-	QtnPropertyChangeReason reasons =
-		QtnPropertyChangeReasonNewValue | QtnPropertyChangeReasonResetValue;
+	Q_ASSERT(reason & QtnPropertyChangeReasonResetValue);
 
-	if (edit)
-		reasons |= QtnPropertyChangeReasonEditValue;
-
-	emit propertyWillChange(reasons, nullptr, 0);
+	m_subPropertyUpdates++;
+	emit propertyWillChange(reason, nullptr, 0);
 
 	for (auto property : properties)
 	{
-		property->reset(edit);
+		property->reset(reason);
 	}
 
-	emit propertyDidChange(reasons);
+	emit propertyDidChange(reason);
+	m_subPropertyUpdates--;
 
 	updateMultipleState(true);
-}
-
-bool QtnMultiProperty::Register()
-{
-	qRegisterMetaType<QtnMultiVariant>();
-
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnMultiProperty::staticMetaObject,
-		&qtnCreateDelegate<QtnMultiPropertyDelegate, QtnMultiProperty>,
-		QByteArrayLiteral("MultiProperty"));
 }
 
 QString QtnMultiProperty::getMultiValuePlaceholder()
@@ -129,9 +119,7 @@ QMetaProperty QtnMultiProperty::getMetaProperty() const
 {
 	Q_ASSERT(!properties.empty());
 
-	auto connector =
-		properties.at(mutablePropertyIndex < 0 ? 0 : mutablePropertyIndex)
-			->getConnector();
+	auto connector = properties.at(0)->getConnector();
 	Q_ASSERT(nullptr != connector);
 
 	return connector->getMetaProperty();
@@ -151,28 +139,77 @@ bool QtnMultiProperty::hasMultipleValues() const
 void QtnMultiProperty::onPropertyValueAccept(
 	QtnPropertyValuePtr valueToAccept, bool *accept)
 {
+	if (m_subPropertyUpdates)
+		return;
 	emit propertyValueAccept(valueToAccept, accept);
 }
 
 void QtnMultiProperty::onPropertyWillChange(
 	QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
 {
+	if (m_subPropertyUpdates)
+		return;
 	emit propertyWillChange(reason, newValue, typeId);
 }
 
 void QtnMultiProperty::onPropertyDidChange(QtnPropertyChangeReason reason)
 {
-	if (0 !=
-		(reason &
-			(QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue)))
+	if (m_subPropertyUpdates)
+		return;
+
+	Q_ASSERT(nullptr != qobject_cast<QtnProperty *>(sender()));
+	auto changedProperty = static_cast<QtnProperty *>(sender());
+	if (edited && (reason & QtnPropertyChangeReasonEdit) &&
+		(reason & QtnPropertyChangeReasonValue))
 	{
-		auto property = qobject_cast<QtnProperty *>(sender());
-		Q_ASSERT(nullptr != property);
-		updateStateFrom(property);
+		auto value = changedProperty->valueAsVariant();
+
+		auto singleReason = reason & ~QtnPropertyChangeReasonMultiEdit;
+
+		m_subPropertyUpdates++;
+		for (auto property : properties)
+		{
+			if (property != changedProperty && property->isEditableByUser())
+			{
+				property->fromVariant(value, singleReason);
+			}
+		}
+		m_subPropertyUpdates--;
+	}
+
+	if (reason & (QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue))
+	{
+		updateStateFrom(changedProperty);
 		updateMultipleState(true);
 	}
 
 	emit propertyDidChange(reason);
+}
+
+void QtnMultiProperty::updatePropertyState()
+{
+	QtnProperty::updatePropertyState();
+
+	if (m_subPropertyUpdates)
+	{
+		return;
+	}
+
+	if (!stateLocal().testFlag(QtnPropertyStateUnlockable))
+	{
+		return;
+	}
+
+	bool isImmutable = stateLocal().testFlag(QtnPropertyStateImmutable);
+	m_subPropertyUpdates++;
+	for (auto property : properties)
+	{
+		if (property->stateLocal().testFlag(QtnPropertyStateUnlockable))
+		{
+			property->switchState(QtnPropertyStateImmutable, isImmutable);
+		}
+	}
+	m_subPropertyUpdates--;
 }
 
 bool QtnMultiProperty::loadImpl(QDataStream &stream)
@@ -206,15 +243,38 @@ bool QtnMultiProperty::saveImpl(QDataStream &stream) const
 	return true;
 }
 
-bool QtnMultiProperty::fromStrImpl(const QString &str, bool edit)
+void QtnMultiProperty::masterPropertyWillChange(QtnPropertyChangeReason reason)
 {
+	if (m_subPropertyUpdates)
+		return;
+	QtnProperty::masterPropertyWillChange(reason);
+}
+
+void QtnMultiProperty::masterPropertyDidChange(QtnPropertyChangeReason reason)
+{
+	if (m_subPropertyUpdates)
+		return;
+	if (reason & (QtnPropertyChangeReasonState | QtnPropertyChangeReasonValue))
+	{
+		updateMultipleState(true);
+	}
+	QtnProperty::masterPropertyDidChange(reason);
+}
+
+bool QtnMultiProperty::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
+{
+	m_subPropertyUpdates++;
+	emit propertyWillChange(reason, nullptr, 0);
+	int okCount = 0;
 	for (auto property : properties)
 	{
-		if (!property->fromStr(str, edit))
-			return false;
+		if (property->fromStr(str, reason))
+			okCount++;
 	}
-
-	return true;
+	emit propertyDidChange(reason);
+	m_subPropertyUpdates--;
+	return okCount > 0;
 }
 
 bool QtnMultiProperty::toStrImpl(QString &str) const
@@ -252,19 +312,17 @@ bool QtnMultiProperty::toStrImpl(QString &str) const
 	return true;
 }
 
-bool QtnMultiProperty::fromVariantImpl(const QVariant &var, bool edit)
+bool QtnMultiProperty::fromVariantImpl(
+	const QVariant &var, QtnPropertyChangeReason reason)
 {
-	bool ok = true;
-
-	if (var.type() == QVariant::UserType &&
-		var.userType() == qMetaTypeId<QtnMultiVariant>())
+	int okCount = 0;
+	m_subPropertyUpdates++;
+	emit propertyWillChange(reason, nullptr, 0);
+	if (var.userType() == qMetaTypeId<QtnMultiVariant>())
 	{
 		auto values = var.value<QtnMultiVariant>().values;
 		auto count = properties.size();
 		auto varCount = size_t(values.count());
-
-		if (count != varCount)
-			ok = false;
 
 		if (count > varCount)
 			count = varCount;
@@ -273,19 +331,20 @@ bool QtnMultiProperty::fromVariantImpl(const QVariant &var, bool edit)
 		{
 			QtnProperty *property = properties.at(i);
 
-			if (!property->fromVariant(values.at(int(i)), edit))
-				ok = false;
+			if (property->fromVariant(values.at(int(i)), reason))
+				okCount++;
 		}
 	} else
 	{
 		for (auto property : properties)
 		{
-			if (!property->fromVariant(var, edit))
-				ok = false;
+			if (property->fromVariant(var, reason))
+				okCount++;
 		}
 	}
-
-	return ok;
+	emit propertyDidChange(reason);
+	m_subPropertyUpdates--;
+	return okCount > 0;
 }
 
 bool QtnMultiProperty::toVariantImpl(QVariant &var) const
@@ -307,27 +366,47 @@ bool QtnMultiProperty::toVariantImpl(QVariant &var) const
 
 void QtnMultiProperty::updateStateFrom(QtnProperty *source)
 {
-	auto state = stateLocal();
+	static const QtnPropertyState unchangedState(QtnPropertyStateMultiValue |
+		QtnPropertyStateCollapsed | QtnPropertyStateModifiedValue);
+	auto state = stateLocal() & unchangedState;
+	state |= source->stateLocal() & ~unchangedState;
 
-	if (state == QtnPropertyStateNone)
+	state &= ~(QtnPropertyStateImmutable | QtnPropertyStateResettable |
+		QtnPropertyStateInvisible | QtnPropertyStateUnlockable);
+
+	size_t unlockableCount = 0;
+	for (auto property : properties)
 	{
-		state = source->stateLocal();
+		auto childState = property->stateLocal();
+		if (childState.testFlag(QtnPropertyStateInvisible))
+		{
+			state |= QtnPropertyStateInvisible;
+		}
+
+		if (childState.testFlag(QtnPropertyStateImmutable))
+		{
+			state |= QtnPropertyStateImmutable;
+		}
+
+		if (childState.testFlag(QtnPropertyStateResettable))
+		{
+			state |= QtnPropertyStateResettable;
+		}
+
+		if (childState.testFlag(QtnPropertyStateUnlockable))
+		{
+			unlockableCount++;
+		}
 	}
 
-	if (source->isResettable())
+	if (unlockableCount == properties.size())
 	{
-		state |= QtnPropertyStateResettable;
+		state |= QtnPropertyStateUnlockable;
 	}
 
-	bool writable = source->isWritable();
-	if (writable)
-	{
-		state &= ~QtnPropertyStateImmutable;
-	}
-
+	m_subPropertyUpdates++;
 	setState(state);
-
-	updateMutablePropertyIndex();
+	m_subPropertyUpdates--;
 }
 
 void QtnMultiProperty::updateMultipleState(bool force)
@@ -338,10 +417,7 @@ void QtnMultiProperty::updateMultipleState(bool force)
 	bool multipleValues = hasMultipleValues();
 	auto state = stateLocal() & ~QtnPropertyStateModifiedValue;
 
-	if (multipleValues)
-		state |= QtnPropertyStateHiddenValue;
-	else
-		state &= ~QtnPropertyStateHiddenValue;
+	state.setFlag(QtnPropertyStateMultiValue, multipleValues);
 
 	for (auto property : properties)
 	{
@@ -352,28 +428,11 @@ void QtnMultiProperty::updateMultipleState(bool force)
 		}
 	}
 
+	m_subPropertyUpdates++;
+
 	setState(state);
-	properties.at((mutablePropertyIndex < 0) ? 0 : mutablePropertyIndex)
-		->switchState(QtnPropertyStateHiddenValue, multipleValues);
-}
 
-void QtnMultiProperty::updateMutablePropertyIndex()
-{
-	if (mutablePropertyIndex < 0 ||
-		!properties.at(mutablePropertyIndex)->isWritable())
-	{
-		mutablePropertyIndex = 0;
-
-		for (auto property : properties)
-		{
-			if (property->isWritable())
-				return;
-
-			mutablePropertyIndex++;
-		}
-
-		mutablePropertyIndex = -1;
-	}
+	m_subPropertyUpdates--;
 }
 
 QtnMultiPropertyDelegate::QtnMultiPropertyDelegate(QtnMultiProperty &owner)
@@ -391,7 +450,64 @@ void QtnMultiPropertyDelegate::init()
 	for (auto property : properties)
 	{
 		auto delegate = factory()->createDelegate(*property);
+		delegate->setStateProperty(&owner());
 		superDelegates.emplace_back(delegate);
+	}
+}
+
+QtnMultiPropertyDelegate::~QtnMultiPropertyDelegate()
+{
+	m_subProperties.clear();
+}
+
+void QtnMultiPropertyDelegate::Register(QtnPropertyDelegateFactory &factory)
+{
+	factory.registerDelegateDefault(&QtnMultiProperty::staticMetaObject,
+		&qtnCreateDelegate<QtnMultiPropertyDelegate, QtnMultiProperty>,
+		"MultiProperty");
+}
+
+void QtnMultiPropertyDelegate::onEditedPropertyDestroyed(PropertyToEdit *data)
+{
+	Q_ASSERT(nullptr != data);
+	data->owner = nullptr;
+	data->property = nullptr;
+	data->connections.clear();
+}
+
+void QtnMultiPropertyDelegate::onEditorDestroyed(PropertyToEdit *data)
+{
+	auto multiProperty = data->owner;
+	if (multiProperty)
+	{
+		multiProperty->edited = false;
+	}
+
+	delete data;
+}
+
+void QtnMultiPropertyDelegate::applyAttributesImpl(
+	const QtnPropertyDelegateInfo &info)
+{
+	for (auto &delegate : superDelegates)
+	{
+		QtnPropertyDelegateInfo mergedInfo;
+		mergedInfo.attributes = info.attributes;
+		auto delegateInfoPtr = delegate->propertyImmutable()->delegateInfo();
+		if (delegateInfoPtr)
+		{
+			mergedInfo.name = delegateInfoPtr->name;
+			auto &attributes = delegateInfoPtr->attributes;
+			for (auto it = attributes.cbegin(); it != attributes.cend(); ++it)
+			{
+				auto rootIt = mergedInfo.attributes.find(it.key());
+				if (rootIt != mergedInfo.attributes.end())
+					continue;
+
+				mergedInfo.attributes[it.key()] = it.value();
+			}
+		}
+		delegate->applyAttributes(mergedInfo);
 
 		for (int i = 0, count = delegate->subPropertyCount(); i < count; ++i)
 		{
@@ -401,7 +517,7 @@ void QtnMultiPropertyDelegate::init()
 				[property](const QScopedPointer<QtnPropertyBase> &a) -> bool {
 					return property->propertyMetaObject() ==
 						a->propertyMetaObject() &&
-						property->name() == a->name();
+						property->displayName() == a->displayName();
 				});
 
 			auto subSet = property->asPropertySet();
@@ -414,6 +530,7 @@ void QtnMultiPropertyDelegate::init()
 					multiSet = new QtnPropertySet(
 						subSet->childrenOrder(), subSet->compareFunc());
 					multiSet->setName(subSet->name());
+					multiSet->setDisplayName(subSet->displayName());
 					multiSet->setDescription(subSet->description());
 					multiSet->setId(subSet->id());
 					multiSet->setState(subSet->stateLocal());
@@ -424,7 +541,7 @@ void QtnMultiPropertyDelegate::init()
 					multiSet = it->data()->asPropertySet();
 				}
 
-				qtnPropertiesToMultiSet(multiSet, subSet);
+				qtnPropertiesToMultiSet(multiSet, subSet, false);
 			} else
 			{
 				QtnMultiProperty *multiProperty;
@@ -434,14 +551,15 @@ void QtnMultiPropertyDelegate::init()
 					multiProperty =
 						new QtnMultiProperty(property->metaObject());
 					multiProperty->setName(property->name());
+					multiProperty->setDisplayName(property->displayName());
 					multiProperty->setDescription(property->description());
 					multiProperty->setId(property->id());
 
 					addSubProperty(multiProperty);
 				} else
 				{
-					multiProperty =
-						qobject_cast<QtnMultiProperty *>(it->data());
+					Q_ASSERT(qobject_cast<QtnMultiProperty *>(it->data()));
+					multiProperty = static_cast<QtnMultiProperty *>(it->data());
 				}
 
 				multiProperty->addProperty(property->asProperty(), false);
@@ -450,200 +568,128 @@ void QtnMultiPropertyDelegate::init()
 	}
 }
 
-QtnMultiPropertyDelegate::~QtnMultiPropertyDelegate()
+void QtnMultiPropertyDelegate::createSubItemsImpl(
+	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
-	m_subProperties.clear();
-}
-
-void QtnMultiPropertyDelegate::onEditedPropertyWillChange(PropertyToEdit *data,
-	QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId)
-{
-	Q_ASSERT(nullptr != data);
-	auto owner = data->owner;
-	Q_ASSERT(nullptr != owner);
-
-	emit owner->propertyWillChange(reason, newValue, typeId);
-}
-
-void QtnMultiPropertyDelegate::onEditedPropertyDidChange(
-	PropertyToEdit *data, QtnPropertyChangeReason reason)
-{
-	Q_ASSERT(nullptr != data);
-	auto owner = data->owner;
-	Q_ASSERT(nullptr != owner);
-
-	if (0 != (reason & QtnPropertyChangeReasonEditValue))
+	Q_ASSERT(!superDelegates.empty());
+	superDelegates.at(0)->createSubItems(context, subItems);
+	for (auto &item : subItems)
 	{
-		auto editedProperty = data->property;
-		Q_ASSERT(nullptr != editedProperty);
+		if (nullptr == item.eventHandler)
+			continue;
 
-		auto value = editedProperty->valueAsVariant();
-
-		for (auto property : owner->properties)
+		auto oldEventHandler = item.eventHandler;
+		item.eventHandler = [oldEventHandler, this](QtnEventContext &context,
+								const QtnSubItem &item,
+								QtnPropertyToEdit *toEdit) -> bool //
 		{
-			if (property != editedProperty && property->isEditableByUser())
+			if (!oldEventHandler(context, item, toEdit))
+				return false;
+
+			if (!toEdit->isValid() || toEdit->property() == property() ||
+				!property()->isEditableByUser())
 			{
-				property->blockSignals(true);
-				property->setValueAsVariant(value);
-				property->blockSignals(false);
+				return true;
 			}
-		}
-	}
 
-	owner->updateMultipleState(true);
+			QtnPropertyToEdit oldToEdit(*toEdit);
+			toEdit->setup(property(),
+				[this, oldToEdit]() -> QWidget * //
+				{
+					QtnMultiPropertyDelegate *thiz = this;
+					auto &p = thiz->owner();
+					auto propertyToEdit = p.properties.at(0);
+					auto data = new PropertyToEdit;
+					data->owner = &p;
+					data->property = propertyToEdit;
+					p.edited = true;
 
-	emit owner->propertyDidChange(reason);
-}
+					using namespace std::placeholders;
 
-void QtnMultiPropertyDelegate::onEditedPropertyDestroyed(PropertyToEdit *data)
-{
-	Q_ASSERT(nullptr != data);
-	data->property = nullptr;
-	data->connections.clear();
-}
-
-void QtnMultiPropertyDelegate::onEditorDestroyed(PropertyToEdit *data)
-{
-	delete data;
-}
-
-bool QtnMultiPropertyDelegate::propertyValueToStr(QString &strValue) const
-{
-	if (owner().valueIsHidden())
-	{
-		strValue = QtnMultiProperty::getMultiValuePlaceholder();
-		return true;
-	}
-
-	if (!superDelegates.empty())
-		return superDelegates.at(0)->propertyValueToStr(strValue);
-
-	strValue.clear();
-	return false;
-}
-
-void QtnMultiPropertyDelegate::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
-{
-	for (auto &delegate : superDelegates)
-	{
-		auto delegateInfo = delegate->getOwnerProperty()->delegateInfo();
-		if (delegateInfo)
-			delegate->applyAttributes(delegateInfo->attributes);
-		delegate->applyAttributes(attributes); // override base attributes
+					data->connections.emplace_back(
+						QObject::connect(propertyToEdit, &QObject::destroyed,
+							std::bind(&QtnMultiPropertyDelegate::
+										  onEditedPropertyDestroyed,
+								data)));
+					auto editor = oldToEdit.createEditor();
+					if (editor)
+					{
+						data->connections.emplace_back(QObject::connect(editor,
+							&QObject::destroyed,
+							std::bind(
+								&QtnMultiPropertyDelegate::onEditorDestroyed,
+								data)));
+					} else
+					{
+						onEditorDestroyed(data);
+					}
+					return editor;
+				});
+			return true;
+		};
 	}
 }
 
-void QtnMultiPropertyDelegate::drawValueImpl(QStylePainter &painter,
-	const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+void qtnPropertiesToMultiSet(
+	QtnPropertySet *target, QtnPropertySet *source, bool takeOwnership)
 {
-	if (owner().valueIsHidden())
+	Q_ASSERT(target);
+	Q_ASSERT(source);
+
+	auto &targetProperties = target->childProperties();
+	for (auto property : source->childProperties())
 	{
-		Q_ASSERT(!superDelegates.empty());
+		auto it = std::find_if(targetProperties.begin(), targetProperties.end(),
+			[property](const QtnPropertyBase *targetProperty) -> bool {
+				return property->propertyMetaObject() ==
+					targetProperty->propertyMetaObject() &&
+					property->displayName() == targetProperty->displayName();
+			});
 
-		auto boolDelegate = dynamic_cast<QtnPropertyDelegateBoolCheck *>(
-			superDelegates.at(0).get());
-
-		if (nullptr != boolDelegate)
+		auto subSet = property->asPropertySet();
+		if (subSet)
 		{
-			QStyleOptionButton opt;
-			opt.rect = rect;
-			opt.state = state | QStyle::State_NoChange;
+			QtnPropertySet *multiSet;
 
-			painter.drawControl(QStyle::CE_CheckBox, opt);
-			return;
-		}
-
-		QPen oldPen = painter.pen();
-		painter.setPen(Qt::darkGray);
-
-		Inherited::drawValueImpl(painter, rect, state, needTooltip);
-		painter.setPen(oldPen);
-	} else if (!superDelegates.empty())
-	{
-		superDelegates.at(0)->drawValue(painter, rect, state, needTooltip);
-	} else
-	{
-		Inherited::drawValueImpl(painter, rect, state, needTooltip);
-	}
-}
-
-QString QtnMultiPropertyDelegate::toolTipImpl() const
-{
-	if (owner().valueIsHidden())
-		return Inherited::toolTipImpl();
-
-	if (!superDelegates.empty())
-		return superDelegates.at(0)->toolTip();
-
-	return QString();
-}
-
-bool QtnMultiPropertyDelegate::acceptKeyPressedForInplaceEditImpl(
-	QKeyEvent *keyEvent) const
-{
-	if (!superDelegates.empty())
-		return superDelegates.at(0)->acceptKeyPressedForInplaceEdit(keyEvent);
-
-	return Inherited::acceptKeyPressedForInplaceEditImpl(keyEvent);
-}
-
-QWidget *QtnMultiPropertyDelegate::createValueEditorImpl(
-	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
-{
-	if (!superDelegates.empty())
-	{
-		PropertyToEdit *data = nullptr;
-
-		bool editable = owner().isEditableByUser();
-
-		int superIndex = 0;
-
-		if (editable)
-		{
-			superIndex = owner().mutablePropertyIndex;
-			auto propertyToEdit = owner().properties.at(superIndex);
-			data = new PropertyToEdit;
-			data->owner = &owner();
-			data->property = propertyToEdit;
-
-			using namespace std::placeholders;
-
-			data->connections.push_back(QObject::connect(propertyToEdit,
-				&QtnProperty::propertyWillChange,
-				std::bind(&QtnMultiPropertyDelegate::onEditedPropertyWillChange,
-					data, _1, _2, _3)));
-			data->connections.push_back(QObject::connect(propertyToEdit,
-				&QtnProperty::propertyDidChange,
-				std::bind(&QtnMultiPropertyDelegate::onEditedPropertyDidChange,
-					data, _1)));
-			data->connections.push_back(QObject::connect(propertyToEdit,
-				&QObject::destroyed,
-				std::bind(&QtnMultiPropertyDelegate::onEditedPropertyDestroyed,
-					data)));
-		}
-
-		auto superDelegate = superDelegates.at(superIndex).get();
-
-		auto editor =
-			superDelegate->createValueEditor(parent, rect, inplaceInfo);
-
-		if (editable)
-		{
-			if (nullptr == editor)
+			if (it == targetProperties.end())
 			{
-				onEditorDestroyed(data);
+				multiSet = new QtnPropertySet(
+					subSet->childrenOrder(), subSet->compareFunc());
+				multiSet->setName(subSet->name());
+				multiSet->setDisplayName(subSet->displayName());
+				multiSet->setDescription(subSet->description());
+				multiSet->setId(subSet->id());
+				multiSet->setState(subSet->stateLocal());
+
+				target->addChildProperty(multiSet, true);
 			} else
 			{
-				data->connections.push_back(
-					QObject::connect(editor, &QObject::destroyed,
-						std::bind(&QtnMultiPropertyDelegate::onEditorDestroyed,
-							data)));
+				multiSet = (*it)->asPropertySet();
 			}
+
+			qtnPropertiesToMultiSet(multiSet, subSet, takeOwnership);
+		} else
+		{
+			QtnMultiProperty *multiProperty;
+
+			if (it == targetProperties.end())
+			{
+				multiProperty = new QtnMultiProperty(property->metaObject());
+				multiProperty->setName(property->name());
+				multiProperty->setDisplayName(property->displayName());
+				multiProperty->setDescription(property->description());
+				multiProperty->setId(property->id());
+
+				target->addChildProperty(multiProperty, true);
+			} else
+			{
+				Q_ASSERT(qobject_cast<QtnMultiProperty *>(*it));
+				multiProperty = static_cast<QtnMultiProperty *>(*it);
+			}
+
+			multiProperty->addProperty(property->asProperty(), takeOwnership);
 		}
-
-		return editor;
 	}
-
-	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
+	if (takeOwnership)
+		source->clearChildProperties();
 }

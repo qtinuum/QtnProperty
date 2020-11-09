@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,25 +17,90 @@ limitations under the License.
 
 #include "PropertyQColor.h"
 
-bool QtnPropertyQColorBase::fromStrImpl(const QString &str, bool edit)
+#include "QtnProperty/Auxiliary/PropertyDelegateInfo.h"
+
+QtnPropertyQColorBase::QtnPropertyQColorBase(QObject *parent)
+	: QtnStructPropertyBase<QColor, QtnPropertyIntCallback>(parent)
 {
-	QColor color(str.trimmed());
+}
 
-	if (!color.isValid())
-		return false;
+QtnProperty *QtnPropertyQColorBase::createRedProperty()
+{
+	auto result = createFieldProperty(&QColor::red, &QColor::setRed,
+		QtnPropertyQColor::redKey(), QtnPropertyQColor::redDisplayName(),
+		QtnPropertyQColor::redDescriptionFmt());
+	result->setMinValue(0);
+	result->setMaxValue(255);
 
-	return setValue(color, edit);
+	QtnPropertyDelegateInfo delegate;
+	delegate.name = qtnSliderBoxDelegate();
+	delegate.attributes[qtnLiveUpdateAttr()] = true;
+	delegate.attributes[qtnAnimateAttr()] = true;
+	delegate.attributes[qtnFillColorAttr()] = QColor(255, 100, 100);
+	result->setDelegateInfo(delegate);
+	return result;
+}
+
+QtnProperty *QtnPropertyQColorBase::createGreenProperty()
+{
+	auto result = createFieldProperty(&QColor::green, &QColor::setGreen,
+		QtnPropertyQColor::greenKey(), QtnPropertyQColor::greenDisplayName(),
+		QtnPropertyQColor::greenDescriptionFmt());
+	result->setMinValue(0);
+	result->setMaxValue(255);
+
+	QtnPropertyDelegateInfo delegate;
+	delegate.name = qtnSliderBoxDelegate();
+	delegate.attributes[qtnLiveUpdateAttr()] = true;
+	delegate.attributes[qtnAnimateAttr()] = true;
+	delegate.attributes[qtnFillColorAttr()] = QColor(100, 255, 100);
+	result->setDelegateInfo(delegate);
+	return result;
+}
+
+QtnProperty *QtnPropertyQColorBase::createBlueProperty()
+{
+	auto result = createFieldProperty(&QColor::blue, &QColor::setBlue,
+		QtnPropertyQColor::blueKey(), QtnPropertyQColor::blueDisplayName(),
+		QtnPropertyQColor::blueDescriptionFmt());
+	result->setMinValue(0);
+	result->setMaxValue(255);
+
+	QtnPropertyDelegateInfo delegate;
+	delegate.name = qtnSliderBoxDelegate();
+	delegate.attributes[qtnLiveUpdateAttr()] = true;
+	delegate.attributes[qtnAnimateAttr()] = true;
+	delegate.attributes[qtnFillColorAttr()] = QColor(100, 100, 255);
+	result->setDelegateInfo(delegate);
+	return result;
+}
+
+bool QtnPropertyQColorBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
+{
+	QColor color;
+	return QtnPropertyQColor::colorFromStr(str, color) &&
+		setValue(color, reason);
 }
 
 bool QtnPropertyQColorBase::toStrImpl(QString &str) const
 {
-	QColor v = value();
+	return QtnPropertyQColor::strFromColor(value(), str);
+}
 
-	if (v.alpha() < 255)
-		str = v.name(QColor::HexArgb);
-	else
-		str = v.name();
+bool QtnPropertyQColor::colorFromStr(const QString &str, QColor &color)
+{
+	QColor newColor(str.trimmed());
+	if (!newColor.isValid())
+		return false;
 
+	color = newColor;
+	return true;
+}
+
+bool QtnPropertyQColor::strFromColor(const QColor &color, QString &str)
+{
+	str = color.name((color.alpha() < 255) ? QColor::HexArgb : QColor::HexRgb);
 	return true;
 }
 
@@ -47,4 +112,49 @@ QtnPropertyQColorCallback::QtnPropertyQColorCallback(QObject *parent)
 QtnPropertyQColor::QtnPropertyQColor(QObject *parent)
 	: QtnSinglePropertyValue<QtnPropertyQColorBase>(parent)
 {
+}
+
+QString QtnPropertyQColor::redKey()
+{
+	return QStringLiteral("red");
+}
+
+QString QtnPropertyQColor::redDisplayName()
+{
+	return tr("Red");
+}
+
+QString QtnPropertyQColor::redDescriptionFmt()
+{
+	return tr("Red component of %1");
+}
+
+QString QtnPropertyQColor::greenKey()
+{
+	return QStringLiteral("green");
+}
+
+QString QtnPropertyQColor::greenDisplayName()
+{
+	return tr("Green");
+}
+
+QString QtnPropertyQColor::greenDescriptionFmt()
+{
+	return tr("Green component of %1");
+}
+
+QString QtnPropertyQColor::blueKey()
+{
+	return QStringLiteral("blue");
+}
+
+QString QtnPropertyQColor::blueDisplayName()
+{
+	return tr("Blue");
+}
+
+QString QtnPropertyQColor::blueDescriptionFmt()
+{
+	return tr("Blue component of %1");
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,14 +36,8 @@ public:
 
 	inline const Objects &getSelectedObjects() const;
 
-	enum ClassOrder
-	{
-		FromLastDescendant,
-		FromTopAncestor
-	};
-
-	inline ClassOrder classOrder() const;
-	void setClassOrder(ClassOrder value);
+	bool isListInheritanceBackwards() const;
+	void setListInheritanceBackwards(bool value);
 
 public slots:
 	void deselectAllObjects();
@@ -64,11 +58,8 @@ protected:
 	void disconnectObject(QObject *object);
 	void connectObject(QObject *object);
 
-private:
-	ClassOrder mClassOrder;
-
-protected:
 	Objects selectedObjects;
+	bool mListInheritanceBackwards;
 };
 
 const QObjectPropertyWidget::Objects & //
@@ -77,7 +68,7 @@ QObjectPropertyWidget::getSelectedObjects() const
 	return selectedObjects;
 }
 
-QObjectPropertyWidget::ClassOrder QObjectPropertyWidget::classOrder() const
+inline bool QObjectPropertyWidget::isListInheritanceBackwards() const
 {
-	return mClassOrder;
+	return mListInheritanceBackwards;
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,20 +20,23 @@ limitations under the License.
 #include "PropertyConnector.h"
 #include "MultiProperty.h"
 #include "Utils/QtnConnections.h"
+#include "PropertySet.h"
 
 QObjectPropertyWidget::QObjectPropertyWidget(QWidget *parent)
 	: QtnPropertyWidgetEx(parent)
-	, mClassOrder(FromLastDescendant)
+	, mListInheritanceBackwards(true)
 {
 }
 
-void QObjectPropertyWidget::setClassOrder(ClassOrder value)
+void QObjectPropertyWidget::setListInheritanceBackwards(bool value)
 {
-	if (value == mClassOrder)
+	if (mListInheritanceBackwards == value)
+	{
 		return;
+	}
 
-	mClassOrder = value;
 	disconnectObjects();
+	mListInheritanceBackwards = value;
 	connectObjects();
 }
 
@@ -134,11 +137,11 @@ QtnPropertyConnector *QObjectPropertyWidget::getPropertyConnector() const
 
 void QObjectPropertyWidget::connectObjects()
 {
-	bool backwards = mClassOrder != FromLastDescendant;
 	if (selectedObjects.size() == 1)
 	{
 		auto object = *selectedObjects.begin();
-		auto set = qtnCreateQObjectPropertySet(object, backwards);
+		auto set =
+			qtnCreateQObjectPropertySet(object, mListInheritanceBackwards);
 
 		if (nullptr != set)
 			set->setParent(this);
@@ -148,7 +151,8 @@ void QObjectPropertyWidget::connectObjects()
 		connectObject(object);
 	} else if (selectedObjects.size() > 1)
 	{
-		auto set = qtnCreateQObjectMultiPropertySet(selectedObjects, backwards);
+		auto set = qtnCreateQObjectMultiPropertySet(
+			selectedObjects, mListInheritanceBackwards);
 
 		if (nullptr != set)
 			set->setParent(this);

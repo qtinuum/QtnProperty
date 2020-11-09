@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,16 +16,15 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateUInt.h"
-#include "Core/PropertyUInt.h"
-#include "Delegates/PropertyEditorAux.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorHandler.h"
-#include "Utils/QtnInt64SpinBox.h"
-#include "MultiProperty.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyDelegateSliderBox.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Utils/QtnInt64SpinBox.h"
+#include "QtnProperty/MultiProperty.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
-#include <QSpinBox>
-#include <QLineEdit>
+#include <QCoreApplication>
 #include <QLocale>
 
 class QtnPropertyUIntSpinBoxHandler
@@ -33,11 +32,14 @@ class QtnPropertyUIntSpinBoxHandler
 {
 public:
 	QtnPropertyUIntSpinBoxHandler(
-		QtnPropertyUIntBase &property, QtnInt64SpinBox &editor);
+		QtnPropertyDelegateUInt *delegate, QtnInt64SpinBox &editor);
 
-private:
+protected:
 	virtual void updateEditor() override;
 	void onValueChanged(qint64 value);
+
+private:
+	QtnPropertyDelegateUInt *m_delegate;
 };
 
 QtnPropertyDelegateUInt::QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner)
@@ -45,26 +47,51 @@ QtnPropertyDelegateUInt::QtnPropertyDelegateUInt(QtnPropertyUIntBase &owner)
 {
 }
 
-bool QtnPropertyDelegateUInt::Register()
+void QtnPropertyDelegateUInt::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyUIntBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyUIntBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateUInt, QtnPropertyUIntBase>,
 		qtnSpinBoxDelegate());
+
+	factory.registerDelegate(&QtnPropertyUIntBase::staticMetaObject,
+		&qtnCreateDelegate<
+			QtnPropertyDelegateSlideBoxTyped<QtnPropertyUIntBase>,
+			QtnPropertyUIntBase>,
+		qtnSliderBoxDelegate());
+}
+
+uint QtnPropertyDelegateUInt::stepValue() const
+{
+	return m_step.isValid() ? m_step.toUInt() : owner().stepValue();
+}
+
+uint QtnPropertyDelegateUInt::minValue() const
+{
+	return m_min.isValid() ? m_min.toUInt() : owner().minValue();
+}
+
+uint QtnPropertyDelegateUInt::maxValue() const
+{
+	return m_max.isValid() ? m_max.toUInt() : owner().maxValue();
+}
+
+uint QtnPropertyDelegateUInt::currentValue() const
+{
+	return qBound(minValue(), owner().value(), maxValue());
 }
 
 QWidget *QtnPropertyDelegateUInt::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
 	auto spinBox = new QtnInt64SpinBox(parent);
-	spinBox->setSuffix(suffix);
+	spinBox->setSuffix(m_suffix);
 	spinBox->setGeometry(rect);
 
-	new QtnPropertyUIntSpinBoxHandler(owner(), *spinBox);
+	new QtnPropertyUIntSpinBoxHandler(this, *spinBox);
 
 	spinBox->selectAll();
 
-	if (owner().isEditableByUser())
+	if (stateProperty()->isEditableByUser())
 		qtnInitNumEdit(spinBox, inplaceInfo, NUM_UNSIGNED_INT);
 
 	return spinBox;
@@ -81,27 +108,39 @@ bool QtnPropertyDelegateUInt::acceptKeyPressedForInplaceEditImpl(
 }
 
 void QtnPropertyDelegateUInt::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	qtnGetAttribute(attributes, qtnSuffixAttr(), suffix);
+	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+	m_min = info.attributes.value(qtnMinAttr());
+	m_max = info.attributes.value(qtnMaxAttr());
+	m_step = info.attributes.value(qtnStepAttr());
+	if (m_step.isValid())
+	{
+		bool ok;
+		uint step = m_step.toUInt(&ok);
+		if (!ok)
+		{
+			m_step = QVariant();
+		} else
+		{
+			m_step = step;
+		}
+	}
+	fixMinMaxVariant<uint>(m_min, m_max);
 }
 
-bool QtnPropertyDelegateUInt::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateUInt::propertyValueToStrImpl(QString &strValue) const
 {
-	strValue = QLocale().toString(owner().value());
+	strValue = QLocale().toString(currentValue());
+	strValue.append(m_suffix);
 	return true;
 }
 
 QtnPropertyUIntSpinBoxHandler::QtnPropertyUIntSpinBoxHandler(
-	QtnPropertyUIntBase &property, QtnInt64SpinBox &editor)
-	: QtnPropertyEditorHandlerVT(property, editor)
+	QtnPropertyDelegateUInt *delegate, QtnInt64SpinBox &editor)
+	: QtnPropertyEditorHandlerVT(delegate, editor)
+	, m_delegate(delegate)
 {
-	if (!property.isEditableByUser())
-		editor.setReadOnly(true);
-
-	editor.setRange(property.minValue(), property.maxValue());
-	editor.setSingleStep(property.stepValue());
-
 	updateEditor();
 
 	editor.setKeyboardTracking(false);
@@ -116,14 +155,18 @@ void QtnPropertyUIntSpinBoxHandler::updateEditor()
 {
 	updating++;
 
-	if (property().valueIsHidden())
+	editor().setReadOnly(!stateProperty()->isEditableByUser());
+	editor().setSingleStep(m_delegate->stepValue());
+	editor().setRange(m_delegate->minValue(), m_delegate->maxValue());
+
+	if (stateProperty()->isMultiValue())
 	{
 		editor().setValue(editor().minimum());
 		editor().setSpecialValueText(
 			QtnMultiProperty::getMultiValuePlaceholder());
 	} else
 	{
-		editor().setValue(property().value());
+		editor().setValue(m_delegate->currentValue());
 		editor().setSpecialValueText(QString());
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@ limitations under the License.
 
 #pragma once
 
-#include "CoreAPI.h"
+#include "Config.h"
+#include "Auxiliary/PropertyAux.h"
 
-#include <QObject>
 #include <QMetaProperty>
+#include <QObject>
 
 class QtnPropertyBase;
 class QtnPropertySet;
@@ -32,9 +33,10 @@ public:
 	explicit QtnPropertyConnector(QtnPropertyBase *property);
 
 	void connectProperty(QObject *object, const QMetaProperty &metaProperty);
+	void updatePropertyState();
 
 	bool isResettablePropertyValue() const;
-	void resetPropertyValue(bool edit);
+	void resetPropertyValue(QtnPropertyChangeReason reason);
 
 	inline QObject *getObject() const;
 	inline const QMetaProperty &getMetaProperty() const;
@@ -42,11 +44,13 @@ public:
 private slots:
 	void onValueChanged();
 	void onModifiedSetChanged();
+	void onPropertyStateChanged(const QMetaProperty &metaProperty);
 
 private:
 	QtnPropertyBase *property;
 	QObject *object;
 	QMetaProperty metaProperty;
+	unsigned ignoreStateChangeCounter;
 };
 
 QObject *QtnPropertyConnector::getObject() const

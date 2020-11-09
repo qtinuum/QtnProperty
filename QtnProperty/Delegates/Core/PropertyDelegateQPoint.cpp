@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,33 +16,76 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQPoint.h"
-#include "Core/PropertyQPoint.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QLocale>
 #include <QLineEdit>
+
+QByteArray qtnXDisplayNameAttr()
+{
+	return QByteArrayLiteral("xDisplayName");
+}
+
+QByteArray qtnXDescriptionAttr()
+{
+	return QByteArrayLiteral("xDescription");
+}
+
+QByteArray qtnYDisplayNameAttr()
+{
+	return QByteArrayLiteral("yDisplayName");
+}
+
+QByteArray qtnYDescriptionAttr()
+{
+	return QByteArrayLiteral("yDescription");
+}
 
 QtnPropertyDelegateQPoint::QtnPropertyDelegateQPoint(
 	QtnPropertyQPointBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQPointBase>(owner)
 {
-	addSubProperty(owner.createXProperty());
-	addSubProperty(owner.createYProperty());
+	auto xProperty = owner.createXProperty();
+	addSubProperty(xProperty);
+
+	auto yProperty = owner.createYProperty();
+	addSubProperty(yProperty);
 }
 
-bool QtnPropertyDelegateQPoint::Register()
+void QtnPropertyDelegateQPoint::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQPointBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyQPointBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQPoint, QtnPropertyQPointBase>,
-		QByteArrayLiteral("XY"));
+		"XY");
+}
+
+void qtnApplyQPointDelegateAttributes(
+	QtnPropertyDelegate *to, const QtnPropertyDelegateInfo &info)
+{
+	enum
+	{
+		X,
+		Y,
+		TOTAL
+	};
+	Q_ASSERT(to->subPropertyCount() == TOTAL);
+	static const QtnSubPropertyInfo KEYS[TOTAL] = {
+		{ X, QtnPropertyQPoint::xKey(), qtnXDisplayNameAttr(),
+			qtnXDescriptionAttr() },
+		{ Y, QtnPropertyQPoint::yKey(), qtnYDisplayNameAttr(),
+			qtnYDescriptionAttr() },
+	};
+
+	to->applySubPropertyInfos(info, KEYS, TOTAL);
 }
 
 void QtnPropertyDelegateQPoint::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	qtnGetAttribute(attributes, qtnSuffixAttr(), mSuffix);
+	info.loadAttribute(qtnSuffixAttr(), m_suffix);
+
+	qtnApplyQPointDelegateAttributes(this, info);
 }
 
 QWidget *QtnPropertyDelegateQPoint::createValueEditorImpl(
@@ -51,14 +94,14 @@ QWidget *QtnPropertyDelegateQPoint::createValueEditorImpl(
 	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool QtnPropertyDelegateQPoint::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateQPoint::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 
 	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
-		locale.toString(value.x()) + mSuffix,
-		locale.toString(value.y()) + mSuffix);
+		locale.toString(value.x()) + m_suffix,
+		locale.toString(value.y()) + m_suffix);
 
 	return true;
 }

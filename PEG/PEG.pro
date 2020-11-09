@@ -1,17 +1,25 @@
-include(../Common.pri)
+include(../Internal/TargetConfig.pri)
 include(Bison.pri)
 include(Flex.pri)
 
 QT += core
 QT -= gui
 
+clang:QMAKE_CXXFLAGS_WARN_ON += \
+    -Wno-deprecated-register \
+    -Wno-unneeded-internal-declaration \
+    -Wno-unused-const-variable
+
+gcc:QMAKE_CXXFLAGS_WARN_ON += \
+    -Wno-unused-function
+
 TARGET = QtnPEG
 
-CONFIG += console
+CONFIG += cmdline
 CONFIG -= app_bundle
 
 TEMPLATE = app
-VERSION = 1.0.0
+VERSION = 2.0.0
 
 SOURCES += main.cpp \
     PropertyEnumGenerator.cpp
@@ -26,3 +34,5 @@ OTHER_FILES += \
 HEADERS += \
     PropertyEnumGeneratorCommon.h \
     PropertyEnumGenerator.h
+
+msvc:QMAKE_CXXFLAGS += /wd4065 /wd4267 /wd4005

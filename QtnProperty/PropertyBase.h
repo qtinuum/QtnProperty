@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,39 +19,50 @@ limitations under the License.
 #define QTN_PROPERTY_BASE_H
 
 #include "Auxiliary/PropertyAux.h"
+#include "Auxiliary/PropertyDelegateInfo.h"
 #include <QDataStream>
 #include <QVariant>
-
-#include <atomic>
+#include <functional>
 
 class QScriptEngine;
 class QtnPropertySet;
 class QtnProperty;
 class QtnPropertyConnector;
+class QtnPropertyDelegateInfoGetter;
 
 class QTN_IMPORT_EXPORT QtnPropertyBase : public QObject
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyBase)
+
 	Q_PROPERTY(QString name READ name)
+	Q_PROPERTY(QString displayName READ displayName)
 	Q_PROPERTY(QString description READ description)
 	Q_PROPERTY(qint32 id READ id)
-	Q_PROPERTY(bool isEditable READ isEditableByUser)
+	Q_PROPERTY(bool isEditable READ isWritable)
+	Q_PROPERTY(bool isEditableByUser READ isEditableByUser)
 	Q_PROPERTY(quint32 state READ state)
-	Q_PROPERTY(QVariant value READ valueAsVariant WRITE setValueAsVariant)
+	Q_PROPERTY(QVariant value READ valueAsVariant WRITE fromVariant)
 
-	QtnPropertyConnector *mPropertyConnector;
 	friend class QtnPropertyConnector;
-	inline void setConnector(QtnPropertyConnector *connector);
 	friend class QtnPropertySet;
 
+	inline void setConnector(QtnPropertyConnector *connector);
+
 public:
+	static const quint8 STORAGE_VERSION;
+
+	using DelegateInfoCallback = std::function<QtnPropertyDelegateInfo()>;
+
 	virtual ~QtnPropertyBase() override;
 
 	virtual const QMetaObject *propertyMetaObject() const;
 
 	inline QString name() const;
 	void setName(const QString &name);
+
+	inline QString displayName() const;
+	void setDisplayName(const QString &displayName);
 
 	inline QString description() const;
 	void setDescription(const QString &description);
@@ -62,19 +73,25 @@ public:
 	bool isExpanded() const;
 	void setExpanded(bool expanded);
 
+	bool isCollapsed() const;
+	void setCollapsed(bool collapsed);
+
 	bool isResettable() const;
-	void reset(bool edit);
+	void reset(QtnPropertyChangeReason reason = QtnPropertyChangeReason());
 
 	bool isWritable() const;
 
-	bool isCollapsed() const;
-	void setCollapsed(bool collapsed);
+	bool isUnlockable() const;
 
 	inline void expand();
 	inline void collapse();
 
 	inline QtnPropertyConnector *getConnector() const;
 	inline bool isQObjectProperty() const;
+
+	void setLocked(bool locked,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReason());
+	void toggleLock(QtnPropertyChangeReason reason = QtnPropertyChangeReason());
 
 	// states
 	QtnPropertyState state() const;
@@ -90,9 +107,10 @@ public:
 
 	bool isEditableByUser() const;
 	bool isVisible() const;
-	bool valueIsHidden() const;
+	bool isMultiValue() const;
 	bool valueIsDefault() const;
 	bool isSimple() const;
+	bool isLocked() const;
 
 	// serialization
 	bool load(QDataStream &stream);
@@ -100,11 +118,13 @@ public:
 	static bool skipLoad(QDataStream &stream);
 
 	// string conversion
-	bool fromStr(const QString &str, bool edit);
+	bool fromStr(const QString &str,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonNewValue);
 	bool toStr(QString &str) const;
 
 	// variant conversion
-	bool fromVariant(const QVariant &var, bool edit);
+	bool fromVariant(const QVariant &var,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReasonNewValue);
 	bool toVariant(QVariant &var) const;
 
 	// casts
@@ -122,7 +142,13 @@ public:
 
 	// getter/setter for "value" property
 	QVariant valueAsVariant() const;
-	void setValueAsVariant(const QVariant &value);
+	// delegates
+	const QtnPropertyDelegateInfo *delegateInfo() const;
+	void setDelegateInfo(const QtnPropertyDelegateInfo &delegateInfo);
+	void setDelegateInfoCallback(const DelegateInfoCallback &callback);
+
+	void setDelegateAttribute(
+		const QByteArray &attributeName, const QVariant &attributeValue);
 
 Q_SIGNALS:
 	void propertyWillChange(QtnPropertyChangeReason reason,
@@ -132,7 +158,7 @@ Q_SIGNALS:
 protected:
 	QtnPropertyBase(QObject *parent);
 
-	virtual void doReset(bool edit);
+	virtual void doReset(QtnPropertyChangeReason reason);
 	virtual bool event(QEvent *e) override;
 
 	// serialization implementation
@@ -140,25 +166,37 @@ protected:
 	virtual bool saveImpl(QDataStream &stream) const;
 
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString &, bool);
+	virtual bool fromStrImpl(const QString &, QtnPropertyChangeReason reason);
 	virtual bool toStrImpl(QString &str) const;
 
 	// variant conversion implementation
-	virtual bool fromVariantImpl(const QVariant &var, bool edit);
+	virtual bool fromVariantImpl(
+		const QVariant &var, QtnPropertyChangeReason reason);
 	virtual bool toVariantImpl(QVariant &var) const;
 
 	// inherited states support
 	virtual void updateStateInherited(bool force);
 	void setStateInherited(QtnPropertyState stateToSet, bool force = false);
 
-private:
-	void onMasterPropertyDestroyed(QObject *object);
-	void masterPropertyStateDidChange(QtnPropertyChangeReason reason);
-	void updateStateFromMasterProperty();
+	void setStateInternal(QtnPropertyState stateToSet, bool force = false,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReason());
+
+	virtual void masterPropertyWillChange(QtnPropertyChangeReason reason);
+	virtual void masterPropertyDidChange(QtnPropertyChangeReason reason);
+
+	virtual void updatePropertyState();
 
 private:
+	QtnPropertyState masterPropertyState() const;
+	void onMasterPropertyDestroyed(QObject *object);
+	void beforeUpdateStateFromMasterProperty();
+	void doUpdateStateFromMasterProperty();
+
+private:
+	QtnPropertyConnector *mPropertyConnector;
 	QtnPropertyBase *m_masterProperty;
 
+	QString m_displayName;
 	QString m_description;
 	QtnPropertyID m_id;
 
@@ -168,11 +206,17 @@ private:
 	int changeReasons;
 	int timer;
 	QEvent *updateEvent;
+	QScopedPointer<QtnPropertyDelegateInfoGetter> m_delegateInfoGetter;
 };
 
 QString QtnPropertyBase::name() const
 {
 	return objectName();
+}
+
+QString QtnPropertyBase::displayName() const
+{
+	return m_displayName;
 }
 
 QString QtnPropertyBase::description() const

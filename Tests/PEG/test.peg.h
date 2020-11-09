@@ -1,9 +1,9 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include "Enum.h"
-#include "PropertyCore.h"
-#include "PropertyGUI.h"
+#include "QtnProperty/Enum.h"
+#include "QtnProperty/PropertyCore.h"
+#include "QtnProperty/PropertyGUI.h"
 
 class QtnPropertySetTest1: public QtnPropertySet
 {
@@ -12,9 +12,9 @@ class QtnPropertySetTest1: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetTest1(QObject* parent = 0);
+    explicit QtnPropertySetTest1(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetTest1();
+    virtual ~QtnPropertySetTest1() override;
     // assignment declaration
     QtnPropertySetTest1& operator=(const QtnPropertySetTest1& other);
     
@@ -44,9 +44,9 @@ class QtnPropertySetTest2: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetTest2(QObject* parent = 0);
+    explicit QtnPropertySetTest2(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetTest2();
+    virtual ~QtnPropertySetTest2() override;
     // assignment declaration
     QtnPropertySetTest2& operator=(const QtnPropertySetTest2& other);
 
@@ -75,9 +75,9 @@ class QtnPropertySetYY: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetYY(QObject* parent = 0);
+    explicit QtnPropertySetYY(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetYY();
+    virtual ~QtnPropertySetYY() override;
     // assignment declaration
     QtnPropertySetYY& operator=(const QtnPropertySetYY& other);
     
@@ -107,9 +107,9 @@ class QtnPropertySetAA: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetAA(QObject* parent = 0);
+    explicit QtnPropertySetAA(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetAA();
+    virtual ~QtnPropertySetAA() override;
     // assignment declaration
     QtnPropertySetAA& operator=(const QtnPropertySetAA& other);
 
@@ -138,9 +138,9 @@ class QtnPropertySetSS: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetSS(QObject* parent = 0);
+    explicit QtnPropertySetSS(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetSS();
+    virtual ~QtnPropertySetSS() override;
     // assignment declaration
     QtnPropertySetSS& operator=(const QtnPropertySetSS& other);
     
@@ -170,9 +170,9 @@ class QtnPropertySetTest3: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetTest3(QObject* parent = 0);
+    explicit QtnPropertySetTest3(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetTest3();
+    virtual ~QtnPropertySetTest3() override;
     // assignment declaration
     QtnPropertySetTest3& operator=(const QtnPropertySetTest3& other);
     
@@ -201,11 +201,11 @@ private:
     void connectDelegates();
     
     // start slot declarations
-    void on_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
-    void on_u_propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
-    void on_u_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
-    void on_s_a_propertyValueAccept(const QtnProperty *property, QtnPropertyValuePtr valueToAccept, bool* accept);
-    void on_s_propertyWillChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue);
+    void on_propertyDidChange(QtnPropertyChangeReason reason);
+    void on_u_propertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId);
+    void on_u_propertyDidChange(QtnPropertyChangeReason reason);
+    void on_s_a_propertyValueAccept(QtnPropertyValuePtr valueToAccept, bool* accept);
+    void on_s_a_propertyWillChange(QtnPropertyChangeReason reason, QtnPropertyValuePtr newValue, int typeId);
     // end slot declarations
 
         public:
@@ -268,9 +268,9 @@ class QtnPropertySetAllPropertyTypes: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetAllPropertyTypes(QObject* parent = 0);
+    explicit QtnPropertySetAllPropertyTypes(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetAllPropertyTypes();
+    virtual ~QtnPropertySetAllPropertyTypes() override;
     // assignment declaration
     QtnPropertySetAllPropertyTypes& operator=(const QtnPropertySetAllPropertyTypes& other);
     
@@ -301,6 +301,13 @@ public:
     QtnPropertyQColorCallback& cpc;
     QtnPropertyQFont& fnp;
     QtnPropertyQFontCallback& fnpc;
+    QtnPropertyButton& bttn;
+    QtnPropertyQPointF& ppf;
+    QtnPropertyQPointFCallback& ppfc;
+    QtnPropertyQRectF& rpf;
+    QtnPropertyQRectFCallback& rpfc;
+    QtnPropertyQSizeF& szpf;
+    QtnPropertyQSizeFCallback& szpfc;
     // end children declarations
 
 protected:
@@ -324,13 +331,60 @@ private:
         double _d;
         QString _s;
         QRect _r;
+        QRectF _rf;
         QPoint _p;
+        QPointF _pf;
         QSize _sz;
+        QSizeF _szf;
         QtnEnumValueType _e;
         QtnEnumFlagsValueType _ef;
         QColor _cl;
         QFont _fn;
     
+};
+
+class MY_TYPE
+{
+public:
+    enum Enum
+    {
+        MY_TYPE1 = 1,
+        MY_TYPE2 = 2
+    };
+    
+    static const QtnEnumInfo& info();
+    static const unsigned int values_count = 2;
+};
+
+class QtnPropertySetTest12: public QtnPropertySet
+{
+    Q_OBJECT
+    //Q_DISABLE_COPY(QtnPropertySetTest12)
+
+public:
+    // constructor declaration
+    explicit QtnPropertySetTest12(QObject* parent = nullptr);
+    // destructor declaration
+    virtual ~QtnPropertySetTest12() override;
+    // assignment declaration
+    QtnPropertySetTest12& operator=(const QtnPropertySetTest12& other);
+    
+    // start children declarations
+    QtnPropertyEnum& p;
+    // end children declarations
+
+protected:
+    // cloning implementation
+    QtnPropertySet* createNewImpl(QObject* parentForNew) const override;
+    QtnPropertySet* createCopyImpl(QObject* parentForCopy) const override;
+    // copy values implementation
+    bool copyValuesImpl(QtnPropertySet* propertySetCopyFrom, QtnPropertyState ignoreMask) override;
+
+private:
+    void init();
+    void connectSlots();
+    void disconnectSlots();
+    void connectDelegates();
 };
 
 #endif // TEST_H

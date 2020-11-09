@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,14 +31,6 @@ static bool getBoolValue(QString boolText, bool &success)
 			QtnPropertyBool::getBoolText(true, true), Qt::CaseInsensitive) == 0)
 		return true;
 
-	if (boolText.compare(QtnPropertyBool::getBoolText(false, false),
-			Qt::CaseInsensitive) == 0)
-		return false;
-
-	if (boolText.compare(QtnPropertyBool::getBoolText(true, false),
-			Qt::CaseInsensitive) == 0)
-		return true;
-
 	if (boolText.toULongLong(&success) != 0)
 		return true;
 
@@ -51,7 +43,8 @@ QtnPropertyBoolBase::QtnPropertyBoolBase(QObject *parent)
 {
 }
 
-bool QtnPropertyBoolBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyBoolBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	bool success = false;
 	bool value = getBoolValue(str.trimmed(), success);
@@ -59,7 +52,7 @@ bool QtnPropertyBoolBase::fromStrImpl(const QString &str, bool edit)
 	if (!success)
 		return false;
 
-	return setValue(value, edit);
+	return setValue(value, reason);
 }
 
 bool QtnPropertyBoolBase::toStrImpl(QString &str) const

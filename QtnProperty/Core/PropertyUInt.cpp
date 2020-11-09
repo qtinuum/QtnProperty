@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@ limitations under the License.
 
 #include "PropertyUInt.h"
 
+#include <QLocale>
+
 QtnPropertyUIntBase::QtnPropertyUIntBase(QObject *parent)
 	: QtnNumericPropertyBase<QtnSinglePropertyBase<quint32>>(parent)
 {
 }
 
-bool QtnPropertyUIntBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyUIntBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	bool ok = false;
 	ValueType value = str.toUInt(&ok);
@@ -30,7 +33,7 @@ bool QtnPropertyUIntBase::fromStrImpl(const QString &str, bool edit)
 	if (!ok)
 		return false;
 
-	return setValue(value, edit);
+	return setValue(value, reason);
 }
 
 bool QtnPropertyUIntBase::toStrImpl(QString &str) const
@@ -39,23 +42,12 @@ bool QtnPropertyUIntBase::toStrImpl(QString &str) const
 	return true;
 }
 
-bool QtnPropertyUIntBase::fromVariantImpl(const QVariant &var, bool edit)
-{
-	bool ok = false;
-	ValueType value = var.toUInt(&ok);
-
-	if (!ok)
-		return false;
-
-	return setValue(value, edit);
-}
-
 QtnPropertyUIntCallback::QtnPropertyUIntCallback(QObject *parent)
 	: QtnSinglePropertyCallback<QtnPropertyUIntBase>(parent)
 {
 }
 
 QtnPropertyUInt::QtnPropertyUInt(QObject *parent)
-	: QtnSinglePropertyValue<QtnPropertyUIntBase>(parent)
+	: QtnNumericPropertyValue<QtnPropertyUIntBase>(parent)
 {
 }

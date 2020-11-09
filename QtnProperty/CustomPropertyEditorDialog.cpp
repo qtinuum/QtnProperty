@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ limitations under the License.
 #include "ui_CustomPropertyEditorDialog.h"
 
 #include "Utils/InplaceEditing.h"
+#include "PropertyView.h"
 
 #include "VarProperty.h"
 
@@ -40,31 +41,35 @@ CustomPropertyEditorDialog::CustomPropertyEditorDialog(QWidget *parent)
 		&CustomPropertyEditorDialog::onActivePropertyChanged);
 
 #ifdef Q_OS_MAC
-	QtnPropertyWidgetEx::addShortcutForAction(
-		QKeySequence(Qt::Key_Backspace), ui->actionPropertyDelete, this);
+	QtnPropertyWidgetEx::addShortcutForAction(QKeySequence(Qt::Key_Backspace),
+		ui->actionPropertyDelete, this, Qt::WindowShortcut);
 #endif
-	QtnPropertyWidgetEx::addShortcutForAction(
-		QKeySequence(Qt::Key_Delete), ui->actionPropertyDelete, this);
+	QtnPropertyWidgetEx::addShortcutForAction(QKeySequence(Qt::Key_Delete),
+		ui->actionPropertyDelete, this, Qt::WindowShortcut);
 
 #ifdef Q_OS_WIN
 	QtnPropertyWidgetEx::addShortcutForAction(
-		QKeySequence(Qt::CTRL | Qt::Key_Insert), ui->actionPropertyCopy, this);
+		QKeySequence(Qt::CTRL | Qt::Key_Insert), ui->actionPropertyCopy, this,
+		Qt::WindowShortcut);
 	QtnPropertyWidgetEx::addShortcutForAction(
-		QKeySequence(Qt::SHIFT | Qt::Key_Insert), ui->actionPropertyPaste,
-		this);
+		QKeySequence(Qt::SHIFT | Qt::Key_Insert), ui->actionPropertyPaste, this,
+		Qt::WindowShortcut);
 #endif
 
+	QtnPropertyWidgetEx::addShortcutForAction(ui->actionPropertyCut->shortcut(),
+		ui->actionPropertyCut, this, Qt::WindowShortcut);
 	QtnPropertyWidgetEx::addShortcutForAction(
-		ui->actionPropertyCut->shortcut(), ui->actionPropertyCut, this);
+		ui->actionPropertyCopy->shortcut(), ui->actionPropertyCopy, this,
+		Qt::WindowShortcut);
 	QtnPropertyWidgetEx::addShortcutForAction(
-		ui->actionPropertyCopy->shortcut(), ui->actionPropertyCopy, this);
-	QtnPropertyWidgetEx::addShortcutForAction(
-		ui->actionPropertyPaste->shortcut(), ui->actionPropertyPaste, this);
+		ui->actionPropertyPaste->shortcut(), ui->actionPropertyPaste, this,
+		Qt::WindowShortcut);
 
 	QtnPropertyWidgetEx::addShortcutForAction(
-		ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions, this);
-	QtnPropertyWidgetEx::addShortcutForAction(
-		ui->actionPropertyAdd->shortcut(), ui->actionPropertyAdd, this);
+		ui->actionPropertyOptions->shortcut(), ui->actionPropertyOptions, this,
+		Qt::WindowShortcut);
+	QtnPropertyWidgetEx::addShortcutForAction(ui->actionPropertyAdd->shortcut(),
+		ui->actionPropertyAdd, this, Qt::WindowShortcut);
 
 	ui->propertyWidget->connectDeleteAction(ui->actionPropertyDelete, true);
 	ui->propertyWidget->connectCutAction(ui->actionPropertyCut, true);

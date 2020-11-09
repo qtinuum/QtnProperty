@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2012-1015 Alex Zhondin <qtinuum.team@gmail.com>
+   Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -145,13 +145,19 @@ struct AssignInfo
     QString value;
 };
 
+struct SignatureInfo
+{
+    QString arguments;
+    QString unusedCode;
+};
+
 // key - setter name (without set)
 // value - setter parameter
 typedef QMap<QString, AssignInfo> Assignments;
 // key - slot name
 // values - slot code
 typedef QMap<QString, AssignInfo> Slots;
-typedef QMap<QString, QString> Signatures;
+typedef QMap<QString, SignatureInfo> Signatures;
 // key - name exception
 typedef QSet<QString> Exceptions;
 

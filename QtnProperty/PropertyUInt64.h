@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ limitations under the License.
 #pragma once
 
 #include "Auxiliary/PropertyTemplates.h"
-#include "Delegates/PropertyDelegate.h"
+#include "Delegates/Utils/PropertyDelegateMisc.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyUInt64Base
 	: public QtnNumericPropertyBase<QtnSinglePropertyBase<quint64>>
@@ -32,11 +32,13 @@ public:
 
 protected:
 	// string conversion implementation
-	virtual bool fromStrImpl(const QString &str, bool edit) override;
+	virtual bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	virtual bool toStrImpl(QString &str) const override;
 
 	// variant conversion implementation
-	virtual bool fromVariantImpl(const QVariant &var, bool edit) override;
+	virtual bool fromVariantImpl(
+		const QVariant &var, QtnPropertyChangeReason reason) override;
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyUInt64Base)
 };
@@ -60,7 +62,7 @@ public:
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyUInt64
-	: public QtnSinglePropertyValue<QtnPropertyUInt64Base>
+	: public QtnNumericPropertyValue<QtnPropertyUInt64Base>
 {
 	Q_OBJECT
 
@@ -71,8 +73,6 @@ public:
 	explicit QtnPropertyUInt64(QObject *parent);
 
 	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyUInt64, QtnPropertyUInt64Base)
-
-	static bool Register();
 };
 
 class QLineEdit;
@@ -83,21 +83,33 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateUInt64
 	Q_OBJECT
 	Q_DISABLE_COPY(QtnPropertyDelegateUInt64)
 
+	QString m_suffix;
+	QVariant m_min;
+	QVariant m_max;
+
 public:
 	QtnPropertyDelegateUInt64(QtnPropertyUInt64Base &owner);
 
-	virtual bool eventFilter(QObject *obj, QEvent *event) override;
+	static void Register(QtnPropertyDelegateFactory &factory);
+
+	quint64 minValue() const;
+	quint64 maxValue() const;
+	quint64 currentValue() const;
 
 protected:
+	virtual bool eventFilter(QObject *obj, QEvent *event) override;
+
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 
-private slots:
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateInfo &info) override;
+
+private:
 	void onEditingFinished();
-	void onEditorDestroyed();
 
 private:
 	void updateEditor();

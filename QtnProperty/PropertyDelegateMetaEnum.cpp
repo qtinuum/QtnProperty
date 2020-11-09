@@ -16,9 +16,11 @@ limitations under the License.
 
 #include "PropertyDelegateMetaEnum.h"
 
-#include "Delegates/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyEditorHandler.h"
 #include "Delegates/PropertyDelegateFactory.h"
 #include "Property.h"
+#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
 
 #include <QCoreApplication>
 #include <QComboBox>
@@ -30,7 +32,7 @@ class QtnPropertyDelegateMetaEnum::EditorHandler
 	QtnPropertyDelegateMetaEnum *mOwner;
 
 public:
-	EditorHandler(QtnPropertyDelegateMetaEnum *owner, QComboBox &editor);
+	EditorHandler(QtnPropertyDelegateMetaEnum *delegate, QComboBox &editor);
 
 	QComboBox &comboBox() const;
 
@@ -45,8 +47,8 @@ private:
 };
 
 QtnPropertyDelegateMetaEnum::QtnPropertyDelegateMetaEnum(
-	const QMetaEnum &metaEnum, QtnProperty *property, bool translate)
-	: QtnPropertyDelegate(property)
+	const QMetaEnum &metaEnum, QtnPropertyBase *property, bool translate)
+	: QtnPropertyDelegateWithValueEditor(*property)
 	, mMetaEnum(metaEnum)
 	, mShouldTranslate(translate)
 {
@@ -59,7 +61,7 @@ void QtnPropertyDelegateMetaEnum::Register(
 		factory = &QtnPropertyDelegateFactory::staticInstance();
 
 	factory->registerDelegate(&QtnProperty::staticMetaObject,
-		[metaEnum, translate](QtnProperty &owner) -> QtnPropertyDelegate * {
+		[metaEnum, translate](QtnPropertyBase &owner) -> QtnPropertyDelegate * {
 			return new QtnPropertyDelegateMetaEnum(metaEnum, &owner, translate);
 		},
 		delegateName(metaEnum));
@@ -85,11 +87,12 @@ QByteArray QtnPropertyDelegateMetaEnum::delegateName(const QMetaEnum &metaEnum)
 int QtnPropertyDelegateMetaEnum::currentValue() const
 {
 	QVariant v;
-	ownerProperty->toVariant(v);
+	propertyImmutable()->toVariant(v);
 	return int(v.toLongLong());
 }
 
-bool QtnPropertyDelegateMetaEnum::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateMetaEnum::propertyValueToStrImpl(
+	QString &strValue) const
 {
 	strValue = valueToStr(currentValue());
 	return !strValue.isNull();
@@ -107,50 +110,45 @@ QString QtnPropertyDelegateMetaEnum::valueToStr(int value) const
 QString QtnPropertyDelegateMetaEnum::keyToStr(const char *key) const
 {
 	return mShouldTranslate
-		? QCoreApplication::translate(mMetaEnum.scope(), key)
+		? QCoreApplication::translate(mMetaEnum.scope(), key, mMetaEnum.name())
 		: QString(QLatin1String(key));
 }
 
-QByteArray QtnPropertyDelegateMetaEnum::translateAttribute()
+QByteArray qtnTranslateAttribute()
 {
-	returnQByteArrayLiteral("translate");
+	return QByteArrayLiteral("translate");
 }
 
 QWidget *QtnPropertyDelegateMetaEnum::createValueEditorImpl(
 	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
 {
-	if (ownerProperty->isEditableByUser())
+	QComboBox *combo = new QtnPropertyComboBox(this, parent);
+	for (int i = 0, count = mMetaEnum.keyCount(); i < count; i++)
 	{
-		QComboBox *combo = new QComboBox(parent);
-		for (int i = 0, count = mMetaEnum.keyCount(); i < count; i++)
-		{
-			combo->addItem(
-				keyToStr(mMetaEnum.key(i)), QVariant(mMetaEnum.value(i)));
-		}
-
-		combo->setGeometry(rect);
-
-		new EditorHandler(this, *combo);
-
-		if (inplaceInfo)
-			combo->showPopup();
-
-		return combo;
+		combo->addItem(
+			keyToStr(mMetaEnum.key(i)), QVariant(mMetaEnum.value(i)));
 	}
 
-	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
+	combo->setGeometry(rect);
+
+	new EditorHandler(this, *combo);
+
+	if (inplaceInfo && stateProperty()->isEditableByUser())
+		combo->showPopup();
+
+	return combo;
 }
 
 void QtnPropertyDelegateMetaEnum::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	qtnGetAttribute(attributes, translateAttribute(), mShouldTranslate);
+	info.loadAttribute(qtnTranslateAttribute(), mShouldTranslate);
 }
 
 QtnPropertyDelegateMetaEnum::EditorHandler::EditorHandler(
-	QtnPropertyDelegateMetaEnum *owner, QComboBox &editor)
-	: QtnPropertyEditorHandlerBase(*owner->ownerProperty, editor)
-	, mOwner(owner)
+	QtnPropertyDelegateMetaEnum *delegate, QComboBox &editor)
+	: QtnPropertyEditorHandlerBase(delegate, editor)
+	, mOwner(delegate)
 	, updating(0)
 {
 	updateEditor();
@@ -162,14 +160,14 @@ QtnPropertyDelegateMetaEnum::EditorHandler::EditorHandler(
 
 QComboBox &QtnPropertyDelegateMetaEnum::EditorHandler::comboBox() const
 {
-	return *static_cast<QComboBox *>(m_editor);
+	return *static_cast<QComboBox *>(editorBase());
 }
 
 void QtnPropertyDelegateMetaEnum::EditorHandler::updateEditor()
 {
 	++updating;
 
-	if (m_property->valueIsHidden())
+	if (stateProperty()->isMultiValue())
 		comboBox().setCurrentIndex(-1);
 	else
 	{
@@ -187,8 +185,8 @@ void QtnPropertyDelegateMetaEnum::EditorHandler::updateValue(int value)
 	if (updating > 0)
 		return;
 
-	if (m_property)
-		m_property->fromVariant(value, true);
+	if (propertyBase())
+		propertyBase()->fromVariant(value, delegate()->editReason());
 }
 
 void QtnPropertyDelegateMetaEnum::EditorHandler::onCurrentIndexChanged(

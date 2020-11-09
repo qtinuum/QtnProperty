@@ -1,5 +1,6 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,11 +17,20 @@ limitations under the License.
 
 #pragma once
 
-#include "CoreAPI.h"
+#include <qglobal.h>
 
-class QLocale;
+#if defined(QTN_DYNAMIC_LIBRARY)
+#define QTN_IMPORT_EXPORT Q_DECL_EXPORT
 
-QTN_IMPORT_EXPORT void qtnInstallTranslations(const QLocale &locale);
+#elif defined(QTN_DYNAMIC_IMPORT)
+#define QTN_IMPORT_EXPORT Q_DECL_IMPORT
+#else
+
+#define QTN_IMPORT_EXPORT
+#ifndef QTN_STATIC_LIBRARY
+#define QTN_STATIC_LIBRARY
+#endif
+#endif
 
 #define PERCENT_SUFFIX 1
 #define DEGREE_SUFFIX 2

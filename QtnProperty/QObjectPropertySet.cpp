@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ limitations under the License.
 #include "PropertyConnector.h"
 #include "MultiProperty.h"
 #include "IQtnPropertyStateProvider.h"
-#include "Config.h"
+#include "Install.h"
 #include "PropertyDelegateAttrs.h"
 
 #include <QCoreApplication>
@@ -29,76 +29,6 @@ limitations under the License.
 #include <QMetaProperty>
 #include <QMap>
 #include <QLocale>
-
-static QtnProperty *createRealNumberProperty(
-	QObject *object, const QMetaProperty &metaProperty)
-{
-	auto property = new QtnPropertyDoubleCallback(nullptr);
-	property->setCallbackValueAccepted(
-		[property](double) -> bool { return property->isEditableByUser(); });
-
-	switch (metaProperty.revision())
-	{
-		case PERCENT_SUFFIX:
-		{
-			QtnPropertyDelegateInfo delegate;
-			qtnInitPercentSpinBoxDelegate(delegate);
-			property->setDelegateInfo(delegate);
-
-			property->setCallbackValueGet([object, metaProperty]() -> double {
-				return metaProperty.read(object).toDouble() * 100.0;
-			});
-
-			property->setCallbackValueSet([object, metaProperty](double value) {
-				metaProperty.write(object, value / 100.0);
-			});
-
-			return property;
-		}
-
-		case DEGREE_SUFFIX:
-		{
-			QtnPropertyDelegateInfo delegate;
-			qtnInitDegreeSpinBoxDelegate(delegate);
-			property->setDelegateInfo(delegate);
-			break;
-		}
-	}
-
-	property->setCallbackValueGet([object, metaProperty]() -> double {
-		return metaProperty.read(object).toDouble();
-	});
-
-	property->setCallbackValueSet([object, metaProperty](double value) {
-		metaProperty.write(object, value);
-	});
-
-	return property;
-}
-
-bool qtnRegisterDefaultMetaPropertyFactory()
-{
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Bool, qtnCreateFactory<QtnPropertyBoolCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::String, qtnCreateFactory<QtnPropertyQStringCallback>());
-	qtnRegisterMetaPropertyFactory(QVariant::Double, createRealNumberProperty);
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Int, qtnCreateFactory<QtnPropertyIntCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::UInt, qtnCreateFactory<QtnPropertyUIntCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Point, qtnCreateFactory<QtnPropertyQPointCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Rect, qtnCreateFactory<QtnPropertyQRectCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Size, qtnCreateFactory<QtnPropertyQSizeCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Color, qtnCreateFactory<QtnPropertyQColorCallback>());
-	qtnRegisterMetaPropertyFactory(
-		QVariant::Font, qtnCreateFactory<QtnPropertyQFontCallback>());
-	return true;
-}
 
 static QMap<int, QtnMetaPropertyFactory_t> &qtnFactoryMap()
 {
@@ -165,9 +95,12 @@ QtnProperty *qtnCreateQObjectProperty(QObject *object,
 	if (!property)
 		return property;
 
-	property->setName((nullptr != className)
-			? QCoreApplication::translate(className, metaProperty.name())
-			: metaProperty.name());
+	property->setName(metaProperty.name());
+	if (className)
+	{
+		property->setDisplayName(
+			QCoreApplication::translate(className, metaProperty.name()));
+	}
 
 	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
 
@@ -179,7 +112,7 @@ QtnProperty *qtnCreateQObjectProperty(QObject *object,
 
 	qtnUpdatePropertyState(property, metaProperty);
 
-	if (connect && metaProperty.hasNotifySignal())
+	if (connect)
 	{
 		auto connector = new QtnPropertyConnector(property);
 		connector->connectProperty(object, metaProperty);
@@ -283,7 +216,7 @@ QtnPropertySet *qtnCreateQObjectPropertySet(QObject *object, bool backwards)
 		return nullptr;
 
 	// move collected property sets to object's property set
-	auto propertySet = new QtnPropertySet(nullptr);
+	auto propertySet = new QtnPropertySet;
 	propertySet->setName(object->objectName());
 
 	int addIndex = backwards ? 0 : -1;
@@ -312,69 +245,10 @@ QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 		if (nullptr == propertySet)
 			continue;
 
-		qtnPropertiesToMultiSet(result, propertySet);
+		qtnPropertiesToMultiSet(result, propertySet, true);
 
 		delete propertySet;
 	}
 
 	return result;
-}
-
-void qtnPropertiesToMultiSet(QtnPropertySet *target, QtnPropertySet *source)
-{
-	Q_ASSERT(target);
-	Q_ASSERT(source);
-
-	auto &targetProperties = target->childProperties();
-	for (auto property : source->childProperties())
-	{
-		auto it = std::find_if(targetProperties.begin(), targetProperties.end(),
-			[property](const QtnPropertyBase *targetProperty) -> bool {
-				return property->propertyMetaObject() ==
-					targetProperty->propertyMetaObject() &&
-					property->name() == targetProperty->name();
-			});
-
-		auto subSet = property->asPropertySet();
-		if (subSet)
-		{
-			QtnPropertySet *multiSet;
-
-			if (it == targetProperties.end())
-			{
-				multiSet = new QtnPropertySet(
-					subSet->childrenOrder(), subSet->compareFunc());
-				multiSet->setName(subSet->name());
-				multiSet->setDescription(subSet->description());
-				multiSet->setId(subSet->id());
-				multiSet->setState(subSet->stateLocal());
-
-				target->addChildProperty(multiSet, true);
-			} else
-			{
-				multiSet = (*it)->asPropertySet();
-			}
-
-			qtnPropertiesToMultiSet(multiSet, subSet);
-		} else
-		{
-			QtnMultiProperty *multiProperty;
-
-			if (it == targetProperties.end())
-			{
-				multiProperty = new QtnMultiProperty(property->metaObject());
-				multiProperty->setName(property->name());
-				multiProperty->setDescription(property->description());
-				multiProperty->setId(property->id());
-
-				target->addChildProperty(multiProperty, true);
-			} else
-			{
-				multiProperty = qobject_cast<QtnMultiProperty *>(*it);
-			}
-
-			multiProperty->addProperty(property->asProperty());
-		}
-	}
-	source->clearChildProperties();
 }

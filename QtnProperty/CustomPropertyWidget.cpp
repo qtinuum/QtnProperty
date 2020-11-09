@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ limitations under the License.
 
 #include "VarProperty.h"
 
+#include "PropertySet.h"
+#include "PropertyView.h"
 #include "Utils/InplaceEditing.h"
 #include "CustomPropertyOptionsDialog.h"
 
@@ -55,10 +57,7 @@ void QtnCustomPropertyWidget::setReadOnly(bool value)
 
 		if (nullptr != rootSet)
 		{
-			if (value)
-				rootSet->addState(QtnPropertyStateImmutable, true);
-			else
-				rootSet->removeState(QtnPropertyStateImmutable, true);
+			rootSet->switchState(QtnPropertyStateImmutable, value, true);
 		}
 	}
 }
@@ -89,13 +88,14 @@ void QtnCustomPropertyWidget::setData(
 
 bool QtnCustomPropertyWidget::canDeleteProperty(QtnPropertyBase *property)
 {
-	if (!readOnly)
+	if (readOnly || !property || !property->isWritable())
 	{
-		auto var_property = getVarProperty(property);
-
-		if (nullptr != var_property)
-			return (var_property != var_property->TopParent());
+		return false;
 	}
+	auto var_property = getVarProperty(property);
+
+	if (nullptr != var_property)
+		return (var_property != var_property->TopParent());
 
 	return false;
 }
@@ -107,7 +107,22 @@ bool QtnCustomPropertyWidget::canCutToClipboard()
 
 bool QtnCustomPropertyWidget::canPasteFromClipboard()
 {
-	return !readOnly && QtnPropertyWidgetEx::canPasteFromClipboard();
+	if (readOnly)
+	{
+		return false;
+	}
+	auto p = getActiveProperty();
+	if (!p)
+	{
+		return false;
+	}
+
+	if (!p->isWritable())
+	{
+		return false;
+	}
+
+	return QtnPropertyWidgetEx::canPasteFromClipboard();
 }
 
 void QtnCustomPropertyWidget::addProperty()
@@ -380,7 +395,7 @@ bool QtnCustomPropertyWidget::dataHasSupportedFormats(const QMimeData *data)
 
 void QtnCustomPropertyWidget::deleteProperty(QtnPropertyBase *property)
 {
-	if (readOnly)
+	if (!canDeleteProperty(property))
 		return;
 
 	auto var_property = getVarProperty(property);
@@ -539,7 +554,7 @@ bool QtnCustomPropertyWidget::insertReplaceOrCancel(
 bool QtnCustomPropertyWidget::applyPropertyData(const QMimeData *data,
 	QtnPropertyBase *destination, QtnApplyPosition position)
 {
-	if (readOnly)
+	if (readOnly || !destination)
 		return false;
 
 	auto varProperty = getVarProperty(destination);
@@ -582,6 +597,10 @@ bool QtnCustomPropertyWidget::applyPropertyData(const QMimeData *data,
 									qobject_cast<QtnPropertyBase *>(
 										destination->parent());
 
+								if (!parent_prop->isWritable())
+								{
+									break;
+								}
 								switch (getVarProperty(parent_prop)->GetType())
 								{
 									case VarProperty::Map:
@@ -617,6 +636,10 @@ bool QtnCustomPropertyWidget::applyPropertyData(const QMimeData *data,
 
 						case QtnApplyPosition::Over:
 						{
+							if (!destination->isWritable())
+							{
+								break;
+							}
 							switch (varProperty->GetType())
 							{
 								case VarProperty::Map:
@@ -647,6 +670,10 @@ bool QtnCustomPropertyWidget::applyPropertyData(const QMimeData *data,
 
 						case QtnApplyPosition::None:
 						{
+							if (!destination->isWritable())
+							{
+								break;
+							}
 							customData.index = varProperty->GetIndex();
 							customData.name = it.key();
 							ok = insertReplaceOrCancel(destination, customData);
@@ -660,7 +687,7 @@ bool QtnCustomPropertyWidget::applyPropertyData(const QMimeData *data,
 				if (ok)
 					return true;
 			}
-		} else
+		} else if (destination->isWritable())
 		{
 			customData.index = varProperty->GetIndex();
 			customData.name = "";

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class QTN_IMPORT_EXPORT CustomPropertyEditorDialog : public QDialog
 
 public:
 	explicit CustomPropertyEditorDialog(QWidget *parent = nullptr);
-	virtual ~CustomPropertyEditorDialog();
+	virtual ~CustomPropertyEditorDialog() override;
 
 	bool execute(const QString &title, QVariant &data);
 

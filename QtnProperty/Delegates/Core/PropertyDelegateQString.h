@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2019 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,25 +18,24 @@ limitations under the License.
 #ifndef PROPERTY_DELEGATE_QSTRING_H
 #define PROPERTY_DELEGATE_QSTRING_H
 
-#include "QtnProperty/Delegates/PropertyDelegate.h"
-
-class QtnPropertyQStringBase;
+#include "QtnProperty/Delegates/Utils/PropertyDelegateMisc.h"
+#include "QtnProperty/Core/PropertyQString.h"
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQString
 	: public QtnPropertyDelegateTyped<QtnPropertyQStringBase>
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateQString)
 
-public:
 	typedef QtnPropertyDelegateTyped<QtnPropertyQStringBase> Inherited;
 
+public:
 	QtnPropertyDelegateQString(QtnPropertyQStringBase &owner);
 
-	static bool Register();
+	static void Register(QtnPropertyDelegateFactory &factory);
 
 protected:
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
+		const QtnPropertyDelegateInfo &info) override;
 
 	virtual bool acceptKeyPressedForInplaceEditImpl(
 		QKeyEvent *keyEvent) const override;
@@ -44,13 +43,14 @@ protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 
-	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
-		const QStyle::State &state, bool *needTooltip = nullptr) const override;
+	virtual bool isPlaceholderColor() const override;
 
-private:
-	int maxLength;
+protected:
+	int m_maxLength;
+	bool m_multiline;
+	QString m_placeholder;
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringInvalidBase
@@ -62,9 +62,9 @@ protected:
 	QtnPropertyDelegateQStringInvalidBase(QtnPropertyQStringBase &owner);
 
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
-	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
-		const QStyle::State &state, bool *needTooltip = nullptr) const override;
+		const QtnPropertyDelegateInfo &info) override;
+	virtual void drawValueImpl(
+		QStylePainter &painter, const QRect &rect) const override;
 
 	virtual bool isPropertyValid() const = 0;
 
@@ -80,15 +80,14 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringFile
 public:
 	QtnPropertyDelegateQStringFile(QtnPropertyQStringBase &owner);
 
-	static bool Register();
+	static void Register(QtnPropertyDelegateFactory &factory);
 
 protected:
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
-	virtual bool propertyValueToStr(QString &strValue) const override;
-	virtual QString toolTipImpl() const override;
-	virtual void drawValueImpl(QStylePainter &painter, const QRect &rect,
-		const QStyle::State &state, bool *needToolTip = nullptr) const override;
+		const QtnPropertyDelegateInfo &info) override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
+	virtual bool toolTipImpl(QString &strValue) const override;
+
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
@@ -99,7 +98,7 @@ protected:
 	bool shouldShowRelativePath() const;
 
 private:
-	QtnPropertyDelegateAttributes m_editorAttributes;
+	QtnPropertyDelegateInfo m_editorAttributes;
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringList
@@ -110,19 +109,45 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringList
 public:
 	QtnPropertyDelegateQStringList(QtnPropertyQStringBase &owner);
 
-	static bool Register();
+	static void Register(QtnPropertyDelegateFactory &factory);
 
 protected:
 	virtual void applyAttributesImpl(
-		const QtnPropertyDelegateAttributes &attributes) override;
+		const QtnPropertyDelegateInfo &info) override;
 
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
 private:
-	QStringList m_items;
+	QtnPropertyDelegateInfo m_editorAttributes;
+};
 
-	QtnPropertyDelegateAttributes m_editorAttributes;
+using QtnGetCandidatesFn = std::function<QStringList()>;
+using QtnCreateCandidateFn = std::function<QString(QWidget *, QString)>;
+Q_DECLARE_METATYPE(QtnGetCandidatesFn);
+Q_DECLARE_METATYPE(QtnCreateCandidateFn);
+
+class QtnPropertyQStringCandidatesComboBoxHandler;
+
+class QTN_IMPORT_EXPORT QtnPropertyDelegateQStringCallback
+	: public QtnPropertyDelegateQString
+{
+	Q_DISABLE_COPY(QtnPropertyDelegateQStringCallback)
+
+public:
+	QtnPropertyDelegateQStringCallback(QtnPropertyQStringBase &owner);
+
+	static void Register(QtnPropertyDelegateFactory &factory);
+
+protected:
+	virtual void applyAttributesImpl(
+		const QtnPropertyDelegateInfo &info) override;
+	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
+		QtnInplaceInfo *inplaceInfo = nullptr) override;
+
+private:
+	QtnPropertyDelegateInfo m_editorAttributes;
+	friend class QtnPropertyQStringCandidatesComboBoxHandler;
 };
 
 #endif // PROPERTY_DELEGATE_QSTRING_H

@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,20 +24,16 @@ QtnPropertyIntBase::QtnPropertyIntBase(QObject *parent)
 {
 }
 
-bool QtnPropertyIntBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyIntBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
 	bool ok = false;
 	ValueType value = str.toInt(&ok);
 
 	if (!ok)
-	{
-		value = QLocale().toInt(str, &ok);
+		return false;
 
-		if (!ok)
-			return false;
-	}
-
-	return setValue(value, edit);
+	return setValue(value, reason);
 }
 
 bool QtnPropertyIntBase::toStrImpl(QString &str) const
@@ -46,23 +42,12 @@ bool QtnPropertyIntBase::toStrImpl(QString &str) const
 	return true;
 }
 
-bool QtnPropertyIntBase::fromVariantImpl(const QVariant &var, bool edit)
-{
-	bool ok = false;
-	ValueType value = var.toInt(&ok);
-
-	if (!ok)
-		return false;
-
-	return setValue(value, edit);
-}
-
 QtnPropertyIntCallback::QtnPropertyIntCallback(QObject *parent)
 	: QtnSinglePropertyCallback<QtnPropertyIntBase>(parent)
 {
 }
 
 QtnPropertyInt::QtnPropertyInt(QObject *parent)
-	: QtnSinglePropertyValue<QtnPropertyIntBase>(parent)
+	: QtnNumericPropertyValue<QtnPropertyIntBase>(parent)
 {
 }

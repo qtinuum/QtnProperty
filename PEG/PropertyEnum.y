@@ -13,7 +13,7 @@ extern void yy_push_state_initialization_list();
 %}
 
 %locations
-%error-verbose
+//%define parse.error verbose
 //%define api.pure full
 %lex-param {YYLEX_PARAM}
 
@@ -206,7 +206,7 @@ name_to_assign:   ID                        {
 
 slot_declaration:   SLOT name_to_assign            {
     if (!pegContext.checkSlotName(pegContext.currAssignFunc)) {
-        QString error = peg.tr("Unrecognized slot name <%1>.").arg(pegContext.currAssignFunc);
+        QString error = QString("Unrecognized slot name <%1>.").arg(pegContext.currAssignFunc);
         yyerror(error.toLatin1().data());
         exit(1);
     }
@@ -222,7 +222,7 @@ slot_declaration:   SLOT name_to_assign            {
 
 delegate_declaration:     DELEGATE {
     if (pegContext.current()->delegateInfo.data()) {
-        QString error = peg.tr("Delegate for object <%1> already defined.").arg(pegContext.current()->name);
+        QString error = QString("Delegate for object <%1> already defined.").arg(pegContext.current()->name);
         yyerror(error.toLatin1().data());
         exit(1);
     }
@@ -294,7 +294,7 @@ enum_value:         ID '(' NUMBER COMMA STR ')'     {
     bool success = false;
     item.id = $3.toInt(&success);
     if (!success) {
-        QString error = peg.tr("Unrecognized enum item id <%1>.").arg($3);
+        QString error = QString("Unrecognized enum item id <%1>.").arg($3);
         yyerror(error.toLatin1().data());
         exit(1);
     }

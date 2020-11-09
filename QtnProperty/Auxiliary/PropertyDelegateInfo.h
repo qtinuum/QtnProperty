@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,34 +18,60 @@ limitations under the License.
 #ifndef QTN_PROPERTY_DELEGATE_INFO_H
 #define QTN_PROPERTY_DELEGATE_INFO_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 #include <QMap>
 #include <QVariant>
-
-QTN_IMPORT_EXPORT QByteArray qtnFieldDelegateName();
-
-typedef QMap<QByteArray, QVariant> QtnPropertyDelegateAttributes;
 
 struct QTN_IMPORT_EXPORT QtnPropertyDelegateInfo
 {
 	QByteArray name;
-	QtnPropertyDelegateAttributes attributes;
+	using Attributes = QMap<QByteArray, QVariant>;
+	Attributes attributes;
 
-	QtnPropertyDelegateInfo();
+	QtnPropertyDelegateInfo() = default;
 	QtnPropertyDelegateInfo(const QtnPropertyDelegateInfo &other);
+	QtnPropertyDelegateInfo(
+		const QByteArray &name, const Attributes &attributes = Attributes());
+
+	template <typename T>
+	inline T getAttribute(
+		const QByteArray &attributeName, const T &defaultValue = T()) const
+	{
+		auto it = attributes.find(attributeName);
+
+		if (it == attributes.end())
+			return defaultValue;
+
+		return it.value().value<T>();
+	}
+
+	template <typename T>
+	inline bool loadAttribute(const QByteArray &name, T &to) const
+	{
+		auto it = attributes.find(name);
+
+		if (it == attributes.end())
+			return false;
+
+		to = it.value().value<T>();
+		return true;
+	}
+
+	template <typename OBJ_T, typename ATTR_T_RET, typename ATTR_T_ARG>
+	inline void storeAttributeValue(const QByteArray &name, OBJ_T *to,
+		ATTR_T_RET (OBJ_T::*get)() const, void (OBJ_T::*set)(ATTR_T_ARG)) const
+	{
+		Q_ASSERT(to);
+		(to->*set)(getAttribute(name, (to->*get)()));
+	}
 };
 
-template <typename T>
-inline bool qtnGetAttribute(const QtnPropertyDelegateAttributes &attributes,
-	const QByteArray &attributeName, T &attributeValue)
+struct QTN_IMPORT_EXPORT QtnSubPropertyInfo
 {
-	auto it = attributes.find(attributeName);
-
-	if (it == attributes.end())
-		return false;
-
-	attributeValue = it.value().value<T>();
-	return true;
-}
+	int id;
+	QString key;
+	QByteArray displayNameAttr;
+	QByteArray descriptionAttr;
+};
 
 #endif // QTN_PROPERTY_DELEGATE_INFO_H

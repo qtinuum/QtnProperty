@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ limitations under the License.
 
 #include "QObjectPropertySet.h"
 #include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorAux.h"
-#include "Delegates/PropertyEditorHandler.h"
+#include "Delegates/Utils/PropertyEditorAux.h"
+#include "Delegates/Utils/PropertyEditorHandler.h"
 #include "MultiProperty.h"
 #include "Core/PropertyQString.h"
 
@@ -28,13 +28,97 @@ limitations under the License.
 #include <QEvent>
 #include <QKeyEvent>
 
+bool qtnCompareQVariants(const QVariant &left, const QVariant &right)
+{
+	if (left.userType() != right.userType())
+	{
+		return false;
+	}
+
+	switch (left.type())
+	{
+		case QVariant::Hash:
+		{
+			const auto leftMap = left.toHash();
+			const auto rightMap = right.toHash();
+			if (leftMap.size() != rightMap.size())
+			{
+				return false;
+			}
+			auto leftIt = leftMap.cbegin();
+			for (; leftIt != leftMap.cend(); ++leftIt)
+			{
+				auto rightIt = rightMap.find(leftIt.key());
+				if (rightIt == rightMap.end())
+				{
+					return false;
+				}
+
+				if (!qtnCompareQVariants(leftIt.value(), rightIt.value()))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		case QVariant::Map:
+		{
+			const auto leftMap = left.toMap();
+			const auto rightMap = right.toMap();
+			if (leftMap.size() != rightMap.size())
+			{
+				return false;
+			}
+			auto leftIt = leftMap.cbegin();
+			auto rightIt = rightMap.cbegin();
+			for (; leftIt != leftMap.cend(); ++leftIt, ++rightIt)
+			{
+				if (leftIt.key() != rightIt.key())
+				{
+					return false;
+				}
+
+				if (!qtnCompareQVariants(leftIt.value(), rightIt.value()))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		case QVariant::List:
+		{
+			const auto leftList = left.toList();
+			const auto rightList = left.toList();
+			int count = leftList.size();
+			if (count != rightList.size())
+			{
+				return false;
+			}
+			for (int i = 0; i < count; i++)
+			{
+				if (!qtnCompareQVariants(leftList.at(i), rightList.at(i)))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		default:
+			break;
+	}
+	return left == right;
+}
+
 class QtnPropertyQVariantEditBttnHandler
 	: public QtnPropertyEditorBttnHandler<QtnPropertyQVariantBase,
 		  QtnLineEditBttn>
 {
 public:
 	QtnPropertyQVariantEditBttnHandler(
-		QtnPropertyQVariantBase &property, QtnLineEditBttn &editor);
+		QtnPropertyDelegate *delegate, QtnLineEditBttn &editor);
 
 protected:
 	virtual void revertInput() override;
@@ -56,9 +140,10 @@ QtnPropertyQVariantBase::QtnPropertyQVariantBase(QObject *parent)
 {
 }
 
-bool QtnPropertyQVariantBase::fromStrImpl(const QString &str, bool edit)
+bool QtnPropertyQVariantBase::fromStrImpl(
+	const QString &str, QtnPropertyChangeReason reason)
 {
-	return setValue(str, edit);
+	return setValue(str, reason);
 }
 
 bool QtnPropertyQVariantBase::toStrImpl(QString &str) const
@@ -67,9 +152,10 @@ bool QtnPropertyQVariantBase::toStrImpl(QString &str) const
 	return true;
 }
 
-bool QtnPropertyQVariantBase::fromVariantImpl(const QVariant &var, bool edit)
+bool QtnPropertyQVariantBase::fromVariantImpl(
+	const QVariant &var, QtnPropertyChangeReason reason)
 {
-	return setValue(var, edit);
+	return setValue(var, reason);
 }
 
 bool QtnPropertyQVariantBase::toVariantImpl(QVariant &var) const
@@ -86,18 +172,15 @@ QtnPropertyQVariantCallback::QtnPropertyQVariantCallback(
 		return metaProperty.read(object);
 	});
 
-	setCallbackValueSet([object, metaProperty](QVariant value) {
+	setCallbackValueSet([object, metaProperty](QVariant value,
+							QtnPropertyChangeReason /*reason*/) {
 		metaProperty.write(object, value);
 	});
-
-	setCallbackValueAccepted(
-		[this](QVariant) -> bool { return isEditableByUser(); });
 
 	setCallbackValueEqual([object, metaProperty](QVariant value) -> bool {
 		auto thisValue = metaProperty.read(object);
 
-		return thisValue.type() == value.type() &&
-			thisValue.userType() == value.userType() && thisValue == value;
+		return qtnCompareQVariants(thisValue, value);
 	});
 }
 
@@ -111,21 +194,6 @@ QtnPropertyQVariant::QtnPropertyQVariant(QObject *parent)
 {
 }
 
-bool QtnPropertyQVariant::Register()
-{
-	qtnRegisterMetaPropertyFactory(QMetaType::QVariant,
-		[](QObject *object,
-			const QMetaProperty &metaProperty) -> QtnProperty * {
-			return new QtnPropertyQVariantCallback(object, metaProperty);
-		});
-
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQVariantBase::staticMetaObject,
-		&qtnCreateDelegate<QtnPropertyDelegateQVariant,
-			QtnPropertyQVariantBase>,
-		QByteArrayLiteral("QVariant"));
-}
-
 QString QtnPropertyQVariant::valueToString(const QVariant &value)
 {
 	return !variantIsObject(value.type()) ? value.toString() : QString();
@@ -135,7 +203,9 @@ bool QtnPropertyQVariant::variantIsObject(QVariant::Type type)
 {
 	switch (type)
 	{
+		case QVariant::Hash:
 		case QVariant::Map:
+		case QVariant::StringList:
 		case QVariant::List:
 			return true;
 
@@ -150,9 +220,11 @@ QString QtnPropertyQVariant::getPlaceholderStr(QVariant::Type type)
 {
 	switch (type)
 	{
+		case QVariant::Hash:
 		case QVariant::Map:
 			return tr("(Dictionary)");
 
+		case QVariant::StringList:
 		case QVariant::List:
 			return tr("(List)");
 
@@ -167,6 +239,14 @@ QtnPropertyDelegateQVariant::QtnPropertyDelegateQVariant(
 	QtnPropertyQVariantBase &owner)
 	: QtnPropertyDelegateTyped<QtnPropertyQVariantBase>(owner)
 {
+}
+
+void QtnPropertyDelegateQVariant::Register(QtnPropertyDelegateFactory &factory)
+{
+	factory.registerDelegateDefault(&QtnPropertyQVariantBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQVariant,
+			QtnPropertyQVariantBase>,
+		"QVariant");
 }
 
 bool QtnPropertyDelegateQVariant::acceptKeyPressedForInplaceEditImpl(
@@ -186,13 +266,14 @@ QWidget *QtnPropertyDelegateQVariant::createValueEditorImpl(
 	auto editor = new QtnLineEditBttn(parent);
 	editor->setGeometry(rect);
 
-	new QtnPropertyQVariantEditBttnHandler(owner(), *editor);
+	new QtnPropertyQVariantEditBttnHandler(this, *editor);
 
 	qtnInitLineEdit(editor->lineEdit, inplaceInfo);
 	return editor;
 }
 
-bool QtnPropertyDelegateQVariant::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateQVariant::propertyValueToStrImpl(
+	QString &strValue) const
 {
 	auto value = owner().value();
 	strValue = QtnPropertyQVariant::valueToString(value);
@@ -203,21 +284,14 @@ bool QtnPropertyDelegateQVariant::propertyValueToStr(QString &strValue) const
 	return true;
 }
 
-void QtnPropertyDelegateQVariant::drawValueImpl(QStylePainter &painter,
-	const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+bool QtnPropertyDelegateQVariant::isPlaceholderColor() const
 {
-	QPen oldPen = painter.pen();
-
-	if (QtnPropertyQVariant::valueToString(owner().value()).isEmpty())
-		painter.setPen(Qt::darkGray);
-
-	Inherited::drawValueImpl(painter, rect, state, needTooltip);
-	painter.setPen(oldPen);
+	return QtnPropertyQVariant::valueToString(owner().value()).isEmpty();
 }
 
 QtnPropertyQVariantEditBttnHandler::QtnPropertyQVariantEditBttnHandler(
-	QtnPropertyQVariantBase &property, QtnLineEditBttn &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
+	QtnPropertyDelegate *delegate, QtnLineEditBttn &editor)
+	: QtnPropertyEditorHandlerType(delegate, editor)
 	, dialog(new CustomPropertyEditorDialog(&editor))
 	, is_object(false)
 {
@@ -249,9 +323,9 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClick()
 void QtnPropertyQVariantEditBttnHandler::updateEditor()
 {
 	auto edit = editor().lineEdit;
-	edit->setReadOnly(!property().isEditableByUser());
+	edit->setReadOnly(!stateProperty()->isEditableByUser());
 
-	if (property().valueIsHidden())
+	if (stateProperty()->isMultiValue())
 	{
 		edit->clear();
 		edit->setPlaceholderText(QtnMultiProperty::getMultiValuePlaceholder());
@@ -285,7 +359,7 @@ void QtnPropertyQVariantEditBttnHandler::onEditingFinished()
 		if (!is_object || !text.isEmpty())
 		{
 			if (is_object || text != property().value().toString())
-				property().edit(text);
+				property().setValue(text, delegate()->editReason());
 
 			updateEditor();
 		}
@@ -310,14 +384,14 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 
 	auto dialogContainer = this->dialogContainer;
 	reverted = true;
-	dialog->setReadOnly(!property->isEditableByUser());
+	dialog->setReadOnly(!stateProperty()->isEditableByUser());
 
 	volatile bool destroyed = false;
 	auto connection = QObject::connect(this, &QObject::destroyed,
 		[&destroyed]() mutable { destroyed = true; });
 
 	if (dialog->execute(property->name(), data) && !destroyed)
-		property->edit(data);
+		property->setValue(data, delegate()->editReason());
 
 	if (!destroyed)
 	{
@@ -330,6 +404,6 @@ void QtnPropertyQVariantEditBttnHandler::onToolButtonClicked(bool)
 
 void QtnPropertyQVariantEditBttnHandler::onApplyData(const QVariant &data)
 {
-	property().edit(data);
+	property().setValue(data, delegate()->editReason());
 	updateEditor();
 }

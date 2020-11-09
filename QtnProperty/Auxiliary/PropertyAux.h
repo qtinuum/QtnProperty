@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_PROPERTY_AUX_H
 #define QTN_PROPERTY_AUX_H
 
-#include "QtnProperty/CoreAPI.h"
+#include "QtnProperty/Config.h"
 #include <QObject>
 
 // forward declarations
@@ -34,10 +34,11 @@ enum QtnPropertyStateFlag
 	QtnPropertyStateImmutable = 0x0004,
 	QtnPropertyStateCollapsed = 0x0008,
 	QtnPropertyStateNonSerialized = 0x0010,
-	QtnPropertyStateHiddenValue = 0x0020,
+	QtnPropertyStateMultiValue = 0x0020,
 	QtnPropertyStateModifiedValue = 0x0040,
 	QtnPropertyStateIgnoreDirectParentState = 0x80,
-	QtnPropertyStateResettable = 0x100
+	QtnPropertyStateResettable = 0x100,
+	QtnPropertyStateUnlockable = 0x200
 };
 
 Q_DECLARE_FLAGS(QtnPropertyState, QtnPropertyStateFlag)
@@ -48,33 +49,31 @@ enum QtnPropertyChangeReasonFlag
 	QtnPropertyChangeReasonNewValue = 0x0001,
 	QtnPropertyChangeReasonLoadedValue = 0x0002,
 	QtnPropertyChangeReasonName = 0x0004,
-	QtnPropertyChangeReasonDescription = 0x0008,
-	QtnPropertyChangeReasonId = 0x0010,
-	QtnPropertyChangeReasonStateLocal = 0x0020,
-	QtnPropertyChangeReasonStateInherited = 0x0040,
+	QtnPropertyChangeReasonDisplayName = 0x0008,
+	QtnPropertyChangeReasonDescription = 0x0010,
+	QtnPropertyChangeReasonId = 0x0020,
+	QtnPropertyChangeReasonStateLocal = 0x0040,
+	QtnPropertyChangeReasonStateInherited = 0x0080,
+	QtnPropertyChangeReasonChildPropertyAdd = 0x0100,
+	QtnPropertyChangeReasonChildPropertyRemove = 0x0200,
+	QtnPropertyChangeReasonEdit = 0x0400,
+	QtnPropertyChangeReasonResetValue = 0x0800,
+	QtnPropertyChangeReasonMultiEdit = 0x1000,
+	QtnPropertyChangeReasonLockToggled = 0x2000,
+	QtnPropertyChangeReasonUpdateDelegate = 0x4000,
 	QtnPropertyChangeReasonState = QtnPropertyChangeReasonStateLocal |
 		QtnPropertyChangeReasonStateInherited,
-	QtnPropertyChangeReasonChildPropertyAdd = 0x0080,
-	QtnPropertyChangeReasonChildPropertyRemove = 0x0100,
-	QtnPropertyChangeReasonEditValue = 0x0200,
-	QtnPropertyChangeReasonResetValue = 0x0400,
 	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd |
 		QtnPropertyChangeReasonChildPropertyRemove,
-	QtnPropertyChangeReasonUserValue =
-		QtnPropertyChangeReasonEditValue | QtnPropertyChangeReasonResetValue,
 	QtnPropertyChangeReasonValue = QtnPropertyChangeReasonNewValue |
-		QtnPropertyChangeReasonLoadedValue |
-		QtnPropertyChangeReasonUserValue
+		QtnPropertyChangeReasonLoadedValue | QtnPropertyChangeReasonResetValue,
 };
 
 Q_DECLARE_FLAGS(QtnPropertyChangeReason, QtnPropertyChangeReasonFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QtnPropertyChangeReason)
 
 typedef qint32 QtnPropertyID;
-enum
-{
-	QtnPropertyIDInvalid = -1
-};
+extern QTN_IMPORT_EXPORT const qint32 QtnPropertyIDInvalid;
 
 typedef void *QtnPropertyValuePtr;
 

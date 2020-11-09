@@ -1,7 +1,14 @@
-#include "../Core/PropertyCore.h"
-#include "../Core/PropertyGUI.h"
+#include "QtnProperty/PropertyCore.h"
+#include "QtnProperty/PropertyGUI.h"
+#include "QtnProperty/PropertyInt64.h"
+#include "QtnProperty/PropertyUInt64.h"
+#include "AB/PropertyABColor.h"
+#include "Layer/PropertyLayer.h"
+#include "PenWidth/PropertyPenWidth.h"
+#include "Freq/PropertyFreq.h"
 
 #include_cpp <QFileDialog>
+#include_cpp <QDebug>
 
 enum COLOR
 {
@@ -23,6 +30,91 @@ property_set SamplePS
     {
         description = "Property to hold boolean values.";
         value = false;
+    }
+
+    Button ButtonProperty
+    {
+        description = "Start calculate a long operation.";
+
+        clickHandler = [](const QtnPropertyButton* bttn) {
+            qDebug() << Q_FUNC_INFO << "Button has clicked: " << bttn;
+        };
+
+        delegate { title = "Click me"; }
+    }
+
+    Button ButtonLinkProperty
+    {
+        clickHandler = [](const QtnPropertyButton* bttn) {
+            qDebug() << Q_FUNC_INFO << "Link has clicked: " << bttn;
+        };
+
+        delegate Link { title = "Click on me"; }
+    }
+
+    ABColor RGBColor
+    {
+        description = "ABColor property with RGB components";
+        value = QColor(123, 150, 10);
+
+        clickHandler = [this](const QtnPropertyABColor* color) {
+            qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
+            RGBColor = QColor::fromRgb(qrand()%255, qrand()%255, qrand()%255);
+        };
+
+        delegate { rgbSubItems = true; }
+    }
+
+    QColor ColorSolidDelegate
+    {
+        description = "QColor property with Solid delegate";
+        value = QColor(13, 150, 10);
+
+        delegate Solid;
+    }
+
+    Float FloatPropertySliderBox
+    {
+        displayName = "Float Property Slider Box";
+        description = "Property to hold float values in range [0, 10].";
+        value = 1.f;
+        minValue = 0;
+        maxValue = 10.f;
+        stepValue = 0.1f;
+
+        delegate SliderBox
+        {
+            fillColor = QColor::fromRgb(170, 170, 255);
+            drawBorder = false;
+        }
+    }
+
+    Float FloatIntRangeSliderBox
+    {
+        description = "Property to hold float values in full range.";
+        value = 111.f;
+        minValue = -float(1 << std::numeric_limits<float>::digits);
+        maxValue = float(1 << std::numeric_limits<float>::digits);
+
+        delegate SliderBox
+        {
+            fillColor = QColor::fromRgb(170, 170, 255);
+            drawBorder = false;
+        }
+    }
+
+    Double DoubleFullRangeSliderBox
+    {
+        description = "Property to hold double values in full range.";
+        value = 1111.0;
+        minValue = -double(1LL << std::numeric_limits<double>::digits);
+        maxValue = double(1LL << std::numeric_limits<double>::digits);
+
+        delegate SliderBox
+        {
+            fillColor = QColor::fromRgb(170, 170, 255);
+            drawBorder = false;
+        }
     }
 
     Double DoubleProperty
@@ -50,12 +142,57 @@ property_set SamplePS
         stepValue = 15;
     }
 
+    Int IntPropertyComboBox
+    {
+        description = "Property to hold integer values with changing step 15.";
+        value = 10;
+        stepValue = 15;
+        delegate IntList
+        {
+            values = QVariant::fromValue(QList<int>() << 10 << 12 << 15);
+        }
+    }
+
     UInt UIntProperty
     {
         description = "Property to hold unsigned integer values in range [100, 200].";
         value = 100;
         minValue = 100;
         maxValue = 200;
+    }
+
+    Int64 Int64Property
+    {
+    	description = "Property to hold signed integer 64-bit value";
+    	value = -(1LL << 35);
+    	delegate
+    	{
+    		step = 100000;
+    	}
+    }
+
+    UInt64 UInt64Property
+    {
+    	description = "Property to hold signed integer 64-bit value";
+    	value = 1ULL << 63;
+    }
+
+    Int64 Int64SliderBox
+    {
+    	description = "Property to hold signed integer 64-bit value with slider box";
+    	value = -(1LL << 34);
+    	delegate SliderBox
+    	{
+    	}
+    }
+
+    UInt64 UInt64SliderBox
+    {
+    	description = "Property to hold unsigned integer 64-bit value with slider box";
+    	value = 1ULL << 58;
+    	delegate SliderBox
+    	{
+    	}
     }
 
     Enum EnumProperty
@@ -145,7 +282,7 @@ property_set SamplePS
         {
             description = "QString property with list of acepted values (one, two, three, four).";
             value = "two";
-            delegate List
+            delegate ComboBox
             {
                 items = QStringList() << "one" << "two" << "three" << "four";
             }
@@ -177,10 +314,49 @@ property_set SamplePS
         value = QRect(10, 10, 200, 200);
     }
 
+    QPointF QPointFProperty
+    {
+        description = "Property to hold QPointF value.";
+        value = QPointF(-10.5, 10.2);
+    }
+
+    QSizeF QSizeFProperty
+    {
+        description = "Property to hold QSizeF value.";
+        value = QSizeF(100.0, 200.1);
+    }
+
+    QRectF QRectFProperty
+    {
+        description = "Property to hold QRectF value.";
+        value = QRectF(10.23, 10.4, 200.2, 200.6);
+    }
+
+    QVector3D QVector3DProperty
+    {
+    	description = "Property to hold QVector3D value.";
+    	value = QVector3D(5, 6, 7);
+    	delegate {
+    		multiplier = 100.0 / 255.0;
+    		min = 0;
+    		max = 255;
+    		precision = 5;
+    		suffix = "%";
+    		z = QVariantMap({
+    			{ QString("name"), QString("SliderBox")},
+    			{ QString("precision"), 3 },
+    		});
+    	}
+    }
+
     QColor QColorProperty
     {
         description = "Property to hold QColor value.";
         value = Qt::blue;
+        slot propertyDidChange
+        {
+            qDebug() << Q_FUNC_INFO << "Property has changed: " << &QColorProperty;
+        }
     }
 
     QFont QFontProperty
@@ -188,6 +364,53 @@ property_set SamplePS
         description = "Property to hold QFont value.";
         value = QFont("Sans Serif", 14);
     }
+
+        Freq FreqProperty
+    {
+        description = "Property to hold frequency values.";
+        value = 15;
+        unit = FreqUnit::KHz;
+    }
+
+    Layer LayerProperty
+    {
+        description = "Property to hold layer.";
+        value = 0;
+    }
+
+	QBrushStyle BrushStyleProperty
+	{
+        description = "Property to hold QBrushStyle enum.";
+        value = Qt::HorPattern;
+	}
+
+	PenWidth PenWidthProperty
+	{
+        description = "Property to hold PenWidth enum.";
+        value = PenWidth::Middle;
+	}
+
+    QPenStyle PenStyleProperty
+    {
+        description = "Property to hold pen style values.";
+        value = Qt::DashLine;
+    }
+
+    QPen PenProperty
+    {
+        description = "Property to hold QPen values.";
+        delegate
+        {
+            editColor = true;
+            editStyle = true;
+            editWidth = true;
+        }
+    }
+
+	QString QStringCallbackProperty
+	{
+        description = "Property to hold QString values with candidates.";
+	}
 
     extern property_set SubPropertySetType SubPropertySet2
     {

@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ limitations under the License.
 #ifndef QTN_QOBJECT_PROPERTY_SET_H
 #define QTN_QOBJECT_PROPERTY_SET_H
 
-#include "CoreAPI.h"
+#include "Config.h"
 #include "Auxiliary/PropertyAux.h"
 
 #include <QMetaProperty>
@@ -32,8 +32,6 @@ class QtnProperty;
 class QtnPropertySet;
 struct QtnPropertyDelegateInfo;
 
-QTN_IMPORT_EXPORT bool qtnRegisterDefaultMetaPropertyFactory();
-
 typedef std::function<QtnProperty *(QObject *, const QMetaProperty &)>
 	QtnMetaPropertyFactory_t;
 QTN_IMPORT_EXPORT bool qtnRegisterMetaPropertyFactory(int metaPropertyType,
@@ -45,11 +43,9 @@ QTN_IMPORT_EXPORT QtnProperty *qtnCreateQObjectProperty(QObject *object,
 QTN_IMPORT_EXPORT QtnProperty *qtnCreateQObjectProperty(
 	QObject *object, const char *propertyName, bool connect = false);
 QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectPropertySet(
-	QObject *object, bool backwards);
+	QObject *object, bool backwards = false);
 QTN_IMPORT_EXPORT QtnPropertySet *qtnCreateQObjectMultiPropertySet(
 	const std::set<QObject *> &objects, bool backwards);
-QTN_IMPORT_EXPORT void qtnPropertiesToMultiSet(
-	QtnPropertySet *target, QtnPropertySet *source);
 
 QTN_IMPORT_EXPORT QtnPropertyState qtnPropertyStateToAdd(
 	const QMetaProperty &metaProperty);
@@ -69,21 +65,16 @@ QtnMetaPropertyFactory_t qtnCreateFactory()
 		auto property = new PropertyCallbackType(nullptr);
 
 		property->setCallbackValueGet(
-			[object, metaProperty]() -> CallbackValueType {
+			[object, metaProperty]() -> CallbackValueTypeStore {
 				auto variantValue = metaProperty.read(object);
 				return CallbackValueTypeStore(variantValue.value<ValueType>());
 			});
 
 		property->setCallbackValueSet(
-			[object, metaProperty](CallbackValueType value) {
+			[object, metaProperty](CallbackValueType value, QtnPropertyChangeReason /*reason*/) {
 				auto variantValue =
 					QVariant::fromValue<ValueType>(ValueType(value));
 				metaProperty.write(object, variantValue);
-			});
-
-		property->setCallbackValueAccepted(
-			[property](CallbackValueType) -> bool {
-				return property->isEditableByUser();
 			});
 
 		return property;

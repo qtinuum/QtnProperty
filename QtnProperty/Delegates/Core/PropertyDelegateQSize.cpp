@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,10 +14,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************/
-
 #include "PropertyDelegateQSize.h"
-#include "Core/PropertyQSize.h"
-#include "Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
 
 #include <QLineEdit>
 #include <QLocale>
@@ -29,12 +28,37 @@ QtnPropertyDelegateQSize::QtnPropertyDelegateQSize(QtnPropertyQSizeBase &owner)
 	addSubProperty(owner.createHeightProperty());
 }
 
-bool QtnPropertyDelegateQSize::Register()
+void QtnPropertyDelegateQSize::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQSizeBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyQSizeBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQSize, QtnPropertyQSizeBase>,
-		QByteArrayLiteral("WH"));
+		"WH");
+}
+
+void qtnApplyQSizeDelegateAttributes(
+	QtnPropertyDelegate *to, const QtnPropertyDelegateInfo &info)
+{
+	enum
+	{
+		WIDTH,
+		HEIGHT,
+		TOTAL
+	};
+	Q_ASSERT(to->subPropertyCount() == TOTAL);
+	static const QtnSubPropertyInfo KEYS[TOTAL] = {
+		{ WIDTH, QtnPropertyQSize::widthKey(), qtnWidthDisplayNameAttr(),
+			qtnWidthDescriptionAttr() },
+		{ HEIGHT, QtnPropertyQSize::heightKey(), qtnHeightDisplayNameAttr(),
+			qtnHeightDescriptionAttr() },
+	};
+
+	to->applySubPropertyInfos(info, KEYS, TOTAL);
+}
+
+void QtnPropertyDelegateQSize::applyAttributesImpl(
+	const QtnPropertyDelegateInfo &info)
+{
+	qtnApplyQSizeDelegateAttributes(this, info);
 }
 
 QWidget *QtnPropertyDelegateQSize::createValueEditorImpl(
@@ -43,7 +67,7 @@ QWidget *QtnPropertyDelegateQSize::createValueEditorImpl(
 	return createValueEditorLineEdit(parent, rect, true, inplaceInfo);
 }
 
-bool QtnPropertyDelegateQSize::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateQSize::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 

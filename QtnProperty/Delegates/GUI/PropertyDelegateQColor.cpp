@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,17 +16,32 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegateQColor.h"
-#include "GUI/PropertyQColor.h"
-#include "Delegates/PropertyDelegateFactory.h"
-#include "Delegates/PropertyEditorHandler.h"
-#include "Delegates/PropertyEditorAux.h"
-#include "PropertyDelegateAttrs.h"
+#include "QtnProperty/Delegates/PropertyDelegateFactory.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorHandler.h"
+#include "QtnProperty/Delegates/Utils/PropertyEditorAux.h"
+#include "QtnProperty/PropertyDelegateAttrs.h"
+#include "QtnProperty/Utils/InplaceEditing.h"
 
 #include <QColorDialog>
 
 QByteArray qtnShapeAttr()
 {
-	returnQByteArrayLiteral("shape");
+	return QByteArrayLiteral("shape");
+}
+
+QByteArray qtnRgbSubItemsAttr()
+{
+	return QByteArrayLiteral("rgbSubItems");
+}
+
+QByteArray qtnSolidDelegateName()
+{
+	return QByteArrayLiteral("Solid");
+}
+
+QByteArray qtnSelectColorDelegateName()
+{
+	return QByteArrayLiteral("SelectColor");
 }
 
 class QtnPropertyQColorLineEditBttnHandler
@@ -35,7 +50,7 @@ class QtnPropertyQColorLineEditBttnHandler
 {
 public:
 	QtnPropertyQColorLineEditBttnHandler(
-		QtnPropertyQColorBase &property, QtnLineEditBttn &editor);
+		QtnPropertyDelegate *delegate, QtnLineEditBttn &editor);
 
 protected:
 	virtual void onToolButtonClick() override;
@@ -48,28 +63,40 @@ private:
 
 QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(
 	QtnPropertyQColorBase &owner)
-	: QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner)
+	: QtnPropertyDelegateTypedEx<QtnPropertyQColorBase>(owner)
 	, m_shape(QtnColorDelegateShapeSquare)
 {
 }
 
-bool QtnPropertyDelegateQColor::Register()
+void QtnPropertyDelegateQColor::Register(QtnPropertyDelegateFactory &factory)
 {
-	return QtnPropertyDelegateFactory::staticInstance().registerDelegateDefault(
-		&QtnPropertyQColorBase::staticMetaObject,
+	factory.registerDelegateDefault(&QtnPropertyQColorBase::staticMetaObject,
 		&qtnCreateDelegate<QtnPropertyDelegateQColor, QtnPropertyQColorBase>,
-		qtnSelectEditDelegate());
+		qtnSelectColorDelegateName());
 }
 
 void QtnPropertyDelegateQColor::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	qtnGetAttribute(attributes, qtnShapeAttr(), m_shape);
+	info.loadAttribute(qtnShapeAttr(), m_shape);
+
+	if (info.getAttribute(qtnRgbSubItemsAttr(), false))
+	{
+		addSubProperty(owner().createRedProperty());
+		addSubProperty(owner().createGreenProperty());
+		addSubProperty(owner().createBlueProperty());
+	}
 }
 
-void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter &painter,
-	const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+void QtnPropertyDelegateQColor::drawValueImpl(
+	QStylePainter &painter, const QRect &rect) const
 {
+	if (stateProperty()->isMultiValue())
+	{
+		QtnPropertyDelegateTypedEx::drawValueImpl(painter, rect);
+		return;
+	}
+
 	QColor value = owner().value();
 
 	QRect textRect = rect;
@@ -77,12 +104,16 @@ void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter &painter,
 	if (m_shape != QtnColorDelegateShapeNone)
 	{
 		QRect colorRect = rect;
-		colorRect.setRight(colorRect.left() + colorRect.height());
+		colorRect.setWidth(colorRect.height());
 		colorRect.adjust(2, 2, -2, -2);
 
 		if (m_shape == QtnColorDelegateShapeSquare)
 		{
-			painter.fillRect(colorRect, Qt::black);
+			painter.fillRect(colorRect,
+				painter.style()->standardPalette().color(
+					stateProperty()->isEditableByUser() ? QPalette::Active
+														: QPalette::Disabled,
+					QPalette::Text));
 			colorRect.adjust(1, 1, -1, -1);
 			painter.fillRect(colorRect, value);
 		} else if (m_shape == QtnColorDelegateShapeCircle)
@@ -105,7 +136,7 @@ void QtnPropertyDelegateQColor::drawValueImpl(QStylePainter &painter,
 	if (textRect.isValid())
 	{
 		QtnPropertyDelegateTyped<QtnPropertyQColorBase>::drawValueImpl(
-			painter, textRect, state, needTooltip);
+			painter, textRect);
 	}
 }
 
@@ -115,7 +146,7 @@ QWidget *QtnPropertyDelegateQColor::createValueEditorImpl(
 	QtnLineEditBttn *editor = new QtnLineEditBttn(parent);
 	editor->setGeometry(rect);
 
-	new QtnPropertyQColorLineEditBttnHandler(owner(), *editor);
+	new QtnPropertyQColorLineEditBttnHandler(this, *editor);
 
 	if (inplaceInfo)
 	{
@@ -125,17 +156,73 @@ QWidget *QtnPropertyDelegateQColor::createValueEditorImpl(
 	return editor;
 }
 
-bool QtnPropertyDelegateQColor::propertyValueToStr(QString &strValue) const
+bool QtnPropertyDelegateQColor::propertyValueToStrImpl(QString &strValue) const
 {
-	strValue = owner().value().name();
+	return owner().toStr(strValue);
+}
+
+QtnPropertyDelegateQColorSolid::QtnPropertyDelegateQColorSolid(
+	QtnPropertyQColorBase &owner)
+	: QtnPropertyDelegateTyped<QtnPropertyQColorBase>(owner)
+{
+}
+
+void QtnPropertyDelegateQColorSolid::Register(
+	QtnPropertyDelegateFactory &factory)
+{
+	factory.registerDelegate(&QtnPropertyQColorBase::staticMetaObject,
+		&qtnCreateDelegate<QtnPropertyDelegateQColorSolid,
+			QtnPropertyQColorBase>,
+		qtnSolidDelegateName());
+}
+
+bool QtnPropertyDelegateQColorSolid::createSubItemValueImpl(
+	QtnDrawContext &context, QtnSubItem &subItemValue)
+{
+	if (!QtnPropertyDelegateTyped<
+			QtnPropertyQColorBase>::createSubItemValueImpl(context,
+			subItemValue))
+		return false;
+
+	// correct left value rect
+	subItemValue.rect.setLeft(context.splitPos);
 	return true;
 }
 
-QtnPropertyQColorLineEditBttnHandler::QtnPropertyQColorLineEditBttnHandler(
-	QtnPropertyQColorBase &property, QtnLineEditBttn &editor)
-	: QtnPropertyEditorHandlerType(property, editor)
+void QtnPropertyDelegateQColorSolid::drawValueImpl(
+	QStylePainter &painter, const QRect &rect) const
 {
-	if (!property.isEditableByUser())
+	if (stateProperty()->isMultiValue())
+	{
+		QtnPropertyDelegateTyped::drawValueImpl(painter, rect);
+		return;
+	}
+
+	auto boxRect = rect;
+	boxRect.adjust(2, 2, -2, -2);
+	painter.fillRect(boxRect, owner());
+}
+
+QWidget *QtnPropertyDelegateQColorSolid::createValueEditorImpl(
+	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+{
+	Q_UNUSED(rect);
+	Q_UNUSED(inplaceInfo);
+
+	QColorDialog dlg(owner(), parent);
+	if (dlg.exec() == QDialog::Accepted)
+	{
+		owner().setValue(dlg.currentColor(), editReason());
+	}
+
+	return nullptr;
+}
+
+QtnPropertyQColorLineEditBttnHandler::QtnPropertyQColorLineEditBttnHandler(
+	QtnPropertyDelegate *delegate, QtnLineEditBttn &editor)
+	: QtnPropertyEditorHandlerType(delegate, editor)
+{
+	if (!stateProperty()->isEditableByUser())
 	{
 		editor.lineEdit->setReadOnly(true);
 		editor.toolButton->setEnabled(false);
@@ -156,7 +243,9 @@ void QtnPropertyQColorLineEditBttnHandler::onToolButtonClick()
 
 void QtnPropertyQColorLineEditBttnHandler::updateEditor()
 {
-	editor().setTextForProperty(&property(), property().value().name());
+	QString str;
+	property().toStr(str);
+	editor().setTextForProperty(stateProperty(), str);
 	editor().lineEdit->selectAll();
 }
 
@@ -172,7 +261,7 @@ void QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked(bool)
 
 	if (dialog->exec() == QDialog::Accepted && !destroyed)
 	{
-		property->edit(dialog->currentColor());
+		property->setValue(dialog->currentColor(), delegate()->editReason());
 	}
 
 	if (!destroyed)
@@ -184,7 +273,10 @@ void QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked(bool)
 void QtnPropertyQColorLineEditBttnHandler::onEditingFinished()
 {
 	if (canApply())
-		property().edit(QColor(editor().lineEdit->text()));
+	{
+		property().setValue(
+			QColor(editor().lineEdit->text()), delegate()->editReason());
+	}
 
 	applyReset();
 }

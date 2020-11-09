@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2017-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@ limitations under the License.
 #pragma once
 
 #include "Auxiliary/PropertyTemplates.h"
-#include "Delegates/PropertyDelegate.h"
+#include "Delegates/Utils/PropertyDelegateMisc.h"
 
 #include <QKeySequence>
 
 class QTN_IMPORT_EXPORT QtnPropertyQKeySequenceBase
-	: public QtnSinglePropertyBase<const QKeySequence &>
+	: public QtnSinglePropertyBase<QKeySequence>
 {
 	Q_OBJECT
 
@@ -33,9 +33,11 @@ public:
 	explicit QtnPropertyQKeySequenceBase(QObject *parent);
 
 protected:
-	virtual bool fromStrImpl(const QString &str, bool edit) override;
+	virtual bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
 	virtual bool toStrImpl(QString &str) const override;
-	virtual bool fromVariantImpl(const QVariant &var, bool edit) override;
+	virtual bool fromVariantImpl(
+		const QVariant &var, QtnPropertyChangeReason reason) override;
 	virtual bool toVariantImpl(QVariant &var) const override;
 };
 
@@ -61,8 +63,6 @@ class QTN_IMPORT_EXPORT QtnPropertyQKeySequence
 
 public:
 	explicit QtnPropertyQKeySequence(QObject *parent = nullptr);
-
-	static bool Register();
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQKeySequence
@@ -75,9 +75,11 @@ public:
 
 	QtnPropertyDelegateQKeySequence(QtnPropertyQKeySequenceBase &owner);
 
+	static void Register(QtnPropertyDelegateFactory &factory);
+
 protected:
 	virtual QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 
-	virtual bool propertyValueToStr(QString &strValue) const override;
+	virtual bool propertyValueToStrImpl(QString &strValue) const override;
 };

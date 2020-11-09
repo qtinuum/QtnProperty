@@ -1,8 +1,14 @@
 #ifndef DEMO_H
 #define DEMO_H
 
-#include "../Core/PropertyCore.h"
-#include "../Core/PropertyGUI.h"
+#include "QtnProperty/PropertyCore.h"
+#include "QtnProperty/PropertyGUI.h"
+#include "QtnProperty/PropertyInt64.h"
+#include "QtnProperty/PropertyUInt64.h"
+#include "AB/PropertyABColor.h"
+#include "Layer/PropertyLayer.h"
+#include "PenWidth/PropertyPenWidth.h"
+#include "Freq/PropertyFreq.h"
 
 class COLOR
 {
@@ -39,9 +45,9 @@ class QtnPropertySetSubPropertySetType: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetSubPropertySetType(QObject* parent = 0);
+    explicit QtnPropertySetSubPropertySetType(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetSubPropertySetType();
+    virtual ~QtnPropertySetSubPropertySetType() override;
     // assignment declaration
     QtnPropertySetSubPropertySetType& operator=(const QtnPropertySetSubPropertySetType& other);
     
@@ -75,18 +81,30 @@ class QtnPropertySetSamplePS: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetSamplePS(QObject* parent = 0);
+    explicit QtnPropertySetSamplePS(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetSamplePS();
+    virtual ~QtnPropertySetSamplePS() override;
     // assignment declaration
     QtnPropertySetSamplePS& operator=(const QtnPropertySetSamplePS& other);
     
     // start children declarations
     QtnPropertyBool& BoolProperty;
+    QtnPropertyButton& ButtonProperty;
+    QtnPropertyButton& ButtonLinkProperty;
+    QtnPropertyABColor& RGBColor;
+    QtnPropertyQColor& ColorSolidDelegate;
+    QtnPropertyFloat& FloatPropertySliderBox;
+    QtnPropertyFloat& FloatIntRangeSliderBox;
+    QtnPropertyDouble& DoubleFullRangeSliderBox;
     QtnPropertyDouble& DoubleProperty;
     QtnPropertyFloat& FloatProperty;
     QtnPropertyInt& IntProperty;
+    QtnPropertyInt& IntPropertyComboBox;
     QtnPropertyUInt& UIntProperty;
+    QtnPropertyInt64& Int64Property;
+    QtnPropertyUInt64& UInt64Property;
+    QtnPropertyInt64& Int64SliderBox;
+    QtnPropertyUInt64& UInt64SliderBox;
     QtnPropertyEnum& EnumProperty;
     QtnPropertyEnumFlags& EnumFlagsProperty;
     QtnPropertyQString& QStringValue;
@@ -95,8 +113,19 @@ public:
     QtnPropertyQPoint& QPointProperty;
     QtnPropertyQSize& QSizeProperty;
     QtnPropertyQRect& QRectProperty;
+    QtnPropertyQPointF& QPointFProperty;
+    QtnPropertyQSizeF& QSizeFProperty;
+    QtnPropertyQRectF& QRectFProperty;
+    QtnPropertyQVector3D& QVector3DProperty;
     QtnPropertyQColor& QColorProperty;
     QtnPropertyQFont& QFontProperty;
+    QtnPropertyFreq& FreqProperty;
+    QtnPropertyLayer& LayerProperty;
+    QtnPropertyQBrushStyle& BrushStyleProperty;
+    QtnPropertyPenWidth& PenWidthProperty;
+    QtnPropertyQPenStyle& PenStyleProperty;
+    QtnPropertyQPen& PenProperty;
+    QtnPropertyQString& QStringCallbackProperty;
     QtnPropertySetSubPropertySetType& SubPropertySet2;
     // end children declarations
 
@@ -114,7 +143,8 @@ private:
     void connectDelegates();
     
     // start slot declarations
-    void on_EnableSubPropertySet_propertyDidChange(const QtnPropertyBase* changedProperty, const QtnPropertyBase* firedProperty, QtnPropertyChangeReason reason);
+    void on_EnableSubPropertySet_propertyDidChange(QtnPropertyChangeReason reason);
+    void on_QColorProperty_propertyDidChange(QtnPropertyChangeReason reason);
     // end slot declarations
 };
 

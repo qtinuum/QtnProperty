@@ -1,6 +1,6 @@
 /*******************************************************************************
-Copyright 2012-2015 Alex Zhondin <qtinuum.team@gmail.com>
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,52 +16,85 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyDelegate.h"
-#include "MultiProperty.h"
-#include "PropertyEditorAux.h"
+#include "Utils/QtnConnections.h"
+#include "Utils/PropertyEditorHandler.h"
+#include "PropertyView.h"
 
-#include <QLineEdit>
-#include <QKeyEvent>
-
-QString qtnElidedText(const QPainter &painter, const QString &text,
-	const QRect &rect, bool *elided)
+QtnPropertyDelegate::QtnPropertyDelegate(QtnPropertyBase &ownerProperty)
+	: m_ownerProperty(&ownerProperty)
+	, m_stateProperty(nullptr)
 {
-	QString newText =
-		painter.fontMetrics().elidedText(text, Qt::ElideRight, rect.width());
-
-	if (elided)
-		*elided = (newText != text);
-
-	return newText;
 }
 
-QtnPropertyDelegate::~QtnPropertyDelegate() {}
+QtnPropertyDelegate::~QtnPropertyDelegate()
+{
+	if (m_editorHandler)
+		m_editorHandler->cleanup();
+}
 
 void QtnPropertyDelegate::init()
 {
 	// do nothing
 }
 
-QWidget *QtnPropertyDelegate::createValueEditor(
-	QWidget *parent, const QRect &rect, QtnInplaceInfo *inplaceInfo)
+QtnPropertyChangeReason QtnPropertyDelegate::editReason() const
 {
-	QWidget *valueEditor = createValueEditorImpl(parent, rect, inplaceInfo);
-
-	if (!valueEditor)
-		return valueEditor;
-
-	valueEditor->setObjectName("QtnPropertyValueEditor");
-	return valueEditor;
+	QtnPropertyChangeReason result = QtnPropertyChangeReasonEdit;
+	if (stateProperty()->isMultiValue())
+		result |= QtnPropertyChangeReasonMultiEdit;
+	return result;
 }
 
-bool QtnPropertyDelegate::propertyValueToStr(QString &strValue) const
+void QtnPropertyDelegate::applySubPropertyInfo(
+	const QtnPropertyDelegateInfo &info, const QtnSubPropertyInfo &subInfo)
 {
-	Q_UNUSED(strValue);
-	return false;
+	QtnPropertyDelegateInfo subDelegateInfo;
+	auto &subAttributes = subDelegateInfo.attributes;
+	subAttributes = info.attributes;
+	auto vSubDelegate = subAttributes.value(subInfo.key.toUtf8());
+	switch (vSubDelegate.type())
+	{
+		case QVariant::Map:
+		case QVariant::Hash:
+		{
+			auto vmap = vSubDelegate.toMap();
+			static const auto sNameKey = QStringLiteral("name");
+			for (auto it = vmap.cbegin(); it != vmap.cend(); ++it)
+			{
+				if (it.key() == sNameKey)
+				{
+					auto vname = vmap.value(sNameKey);
+					subDelegateInfo.name = vname.type() == QVariant::ByteArray
+						? vname.toByteArray()
+						: vname.toString().toUtf8();
+				} else
+				{
+					subAttributes[it.key().toUtf8()] = it.value();
+				}
+			}
+		}
+
+		default:
+			break;
+	}
+
+	auto p = subProperty(subInfo.id);
+	p->setName(subInfo.key);
+	info.storeAttributeValue(subInfo.displayNameAttr, p,
+		&QtnPropertyBase::displayName, &QtnPropertyBase::setDisplayName);
+	info.storeAttributeValue(subInfo.descriptionAttr, p,
+		&QtnPropertyBase::description, &QtnPropertyBase::setDescription);
+	p->setDelegateInfo(subDelegateInfo);
 }
 
-QtnPropertyDelegate::QtnPropertyDelegate(QtnProperty *ownerProperty)
-	: ownerProperty(ownerProperty)
+void QtnPropertyDelegate::applySubPropertyInfos(
+	const QtnPropertyDelegateInfo &info, const QtnSubPropertyInfo *subInfos,
+	int count)
 {
+	for (int i = 0; i < count; i++)
+	{
+		applySubPropertyInfo(info, subInfos[i]);
+	}
 }
 
 int QtnPropertyDelegate::subPropertyCountImpl() const
@@ -76,75 +109,172 @@ QtnPropertyBase *QtnPropertyDelegate::subPropertyImpl(int index)
 }
 
 void QtnPropertyDelegate::applyAttributesImpl(
-	const QtnPropertyDelegateAttributes &attributes)
+	const QtnPropertyDelegateInfo &info)
 {
-	Q_UNUSED(attributes);
+	Q_UNUSED(info);
 }
 
-void QtnPropertyDelegate::drawValueImpl(QStylePainter &painter,
-	const QRect &rect, const QStyle::State &state, bool *needTooltip) const
+QStyle::State QtnPropertyDelegate::state(
+	bool isActive, const QtnSubItem &subItem) const
 {
-	QString strValue;
-
-	if (propertyValueToStr(strValue))
+	auto subState = subItem.state();
+	QStyle::State state = QStyle::State_Active;
+	if (stateProperty()->isEditableByUser())
+		state |= QStyle::State_Enabled;
+	if (isActive)
 	{
-		drawValueText(strValue, painter, rect, state, needTooltip);
+		state |= QStyle::State_Selected;
+		state |= QStyle::State_HasFocus;
+	}
+
+	if (subState == QtnSubItemStateUnderCursor)
+		state |= QStyle::State_MouseOver;
+	else if (subState == QtnSubItemStatePushed)
+		state |= QStyle::State_Sunken;
+
+	return state;
+}
+
+void QtnPropertyDelegate::addSubItemLock(
+	QtnDrawContext &context, QList<QtnSubItem> &subItems)
+{
+	if (!stateProperty()->isUnlockable())
+	{
+		return;
+	}
+
+	QtnSubItem item(context.rect.marginsRemoved(context.margins));
+	item.rect.setWidth(item.rect.height());
+	context.margins.setLeft(context.margins.left() + item.rect.height() +
+		context.widget->valueLeftMargin());
+
+	item.setTextAsTooltip(stateProperty()->isLocked()
+			? QtnPropertyView::tr("Unlock")
+			: QtnPropertyView::tr("Lock"));
+
+	item.trackState();
+
+	if (item.rect.isValid())
+	{
+		item.drawHandler = [this](QtnDrawContext &context,
+							   const QtnSubItem &item) {
+			drawButton(context, item, QIcon(),
+				stateProperty()->isLocked()
+					? QString::fromUtf8("\xF0\x9F\x93\x95")
+					: QString::fromUtf8("\xF0\x9F\x93\x96"));
+		};
+
+		item.eventHandler = [this](QtnEventContext &context, const QtnSubItem &,
+								QtnPropertyToEdit *) -> bool {
+			if ((context.eventType() == QEvent::MouseButtonPress) ||
+				(context.eventType() == QEvent::MouseButtonDblClick))
+			{
+				QtnConnections connections;
+				context.widget->connectPropertyToEdit(
+					stateProperty(), connections);
+				stateProperty()->toggleLock(editReason());
+				return true;
+			}
+
+			return false;
+		};
+
+		subItems.append(item);
 	}
 }
 
-QString QtnPropertyDelegate::toolTipImpl() const
+QColor QtnPropertyDelegate::disabledTextColor(const QStylePainter &painter)
 {
-	QString strValue;
-	propertyValueToStr(strValue);
-	return strValue;
+	auto palette = painter.style()->standardPalette();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+	return palette.color(QPalette::Active, QPalette::PlaceholderText);
+#else
+	return palette.color(QPalette::Disabled, QPalette::Text);
+#endif
 }
 
-bool QtnPropertyDelegate::acceptKeyPressedForInplaceEditImpl(
-	QKeyEvent *keyEvent) const
+void QtnPropertyDelegate::addSubItemBranchNode(
+	QtnDrawContext &context, QList<QtnSubItem> &subItems)
 {
-	int key = keyEvent->key();
-	return (key == Qt::Key_Space || key == Qt::Key_Return);
-}
-
-void QtnPropertyDelegate::drawValueText(const QString &text,
-	QStylePainter &painter, const QRect &rect, const QStyle::State &state,
-	bool *needTooltip)
-{
-	Q_UNUSED(state);
-
-	if (text.isEmpty())
+	if (!context.hasChildren)
 		return;
 
-	painter.drawText(rect, Qt::AlignLeading | Qt::AlignVCenter,
-		qtnElidedText(painter, text, rect, needTooltip));
-}
+	QtnSubItem brItem(context.rect.marginsRemoved(context.margins));
+	brItem.rect.setWidth(brItem.rect.height());
+	context.margins.setLeft(context.margins.left() + brItem.rect.height());
+	brItem.trackState();
 
-QLineEdit *QtnPropertyDelegate::createValueEditorLineEdit(QWidget *parent,
-	const QRect &rect, bool readOnly, QtnInplaceInfo *inplaceInfo)
-{
-	QLineEdit *lineEdit = new QLineEdit(parent);
-	lineEdit->setGeometry(rect);
-	lineEdit->setReadOnly(readOnly);
+	if (!brItem.rect.isValid())
+		return;
 
-	QString strValue;
+	brItem.drawHandler = [this](
+							 QtnDrawContext &context, const QtnSubItem &item) {
+		auto &painter = *context.painter;
+		QRectF branchRect = item.rect;
+		qreal side = branchRect.height() / qreal(3.5);
+		QColor fillClr = context.palette().color(QPalette::Text);
+		QColor outlineClr = (item.state() != QtnSubItemStateNone)
+			? Qt::blue
+			: context.palette().color(QPalette::Text);
 
-	if (ownerProperty->valueIsHidden())
-	{
-		lineEdit->setPlaceholderText(
-			QtnMultiProperty::getMultiValuePlaceholder());
-	} else
-	{
-		propertyValueToStr(strValue);
-	}
+		painter.save();
+		painter.setPen(outlineClr);
 
-	lineEdit->setText(strValue);
+		QPainterPath branchPath;
+		if (stateProperty()->isCollapsed())
+		{
+			branchPath.moveTo(
+				branchRect.left() + side, branchRect.top() + side);
+			branchPath.lineTo(branchRect.right() - side - 1,
+				branchRect.top() + branchRect.height() / qreal(2.0));
+			branchPath.lineTo(
+				branchRect.left() + side, branchRect.bottom() - side);
+			branchPath.closeSubpath();
+		} else
+		{
+			branchPath.moveTo(
+				branchRect.left() + side, branchRect.top() + side);
+			branchPath.lineTo(
+				branchRect.right() - side, branchRect.top() + side);
+			branchPath.lineTo(
+				branchRect.left() + branchRect.width() / qreal(2.0),
+				branchRect.bottom() - side - 1);
+			branchPath.closeSubpath();
+		}
 
-	qtnInitLineEdit(lineEdit, inplaceInfo);
+		if (painter.testRenderHint(QPainter::Antialiasing))
+		{
+			painter.fillPath(branchPath, fillClr);
+			painter.drawPath(branchPath);
+		} else
+		{
+			painter.setRenderHint(QPainter::Antialiasing, true);
+			painter.fillPath(branchPath, fillClr);
+			painter.drawPath(branchPath);
+			painter.setRenderHint(QPainter::Antialiasing, false);
+		}
 
-	return lineEdit;
-}
+		painter.restore();
+	};
 
-QtnInplaceInfo::QtnInplaceInfo()
-	: activationEvent(0)
-{
+	brItem.eventHandler = [this](QtnEventContext &context, const QtnSubItem &,
+							  QtnPropertyToEdit *) -> bool {
+		if ((context.eventType() == QEvent::MouseButtonPress) ||
+			(context.eventType() == QEvent::MouseButtonDblClick))
+		{
+			stateProperty()->toggleState(QtnPropertyStateCollapsed);
+			return true;
+		}
+
+		return false;
+	};
+
+	brItem.tooltipHandler = [this](QtnEventContext &,
+								const QtnSubItem &) -> QString {
+		return (stateProperty()->isCollapsed())
+			? QtnPropertyView::tr("Click to expand")
+			: QtnPropertyView::tr("Click to collapse");
+	};
+
+	subItems.append(brItem);
 }

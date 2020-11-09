@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2015-2017 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ QtnPropertyConnector::QtnPropertyConnector(QtnPropertyBase *property)
 	: QObject(property)
 	, property(property)
 	, object(nullptr)
+	, ignoreStateChangeCounter(0)
 {
 	Q_ASSERT(nullptr != property);
 	Q_ASSERT(nullptr == property->getConnector());
@@ -34,13 +35,15 @@ QtnPropertyConnector::QtnPropertyConnector(QtnPropertyBase *property)
 void QtnPropertyConnector::connectProperty(
 	QObject *object, const QMetaProperty &metaProperty)
 {
-	property->switchState(
-		QtnPropertyStateResettable, metaProperty.isResettable());
 	this->object = object;
 	this->metaProperty = metaProperty;
 	auto metaObject = this->metaObject();
-	auto slot = metaObject->method(metaObject->indexOfSlot("onValueChanged()"));
-	QObject::connect(object, metaProperty.notifySignal(), this, slot);
+	if (metaProperty.hasNotifySignal())
+	{
+		auto slot =
+			metaObject->method(metaObject->indexOfSlot("onValueChanged()"));
+		QObject::connect(object, metaProperty.notifySignal(), this, slot);
+	}
 
 	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
 
@@ -49,12 +52,44 @@ void QtnPropertyConnector::connectProperty(
 		auto srcMetaObject = object->metaObject();
 		auto signal = srcMetaObject->method(
 			srcMetaObject->indexOfSignal("modifiedSetChanged()"));
-		Q_ASSERT(signal.isValid());
+		if (signal.isValid())
+		{
+			auto slot = metaObject->method(
+				metaObject->indexOfSlot("onModifiedSetChanged()"));
+			QObject::connect(object, signal, this, slot);
+		}
 
-		slot = metaObject->method(
-			metaObject->indexOfSlot("onModifiedSetChanged()"));
-		QObject::connect(object, signal, this, slot);
+		signal = srcMetaObject->method(srcMetaObject->indexOfSignal(
+			"propertyStateChanged(QMetaProperty)"));
+		if (signal.isValid())
+		{
+			auto slot = metaObject->method(metaObject->indexOfSlot(
+				"onPropertyStateChanged(QMetaProperty)"));
+			QObject::connect(object, signal, this, slot);
+		}
+	} else
+	{
+		property->switchState(
+			QtnPropertyStateResettable, metaProperty.isResettable());
 	}
+}
+
+void QtnPropertyConnector::updatePropertyState()
+{
+	if (!property || !object || !metaProperty.isValid())
+	{
+		return;
+	}
+
+	auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
+	if (!stateProvider)
+	{
+		return;
+	}
+
+	ignoreStateChangeCounter++;
+	stateProvider->setPropertyState(metaProperty, property->stateLocal());
+	ignoreStateChangeCounter--;
 }
 
 bool QtnPropertyConnector::isResettablePropertyValue() const
@@ -62,55 +97,53 @@ bool QtnPropertyConnector::isResettablePropertyValue() const
 	return metaProperty.isResettable();
 }
 
-void QtnPropertyConnector::resetPropertyValue(bool edit)
+void QtnPropertyConnector::resetPropertyValue(QtnPropertyChangeReason reason)
 {
-	if (nullptr != object && metaProperty.isResettable())
+	if (nullptr != object && nullptr != property && metaProperty.isResettable())
 	{
-		auto property = qobject_cast<QtnPropertyBase *>(parent());
-		Q_ASSERT(nullptr != property);
-
-		if (property->isWritable())
+		if (property->isResettable())
 		{
-			QtnPropertyChangeReason reasons = QtnPropertyChangeReasonNewValue |
-				QtnPropertyChangeReasonResetValue;
+			reason |= QtnPropertyChangeReasonResetValue;
 
-			if (edit)
-				reasons |= QtnPropertyChangeReasonEditValue;
-
-			emit property->propertyWillChange(reasons, nullptr, 0);
+			emit property->propertyWillChange(reason, nullptr, 0);
 			metaProperty.reset(object);
-			emit property->propertyDidChange(reasons);
+			emit property->propertyDidChange(reason);
 		}
 	}
 }
 
 void QtnPropertyConnector::onValueChanged()
 {
-	auto property = qobject_cast<QtnPropertyBase *>(parent());
-
 	if (nullptr != property)
 	{
 		property->postUpdateEvent(QtnPropertyChangeReasonNewValue, 20);
 	}
 }
 
+void QtnPropertyConnector::onPropertyStateChanged(
+	const QMetaProperty &metaProperty)
+{
+	if (ignoreStateChangeCounter == 0 && nullptr != property &&
+		metaProperty.propertyIndex() == this->metaProperty.propertyIndex())
+	{
+		onModifiedSetChanged();
+	}
+}
+
 void QtnPropertyConnector::onModifiedSetChanged()
 {
-	auto property = qobject_cast<QtnPropertyBase *>(parent());
-
 	if (nullptr != property)
 	{
-		QtnPropertyState state;
-
 		auto stateProvider = dynamic_cast<IQtnPropertyStateProvider *>(object);
 
-		if (nullptr != stateProvider)
-			state = stateProvider->getPropertyState(metaProperty);
+		if (nullptr == stateProvider)
+			return;
 
-		state.setFlag(QtnPropertyStateCollapsed, property->isCollapsed());
-		state.setFlag(QtnPropertyStateResettable, property->isResettable());
-
+		QtnPropertyState state;
+		state = stateProvider->getPropertyState(metaProperty);
 		state |= qtnPropertyStateToAdd(metaProperty);
+		state.setFlag(QtnPropertyStateCollapsed, property->isCollapsed());
+		state.setFlag(QtnPropertyStateResettable, metaProperty.isResettable());
 
 		property->setState(state);
 	}
