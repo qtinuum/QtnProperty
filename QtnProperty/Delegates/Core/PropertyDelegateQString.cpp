@@ -1178,7 +1178,8 @@ void QtnPropertyQStringCandidatesComboBoxHandler::connectLineEdit()
 	QObject::connect(mLineEdit, &QtnCompleterLineEdit::escaped, this,
 		&QtnPropertyQStringCandidatesComboBoxHandler::revertInput);
 	QObject::connect(mLineEdit, &QLineEdit::editingFinished, this,
-		&QtnPropertyQStringCandidatesComboBoxHandler::onEditingFinished);
+		&QtnPropertyQStringCandidatesComboBoxHandler::onEditingFinished,
+		Qt::QueuedConnection);
 	QObject::connect(mLineEdit->completer(),
 		static_cast<void (QCompleter::*)(const QModelIndex &)>(
 			&QCompleter::activated),
