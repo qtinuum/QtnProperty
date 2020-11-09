@@ -624,7 +624,7 @@ void QtnPropertySetSamplePS::init()
     Int64Property.setName(Int64Property_name);
     static QString Int64Property_description = "Property to hold signed integer 64-bit value";
     Int64Property.setDescription(Int64Property_description);
-    Int64Property.setValue(-1LL << 35);
+    Int64Property.setValue(-(1LL << 35));
     static QString UInt64Property_name = QStringLiteral("UInt64Property");
     UInt64Property.setName(UInt64Property_name);
     static QString UInt64Property_description = "Property to hold signed integer 64-bit value";
@@ -634,7 +634,7 @@ void QtnPropertySetSamplePS::init()
     Int64SliderBox.setName(Int64SliderBox_name);
     static QString Int64SliderBox_description = "Property to hold signed integer 64-bit value with slider box";
     Int64SliderBox.setDescription(Int64SliderBox_description);
-    Int64SliderBox.setValue(-1LL << 34);
+    Int64SliderBox.setValue(-(1LL << 34));
     static QString UInt64SliderBox_name = QStringLiteral("UInt64SliderBox");
     UInt64SliderBox.setName(UInt64SliderBox_name);
     static QString UInt64SliderBox_description = "Property to hold unsigned integer 64-bit value with slider box";

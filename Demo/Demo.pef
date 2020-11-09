@@ -95,7 +95,7 @@ property_set SamplePS
         value = 111.f;
         minValue = -float(1 << std::numeric_limits<float>::digits);
         maxValue = float(1 << std::numeric_limits<float>::digits);
-        
+
         delegate SliderBox
         {
             fillColor = QColor::fromRgb(170, 170, 255);
@@ -109,7 +109,7 @@ property_set SamplePS
         value = 1111.0;
         minValue = -double(1LL << std::numeric_limits<double>::digits);
         maxValue = double(1LL << std::numeric_limits<double>::digits);
-        
+
         delegate SliderBox
         {
             fillColor = QColor::fromRgb(170, 170, 255);
@@ -164,7 +164,7 @@ property_set SamplePS
     Int64 Int64Property
     {
     	description = "Property to hold signed integer 64-bit value";
-    	value = -1LL << 35;
+    	value = -(1LL << 35);
     	delegate
     	{
     		step = 100000;
@@ -180,7 +180,7 @@ property_set SamplePS
     Int64 Int64SliderBox
     {
     	description = "Property to hold signed integer 64-bit value with slider box";
-    	value = -1LL << 34;
+    	value = -(1LL << 34);
     	delegate SliderBox
     	{
     	}
