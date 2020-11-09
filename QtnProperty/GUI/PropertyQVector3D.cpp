@@ -60,7 +60,7 @@ bool QtnPropertyQVector3DBase::fromStrImpl(
 		return false;
 	}
 
-	text = text.mid(1, text.length() - 1).trimmed();
+	text = text.mid(1, text.length() - 2).trimmed();
 	auto params = text.split(QChar(','));
 	if (params.size() != 3)
 	{

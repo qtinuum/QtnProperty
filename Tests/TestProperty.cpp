@@ -505,6 +505,22 @@ void TestProperty::propertyPen()
 	}
 }
 
+void TestProperty::propertyVector3D()
+{
+	QVector3D testValue(12.f, 22.f, 33.f);
+	QtnPropertyQVector3D p;
+	p.setValue(testValue);
+
+	QCOMPARE(p.value(), testValue);
+
+	QString str;
+	QVERIFY(p.toStr(str));
+	p.setValue(QVector3D(1.f, 1.f, 1.f));
+	QVERIFY(p.value() != testValue);
+	QVERIFY(p.fromStr(str));
+	QCOMPARE(p.value(), testValue);
+}
+
 void TestProperty::propertySet()
 {
 	QtnPropertySet p(this);
