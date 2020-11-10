@@ -60,11 +60,11 @@ bool QtnPropertyDelegateQSizeF::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 
+	QLocale locale;
 	strValue = QtnPropertyQSize::getToStringFormat().arg(
+		QtnDoubleSpinBox::valueToText(value.width(), locale, m_precision, true),
 		QtnDoubleSpinBox::valueToText(
-			value.width(), QLocale(), m_precision, true),
-		QtnDoubleSpinBox::valueToText(
-			value.height(), QLocale(), m_precision, true));
+			value.height(), locale, m_precision, true));
 
 	return true;
 }

@@ -69,12 +69,13 @@ bool QtnPropertyDelegateQPointF::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 
+	QLocale locale;
 	strValue = QtnPropertyQPoint::getToStringFormat().arg(
 		QtnDoubleSpinBox::valueToText(
-			value.x() * m_multiplier, QLocale(), m_precision, true) +
+			value.x() * m_multiplier, locale, m_precision, true) +
 			m_suffix,
 		QtnDoubleSpinBox::valueToText(
-			value.y() * m_multiplier, QLocale(), m_precision, true) +
+			value.y() * m_multiplier, locale, m_precision, true) +
 			m_suffix);
 
 	return true;

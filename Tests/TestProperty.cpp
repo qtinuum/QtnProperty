@@ -209,13 +209,15 @@ void TestProperty::state()
 	QCOMPARE(ps.state(), QtnPropertyStateNone);
 
 	int call_count = 0;
-	QObject::connect(&ps, &QtnPropertyBase::propertyWillChange,
-		[&call_count](QtnPropertyChangeReason, QtnPropertyValuePtr, int) {
-			++call_count;
-		});
+	auto connection1 =
+		QObject::connect(&ps, &QtnPropertyBase::propertyWillChange,
+			[&call_count](QtnPropertyChangeReason, QtnPropertyValuePtr, int) {
+				++call_count;
+			});
 
-	QObject::connect(&ps, &QtnPropertyBase::propertyDidChange,
-		[&call_count](QtnPropertyChangeReason) { ++call_count; });
+	auto connection2 =
+		QObject::connect(&ps, &QtnPropertyBase::propertyDidChange,
+			[&call_count](QtnPropertyChangeReason) { ++call_count; });
 
 	ps.addState(QtnPropertyStateNone, true);
 	QCOMPARE(call_count, 2);
@@ -225,6 +227,9 @@ void TestProperty::state()
 
 	ps.removeState(QtnPropertyStateCollapsed, true);
 	QCOMPARE(call_count, 4);
+
+	QObject::disconnect(connection1);
+	QObject::disconnect(connection2);
 }
 
 void TestProperty::stateChange()

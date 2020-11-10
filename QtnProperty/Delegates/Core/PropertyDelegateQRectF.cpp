@@ -83,17 +83,18 @@ bool QtnPropertyDelegateQRectF::propertyValueToStrImpl(QString &strValue) const
 {
 	auto value = owner().value();
 
+	QLocale locale;
 	strValue = QtnPropertyQRect::getToStringFormat(m_coordinates)
 				   .arg(QtnDoubleSpinBox::valueToText(
-							value.left(), QLocale(), m_precision, true),
+							value.left(), locale, m_precision, true),
 					   QtnDoubleSpinBox::valueToText(
-						   value.top(), QLocale(), m_precision, true),
+						   value.top(), locale, m_precision, true),
 					   QtnDoubleSpinBox::valueToText(
 						   m_coordinates ? value.right() : value.width(),
-						   QLocale(), m_precision, true),
+						   locale, m_precision, true),
 					   QtnDoubleSpinBox::valueToText(
 						   m_coordinates ? value.bottom() : value.height(),
-						   QLocale(), m_precision, true));
+						   locale, m_precision, true));
 
 	return true;
 }
