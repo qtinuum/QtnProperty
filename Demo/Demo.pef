@@ -89,6 +89,35 @@ property_set SamplePS
         }
     }
 
+    Float FloatPercent
+    {
+    	description = "Property to hold float values in range [0-1] visible as [0%-100%].";
+    	value = 0.5f;
+    	minValue = 0.f;
+    	maxValue = 1.f;
+
+    	delegate
+    	{
+    		multiplier = 100.0;
+    		suffix = "%";
+    	}
+    }
+
+    Double DoublePercent
+    {
+    	description = "Property to hold double values in range [0-1] visible as [0%-100%].";
+    	value = 0.5;
+    	minValue = 0.0;
+    	maxValue = 1.0;
+
+    	delegate
+    	{
+    		multiplier = 100.0;
+    		precision = 10;
+    		suffix = "%";
+    	}
+    }
+
     Float FloatIntRangeSliderBox
     {
         description = "Property to hold float values in full range.";
