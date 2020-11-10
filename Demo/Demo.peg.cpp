@@ -222,6 +222,8 @@ QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     , RGBColor(*qtnCreateProperty<QtnPropertyABColor>(this))
     , ColorSolidDelegate(*qtnCreateProperty<QtnPropertyQColor>(this))
     , FloatPropertySliderBox(*qtnCreateProperty<QtnPropertyFloat>(this))
+    , FloatPercent(*qtnCreateProperty<QtnPropertyFloat>(this))
+    , DoublePercent(*qtnCreateProperty<QtnPropertyDouble>(this))
     , FloatIntRangeSliderBox(*qtnCreateProperty<QtnPropertyFloat>(this))
     , DoubleFullRangeSliderBox(*qtnCreateProperty<QtnPropertyDouble>(this))
     , DoubleProperty(*qtnCreateProperty<QtnPropertyDouble>(this))
@@ -276,6 +278,8 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
     RGBColor = other.RGBColor;
     ColorSolidDelegate = other.ColorSolidDelegate;
     FloatPropertySliderBox = other.FloatPropertySliderBox;
+    FloatPercent = other.FloatPercent;
+    DoublePercent = other.DoublePercent;
     FloatIntRangeSliderBox = other.FloatIntRangeSliderBox;
     DoubleFullRangeSliderBox = other.DoubleFullRangeSliderBox;
     DoubleProperty = other.DoubleProperty;
@@ -361,6 +365,16 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     if (!(theCopyFrom->FloatPropertySliderBox.state() & ignoreMask))
     {
         FloatPropertySliderBox = theCopyFrom->FloatPropertySliderBox;
+    }
+
+    if (!(theCopyFrom->FloatPercent.state() & ignoreMask))
+    {
+        FloatPercent = theCopyFrom->FloatPercent;
+    }
+
+    if (!(theCopyFrom->DoublePercent.state() & ignoreMask))
+    {
+        DoublePercent = theCopyFrom->DoublePercent;
     }
 
     if (!(theCopyFrom->FloatIntRangeSliderBox.state() & ignoreMask))
@@ -571,6 +585,20 @@ void QtnPropertySetSamplePS::init()
     FloatPropertySliderBox.setMinValue(0);
     FloatPropertySliderBox.setStepValue(0.1f);
     FloatPropertySliderBox.setValue(1.f);
+    static QString FloatPercent_name = QStringLiteral("FloatPercent");
+    FloatPercent.setName(FloatPercent_name);
+    static QString FloatPercent_description = "Property to hold float values in range [0-1] visible as [0%-100%].";
+    FloatPercent.setDescription(FloatPercent_description);
+    FloatPercent.setMaxValue(1.f);
+    FloatPercent.setMinValue(0.f);
+    FloatPercent.setValue(0.5f);
+    static QString DoublePercent_name = QStringLiteral("DoublePercent");
+    DoublePercent.setName(DoublePercent_name);
+    static QString DoublePercent_description = "Property to hold double values in range [0-1] visible as [0%-100%].";
+    DoublePercent.setDescription(DoublePercent_description);
+    DoublePercent.setMaxValue(1.0);
+    DoublePercent.setMinValue(0.0);
+    DoublePercent.setValue(0.5);
     static QString FloatIntRangeSliderBox_name = QStringLiteral("FloatIntRangeSliderBox");
     FloatIntRangeSliderBox.setName(FloatIntRangeSliderBox_name);
     static QString FloatIntRangeSliderBox_description = "Property to hold float values in full range.";
@@ -808,6 +836,19 @@ void QtnPropertySetSamplePS::connectDelegates()
         info.name = "SliderBox";
         info.attributes["drawBorder"] = false;
         info.attributes["fillColor"] = QColor::fromRgb(170, 170, 255);
+        return info;
+    });
+    FloatPercent.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.attributes["multiplier"] = 100.0;
+        info.attributes["suffix"] = "%";
+        return info;
+    });
+    DoublePercent.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
+        QtnPropertyDelegateInfo info;
+        info.attributes["multiplier"] = 100.0;
+        info.attributes["precision"] = 10;
+        info.attributes["suffix"] = "%";
         return info;
     });
     FloatIntRangeSliderBox.setDelegateInfoCallback([] () -> QtnPropertyDelegateInfo {
