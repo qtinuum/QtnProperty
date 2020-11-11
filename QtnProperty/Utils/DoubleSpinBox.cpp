@@ -41,9 +41,9 @@ QString QtnDoubleSpinBox::valueToText(
 
 	if (i >= 0)
 	{
-		auto digitsTest = QByteArray::number(
-			value, 'f', std::numeric_limits<double>::digits10 - 1);
-		if (digitsTest.endsWith('9') && result.endsWith(locale.toString(9)))
+		auto digitsTest = QByteArray::number(value, 'f', decimals + 1);
+		auto last = char(digitsTest.back());
+		if (last >= '5' && last <= '9' && result.endsWith(locale.toString(9)))
 		{
 			auto begin = result.constData();
 			auto data = &begin[result.length() - 1];
