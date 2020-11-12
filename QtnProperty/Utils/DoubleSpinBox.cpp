@@ -42,7 +42,7 @@ QString QtnDoubleSpinBox::valueToText(
 	if (i >= 0)
 	{
 		auto digitsTest = QByteArray::number(value, 'f', decimals + 1);
-		auto last = char(digitsTest.back());
+		char last = *digitsTest.crbegin();
 		if (last >= '5' && last <= '9' && result.endsWith(locale.toString(9)))
 		{
 			auto begin = result.constData();
