@@ -94,6 +94,8 @@ public:
     QtnPropertyABColor& RGBColor;
     QtnPropertyQColor& ColorSolidDelegate;
     QtnPropertyFloat& FloatPropertySliderBox;
+    QtnPropertyFloat& FloatPercent;
+    QtnPropertyDouble& DoublePercent;
     QtnPropertyFloat& FloatIntRangeSliderBox;
     QtnPropertyDouble& DoubleFullRangeSliderBox;
     QtnPropertyDouble& DoubleProperty;

@@ -49,18 +49,18 @@ bool QtnPropertyQVector3DBase::fromStrImpl(
 	const QString &str, QtnPropertyChangeReason reason)
 {
 	auto text = str.trimmed();
-	if (!text.startsWith(sPrefix))
+	if (!text.startsWith(sPrefix, Qt::CaseInsensitive))
 	{
 		return false;
 	}
 	text = text.mid(sPrefix.length()).trimmed();
 
-	if (!text.startsWith("(") || !text.endsWith(")"))
+	if (!text.startsWith(QChar('(')) || !text.endsWith(QChar(')')))
 	{
 		return false;
 	}
 
-	text = text.mid(1, text.length() - 1).trimmed();
+	text = text.mid(1, text.length() - 2).trimmed();
 	auto params = text.split(QChar(','));
 	if (params.size() != 3)
 	{
@@ -89,7 +89,8 @@ bool QtnPropertyQVector3DBase::fromStrImpl(
 bool QtnPropertyQVector3DBase::toStrImpl(QString &str) const
 {
 	QVector3D v = value();
-	str = QStringLiteral("QVector3D(%1, %2, %3)")
+	str = QStringLiteral("%1(%2, %3, %4)")
+			  .arg(sPrefix)
 			  .arg(v.x())
 			  .arg(v.y())
 			  .arg(v.z());

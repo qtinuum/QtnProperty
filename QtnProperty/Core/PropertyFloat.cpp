@@ -36,7 +36,7 @@ bool QtnPropertyFloatBase::fromStrImpl(
 
 bool QtnPropertyFloatBase::toStrImpl(QString &str) const
 {
-	str = QString::number(value(), 'f', std::numeric_limits<float>::digits10);
+	str = QString::number(value(), 'g', std::numeric_limits<float>::digits10);
 	return true;
 }
 

@@ -118,16 +118,16 @@ void QtnPropertyDelegateQColor::drawValueImpl(
 			painter.fillRect(colorRect, value);
 		} else if (m_shape == QtnColorDelegateShapeCircle)
 		{
+			auto oldBrush = painter.brush();
 			bool oldAntiAliasing =
 				painter.testRenderHint(QPainter::Antialiasing);
 			painter.setRenderHint(QPainter::Antialiasing);
 
-			QPainterPath path;
-			path.addEllipse(colorRect);
-			painter.fillPath(path, value);
+			painter.setBrush(value);
 			painter.drawEllipse(colorRect);
 
 			painter.setRenderHint(QPainter::Antialiasing, oldAntiAliasing);
+			painter.setBrush(oldBrush);
 		}
 
 		textRect.setLeft(colorRect.right() + 3);

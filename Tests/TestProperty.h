@@ -27,6 +27,7 @@ private Q_SLOTS:
 	void propertyEnum();
 	void propertyEnumFlags();
 	void propertyPen();
+	void propertyVector3D();
 	void propertySet();
 	void serializationState();
 	void serializationChildren();

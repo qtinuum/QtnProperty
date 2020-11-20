@@ -36,7 +36,7 @@ bool QtnPropertyDoubleBase::fromStrImpl(
 
 bool QtnPropertyDoubleBase::toStrImpl(QString &str) const
 {
-	str = QString::number(value(), 'f', std::numeric_limits<double>::digits10);
+	str = QString::number(value(), 'g', std::numeric_limits<double>::digits10);
 	return true;
 }
 

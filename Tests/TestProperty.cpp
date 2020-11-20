@@ -209,13 +209,15 @@ void TestProperty::state()
 	QCOMPARE(ps.state(), QtnPropertyStateNone);
 
 	int call_count = 0;
-	QObject::connect(&ps, &QtnPropertyBase::propertyWillChange,
-		[&call_count](QtnPropertyChangeReason, QtnPropertyValuePtr, int) {
-			++call_count;
-		});
+	auto connection1 =
+		QObject::connect(&ps, &QtnPropertyBase::propertyWillChange,
+			[&call_count](QtnPropertyChangeReason, QtnPropertyValuePtr, int) {
+				++call_count;
+			});
 
-	QObject::connect(&ps, &QtnPropertyBase::propertyDidChange,
-		[&call_count](QtnPropertyChangeReason) { ++call_count; });
+	auto connection2 =
+		QObject::connect(&ps, &QtnPropertyBase::propertyDidChange,
+			[&call_count](QtnPropertyChangeReason) { ++call_count; });
 
 	ps.addState(QtnPropertyStateNone, true);
 	QCOMPARE(call_count, 2);
@@ -225,6 +227,9 @@ void TestProperty::state()
 
 	ps.removeState(QtnPropertyStateCollapsed, true);
 	QCOMPARE(call_count, 4);
+
+	QObject::disconnect(connection1);
+	QObject::disconnect(connection2);
 }
 
 void TestProperty::stateChange()
@@ -503,6 +508,22 @@ void TestProperty::propertyPen()
 			QCOMPARE(p.value().joinStyle(), Qt::BevelJoin);
 		}
 	}
+}
+
+void TestProperty::propertyVector3D()
+{
+	QVector3D testValue(12.f, 22.f, 33.f);
+	QtnPropertyQVector3D p;
+	p.setValue(testValue);
+
+	QCOMPARE(p.value(), testValue);
+
+	QString str;
+	QVERIFY(p.toStr(str));
+	p.setValue(QVector3D(1.f, 1.f, 1.f));
+	QVERIFY(p.value() != testValue);
+	QVERIFY(p.fromStr(str));
+	QCOMPARE(p.value(), testValue);
 }
 
 void TestProperty::propertySet()
