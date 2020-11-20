@@ -6,7 +6,7 @@ compiler:
 
 branches:
   only:
-    - v2.0.0_dev
+    - develop
 
 os:
   - linux
