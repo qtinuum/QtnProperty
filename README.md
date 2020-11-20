@@ -2,7 +2,7 @@
 
 # QtnProperty
 This is user and programmist friendly properties for Qt framework.
-See [wiki](https://github.com/lexxmark/QtnProperty/wiki) for some details.
+See [wiki](https://github.com/qtinuum/QtnProperty/wiki) for some details.
 
 # Overview
 There are some limitations of standard Qt property system.
@@ -20,6 +20,16 @@ The key features are:
 * Delegates to customize look and feel properties in property widget
 * PEG (property/enum generator) - it's optional tool like Qt moc which generates properties hierarchy from QML like files into C++ code.
 
+New Features in v2.0.0
+* **Multi-properties with QtnMultipleProperty.** It is useful when you want to show properties of multiple objects at once. When values of objects's properties differ it shows grayed (**Multiple properties**). When you set a new property value, it will be changed in every dependent object. Multi-property set can be created with qtnCreateQObjectMultiPropertySet function defined in [QObjectPropertySet.h](https://github.com/qtinuum/QtnProperty/blob/master/QtnProperty/QObjectPropertySet.h) or from custom property sets in a loop with qtnPropertiesToMultiSet function where target argument is a multi-property set, and source argument is a source property set you want to join.
+* **QVariant properties with QtnCustomPropertyWidget.** You can edit QVariant as property set / add/remove subproperties in QVariantMap or QVariantList, copy/paste variant properties.
+* **Integer 64 properties** QtnPropertyInt64 QtnPropertyUInt64
+* **Floating point variants of QPoint, QSize, QRect properties**
+* **Overriding QtnPropertyDelegateFactory for QtnPropertySet**
+* **Improvements to sync objects values and property editors**
+* **Translations EN_RU**
+
+
 Some screenshots of the Demo application:
 ![Demo_screenshot_linux](Docs/img/Demo1.png)
 ![Demo_screenshot_win](Docs/img/DemoWin.png)
@@ -27,29 +37,35 @@ Some screenshots of the Demo application:
 # How to build
 **Requirements:**
 
-1. Qt 5.2 framework or later
+1. Qt 5.9 framework or later
 2. Flex 2.6.4 and Bison 3.1.1 (for Windows can be found [here](https://github.com/lexxmark/winflexbison)) if you build QtnPEG tool
 
 **To build:**
   
     mkdir path_to_build
     cd path_to_build
-    qmake path_to_QtnProperty/Property.pro -r
+    qmake path_to_QtnProperty/QtnProperty.pro -r
     make
 
-Or just open path\_to\_QtnProperty/Property.pro file in Qt Creator and build all.
-Generated libraries and executables will be placed into the 'path\_to\_build/bin-[linux|osx|win]' folder.
-  
-**To run tests and demo:**
+Or just open path\_to\_QtnProperty/QtnProperty.pro file in Qt Creator and build all.
+Generated libraries and executables will be placed into the target specific folders.
+For example:
 
-    cd path_to_build/bin-[linux|osx|win]
+    bin-linux-gcc-x86_64
+    bin-osx-clang-x86_64
+    bin-win32-msvc-i386
+    bin-win32-msvc-clang-x86_64
+    bin-win32-gcc-i386
+    bin-win32-gcc-x86_64
+
+**To run tests and demo, go to one of the binary folders and run:**
+
     ./QtnPropertyTests
     ./QtnPropertyDemo
 
-QtnProperty project consists of five submodules:
+QtnProperty project consists of four submodules:
 
-1. **QtnPropertyCore** static library - property classes (non GUI stuff)
-2. **QtnPropertyWidget** static library - QtnPropertyWidget, QtnPropertyView and property delegates (GUI stuff)
+1. **QtnProperty** library - property classes. By default it is a static library. If you need a dynamic library, you should run **qmake** with **CONFIG+=qtnproperty_dynamic** argument
 3. **QtnPEG** tool - optional executable to generate C++ code for property sets from simple QML like files (*.pef files)
 4. **QtnPropertyTests** - tests for QtnPropertyCore library
 5. **QtnPropertyDemo** - demo application
@@ -57,9 +73,30 @@ QtnProperty project consists of five submodules:
 # How to use
 
 ## Step 1.
-To have QtnProperty in your project your should include QtnProperty.pri file into your pro file. It will add QtnPropertyCore and QtnPropertyWidget static libraries to your project.
-```C++
-    include(QtnProperty\QtnProperty.pri)
+To have QtnProperty in your project you should include QtnPropertyDepend.pri file into your pro file. Example:
+
+MyProject.pro
+-------------
+```
+TEMPLATE   = subdirs
+SUBDIRS   += \
+        QtnProperty \
+        Application
+
+QtnProperty.file = path_to/QtnProperty/QtnProperty.pro
+
+Application.depends = \
+    QtnProperty
+```
+Application/Application.pro
+---------------------------
+```
+QT += core gui widgets script
+
+TEMPLATE = app
+
+include(path_to/QtnProperty/QtnPropertyDepend.pri)
+# this will add QtnProperty root to include path and will link the library to your app.
 ```
 
 ## Step 2.
@@ -82,7 +119,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_propertySet = new QtnPropertySet(this)
 
     auto floatValue = qtnCreateProperty<QtnPropertyFloat>(m_propertySet);
-    floatValue->setName(tr("Value"));
+    floatValue->setName("value");
+    floatValue->setDisplayName(tr("Value"));
     floatValue->setDescription(tr("Float value"));
     floatValue->setMaxValue(1.f);
     floatValue->setMinValue(0.f);
@@ -90,7 +128,8 @@ MainWindow::MainWindow(QWidget *parent) :
     floatValue->setValue(0.3f);
 
     auto textColor = qtnCreateProperty<QtnPropertyQColor>(m_propertySet);
-    textColor->setName(tr("TextColor"));
+    textColor->setName("textColor");
+    textColor->setDisplayName(tr("TextColor"));
     textColor->setDescription(tr("Foreground text color"));
     textColor->setValue(QColor(0, 0, 0));
 
@@ -112,16 +151,15 @@ To use *.pef files in your project you should do the following in your pro file:
 * list all *.pef files in PEG_SOURCES variable
 
 ```C++
-PEG_TOOL = $$BIN_DIR/QtnPEG
-include(../PEG.pri)
+include(path_to/QtnProperty/PEG/PEG.pri)
 PEG_SOURCES += TextEditor.pef
 ```
 
 ## Step 5.
-Write *.pef file with propertyset declaration. See [wiki](https://github.com/lexxmark/QtnProperty/wiki/Property-Enum-file-format-(*.pef)) for more info. For example TextEditor.pef:
+Write *.pef file with propertyset declaration. See [wiki](https://github.com/qtinuum/QtnProperty/wiki/Property-Enum-file-format-(*.pef)) for more info. For example TextEditor.pef:
   
 ```C++
-#include "Core/PropertyCore.h"
+#include "QtnProperty/PropertyCore.h"
 
 property_set TextEditor
 {
@@ -165,17 +203,6 @@ Now you can use QtnPropertySetTextEditor class (defined in generated files) in y
 ```
 
 Video of GUI testing using Froglogic (c) Squish test framework is [here](https://www.youtube.com/watch?v=lCmM13vPWBU).
-
-# Useful links
-The following fork [https://github.com/kusharami/QtnProperty](https://github.com/kusharami/QtnProperty) has some advanced features:
-
-* **Multi-properties with QtnMultipleProperty.** It is useful when you want to show properties of multiple objects at once. When values of objects's properties differ it shows grayed (**Multiple properties**). When you set a new property value, it will be changed in every dependent object. Multi-property set can be created with qtnCreateQObjectMultiPropertySet function defined in [QObjectPropertySet.h](https://github.com/kusharami/QtnProperty/blob/master/QtnProperty/QObjectPropertySet.h) or from custom property sets in a loop with qtnPropertiesToMultiSet function where target argument is a multi-property set, and source argument is a source property set you want to join.
-* **QVariant properties with QtnCustomPropertyWidget.** You can edit QVariant as property set / add/remove subproperties in QVariantMap or QVariantList, copy/paste variant properties.
-* **Integer 64 properties** QtnPropertyInt64 QtnPropertyUInt64
-* **Floating point variants of QPoint, QSize, QRect properties**
-* **Overriding QtnPropertyDelegateFactory for QtnPropertySet**
-* **Improvements to sync objects values and property editors**
-* **Translations EN_RU**
 
 
 

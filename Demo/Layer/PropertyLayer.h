@@ -1,35 +1,39 @@
-/*
-   Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+/*******************************************************************************
+Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
 #ifndef PROPERTY_LAYER_H
 #define PROPERTY_LAYER_H
 
-#include "Auxiliary/PropertyTemplates.h"
+#include "QtnProperty/Auxiliary/PropertyTemplates.h"
 #include <QColor>
 
 struct LayerInfo
 {
-    QString name;
-    QColor color;
-    qintptr data = 0;
+	QString name;
+	QColor color;
+	qintptr data = 0;
 
-    LayerInfo() {}
-    LayerInfo(QString name, QColor color, qintptr data = 0)
-        : name(name), color(color), data(data)
-    {}
+	LayerInfo() {}
+	LayerInfo(QString name, QColor color, qintptr data = 0)
+		: name(name)
+		, color(color)
+		, data(data)
+	{
+	}
 };
 
 /*
@@ -42,60 +46,64 @@ QDataStream& operator>> (QDataStream& stream, LayerInfo& layer);
 Q_DECLARE_METATYPE(LayerInfo)
 */
 
-class QtnPropertyLayerBase: public QtnSinglePropertyBase<int>
+class QtnPropertyLayerBase : public QtnSinglePropertyBase<int>
 {
-    Q_OBJECT
-    QtnPropertyLayerBase(const QtnPropertyLayerBase& other) Q_DECL_EQ_DELETE;
+	Q_OBJECT
+	QtnPropertyLayerBase(const QtnPropertyLayerBase &other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit QtnPropertyLayerBase(QObject *parent)
-        : QtnSinglePropertyBase<int>(parent)
-    {
-    }
+	explicit QtnPropertyLayerBase(QObject *parent)
+		: QtnSinglePropertyBase<int>(parent)
+	{
+	}
 
-    const LayerInfo* valueLayer() const;
-    LayerInfo* valueLayer();
+	const LayerInfo *valueLayer() const;
+	LayerInfo *valueLayer();
 
-    const QList<LayerInfo>& layers() const;
-    void setLayers(QList<LayerInfo> layers);
+	const QList<LayerInfo> &layers() const;
+	void setLayers(QList<LayerInfo> layers);
 
 protected:
-    // string conversion implementation
-    bool fromStrImpl(const QString& str) override;
-    bool toStrImpl(QString& str) const override;
+	// string conversion implementation
+	bool fromStrImpl(
+		const QString &str, QtnPropertyChangeReason reason) override;
+	bool toStrImpl(QString &str) const override;
 
 private:
-    QList<LayerInfo> m_layers;
+	QList<LayerInfo> m_layers;
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyLayerBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS(QtnPropertyLayerBase)
 };
 
-class QtnPropertyLayerCallback: public QtnSinglePropertyCallback<QtnPropertyLayerBase>
+class QtnPropertyLayerCallback
+	: public QtnSinglePropertyCallback<QtnPropertyLayerBase>
 {
-    Q_OBJECT
-    QtnPropertyLayerCallback(const QtnPropertyLayerCallback& other) Q_DECL_EQ_DELETE;
+	Q_OBJECT
+	QtnPropertyLayerCallback(
+		const QtnPropertyLayerCallback &other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit QtnPropertyLayerCallback(QObject *parent)
-        : QtnSinglePropertyCallback<QtnPropertyLayerBase>(parent)
-    {
-    }
+	explicit QtnPropertyLayerCallback(QObject *parent)
+		: QtnSinglePropertyCallback<QtnPropertyLayerBase>(parent)
+	{
+	}
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyLayerCallback, QtnPropertyLayerBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS2(
+		QtnPropertyLayerCallback, QtnPropertyLayerBase)
 };
 
-class QtnPropertyLayer: public QtnSinglePropertyValue<QtnPropertyLayerBase>
+class QtnPropertyLayer : public QtnSinglePropertyValue<QtnPropertyLayerBase>
 {
-    Q_OBJECT
-    QtnPropertyLayer(const QtnPropertyLayer& other) Q_DECL_EQ_DELETE;
+	Q_OBJECT
+	QtnPropertyLayer(const QtnPropertyLayer &other) Q_DECL_EQ_DELETE;
 
 public:
-    explicit QtnPropertyLayer(QObject *parent)
-        : QtnSinglePropertyValue<QtnPropertyLayerBase>(parent)
-    {
-    }
+	explicit QtnPropertyLayer(QObject *parent)
+		: QtnSinglePropertyValue<QtnPropertyLayerBase>(parent)
+	{
+	}
 
-    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyLayer, QtnPropertyLayerBase)
+	P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyLayer, QtnPropertyLayerBase)
 };
 
 #endif // PROPERTY_LAYER_H

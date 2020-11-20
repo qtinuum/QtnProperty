@@ -68,7 +68,7 @@
   <customwidget>
    <class>QtnPropertyWidget</class>
    <extends>QWidget</extends>
-   <header>PropertyWidget.h</header>
+   <header>QtnProperty/PropertyWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

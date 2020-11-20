@@ -1,7 +1,6 @@
 /tmp/
-/bin/
-/bin-*/
-build-*
+/bin*/
+build*/
 /workdir/
 *.pro.user
 *.lexer.*
@@ -10,3 +9,5 @@ build-*
 *.directory
 *.autosave
 *Thumbs.db
+*.qm
+*.orig

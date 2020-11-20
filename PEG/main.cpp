@@ -20,80 +20,84 @@
 #include <QFileInfo>
 #include <QRegExp>
 
-extern int yyparse ();
+extern int yyparse();
 extern FILE *yyin;
 extern int yydebug;
 
 int main(int argc, char *argv[])
 {
-    //yydebug = 1;
+	//yydebug = 1;
 
-    // Qt application
-    QCoreApplication app(argc, argv);
-    app.setAttribute(Qt::AA_Use96Dpi, true);
+	// Qt application
+	QCoreApplication app(argc, argv);
+	app.setAttribute(Qt::AA_Use96Dpi, true);
 
-    // check argument
-    if (argc < 2 || argc > 4)
-    {
-        QTextStream(stdout) << PEG::tr("peg usage: peg <input file> [<cpp output file> [h output file]]") << endl;
-        return 0;
-    }
+	// check argument
+	if (argc < 2 || argc > 4)
+	{
+		QTextStream(stdout) << QString("peg usage: peg <input file> [<cpp "
+									   "output file> [h output file]]")
+							<< endl;
+		return 0;
+	}
 
-    // generate output file names
-    const char* inputFileName = argv[1];
-    QFileInfo fi(inputFileName);
-    if (!fi.exists())
-    {
-        QTextStream(stderr) << PEG::tr("Error: file '%1' doesn't exist").arg(fi.absoluteFilePath()) << endl;
-        return 1;
-    }
+	// generate output file names
+	const char *inputFileName = argv[1];
+	QFileInfo fi(inputFileName);
+	if (!fi.exists())
+	{
+		QTextStream(stderr) << QString("Error: file '%1' doesn't exist")
+								   .arg(fi.absoluteFilePath())
+							<< endl;
+		return 1;
+	}
 
-    QString cppFileName;
-    if (argc < 3)
-    {
-        cppFileName = fi.path() + "/" + fi.completeBaseName() + ".peg.cpp";
-    }
-    else
-    {
-        cppFileName = argv[2];
-    }
+	QString cppFileName;
+	if (argc < 3)
+	{
+		cppFileName = fi.path() + "/" + fi.completeBaseName() + ".peg.cpp";
+	} else
+	{
+		cppFileName = argv[2];
+	}
 
-    QString hFileName;
-    if (argc < 3)
-    {
-        hFileName = fi.path() + "/" + fi.completeBaseName() + ".peg.h";
-    }
-    else if (argc < 4)
-    {
-        hFileName = cppFileName;
-        hFileName.replace(QRegExp(".cpp$"), ".h");
-    }
-    else
-    {
-        hFileName = argv[3];
-    }
+	QString hFileName;
+	if (argc < 3)
+	{
+		hFileName = fi.path() + "/" + fi.completeBaseName() + ".peg.h";
+	} else if (argc < 4)
+	{
+		hFileName = cppFileName;
+		hFileName.replace(QRegExp(".cpp$"), ".h");
+	} else
+	{
+		hFileName = argv[3];
+	}
 
-    PEG& peg = PEG::instance();
+	PEG &peg = PEG::instance();
 
-    if (!peg.start(hFileName, cppFileName))
-        return 1;
+	if (!peg.start(hFileName, cppFileName))
+		return 1;
 
-    // open source file for reading
-    FILE* input_file = fopen(inputFileName, "r");
-    if (!input_file)
-    {
-        QTextStream(stderr) << PEG::tr("Error: cannot open file '%1' for reading").arg(inputFileName) << endl;
-        return 1;
-    }
+	// open source file for reading
+	FILE *input_file = fopen(inputFileName, "r");
+	if (!input_file)
+	{
+		QTextStream(stderr)
+			<< QString("Error: cannot open file '%1' for reading")
+				   .arg(inputFileName)
+			<< endl;
+		return 1;
+	}
 
-    yyin = input_file;
+	yyin = input_file;
 
-    int result = yyparse();
+	int result = yyparse();
 
-    yyin = stdin;
-    fclose(input_file);
+	yyin = stdin;
+	fclose(input_file);
 
-    peg.stop();
+	peg.stop();
 
-    return result;
+	return result;
 }

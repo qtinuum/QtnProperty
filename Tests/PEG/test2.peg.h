@@ -1,7 +1,7 @@
 #ifndef TEST2_H
 #define TEST2_H
 
-#include "PropertyCore.h"
+#include "QtnProperty/PropertyCore.h"
 
 class QtnPropertySetA: public QtnPropertySet
 {
@@ -10,9 +10,9 @@ class QtnPropertySetA: public QtnPropertySet
 
 public:
     // constructor declaration
-    explicit QtnPropertySetA(QObject* parent = 0);
+    explicit QtnPropertySetA(QObject* parent = nullptr);
     // destructor declaration
-    virtual ~QtnPropertySetA();
+    virtual ~QtnPropertySetA() override;
     // assignment declaration
     QtnPropertySetA& operator=(const QtnPropertySetA& other);
     

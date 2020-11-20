@@ -1,13 +1,13 @@
-include(../Config.pri)
-PEG_TOOL = $$BIN_DIR/QtnPEG
-include(../PEG.pri)
+include(../QtnPropertyDepend.pri)
+include(../Internal/TargetConfig.pri)
+include(../PEG/PEG.pri)
 
-QT += core widgets script testlib
+QT += core gui widgets script testlib
 
 TARGET = QtnPropertyTests
 
-CONFIG   += console
-CONFIG   -= app_bundle
+CONFIG   += cmdline
+CONFIG -= app_bundle
 
 TEMPLATE = app
 
@@ -26,10 +26,4 @@ PEG_SOURCES += PEG/test.pef \
 
 OTHER_FILES += $$PEG_SOURCES
 
-LIBS += -L$$BIN_DIR -lQtnPropertyCore
-win32 {
-} else:unix {
-    QMAKE_LFLAGS += -Wl,-rpath,\'\$$ORIGIN\'
-}
 
-INCLUDEPATH += $$TOP_SRC_DIR/Core
