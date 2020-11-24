@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/lexxmark/QtnProperty.svg?branch=master)](https://travis-ci.org/lexxmark/QtnProperty)
+[![Build Status](https://travis-ci.org/qtinuum/QtnProperty.svg?branch=master)](https://travis-ci.org/qtinuum/QtnProperty)
 
 # QtnProperty
 This is user and programmist friendly properties for Qt framework.
