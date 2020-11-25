@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/qtinuum/QtnProperty.svg?branch=master)](https://travis-ci.org/qtinuum/QtnProperty)
 
 # QtnProperty
-This is user and programmist friendly properties for Qt framework.
+This is user and programmer friendly properties for Qt framework.
 See [wiki](https://github.com/qtinuum/QtnProperty/wiki) for some details.
 
 # Overview
