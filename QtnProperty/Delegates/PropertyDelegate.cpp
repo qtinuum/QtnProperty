@@ -97,6 +97,11 @@ void QtnPropertyDelegate::applySubPropertyInfos(
 	}
 }
 
+bool QtnPropertyDelegate::isSplittable() const
+{
+	return false;
+}
+
 int QtnPropertyDelegate::subPropertyCountImpl() const
 {
 	return 0;

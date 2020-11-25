@@ -335,16 +335,24 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 	for (int i = firstVisibleItemIndex; i <= lastVisibleItemIndex; ++i)
 	{
 		const VisibleItem &vItem = m_visibleItems[i];
+
 		drawItem(painter, itemRect, vItem);
+		auto delegate = vItem.item->delegate.get();
+		Q_ASSERT(delegate); // cannot be null
+
+		if (delegate->isSplittable())
+		{
+			painter.save();
+			QPen pen;
+			pen.setColor(this->palette().color(QPalette::Mid));
+			pen.setStyle(Qt::DotLine);
+			painter.setPen(pen);
+			painter.drawLine(splitPosition(), itemRect.top(), splitPosition(),
+				itemRect.bottom());
+			painter.restore();
+		}
 		itemRect.translate(0, m_itemHeight);
 	}
-
-	QPen pen;
-	pen.setColor(this->palette().color(QPalette::Mid));
-	pen.setStyle(Qt::DotLine);
-	painter.setPen(pen);
-	painter.drawLine(
-		splitPosition(), 0, splitPosition(), viewPortRect.bottom());
 }
 
 void QtnPropertyView::drawItem(
@@ -486,7 +494,11 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		return;
 	}
 
-	if (qAbs(e->x() - splitPosition()) < TOLERANCE)
+	int index = visibleItemIndexByPoint(e->pos());
+	bool isSplittableItem = index >= 0
+		? m_visibleItems.at(index).item->delegate->isSplittable()
+		: false;
+	if (isSplittableItem && qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
 		Q_ASSERT(!m_rubberBand);
 		m_rubberBand = new QRubberBand(QRubberBand::Line, this);
@@ -498,7 +510,6 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		m_rubberBand->show();
 	} else
 	{
-		int index = visibleItemIndexByPoint(e->pos());
 		if (index >= 0)
 		{
 			changeActivePropertyByIndex(index);
@@ -554,8 +565,12 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)
 		}
 	} else
 	{
-		bool atSplitterPos = qAbs(e->x() - splitPosition()) < TOLERANCE;
 		int index = visibleItemIndexByPoint(e->pos());
+		bool isSplittable = index >= 0
+			? m_visibleItems.at(index).item->delegate->isSplittable()
+			: false;
+		bool atSplitterPos =
+			isSplittable && qAbs(e->x() - splitPosition()) < TOLERANCE;
 		if (!handleMouseEvent(index, e, e->pos()))
 		{
 			if (atSplitterPos)
