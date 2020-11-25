@@ -350,10 +350,8 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 void QtnPropertyView::drawItem(
 	QStylePainter &painter, const QRect &rect, const VisibleItem &vItem) const
 {
-	if (!vItem.item->delegate.get())
-	{
-		return;
-	}
+	auto delegate = vItem.item->delegate.get();
+	Q_ASSERT(delegate); // cannot be null
 
 	QMargins margins(m_valueLeftMargin + rect.height() * vItem.level, 0, 0, 0);
 	bool isActive = (m_activeProperty == vItem.item->property);
@@ -365,7 +363,7 @@ void QtnPropertyView::drawItem(
 	if (!vItem.subItemsValid)
 	{
 		Q_ASSERT(vItem.subItems.isEmpty());
-		vItem.item->delegate->createSubItems(drawContext, vItem.subItems);
+		delegate->createSubItems(drawContext, vItem.subItems);
 		vItem.subItemsValid = true;
 	}
 
@@ -1170,28 +1168,27 @@ void QtnPropertyView::setupItemDelegate(Item *item)
 {
 	auto property = item->property;
 	auto delegate = m_delegateFactory.createDelegate(*property);
+	Q_ASSERT(delegate); // should always return non-null
+
 	item->delegate.reset(delegate);
 	item->children.clear();
 
-	if (delegate)
+	// apply attributes
+	auto delegateInfo = property->delegateInfo();
+	if (delegateInfo)
 	{
-		// apply attributes
-		auto delegateInfo = property->delegateInfo();
-		if (delegateInfo)
-		{
-			delegate->applyAttributes(*delegateInfo);
-		}
+		delegate->applyAttributes(*delegateInfo);
+	}
 
-		// process delegate subproperties
-		for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
-		{
-			auto child = delegate->subProperty(i);
-			Q_ASSERT(child);
+	// process delegate subproperties
+	for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
+	{
+		auto child = delegate->subProperty(i);
+		Q_ASSERT(child);
 
-			auto childItem = createItemsTree(child);
-			childItem->parent = item;
-			item->children.emplace_back(childItem);
-		}
+		auto childItem = createItemsTree(child);
+		childItem->parent = item;
+		item->children.emplace_back(childItem);
 	}
 }
 
