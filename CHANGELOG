@@ -23,6 +23,6 @@ v2.0.0  20.11.2020
     [NEW] QtnPropertyStateUnlockable and Lock/Unlock button
     [NEW] Update delegate with QtnPropertyChangeReasonUpdateDelegate
     [NEW] Support dark theme on MacOS
-
+    [FIX] QColor property delegate with circle shape draws valid color
     [FIX] Update property view when changing QObject property values outside property editor
     [FIX] SliderBox delegate works with huge value range
