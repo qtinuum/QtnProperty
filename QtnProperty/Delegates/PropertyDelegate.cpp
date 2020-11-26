@@ -20,6 +20,8 @@ limitations under the License.
 #include "Utils/PropertyEditorHandler.h"
 #include "PropertyView.h"
 
+#include <QPainterPath>
+
 QtnPropertyDelegate::QtnPropertyDelegate(QtnPropertyBase &ownerProperty)
 	: m_ownerProperty(&ownerProperty)
 	, m_stateProperty(nullptr)
