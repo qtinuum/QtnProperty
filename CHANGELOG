@@ -3,6 +3,8 @@ QtnProperty
 
 v2.0.1  ??.??.2020
     [REFINE] Show splitter line and change mouse cursor only for splittable property delegates
+    [FIX] Correct stripping redundant digits after decimal point when converting floating-point value to locale string
+    [FIX] Fixed compilation with Qt 5.15
 
 v2.0.0  20.11.2020
     [NEW] Multi-property set with QtnMultiProperty (Used in QObjectPropertyWidget if multiple objects selected)
