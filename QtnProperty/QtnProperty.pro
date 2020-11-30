@@ -2,7 +2,7 @@ include(../Internal/TargetConfig.pri)
 
 TARGET = QtnProperty
 TEMPLATE = lib
-VERSION = 2.0.0
+VERSION = 2.0.1
 
 qtnproperty_dynamic {
     DEFINES += QTN_DYNAMIC_LIBRARY
