@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -332,28 +332,47 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 
 	QStylePainter painter(viewport());
 
-	for (int i = firstVisibleItemIndex; i <= lastVisibleItemIndex; ++i)
-	{
-		const VisibleItem &vItem = m_visibleItems[i];
-		drawItem(painter, itemRect, vItem);
-		itemRect.translate(0, m_itemHeight);
-	}
+	int splitLineY1 = itemRect.top();
+	int splitLineY2 = splitLineY1;
+	int splitLineX = splitPosition();
 
-	QPen pen;
-	pen.setColor(this->palette().color(QPalette::Mid));
-	pen.setStyle(Qt::DotLine);
-	painter.setPen(pen);
-	painter.drawLine(
-		splitPosition(), 0, splitPosition(), viewPortRect.bottom());
+	int lastIndex = lastVisibleItemIndex + 1;
+	QPen splitLinePen;
+	splitLinePen.setColor(this->palette().color(QPalette::Mid));
+	splitLinePen.setStyle(Qt::DotLine);
+	for (int i = firstVisibleItemIndex; i <= lastIndex; ++i)
+	{
+		QtnPropertyDelegate *delegate = nullptr;
+		if (i <= lastVisibleItemIndex)
+		{
+			const VisibleItem &vItem = m_visibleItems[i];
+
+			drawItem(painter, itemRect, vItem);
+			delegate = vItem.item->delegate.get();
+			Q_ASSERT(delegate); // cannot be null
+		}
+		itemRect.translate(0, m_itemHeight);
+		if (!delegate || !delegate->isSplittable())
+		{
+			if (splitLineY2 > splitLineY1)
+			{
+				painter.save();
+				painter.setPen(splitLinePen);
+				painter.drawLine(
+					splitLineX, splitLineY1, splitLineX, splitLineY2);
+				painter.restore();
+			}
+			splitLineY1 = itemRect.top();
+		}
+		splitLineY2 = itemRect.top();
+	}
 }
 
 void QtnPropertyView::drawItem(
 	QStylePainter &painter, const QRect &rect, const VisibleItem &vItem) const
 {
-	if (!vItem.item->delegate.get())
-	{
-		return;
-	}
+	auto delegate = vItem.item->delegate.get();
+	Q_ASSERT(delegate); // cannot be null
 
 	QMargins margins(m_valueLeftMargin + rect.height() * vItem.level, 0, 0, 0);
 	bool isActive = (m_activeProperty == vItem.item->property);
@@ -365,7 +384,7 @@ void QtnPropertyView::drawItem(
 	if (!vItem.subItemsValid)
 	{
 		Q_ASSERT(vItem.subItems.isEmpty());
-		vItem.item->delegate->createSubItems(drawContext, vItem.subItems);
+		delegate->createSubItems(drawContext, vItem.subItems);
 		vItem.subItemsValid = true;
 	}
 
@@ -488,7 +507,11 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		return;
 	}
 
-	if (qAbs(e->x() - splitPosition()) < TOLERANCE)
+	int index = visibleItemIndexByPoint(e->pos());
+	bool isSplittableItem = index >= 0
+		? m_visibleItems.at(index).item->delegate->isSplittable()
+		: false;
+	if (isSplittableItem && qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
 		Q_ASSERT(!m_rubberBand);
 		m_rubberBand = new QRubberBand(QRubberBand::Line, this);
@@ -500,7 +523,6 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		m_rubberBand->show();
 	} else
 	{
-		int index = visibleItemIndexByPoint(e->pos());
 		if (index >= 0)
 		{
 			changeActivePropertyByIndex(index);
@@ -556,8 +578,12 @@ void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)
 		}
 	} else
 	{
-		bool atSplitterPos = qAbs(e->x() - splitPosition()) < TOLERANCE;
 		int index = visibleItemIndexByPoint(e->pos());
+		bool isSplittable = index >= 0
+			? m_visibleItems.at(index).item->delegate->isSplittable()
+			: false;
+		bool atSplitterPos =
+			isSplittable && qAbs(e->x() - splitPosition()) < TOLERANCE;
 		if (!handleMouseEvent(index, e, e->pos()))
 		{
 			if (atSplitterPos)
@@ -1170,28 +1196,27 @@ void QtnPropertyView::setupItemDelegate(Item *item)
 {
 	auto property = item->property;
 	auto delegate = m_delegateFactory.createDelegate(*property);
+	Q_ASSERT(delegate); // should always return non-null
+
 	item->delegate.reset(delegate);
 	item->children.clear();
 
-	if (delegate)
+	// apply attributes
+	auto delegateInfo = property->delegateInfo();
+	if (delegateInfo)
 	{
-		// apply attributes
-		auto delegateInfo = property->delegateInfo();
-		if (delegateInfo)
-		{
-			delegate->applyAttributes(*delegateInfo);
-		}
+		delegate->applyAttributes(*delegateInfo);
+	}
 
-		// process delegate subproperties
-		for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
-		{
-			auto child = delegate->subProperty(i);
-			Q_ASSERT(child);
+	// process delegate subproperties
+	for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
+	{
+		auto child = delegate->subProperty(i);
+		Q_ASSERT(child);
 
-			auto childItem = createItemsTree(child);
-			childItem->parent = item;
-			item->children.emplace_back(childItem);
-		}
+		auto childItem = createItemsTree(child);
+		childItem->parent = item;
+		item->children.emplace_back(childItem);
 	}
 }
 

@@ -72,6 +72,8 @@ public:
 	void applySubPropertyInfos(const QtnPropertyDelegateInfo &info,
 		const QtnSubPropertyInfo *subInfo, int count);
 
+	virtual bool isSplittable() const;
+
 protected:
 	QtnPropertyDelegate(QtnPropertyBase &ownerProperty);
 

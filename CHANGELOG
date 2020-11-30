@@ -1,0 +1,33 @@
+QtnProperty
+===========
+
+v2.0.1  30.11.2020
+    [REFINE] Show splitter line and change mouse cursor only for splittable property delegates
+    [FIX] Correct stripping redundant digits after decimal point when converting floating-point value to locale string
+    [FIX] Fixed compilation with Qt 5.15
+
+v2.0.0  20.11.2020
+    [NEW] Multi-property set with QtnMultiProperty (Used in QObjectPropertyWidget if multiple objects selected)
+    [NEW] Delegate attributes for floating-point properties:
+        multiplier, precision
+    [NEW] Delegate attributes for numeric properties:
+        min, max, step, suffix
+    [NEW] Delegate attributes for string properties:
+        placeholder, multiline_edit
+    [NEW] Apply delegate attributes for sub-properties (see QPoint, QSize etc.)
+    [NEW] QtnDoubleSpinBox - trailing zeros removed (used in floating-point properties)
+    [NEW] QtnInt64SpinBox - used in uint and int64 properties
+    [NEW] QtnCompleterLineEdit - autocomplete popup view with input text highlighted (used in QtnPropertyDelegateQStringCallback)
+    [NEW] Property delegates for:
+        int64, uint64, QPointF, QSizeF, QRectF, 
+        QVector3D, Button, QBrush, QPen, QVariant, QKeySequence 
+    [NEW] Editing QVariant with CustomProperyEditorDialog and CustomPropertyWidget
+    [NEW] Ability to set custom property delegate factory for QtnPropertyView with delegateFactory()->setSuperFactory(factory)
+    [NEW] QtnPropertyDelegateMetaEnum - property delegate for registered enums (Register with QtnPropertyDelegateMetaEnum::Register, and use custom delegate factory)
+    [NEW] QtnPropertyStateResettable and Reset button
+    [NEW] QtnPropertyStateUnlockable and Lock/Unlock button
+    [NEW] Update delegate with QtnPropertyChangeReasonUpdateDelegate
+    [NEW] Support dark theme on MacOS
+    [FIX] QColor property delegate with circle shape draws valid color
+    [FIX] Update property view when changing QObject property values outside property editor
+    [FIX] SliderBox delegate works with huge value range

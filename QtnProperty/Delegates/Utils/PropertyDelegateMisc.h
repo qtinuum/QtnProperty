@@ -34,6 +34,9 @@ class QTN_IMPORT_EXPORT QtnPropertyDelegateWithValues
 {
 	Q_DISABLE_COPY(QtnPropertyDelegateWithValues)
 
+public:
+	virtual bool isSplittable() const override;
+
 protected:
 	QtnPropertyDelegateWithValues(QtnPropertyBase &owner);
 

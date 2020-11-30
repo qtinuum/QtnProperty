@@ -2,24 +2,15 @@ PropertyArray
 
 Implement PropertySetForm - property widgets on form
 
-AutoValue feature
-Remove trailing zeroes in Double/Float property editors
-
 Make wrapper propertyset for QObject derived classes (implement Enum and EnumFlags cases)
-Add reset button
-Connect to QObject property changed signal
 
 Save/Load via XML
-Save/Load in JSON
 
 PropertyTypes:
 1. Date/Time
 2. Bitmap ???
-3. Brush
 4. Cursor
 5. Icon
-6. Pen
-
 
 owner feature????
 How to define default PropertySet?

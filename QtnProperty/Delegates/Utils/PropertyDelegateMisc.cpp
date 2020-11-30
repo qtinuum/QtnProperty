@@ -144,6 +144,11 @@ void QtnPropertyDelegateWithValues::createSubItemsImpl(
 	addSubItemValues(context, subItems);
 }
 
+bool QtnPropertyDelegateWithValues::isSplittable() const
+{
+	return true;
+}
+
 QtnPropertyDelegateWithValues::QtnPropertyDelegateWithValues(
 	QtnPropertyBase &owner)
 	: QtnPropertyDelegate(owner)
