@@ -80,6 +80,7 @@ QtnPropertyView::QtnPropertyView(QWidget *parent, QtnPropertySet *propertySet)
 	, m_lastChangeReason(0)
 	, m_stopInvalidate(0)
 	, m_mouseAtSplitter(false)
+	, m_mouseCaptured(false)
 	, m_accessibilityProxy(nullptr)
 {
 	set_smaller_text_osx(this);
@@ -290,6 +291,11 @@ int QtnPropertyView::valueLeftMargin() const
 	return m_valueLeftMargin;
 }
 
+bool QtnPropertyView::isMouseCaptured() const
+{
+	return m_mouseCaptured || m_rubberBand;
+}
+
 void QtnPropertyView::connectPropertyToEdit(
 	QtnPropertyBase *property, QtnConnections &outConnections)
 {
@@ -331,11 +337,11 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 
 	QStylePainter painter(viewport());
 
-    QPen splitterPen;
-    splitterPen.setColor(this->palette().color(QPalette::Mid));
-    splitterPen.setStyle(Qt::DotLine);
+	QPen splitterPen;
+	splitterPen.setColor(this->palette().color(QPalette::Mid));
+	splitterPen.setStyle(Qt::DotLine);
 
-    for (int i = firstVisibleItemIndex; i <= lastVisibleItemIndex; ++i)
+	for (int i = firstVisibleItemIndex; i <= lastVisibleItemIndex; ++i)
 	{
 		const VisibleItem &vItem = m_visibleItems[i];
 
@@ -346,8 +352,8 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 		if (delegate->isSplittable())
 		{
 			painter.save();
-            splitterPen.setDashOffset(itemRect.top());
-            painter.setPen(splitterPen);
+			splitterPen.setDashOffset(itemRect.top());
+			painter.setPen(splitterPen);
 			painter.drawLine(splitPosition(), itemRect.top(), splitPosition(),
 				itemRect.bottom());
 			painter.restore();
@@ -481,6 +487,7 @@ static const int TOLERANCE = 3;
 
 void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 {
+	m_mouseCaptured = false;
 	if (e->button() == Qt::RightButton)
 	{
 		auto property = getPropertyAt(e->pos());
@@ -513,7 +520,7 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		if (index >= 0)
 		{
 			changeActivePropertyByIndex(index);
-			handleMouseEvent(index, e, e->pos());
+			m_mouseCaptured = handleMouseEvent(index, e, e->pos());
 		}
 	}
 	QAbstractScrollArea::mousePressEvent(e);
@@ -541,6 +548,7 @@ void QtnPropertyView::mouseReleaseEvent(QMouseEvent *e)
 	}
 
 	QAbstractScrollArea::mouseReleaseEvent(e);
+	m_mouseCaptured = false;
 }
 
 void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)

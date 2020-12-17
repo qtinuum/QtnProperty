@@ -311,6 +311,10 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 
 			if (mevent->button() == Qt::LeftButton)
 			{
+				if (propertyView()->isMouseCaptured())
+				{
+					break;
+				}
 				dragStartPos = mevent->pos();
 				draggedProperty = propertyView()->getPropertyAt(dragStartPos);
 				canRemove = canDeleteProperty(draggedProperty);
@@ -324,6 +328,11 @@ bool QtnPropertyWidgetEx::eventFilter(QObject *obj, QEvent *event)
 		{
 			if (mDrag)
 				break;
+
+			if (propertyView()->isMouseCaptured())
+			{
+				break;
+			}
 
 			auto mevent = static_cast<QMouseEvent *>(event);
 

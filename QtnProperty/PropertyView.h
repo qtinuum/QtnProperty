@@ -83,6 +83,8 @@ public:
 		QtnPropertyBase *property, QtnConnections &outConnections);
 	int valueLeftMargin() const;
 
+	bool isMouseCaptured() const;
+
 public slots:
 	QtnAccessibilityProxy *accessibilityProxy();
 
@@ -190,10 +192,11 @@ private:
 	QColor m_propertySetBackdroundColor;
 
 	float m_splitRatio;
-    std::unique_ptr<QRubberBand> m_rubberBand;
+	std::unique_ptr<QRubberBand> m_rubberBand;
 	QtnPropertyChangeReason m_lastChangeReason;
 	unsigned m_stopInvalidate;
 	bool m_mouseAtSplitter;
+	bool m_mouseCaptured;
 
 	friend class QtnAccessibilityProxy;
 	QtnAccessibilityProxy *m_accessibilityProxy;
