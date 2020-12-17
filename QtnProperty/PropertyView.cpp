@@ -1,6 +1,6 @@
 /*******************************************************************************
 Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
-Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
+Copyright (c) 2015-2019 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -331,39 +331,26 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 
 	QStylePainter painter(viewport());
 
-	int splitLineY1 = itemRect.top();
-	int splitLineY2 = splitLineY1;
-	int splitLineX = splitPosition();
-
-	int lastIndex = lastVisibleItemIndex + 1;
-	QPen splitLinePen;
-	splitLinePen.setColor(this->palette().color(QPalette::Mid));
-	splitLinePen.setStyle(Qt::DotLine);
-	for (int i = firstVisibleItemIndex; i <= lastIndex; ++i)
+	for (int i = firstVisibleItemIndex; i <= lastVisibleItemIndex; ++i)
 	{
-		QtnPropertyDelegate *delegate = nullptr;
-		if (i <= lastVisibleItemIndex)
-		{
-			const VisibleItem &vItem = m_visibleItems[i];
+		const VisibleItem &vItem = m_visibleItems[i];
 
-			drawItem(painter, itemRect, vItem);
-			delegate = vItem.item->delegate.get();
-			Q_ASSERT(delegate); // cannot be null
+		drawItem(painter, itemRect, vItem);
+		auto delegate = vItem.item->delegate.get();
+		Q_ASSERT(delegate); // cannot be null
+
+		if (delegate->isSplittable())
+		{
+			painter.save();
+			QPen pen;
+			pen.setColor(this->palette().color(QPalette::Mid));
+			pen.setStyle(Qt::DotLine);
+			painter.setPen(pen);
+			painter.drawLine(splitPosition(), itemRect.top(), splitPosition(),
+				itemRect.bottom());
+			painter.restore();
 		}
 		itemRect.translate(0, m_itemHeight);
-		if (!delegate || !delegate->isSplittable())
-		{
-			if (splitLineY2 > splitLineY1)
-			{
-				painter.save();
-				painter.setPen(splitLinePen);
-				painter.drawLine(
-					splitLineX, splitLineY1, splitLineX, splitLineY2);
-				painter.restore();
-			}
-			splitLineY1 = itemRect.top();
-		}
-		splitLineY2 = itemRect.top();
 	}
 }
 
