@@ -77,7 +77,6 @@ QtnPropertyView::QtnPropertyView(QWidget *parent, QtnPropertySet *propertySet)
 	, m_itemHeightSpacing(6)
 	, m_valueLeftMargin(0)
 	, m_splitRatio(0.5f)
-	, m_rubberBand(nullptr)
 	, m_lastChangeReason(0)
 	, m_stopInvalidate(0)
 	, m_mouseAtSplitter(false)
@@ -513,8 +512,7 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		: false;
 	if (isSplittableItem && qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
-		Q_ASSERT(!m_rubberBand);
-		m_rubberBand = new QRubberBand(QRubberBand::Line, this);
+        m_rubberBand = std::make_unique<QRubberBand>(QRubberBand::Line, this);
 
 		QRect rect = viewport()->rect();
 		rect.setLeft(e->x());
@@ -542,7 +540,6 @@ void QtnPropertyView::mouseReleaseEvent(QMouseEvent *e)
 
 	if (m_rubberBand)
 	{
-		delete m_rubberBand;
 		m_rubberBand = nullptr;
 
 		// update split ratio
