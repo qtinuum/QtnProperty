@@ -501,7 +501,7 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		: false;
 	if (isSplittableItem && qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
-        m_rubberBand = std::make_unique<QRubberBand>(QRubberBand::Line, this);
+		m_rubberBand.reset(new QRubberBand(QRubberBand::Line, this));
 
 		QRect rect = viewport()->rect();
 		rect.setLeft(e->x());
