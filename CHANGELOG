@@ -1,6 +1,9 @@
 QtnProperty
 ===========
 
+v2.0.2  ??.12.2020
+    [FIX] Don't break property view splitter with drag action
+
 v2.0.1  30.11.2020
     [REFINE] Show splitter line and change mouse cursor only for splittable property delegates
     [FIX] Correct stripping redundant digits after decimal point when converting floating-point value to locale string
