@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2012-2016 Alex Zhondin <lexxmark.dev@gmail.com>
+Copyright (c) 2012-2016, 2020 Alex Zhondin <lexxmark.dev@gmail.com>
 Copyright (c) 2015-2020 Alexandra Cherdantseva <neluhus.vagus@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,10 +77,10 @@ QtnPropertyView::QtnPropertyView(QWidget *parent, QtnPropertySet *propertySet)
 	, m_itemHeightSpacing(6)
 	, m_valueLeftMargin(0)
 	, m_splitRatio(0.5f)
-	, m_rubberBand(nullptr)
 	, m_lastChangeReason(0)
 	, m_stopInvalidate(0)
 	, m_mouseAtSplitter(false)
+	, m_mouseCaptured(false)
 	, m_accessibilityProxy(nullptr)
 {
 	set_smaller_text_osx(this);
@@ -291,6 +291,11 @@ int QtnPropertyView::valueLeftMargin() const
 	return m_valueLeftMargin;
 }
 
+bool QtnPropertyView::isMouseCaptured() const
+{
+	return m_mouseCaptured || m_rubberBand;
+}
+
 void QtnPropertyView::connectPropertyToEdit(
 	QtnPropertyBase *property, QtnConnections &outConnections)
 {
@@ -332,39 +337,28 @@ void QtnPropertyView::paintEvent(QPaintEvent *e)
 
 	QStylePainter painter(viewport());
 
-	int splitLineY1 = itemRect.top();
-	int splitLineY2 = splitLineY1;
-	int splitLineX = splitPosition();
+	QPen splitterPen;
+	splitterPen.setColor(this->palette().color(QPalette::Mid));
+	splitterPen.setStyle(Qt::DotLine);
 
-	int lastIndex = lastVisibleItemIndex + 1;
-	QPen splitLinePen;
-	splitLinePen.setColor(this->palette().color(QPalette::Mid));
-	splitLinePen.setStyle(Qt::DotLine);
-	for (int i = firstVisibleItemIndex; i <= lastIndex; ++i)
+	for (int i = firstVisibleItemIndex; i <= lastVisibleItemIndex; ++i)
 	{
-		QtnPropertyDelegate *delegate = nullptr;
-		if (i <= lastVisibleItemIndex)
-		{
-			const VisibleItem &vItem = m_visibleItems[i];
+		const VisibleItem &vItem = m_visibleItems[i];
 
-			drawItem(painter, itemRect, vItem);
-			delegate = vItem.item->delegate.get();
-			Q_ASSERT(delegate); // cannot be null
+		drawItem(painter, itemRect, vItem);
+		auto delegate = vItem.item->delegate.get();
+		Q_ASSERT(delegate); // cannot be null
+
+		if (delegate->isSplittable())
+		{
+			painter.save();
+			splitterPen.setDashOffset(itemRect.top());
+			painter.setPen(splitterPen);
+			painter.drawLine(splitPosition(), itemRect.top(), splitPosition(),
+				itemRect.bottom());
+			painter.restore();
 		}
 		itemRect.translate(0, m_itemHeight);
-		if (!delegate || !delegate->isSplittable())
-		{
-			if (splitLineY2 > splitLineY1)
-			{
-				painter.save();
-				painter.setPen(splitLinePen);
-				painter.drawLine(
-					splitLineX, splitLineY1, splitLineX, splitLineY2);
-				painter.restore();
-			}
-			splitLineY1 = itemRect.top();
-		}
-		splitLineY2 = itemRect.top();
 	}
 }
 
@@ -493,6 +487,7 @@ static const int TOLERANCE = 3;
 
 void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 {
+	m_mouseCaptured = false;
 	if (e->button() == Qt::RightButton)
 	{
 		auto property = getPropertyAt(e->pos());
@@ -513,8 +508,7 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		: false;
 	if (isSplittableItem && qAbs(e->x() - splitPosition()) < TOLERANCE)
 	{
-		Q_ASSERT(!m_rubberBand);
-		m_rubberBand = new QRubberBand(QRubberBand::Line, this);
+		m_rubberBand.reset(new QRubberBand(QRubberBand::Line, this));
 
 		QRect rect = viewport()->rect();
 		rect.setLeft(e->x());
@@ -526,7 +520,7 @@ void QtnPropertyView::mousePressEvent(QMouseEvent *e)
 		if (index >= 0)
 		{
 			changeActivePropertyByIndex(index);
-			handleMouseEvent(index, e, e->pos());
+			m_mouseCaptured = handleMouseEvent(index, e, e->pos());
 		}
 	}
 	QAbstractScrollArea::mousePressEvent(e);
@@ -542,7 +536,6 @@ void QtnPropertyView::mouseReleaseEvent(QMouseEvent *e)
 
 	if (m_rubberBand)
 	{
-		delete m_rubberBand;
 		m_rubberBand = nullptr;
 
 		// update split ratio
@@ -555,6 +548,7 @@ void QtnPropertyView::mouseReleaseEvent(QMouseEvent *e)
 	}
 
 	QAbstractScrollArea::mouseReleaseEvent(e);
+	m_mouseCaptured = false;
 }
 
 void QtnPropertyView::mouseMoveEvent(QMouseEvent *e)

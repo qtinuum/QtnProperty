@@ -1,6 +1,9 @@
 QtnProperty
 ===========
 
+v2.0.2  18.12.2020
+    [FIX] Don't break property view splitter with drag action
+
 v2.0.1  30.11.2020
     [REFINE] Show splitter line and change mouse cursor only for splittable property delegates
     [FIX] Correct stripping redundant digits after decimal point when converting floating-point value to locale string
@@ -19,8 +22,8 @@ v2.0.0  20.11.2020
     [NEW] QtnInt64SpinBox - used in uint and int64 properties
     [NEW] QtnCompleterLineEdit - autocomplete popup view with input text highlighted (used in QtnPropertyDelegateQStringCallback)
     [NEW] Property delegates for:
-        int64, uint64, QPointF, QSizeF, QRectF, 
-        QVector3D, Button, QBrush, QPen, QVariant, QKeySequence 
+        int64, uint64, QPointF, QSizeF, QRectF,
+        QVector3D, Button, QBrush, QPen, QVariant, QKeySequence
     [NEW] Editing QVariant with CustomProperyEditorDialog and CustomPropertyWidget
     [NEW] Ability to set custom property delegate factory for QtnPropertyView with delegateFactory()->setSuperFactory(factory)
     [NEW] QtnPropertyDelegateMetaEnum - property delegate for registered enums (Register with QtnPropertyDelegateMetaEnum::Register, and use custom delegate factory)
