@@ -44,6 +44,7 @@ limitations under the License.
 #include "QtnProperty/PropertyInt64.h"
 #include "QtnProperty/PropertyUInt64.h"
 #include "QtnProperty/MultiProperty.h"
+#include "QtnProperty/PropertyQVariant.h"
 
 #include <QDebug>
 
@@ -252,6 +253,7 @@ void QtnPropertyDelegateFactory::registerDefaultDelegates(
 	QtnPropertyDelegateQBrushStyle::Register(factory);
 	QtnPropertyDelegateQKeySequence::Register(factory);
 	QtnPropertyDelegateQVector3D::Register(factory);
+	QtnPropertyDelegateQVariant::Register(factory);
 	QtnMultiPropertyDelegate::Register(factory);
 }
 
