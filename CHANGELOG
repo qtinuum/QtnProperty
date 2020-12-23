@@ -1,6 +1,9 @@
 QtnProperty
 ===========
 
+v2.0.3  23.12.2020
+    [FIX] Register QVariant property delegate
+
 v2.0.2  18.12.2020
     [FIX] Don't break property view splitter with drag action
 
