@@ -15,6 +15,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "DoubleSpinBox.h"
+#include <QKeyEvent>
 
 QtnDoubleSpinBox::QtnDoubleSpinBox(QWidget *parent)
 	: QDoubleSpinBox(parent)
@@ -24,6 +25,14 @@ QtnDoubleSpinBox::QtnDoubleSpinBox(QWidget *parent)
 QString QtnDoubleSpinBox::textFromValue(double val) const
 {
 	return valueToText(val, locale(), decimals(), isGroupSeparatorShown());
+}
+
+QValidator::State QtnDoubleSpinBox::validate(QString& text, int& pos) const
+{
+	for (auto& chr : text)
+		if (chr == QLatin1Char('.') || chr == QLatin1Char(','))
+			chr = locale().decimalPoint();
+	return QDoubleSpinBox::validate(text, pos);
 }
 
 QString QtnDoubleSpinBox::valueToText(
