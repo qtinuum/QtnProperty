@@ -15,7 +15,6 @@ limitations under the License.
 *******************************************************************************/
 
 #include "DoubleSpinBox.h"
-#include <QKeyEvent>
 
 QtnDoubleSpinBox::QtnDoubleSpinBox(QWidget *parent)
 	: QDoubleSpinBox(parent)
