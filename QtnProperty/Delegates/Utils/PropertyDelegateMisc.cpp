@@ -473,7 +473,9 @@ bool QtnPropertyDelegateWithValueEditor::acceptKeyPressedForInplaceEditImpl(
 	QKeyEvent *keyEvent) const
 {
 	int key = keyEvent->key();
-	return (key == Qt::Key_Space) || (key == Qt::Key_Return);
+    return  (key == Qt::Key_Space) ||
+            (key == Qt::Key_Return) ||
+            (key == Qt::Key_Enter);
 }
 
 QLineEdit *QtnPropertyDelegateWithValueEditor::createValueEditorLineEdit(
