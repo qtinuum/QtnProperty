@@ -88,6 +88,7 @@ public:
     QtnPropertySetSamplePS& operator=(const QtnPropertySetSamplePS& other);
     
     // start children declarations
+    QtnPropertyMyColor& myColor;
     QtnPropertyBool& BoolProperty;
     QtnPropertyButton& ButtonProperty;
     QtnPropertyButton& ButtonLinkProperty;

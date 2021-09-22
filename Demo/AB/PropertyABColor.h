@@ -41,4 +41,29 @@ Q_SIGNALS:
 	void click(const QtnPropertyABColor *property);
 };
 
+struct MyColor
+{
+    int red = 0;
+    int green = 0;
+    int blue = 0;
+};
+
+class QtnPropertyMyColor : public QtnSinglePropertyValueAs<QtnPropertyQColorBase, MyColor>
+{
+    Q_OBJECT
+
+private:
+    QtnPropertyMyColor(const QtnPropertyMyColor &other) Q_DECL_EQ_DELETE;
+
+public:
+    explicit QtnPropertyMyColor(QObject *parent = nullptr)
+        : QtnSinglePropertyValueAs<QtnPropertyQColorBase, MyColor>(parent)
+    {
+    }
+
+protected:
+    bool fromActualValue(const ValueTypeStore& actualValue, OldValueType& oldValue) const override;
+    bool toActualValue(ValueTypeStore& actualValue, const OldValueType& oldValue) const override;
+};
+
 #endif // PROPERTY_AB_COLOR_H
