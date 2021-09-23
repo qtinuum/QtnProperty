@@ -32,13 +32,13 @@ template <typename T, typename EqPred = std::equal_to<T>>
 class QtnSinglePropertyBase : public QtnProperty
 {
 public:
-    using ValueType = T;
+	using ValueType = T;
 	using ValueTypeStore = typename std::decay<ValueType>::type;
-    using ValueTag = PropertyValueTag<QtnSinglePropertyBase<T, EqPred>>;
+	using ValueTag = PropertyValueTag<QtnSinglePropertyBase<T, EqPred>>;
 
 	inline ValueType value() const
 	{
-        return valueImpl(ValueTag());
+		return valueImpl(ValueTag());
 	}
 
 	bool setValue(ValueType newValue,
@@ -119,7 +119,7 @@ protected:
 		}
 	}
 
-    virtual ValueType valueImpl(ValueTag) const = 0;
+	virtual ValueType valueImpl(ValueTag) const = 0;
 	virtual void setValueImpl(
 		ValueType newValue, QtnPropertyChangeReason reason) = 0;
 	virtual bool isValueAcceptedImpl(ValueType)
@@ -189,107 +189,145 @@ template <typename QtnSinglePropertyBaseType>
 class QtnSinglePropertyBaseAsImpl : public QtnSinglePropertyBaseType
 {
 public:
-    using BaseValueType = typename QtnSinglePropertyBaseType::ValueType;
-    using BaseValueTypeStore = typename QtnSinglePropertyBaseType::ValueTypeStore;
+	using BaseValueType = typename QtnSinglePropertyBaseType::ValueType;
+	using BaseValueTypeStore = typename QtnSinglePropertyBaseType::ValueTypeStore;
 
 protected:
-    virtual BaseValueType valueBaseImpl() const = 0;
-    virtual void setValueBaseImpl(BaseValueType newValue, QtnPropertyChangeReason reason) = 0;
+	virtual BaseValueType valueBaseImpl() const = 0;
+	virtual void setValueBaseImpl(BaseValueType newValue, QtnPropertyChangeReason reason) = 0;
 
 private:
-    BaseValueType valueImpl() const final
-    {
-        return valueBaseImpl();
-    }
-    void setValueImpl(BaseValueType newValue, QtnPropertyChangeReason reason) final
-    {
-        setValueBaseImpl(std::move(newValue), reason);
-    }
+	BaseValueType valueImpl() const final
+	{
+		return valueBaseImpl();
+	}
+	void setValueImpl(BaseValueType newValue, QtnPropertyChangeReason reason) final
+	{
+		setValueBaseImpl(std::move(newValue), reason);
+	}
 };
 */
-template <typename QtnSinglePropertyBaseType, typename ActualValueType>
+template <typename QtnSinglePropertyBaseType, typename ActualValueType, typename EqPred = std::equal_to<ActualValueType>>
 class QtnSinglePropertyBaseAs : public QtnSinglePropertyBaseType
 {
 public:
-    using ThisPropertyType = QtnSinglePropertyBaseAs<QtnSinglePropertyBaseType, ActualValueType>;
-    using BasePropertyType = QtnSinglePropertyBaseType;
+	using ThisPropertyType = QtnSinglePropertyBaseAs<QtnSinglePropertyBaseType, ActualValueType, EqPred>;
+	using BasePropertyType = QtnSinglePropertyBaseType;
 
-    using BaseValueType = typename QtnSinglePropertyBaseType::ValueType;
-    using BaseValueTypeStore = typename QtnSinglePropertyBaseType::ValueTypeStore;
-    using BaseValueTag = typename QtnSinglePropertyBaseType::ValueTag;
+	using BaseValueType = typename QtnSinglePropertyBaseType::ValueType;
+	using BaseValueTypeStore = typename QtnSinglePropertyBaseType::ValueTypeStore;
+	using BaseValueTag = typename QtnSinglePropertyBaseType::ValueTag;
 
-    using ValueType = ActualValueType;
-    using ValueTypeStore = typename std::decay<ValueType>::type;
-    using ValueTag = PropertyValueTag<ThisPropertyType>;
+	using ValueType = ActualValueType;
+	using ValueTypeStore = typename std::decay<ValueType>::type;
+	using ValueTag = PropertyValueTag<ThisPropertyType>;
 
-    inline ValueType value() const
-    {
-        return valueImpl(ValueTag());
-    }
+	inline ValueType value() const
+	{
+		return valueImpl(ValueTag());
+	}
 
-    bool setValue(ValueType newValue,
-        QtnPropertyChangeReason reason = QtnPropertyChangeReason())
-    {
-        BaseValueTypeStore baseValue = BaseValueTypeStore();
-        if (!fromActualValue(std::move(newValue), baseValue))
-            return false;
+	bool setValue(ValueType newValue,
+		QtnPropertyChangeReason reason = QtnPropertyChangeReason())
+	{
+		BaseValueTypeStore baseValue = BaseValueTypeStore();
+		if (!fromActualValue(std::move(newValue), baseValue))
+			return false;
 
-        return BasePropertyType::setValue(baseValue, reason);
-    }
+		return BasePropertyType::setValue(baseValue, reason);
+	}
 
-    inline operator ValueType() const
-    {
-        return value();
-    }
+	inline operator ValueType() const
+	{
+		return value();
+	}
 
-    inline ThisPropertyType &operator=(ValueType newValue)
-    {
-        setValue(newValue);
-        return *this;
-    }
+	inline ThisPropertyType &operator=(ValueType newValue)
+	{
+		setValue(newValue);
+		return *this;
+	}
 
-    inline ThisPropertyType &operator=(const ThisPropertyType &newValue)
-    {
-        setValue(newValue.value());
-        return *this;
-    }
+	inline ThisPropertyType &operator=(const ThisPropertyType &newValue)
+	{
+		setValue(newValue.value());
+		return *this;
+	}
 
 protected:
-    explicit QtnSinglePropertyBaseAs(QObject *parent)
-        : BasePropertyType(parent)
-    {
-    }
+	explicit QtnSinglePropertyBaseAs(QObject *parent)
+		: BasePropertyType(parent)
+	{
+	}
 
-    virtual ValueType valueImpl(ValueTag) const = 0;
-    virtual void setValueImpl(ValueType newValue, QtnPropertyChangeReason reason) = 0;
+	virtual bool fromActualValue(ValueType actualValue, BaseValueTypeStore& baseValue) const = 0;
+	virtual bool toActualValue(ValueTypeStore& actualValue, BaseValueType baseValue) const = 0;
 
-    virtual bool fromActualValue(ValueType actualValue, BaseValueTypeStore& baseValue) const = 0;
-    virtual bool toActualValue(ValueTypeStore& actualValue, BaseValueType baseValue) const = 0;
+	virtual ValueType valueImpl(ValueTag) const = 0;
+	virtual void setValueImpl(ValueType newValue, QtnPropertyChangeReason reason) = 0;
 
-    BaseValueType valueImpl(BaseValueTag) const override
-    {
-        BaseValueTypeStore baseValue = BaseValueTypeStore();
-        fromActualValue(value(), baseValue);
-        return baseValue;
-    }
+	virtual bool isValueAcceptedImpl(ValueType)
+	{
+		return true;
+	}
+
+	virtual bool defaultValueImpl(ValueTypeStore &to) const
+	{
+		Q_UNUSED(to);
+		return false;
+	}
+
+	virtual bool isValueEqualImpl(ValueType valueToCompare)
+	{
+		return EqPred()(valueToCompare, value());
+	}
+
+	BaseValueType valueImpl(BaseValueTag) const override
+	{
+		BaseValueTypeStore baseValue = BaseValueTypeStore();
+		fromActualValue(value(), baseValue);
+		return baseValue;
+	}
+
+	virtual bool isValueAcceptedImpl(BaseValueType valueToAccept) override
+	{
+		ValueTypeStore value = ValueTypeStore();
+		toActualValue(value, std::move(valueToAccept));
+		return isValueAcceptedImpl(std::move(value));
+	}
+
+	virtual bool isValueEqualImpl(BaseValueType valueToCompare) override
+	{
+		ValueTypeStore value = ValueTypeStore();
+		toActualValue(value, std::move(valueToCompare));
+		return isValueEqualImpl(std::move(value));
+	}
+
+	virtual bool defaultValueImpl(BaseValueTypeStore &to) const override
+	{
+		ValueTypeStore value = ValueTypeStore();
+		if (defaultValueImpl(value))
+			return fromActualValue(value, to);
+		return false;
+	}
 
 private:
-    void setValueImpl(
-        BaseValueType newValue, QtnPropertyChangeReason reason) override
-    {
-        ValueTypeStore value = ValueTypeStore();
-        toActualValue(value, std::move(newValue));
-        setValueImpl(std::move(value), reason);
-    }
+	void setValueImpl(
+		BaseValueType newValue, QtnPropertyChangeReason reason) override
+	{
+		ValueTypeStore value = ValueTypeStore();
+		toActualValue(value, std::move(newValue));
+		setValueImpl(std::move(value), reason);
+	}
 };
 
 template <typename QtnSinglePropertyType>
 class QtnSinglePropertyValue : public QtnSinglePropertyType
 {
 public:
-    using ValueType = typename QtnSinglePropertyType::ValueType;
-    using ValueTypeStore = typename QtnSinglePropertyType::ValueTypeStore;
-    using ValueTag = typename QtnSinglePropertyType::ValueTag;
+	using ValueType = typename QtnSinglePropertyType::ValueType;
+	using ValueTypeStore = typename QtnSinglePropertyType::ValueTypeStore;
+	using ValueTag = typename QtnSinglePropertyType::ValueTag;
 
 protected:
 	explicit QtnSinglePropertyValue(QObject *parent)
@@ -298,7 +336,7 @@ protected:
 	{
 	}
 
-    ValueType valueImpl(ValueTag) const override
+	ValueType valueImpl(ValueTag) const override
 	{
 		return m_value;
 	}
@@ -319,14 +357,14 @@ template <typename QtnSinglePropertyType>
 class QtnSinglePropertyCallback : public QtnSinglePropertyType
 {
 public:
-    using ValueType = typename QtnSinglePropertyType::ValueType;
-    using ValueTypeStore = typename QtnSinglePropertyType::ValueTypeStore;
-    using ValueTag = typename QtnSinglePropertyType::ValueTag;
+	using ValueType = typename QtnSinglePropertyType::ValueType;
+	using ValueTypeStore = typename QtnSinglePropertyType::ValueTypeStore;
+	using ValueTag = typename QtnSinglePropertyType::ValueTag;
 
-    using CallbackValueGet = std::function<ValueTypeStore()>;
-    using CallbackValueSet = std::function<void(ValueType, QtnPropertyChangeReason)>;
-    using CallbackValueAccepted = std::function<bool(ValueType)>;
-    using CallbackValueEqual = std::function<bool(ValueType)>;
+	using CallbackValueGet = std::function<ValueTypeStore()>;
+	using CallbackValueSet = std::function<void(ValueType, QtnPropertyChangeReason)>;
+	using CallbackValueAccepted = std::function<bool(ValueType)>;
+	using CallbackValueEqual = std::function<bool(ValueType)>;
 
 	inline const CallbackValueGet &callbackValueDefault() const
 	{
@@ -386,7 +424,7 @@ protected:
 	{
 	}
 
-    virtual ValueType valueImpl(ValueTag) const override
+	virtual ValueType valueImpl(ValueTag) const override
 	{
 		Q_ASSERT(m_callbackValueGet);
 		return m_callbackValueGet();
@@ -633,7 +671,7 @@ class QtnNumericPropertyValue : public QtnSinglePropertyType
 {
 public:
 	using ValueType = typename QtnSinglePropertyType::ValueType;
-    using ValueTag = typename QtnSinglePropertyType::ValueTag;
+	using ValueTag = typename QtnSinglePropertyType::ValueTag;
 
 	inline ValueType defaultValue() const
 	{
@@ -660,7 +698,7 @@ protected:
 		return true;
 	}
 
-    virtual ValueType valueImpl(ValueTag) const override
+	virtual ValueType valueImpl(ValueTag) const override
 	{
 		return m_value;
 	}
