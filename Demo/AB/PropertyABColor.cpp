@@ -28,16 +28,16 @@ void QtnPropertyABColor::setClickHandler(
 	QObject::connect(this, &QtnPropertyABColor::click, clickHandler);
 }
 
-bool QtnPropertyMyColor::fromActualValue(const ValueTypeStore& actualValue, OldValueType& oldValue) const
+bool QtnPropertyMyColor::fromActualValue(ValueType actualValue, BaseValueTypeStore& baseValue) const
 {
-    oldValue = QColor::fromRgb(actualValue.red, actualValue.green, actualValue.blue);
+    baseValue = QColor::fromRgb(actualValue.red, actualValue.green, actualValue.blue);
     return true;
 }
 
-bool QtnPropertyMyColor::toActualValue(ValueTypeStore& actualValue, const OldValueType& oldValue) const
+bool QtnPropertyMyColor::toActualValue(ValueTypeStore& actualValue, BaseValueType baseValue) const
 {
-    actualValue.red = oldValue.red();
-    actualValue.green = oldValue.green();
-    actualValue.blue = oldValue.blue();
+    actualValue.red = baseValue.red();
+    actualValue.green = baseValue.green();
+    actualValue.blue = baseValue.blue();
     return true;
 }
