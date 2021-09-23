@@ -216,6 +216,7 @@ void QtnPropertySetSubPropertySetType::connectDelegates()
 
 QtnPropertySetSamplePS::QtnPropertySetSamplePS(QObject* parent)
     : QtnPropertySet(parent)
+    , myColor(*qtnCreateProperty<QtnPropertyMyColor>(this))
     , BoolProperty(*qtnCreateProperty<QtnPropertyBool>(this))
     , ButtonProperty(*qtnCreateProperty<QtnPropertyButton>(this))
     , ButtonLinkProperty(*qtnCreateProperty<QtnPropertyButton>(this))
@@ -272,6 +273,7 @@ QtnPropertySetSamplePS& QtnPropertySetSamplePS::operator=(const QtnPropertySetSa
 {
     Q_UNUSED(other);
 
+    myColor = other.myColor;
     BoolProperty = other.BoolProperty;
     ButtonProperty = other.ButtonProperty;
     ButtonLinkProperty = other.ButtonLinkProperty;
@@ -336,6 +338,11 @@ bool QtnPropertySetSamplePS::copyValuesImpl(QtnPropertySet* propertySetCopyFrom,
     auto theCopyFrom = qobject_cast<QtnPropertySetSamplePS*>(propertySetCopyFrom);
     if (!theCopyFrom)
         return false;
+
+    if (!(theCopyFrom->myColor.state() & ignoreMask))
+    {
+        myColor = theCopyFrom->myColor;
+    }
 
     if (!(theCopyFrom->BoolProperty.state() & ignoreMask))
     {
@@ -545,6 +552,10 @@ void QtnPropertySetSamplePS::init()
     setName(SamplePS_name);
     
     // start children initialization
+    static QString myColor_name = QStringLiteral("myColor");
+    myColor.setName(myColor_name);
+    static QString myColor_description = "Property to hold MyColor values.";
+    myColor.setDescription(myColor_description);
     static QString BoolProperty_name = QStringLiteral("BoolProperty");
     BoolProperty.setName(BoolProperty_name);
     static QString BoolProperty_description = "Property to hold boolean values.";

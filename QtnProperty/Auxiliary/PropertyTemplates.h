@@ -212,6 +212,75 @@ private:
 	Q_DISABLE_COPY(QtnSinglePropertyValue)
 };
 
+template <typename QtnSinglePropertyType, typename ActualValueType>
+class QtnSinglePropertyValueAs : public QtnSinglePropertyType
+{
+public:
+    using ThisPropertyType = QtnSinglePropertyValueAs<QtnSinglePropertyType, ActualValueType>;
+    using OldValueType = typename QtnSinglePropertyType::ValueType;
+    using OldValueTypeStore = typename QtnSinglePropertyType::ValueTypeStore;
+    using ValueType = ActualValueType;
+    using ValueTypeStore = typename std::decay<ValueType>::type;
+
+    inline ValueType value() const
+    {
+        return m_value;
+    }
+
+    bool setValue(ValueType newValue,
+        QtnPropertyChangeReason reason = QtnPropertyChangeReason())
+    {
+        OldValueType v = OldValueType();
+        if (!fromActualValue(newValue, v))
+            return false;
+
+        return QtnSinglePropertyType::setValue(v, reason);
+    }
+
+    inline operator ValueType() const
+    {
+        return value();
+    }
+
+    inline ThisPropertyType &operator=(ValueType newValue)
+    {
+        setValue(newValue);
+        return *this;
+    }
+
+    inline ThisPropertyType &operator=(const ThisPropertyType &newValue)
+    {
+        setValue(newValue.value());
+        return *this;
+    }
+
+protected:
+    explicit QtnSinglePropertyValueAs(QObject *parent)
+        : QtnSinglePropertyType(parent)
+        , m_value(ValueTypeStore())
+    {
+    }
+
+    virtual bool fromActualValue(const ValueTypeStore& actualValue, OldValueType& oldValue) const = 0;
+    virtual bool toActualValue(ValueTypeStore& actualValue, const OldValueType& oldValue) const = 0;
+
+    OldValueType valueImpl() const override
+    {
+        OldValueType value = OldValueType();
+        fromActualValue(m_value, value);
+        return value;
+    }
+
+    void setValueImpl(
+        OldValueType newValue, QtnPropertyChangeReason /*reason*/) override
+    {
+        toActualValue(m_value, newValue);
+    }
+
+private:
+    ValueTypeStore m_value;
+};
+
 template <typename QtnSinglePropertyType>
 class QtnSinglePropertyCallback : public QtnSinglePropertyType
 {

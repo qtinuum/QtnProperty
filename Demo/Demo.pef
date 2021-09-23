@@ -26,6 +26,11 @@ enum FLAGS
 
 property_set SamplePS
 {
+	MyColor myColor
+	{
+        description = "Property to hold MyColor values.";
+	}
+	
     Bool BoolProperty
     {
         description = "Property to hold boolean values.";
