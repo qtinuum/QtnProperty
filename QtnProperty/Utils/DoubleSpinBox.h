@@ -22,9 +22,10 @@ limitations under the License.
 class QTN_IMPORT_EXPORT QtnDoubleSpinBox : public QDoubleSpinBox
 {
 public:
-	explicit QtnDoubleSpinBox(QWidget *parent = 0);
+	explicit QtnDoubleSpinBox(QWidget *parent = nullptr);
 
 	virtual QString textFromValue(double val) const override;
+	virtual QValidator::State validate(QString &text, int &pos) const override;
 
 	static QString valueToText(double value, const QLocale &locale = QLocale(),
 		int decimals = 15, bool groupSeparatorShown = false);
