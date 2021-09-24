@@ -228,7 +228,7 @@ QtnPropertyQColorLineEditBttnHandler::QtnPropertyQColorLineEditBttnHandler(
 		editor.toolButton->setEnabled(false);
 	}
 
-	updateEditor();
+	QtnPropertyQColorLineEditBttnHandler::updateEditor();
 	editor.lineEdit->installEventFilter(this);
 	QObject::connect(editor.toolButton, &QToolButton::clicked, this,
 		&QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked);
@@ -274,8 +274,7 @@ void QtnPropertyQColorLineEditBttnHandler::onEditingFinished()
 {
 	if (canApply())
 	{
-		property().setValue(
-			QColor(editor().lineEdit->text()), delegate()->editReason());
+		property().fromStr(editor().lineEdit->text(), delegate()->editReason());
 	}
 
 	applyReset();
