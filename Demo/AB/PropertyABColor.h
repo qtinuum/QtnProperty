@@ -48,7 +48,9 @@ struct MyColor
     int blue = 0;
 };
 
-class QtnPropertyMyColor : public QtnSinglePropertyValueAs<QtnPropertyQColorBase, MyColor>
+using QtnPropertyMyColorBase = QtnSinglePropertyBaseAs<QtnPropertyQColorBase, MyColor>;
+
+class QtnPropertyMyColor : public QtnSinglePropertyValue<QtnPropertyMyColorBase>
 {
     Q_OBJECT
 
@@ -57,13 +59,15 @@ private:
 
 public:
     explicit QtnPropertyMyColor(QObject *parent = nullptr)
-        : QtnSinglePropertyValueAs<QtnPropertyQColorBase, MyColor>(parent)
+        : QtnSinglePropertyValue<QtnPropertyMyColorBase>(parent)
     {
     }
 
 protected:
-    bool fromActualValue(const ValueTypeStore& actualValue, OldValueType& oldValue) const override;
-    bool toActualValue(ValueTypeStore& actualValue, const OldValueType& oldValue) const override;
+    bool fromActualValue(ValueType actualValue, BaseValueTypeStore& baseValue) const override;
+    bool toActualValue(ValueTypeStore& actualValue, BaseValueType baseValue) const override;
+
+    P_PROPERTY_DECL_MEMBER_OPERATORS2(QtnPropertyMyColor, QtnPropertyMyColorBase)
 };
 
 #endif // PROPERTY_AB_COLOR_H
