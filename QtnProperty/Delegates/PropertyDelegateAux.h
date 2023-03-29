@@ -284,7 +284,7 @@ void fixMinMaxVariant(QVariant &minv, QVariant &maxv)
 		}
 	}
 
-	if (minv.isValid() && maxv.isValid() && maxv < minv)
+    if (minv.isValid() && maxv.isValid() && maxv.value<T>() < minv.value<T>())
 	{
 		minv = QVariant();
 		maxv = QVariant();

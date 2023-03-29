@@ -49,6 +49,7 @@ QTN_IMPORT_EXPORT QByteArray qtnLabelFalseAttr();
 QTN_IMPORT_EXPORT QByteArray qtnLabelTrueAttr();
 QTN_IMPORT_EXPORT QByteArray qtnShapeAttr();
 QTN_IMPORT_EXPORT QByteArray qtnRgbSubItemsAttr();
+QTN_IMPORT_EXPORT QByteArray qtnShowAlphaChannelAttr();
 
 QTN_IMPORT_EXPORT QByteArray qtnFillColorAttr();
 QTN_IMPORT_EXPORT QByteArray qtnLiveUpdateAttr();

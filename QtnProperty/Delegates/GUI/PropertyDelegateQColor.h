@@ -45,6 +45,7 @@ protected:
 
 private:
 	quint32 m_shape;
+    bool m_hasAlpha;
 };
 
 class QTN_IMPORT_EXPORT QtnPropertyDelegateQColorSolid

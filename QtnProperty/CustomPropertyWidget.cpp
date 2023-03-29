@@ -449,7 +449,7 @@ QMimeData *QtnCustomPropertyWidget::getPropertyDataForAction(
 					QString::fromUtf8(&json.constData()[start], end - start)
 						.trimmed());
 
-				mime->setData(kCustomPropertyData, doc.toBinaryData());
+                mime->setData(kCustomPropertyData, doc.toJson());
 
 				return mime;
 			}
@@ -566,7 +566,7 @@ bool QtnCustomPropertyWidget::applyPropertyData(const QMimeData *data,
 		if (data->hasFormat(kCustomPropertyData))
 		{
 			auto doc =
-				QJsonDocument::fromBinaryData(data->data(kCustomPropertyData));
+                QJsonDocument::fromJson(data->data(kCustomPropertyData));
 
 			if (doc.isObject())
 			{

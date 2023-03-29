@@ -43,8 +43,7 @@ void set_smaller_text_osx(QWidget *w)
 	// If any has been set explicitly, we'll leave the widget alone.
 	if (!w->testAttribute(Qt::WA_MacMiniSize) &&
 		!w->testAttribute(Qt::WA_MacSmallSize) &&
-		!w->testAttribute(Qt::WA_MacNormalSize) &&
-		!w->testAttribute(Qt::WA_MacVariableSize))
+        !w->testAttribute(Qt::WA_MacNormalSize))
 	{
 		// make the text the 'normal' size
 		w->setAttribute(Qt::WA_MacSmallSize);
@@ -61,7 +60,6 @@ QtnPropertyWidget::QtnPropertyWidget(QWidget *parent)
 	, m_descriptionPanel(0)
 {
 	m_layout->setContentsMargins(0, 0, 0, 0);
-	m_layout->setMargin(0);
 	m_layout->setSpacing(0);
 	set_smaller_text_osx(this);
 

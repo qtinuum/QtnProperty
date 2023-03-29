@@ -16,6 +16,7 @@ limitations under the License.
 *******************************************************************************/
 
 #include "PropertyEnumFlags.h"
+#include <QRegularExpression>
 
 QtnPropertyEnumFlagsBase::QtnPropertyEnumFlagsBase(QObject *parent)
 	: QtnSinglePropertyBase<QtnEnumFlagsValueType>(parent)
@@ -34,12 +35,13 @@ bool QtnPropertyEnumFlagsBase::fromStrImpl(
 
 	if (!enumStr.isEmpty() && enumStr != "0")
 	{
-		static QRegExp parserEnumFlags(
-			QStringLiteral("^\\s*([^|\\s]+)\\s*\\|(.+)$"), Qt::CaseInsensitive);
+        static QRegularExpression parserEnumFlags(
+            QStringLiteral("^\\s*([^|\\s]+)\\s*\\|(.+)$"), QRegularExpression::CaseInsensitiveOption);
 
-		while (parserEnumFlags.exactMatch(enumStr))
+        QRegularExpressionMatch match = parserEnumFlags.match(enumStr);
+        while (match.hasMatch())
 		{
-			QStringList params = parserEnumFlags.capturedTexts();
+            QStringList params = match.capturedTexts();
 
 			if (params.size() != 3)
 				return false;
@@ -52,6 +54,7 @@ bool QtnPropertyEnumFlagsBase::fromStrImpl(
 			val = val | enumValue->value();
 
 			enumStr = params[2];
+            match = parserEnumFlags.match(enumStr);
 		}
 
 		const QtnEnumValueInfo *enumValue = m_enumInfo->fromStr(enumStr);

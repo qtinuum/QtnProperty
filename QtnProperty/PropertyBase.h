@@ -147,8 +147,9 @@ public:
 	void setDelegateInfo(const QtnPropertyDelegateInfo &delegateInfo);
 	void setDelegateInfoCallback(const DelegateInfoCallback &callback);
 
-	void setDelegateAttribute(
-		const QByteArray &attributeName, const QVariant &attributeValue);
+    void setDelegateAttribute(const QByteArray &attributeName,
+                              const QVariant &attributeValue,
+                              QtnPropertyChangeReason reason = QtnPropertyChangeReason());
 
 Q_SIGNALS:
 	void propertyWillChange(QtnPropertyChangeReason reason,

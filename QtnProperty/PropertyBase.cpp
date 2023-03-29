@@ -20,7 +20,7 @@ limitations under the License.
 #include "PropertySet.h"
 #include "PropertyConnector.h"
 
-#include <QScriptEngine>
+#include <QIODevice>
 #include <QCoreApplication>
 
 const qint32 QtnPropertyIDInvalid = -1;
@@ -64,113 +64,6 @@ private:
 	QtnPropertyBase::DelegateInfoCallback m_callback;
 	QScopedPointer<QtnPropertyDelegateInfo> m_delegateInfo;
 };
-
-static QScriptValue qtnPropertyChangeReasonToScriptValue(
-	QScriptEngine *engine, const QtnPropertyChangeReason &val)
-{
-	QScriptValue obj(engine, QtnPropertyChangeReason::Int(val));
-	return obj;
-}
-
-static void qtnPropertyChangeReasonFromScriptValue(
-	const QScriptValue &obj, QtnPropertyChangeReason &val)
-{
-	val = (QtnPropertyChangeReason::enum_type) obj.toInt32();
-}
-
-static QScriptValue qtnPropertyValuePtrToScriptValue(
-	QScriptEngine *engine, const QtnPropertyValuePtr &val)
-{
-	Q_UNUSED(engine);
-	Q_UNUSED(val);
-	// no sutable conversion
-	return QScriptValue();
-}
-
-static void qtnPropertyValuePtrFromScriptValue(
-	const QScriptValue &obj, QtnPropertyValuePtr &val)
-{
-	Q_UNUSED(obj);
-	Q_UNUSED(val);
-	// no sutable conversion
-}
-
-typedef const QtnPropertyBase *QtnPropertyBasePtr_t;
-
-static QScriptValue qtnPropertyBasePtrToScriptValue(
-	QScriptEngine *engine, const QtnPropertyBasePtr_t &val)
-{
-	QtnPropertyBasePtr_t value = val;
-	QScriptValue obj = engine->newQObject(const_cast<QtnPropertyBase *>(value));
-	return obj;
-}
-
-static void qtnPropertyBasePtrFromScriptValue(
-	const QScriptValue &obj, QtnPropertyBasePtr_t &val)
-{
-	val = qobject_cast<const QtnPropertyBase *>(obj.toQObject());
-}
-
-void qtnScriptRegisterPropertyTypes(QScriptEngine *engine)
-{
-	qScriptRegisterMetaType(engine, qtnPropertyChangeReasonToScriptValue,
-		qtnPropertyChangeReasonFromScriptValue);
-	qScriptRegisterMetaType(engine, qtnPropertyValuePtrToScriptValue,
-		qtnPropertyValuePtrFromScriptValue);
-	qScriptRegisterMetaType(engine, qtnPropertyBasePtrToScriptValue,
-		qtnPropertyBasePtrFromScriptValue);
-
-	QScriptValue obj = engine->globalObject();
-
-	obj.setProperty("QtnPropertyStateNone", QtnPropertyStateNone,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateNonSimple", QtnPropertyStateNonSimple,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateInvisible", QtnPropertyStateInvisible,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateImmutable", QtnPropertyStateImmutable,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateCollapsed", QtnPropertyStateCollapsed,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyStateNonSerialized",
-		QtnPropertyStateNonSerialized,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-
-	obj.setProperty("QtnPropertyChangeReasonNewValue",
-		QtnPropertyChangeReasonNewValue,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonLoadedValue",
-		QtnPropertyChangeReasonLoadedValue,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonValue",
-		QtnPropertyChangeReasonValue,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonName", QtnPropertyChangeReasonName,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonDescription",
-		QtnPropertyChangeReasonDescription,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonId", QtnPropertyChangeReasonId,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonStateLocal",
-		QtnPropertyChangeReasonStateLocal,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonStateInherited",
-		QtnPropertyChangeReasonStateInherited,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonState",
-		QtnPropertyChangeReasonState,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonChildPropertyAdd",
-		QtnPropertyChangeReasonChildPropertyAdd,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonChildPropertyRemove",
-		QtnPropertyChangeReasonChildPropertyRemove,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-	obj.setProperty("QtnPropertyChangeReasonChildren",
-		QtnPropertyChangeReasonChildren,
-		QScriptValue::ReadOnly | QScriptValue::Undeletable);
-}
 
 extern bool qtnPropertyRegister();
 
@@ -667,7 +560,7 @@ bool QtnPropertyBase::toVariantImpl(QVariant &var) const
 	if (!toStr(str))
 		return false;
 
-	var.setValue<QString>(str);
+    var.setValue<QString>(std::move(str));
 	return true;
 }
 
@@ -916,7 +809,7 @@ void QtnPropertyBase::setDelegateInfoCallback(
 }
 
 void QtnPropertyBase::setDelegateAttribute(
-	const QByteArray &attributeName, const QVariant &attributeValue)
+    const QByteArray &attributeName, const QVariant &attributeValue, QtnPropertyChangeReason reason)
 {
 	if (m_delegateInfoGetter.isNull())
 	{
@@ -927,6 +820,9 @@ void QtnPropertyBase::setDelegateAttribute(
 	auto delegate = m_delegateInfoGetter->delegateInfo();
 	Q_ASSERT(delegate);
 	delegate->attributes[attributeName] = attributeValue;
+
+    if (reason)
+        emit propertyDidChange(reason);
 }
 
 QtnPropertyDelegateInfoGetterValue::QtnPropertyDelegateInfoGetterValue(

@@ -177,7 +177,7 @@ protected:
 
 	virtual bool toVariantImpl(QVariant &var) const override
 	{
-		var.setValue<ValueTypeStore>(value());
+        var.setValue(value());
 		return var.isValid();
 	}
 

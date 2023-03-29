@@ -44,6 +44,7 @@ public:
 	QtnProperty *createRedProperty();
 	QtnProperty *createGreenProperty();
 	QtnProperty *createBlueProperty();
+    QtnProperty *createAlphaProperty();
 
 protected:
 	// string conversion implementation
@@ -92,6 +93,9 @@ public:
 	static QString blueKey();
 	static QString blueDisplayName();
 	static QString blueDescriptionFmt();
+    static QString alphaKey();
+    static QString alphaDisplayName();
+    static QString alphaDescriptionFmt();
 
 	static bool colorFromStr(const QString &str, QColor &color);
 	static bool strFromColor(const QColor &color, QString &str);
