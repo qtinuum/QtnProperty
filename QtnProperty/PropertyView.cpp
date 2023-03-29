@@ -809,8 +809,9 @@ void QtnPropertyView::keyPressEvent(QKeyEvent *e)
 
 void QtnPropertyView::wheelEvent(QWheelEvent *e)
 {
+    QPoint pt(e->position().x(), e->position().y());
 	bool processed =
-		handleMouseEvent(visibleItemIndexByPoint(e->pos()), e, e->pos());
+        handleMouseEvent(visibleItemIndexByPoint(pt), e, pt);
 	if (processed)
 		return;
 
@@ -1144,6 +1145,18 @@ void QtnPropertyView::disconnectActiveProperty()
 	}
 }
 
+void QtnPropertyView::applyItemDelegateAttr(Item *item)
+{
+    auto property = item->property;
+    auto &delegate = item->delegate;
+    auto delegateInfo = property->delegateInfo();
+    if (delegateInfo)
+        delegate->applyAttributes(*delegateInfo);
+
+    for (auto& i : item->children)
+        applyItemDelegateAttr(i.get());
+}
+
 void QtnPropertyView::onPropertyDidChange(
 	QtnPropertyChangeReason reason, Item *item)
 {
@@ -1153,6 +1166,10 @@ void QtnPropertyView::onPropertyDidChange(
 	if (reason & QtnPropertyChangeReasonUpdateDelegate)
 	{
 		setupItemDelegate(item);
+    }
+    else if (reason & QtnPropertyChangeReasonNewAttribute)
+    {
+        applyItemDelegateAttr(item);
 	}
 
 	if (m_stopInvalidate)
@@ -1202,16 +1219,29 @@ void QtnPropertyView::setupItemDelegate(Item *item)
 		delegate->applyAttributes(*delegateInfo);
 	}
 
-	// process delegate subproperties
-	for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
-	{
-		auto child = delegate->subProperty(i);
-		Q_ASSERT(child);
+    if (property->asProperty() && property->asPropertySet())
+    {
+        auto propertySet = property->asPropertySet();
+        for (auto child : propertySet->childProperties())
+        {
+            auto childItem = createItemsTree(child);
+            childItem->parent = item;
+            item->children.emplace_back(childItem);
+        }
+    }
+    else
+    {
+        // process delegate subproperties
+        for (int i = 0, n = delegate->subPropertyCount(); i < n; ++i)
+        {
+            auto child = delegate->subProperty(i);
+            Q_ASSERT(child);
 
-		auto childItem = createItemsTree(child);
-		childItem->parent = item;
-		item->children.emplace_back(childItem);
-	}
+            auto childItem = createItemsTree(child);
+            childItem->parent = item;
+            item->children.emplace_back(childItem);
+        }
+    }
 }
 
 QtnPropertyView::VisibleItem::VisibleItem()

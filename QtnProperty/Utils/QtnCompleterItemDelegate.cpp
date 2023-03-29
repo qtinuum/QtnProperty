@@ -55,8 +55,8 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 					if (currentStr.startsWith(
 							subString, completer->caseSensitivity()))
 					{
-						highlightRect.setWidth(fm.width(QString::fromRawData(
-							currentStr.constData(), subString.length())));
+                        highlightRect.setWidth(fm.boundingRect(QString::fromRawData(
+                            currentStr.constData(), subString.length())).width());
 						contains = true;
 					}
 					break;
@@ -67,10 +67,10 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 					if (i >= 0)
 					{
 						highlightRect.setLeft(highlightRect.left() +
-							fm.width(QString::fromRawData(
-								currentStr.constData(), i)));
-						highlightRect.setWidth(fm.width(QString::fromRawData(
-							&currentStr.constData()[i], subString.length())));
+                            fm.boundingRect(QString::fromRawData(
+                                currentStr.constData(), i)).width());
+                        highlightRect.setWidth(fm.boundingRect(QString::fromRawData(
+                            &currentStr.constData()[i], subString.length())).width());
 						contains = true;
 					}
 					break;
@@ -80,9 +80,9 @@ void QtnCompleterItemDelegate::paint(QPainter *painter,
 							subString, completer->caseSensitivity()))
 					{
 						highlightRect.setLeft(highlightRect.left() +
-							fm.width(
+                            fm.boundingRect(
 								QString::fromRawData(currentStr.constData(),
-									currentStr.length() - subString.length())));
+                                    currentStr.length() - subString.length())).width());
 						contains = true;
 					}
 					break;

@@ -29,6 +29,7 @@ limitations under the License.
 #include <QComboBox>
 #include <QStyledItemDelegate>
 #include <QPaintEvent>
+#include <QAbstractItemView>
 
 QByteArray qtnShowNoPenAttr()
 {
@@ -70,7 +71,6 @@ void QtnPropertyDelegateQPenStyle::Register(QtnPropertyDelegateFactory &factory)
 
 static void drawPenStyle(QPainter &painter, QRect rect, Qt::PenStyle penStyle)
 {
-	rect.adjust(2, 2, -2, -2);
 	QPen pen = painter.pen();
 	pen.setStyle(penStyle);
 	painter.save();
@@ -133,7 +133,9 @@ void QtnPropertyDelegateQPenStyle::drawValueImpl(
 	}
 
 	Qt::PenStyle value = owner().value();
-	drawPenStyle(painter, rect, value);
+    int btnMargin = painter.style()->pixelMetric(QStyle::PM_ButtonMargin);
+    QMargins margins(btnMargin, 0, btnMargin, 0);
+    drawPenStyle(painter, rect.marginsRemoved(margins), value);
 }
 
 QWidget *QtnPropertyDelegateQPenStyle::createValueEditorImpl(
@@ -289,15 +291,29 @@ void QtnPropertyDelegateQPen::applyAttributesImpl(
 	}
 }
 
-QWidget *QtnPropertyDelegateQPen::createValueEditorImpl(
-	QWidget *parent, const QRect &rect, QtnInplaceInfo *)
+void QtnPropertyDelegateQPen::drawValueImpl(
+    QStylePainter &painter, const QRect &rect) const
 {
-	auto editor = new QLineEdit(parent);
-	editor->setGeometry(rect);
+    if (stateProperty()->isMultiValue())
+    {
+        QtnPropertyDelegateTyped::drawValueImpl(painter, rect);
+        return;
+    }
 
-	new QtnPropertyQPenLineEditHandler(this, *editor);
+    QPen pen = owner().value();
+    int btnMargin = painter.style()->pixelMetric(QStyle::PM_ButtonMargin);
+    QMargins margins(btnMargin, 0, btnMargin, 0);
 
-	return editor;
+    painter.save();
+    painter.setPen(pen);
+    drawPenStyle(painter, rect.marginsRemoved(margins), pen.style());
+    painter.restore();
+}
+
+QWidget *QtnPropertyDelegateQPen::createValueEditorImpl(
+    QWidget *parent, const QRect &rect, QtnInplaceInfo *)
+{
+    return nullptr;
 }
 
 bool QtnPropertyDelegateQPen::propertyValueToStrImpl(QString &strValue) const
@@ -311,7 +327,7 @@ void QtnPropertyPenStyleItemDelegate::paint(QPainter *painter,
 {
 	QStyledItemDelegate::paint(painter, option, index);
 	auto penStyle = index.data(Qt::UserRole).value<Qt::PenStyle>();
-	drawPenStyle(*painter, option.rect, penStyle);
+    drawPenStyle(*painter, option.rect.adjusted(2, 0, -2, 0), penStyle);
 }
 
 QtnPropertyPenStyleComboBox::QtnPropertyPenStyleComboBox(
@@ -323,8 +339,13 @@ QtnPropertyPenStyleComboBox::QtnPropertyPenStyleComboBox(
 void QtnPropertyPenStyleComboBox::customPaint(
 	QPainter &painter, const QRect &rect)
 {
+    auto itemView = view();
+    auto style = itemView->style();
 	auto penStyle = currentData().value<Qt::PenStyle>();
-	drawPenStyle(painter, rect, penStyle);
+    int btnMargin = style->pixelMetric(QStyle::PM_ButtonMargin);
+    int indMargin = style->pixelMetric(QStyle::PM_IndicatorWidth);
+    QMargins margins(btnMargin, 0, btnMargin + indMargin, 0);
+    drawPenStyle(painter, rect.marginsRemoved(margins), penStyle);
 }
 
 QtnPropertyPenStyleComboBoxHandler::QtnPropertyPenStyleComboBoxHandler(

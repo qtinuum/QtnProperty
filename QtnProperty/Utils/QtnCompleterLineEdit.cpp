@@ -207,7 +207,7 @@ bool QtnCompleterLineEdit::Completer::eventFilter(
 					disableHide = true;
 					if (watched != mLineEdit)
 					{
-						me->setLocalPos(localPos);
+                        //me->setLocalPos(localPos);
 						mLineEdit->event(event);
 					}
 					break;

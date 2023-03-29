@@ -169,6 +169,7 @@ private:
 
 	Item *findItem(Item *currentItem, const QtnPropertyBase *property) const;
 	void setupItemDelegate(Item *item);
+    void applyItemDelegateAttr(Item *item);
 
 private:
 	QtnPropertySet *m_propertySet;

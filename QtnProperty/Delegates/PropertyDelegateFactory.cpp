@@ -112,6 +112,9 @@ QtnPropertyDelegate *QtnPropertyDelegateFactory::createDelegateInternal(
 {
 	const QMetaObject *metaObject = owner.metaObject();
 
+    if (owner.asProperty() && owner.asPropertySet())
+        return createDelegateInternal(*owner.asProperty());
+
 	CreateFunction createFunction = nullptr;
 	while (metaObject && !createFunction)
 	{

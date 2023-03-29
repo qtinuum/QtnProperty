@@ -30,7 +30,7 @@ QValidator::State QtnDoubleSpinBox::validate(QString& text, int& pos) const
 {
 	for (auto& chr : text)
 		if (chr == QLatin1Char('.') || chr == QLatin1Char(','))
-			chr = locale().decimalPoint();
+            chr = locale().decimalPoint().front();
 	return QDoubleSpinBox::validate(text, pos);
 }
 

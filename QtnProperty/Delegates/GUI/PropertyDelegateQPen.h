@@ -59,6 +59,8 @@ public:
 protected:
 	void applyAttributesImpl(const QtnPropertyDelegateInfo &info) override;
 
+    void drawValueImpl(QStylePainter &painter, const QRect &rect) const override;
+
 	QWidget *createValueEditorImpl(QWidget *parent, const QRect &rect,
 		QtnInplaceInfo *inplaceInfo = nullptr) override;
 

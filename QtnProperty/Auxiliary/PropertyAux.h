@@ -61,6 +61,7 @@ enum QtnPropertyChangeReasonFlag
 	QtnPropertyChangeReasonMultiEdit = 0x1000,
 	QtnPropertyChangeReasonLockToggled = 0x2000,
 	QtnPropertyChangeReasonUpdateDelegate = 0x4000,
+    QtnPropertyChangeReasonNewAttribute = 0x8000,
 	QtnPropertyChangeReasonState = QtnPropertyChangeReasonStateLocal |
 		QtnPropertyChangeReasonStateInherited,
 	QtnPropertyChangeReasonChildren = QtnPropertyChangeReasonChildPropertyAdd |

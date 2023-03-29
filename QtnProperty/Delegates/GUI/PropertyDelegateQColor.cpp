@@ -44,13 +44,18 @@ QByteArray qtnSelectColorDelegateName()
 	return QByteArrayLiteral("SelectColor");
 }
 
+QByteArray qtnShowAlphaChannelAttr()
+{
+    return QByteArrayLiteral("hasAlpha");
+}
+
 class QtnPropertyQColorLineEditBttnHandler
 	: public QtnPropertyEditorBttnHandler<QtnPropertyQColorBase,
 		  QtnLineEditBttn>
 {
 public:
 	QtnPropertyQColorLineEditBttnHandler(
-		QtnPropertyDelegate *delegate, QtnLineEditBttn &editor);
+        QtnPropertyDelegate *delegate, QtnLineEditBttn &editor, bool showAlpha = false);
 
 protected:
 	virtual void onToolButtonClick() override;
@@ -59,12 +64,16 @@ protected:
 private:
 	void onToolButtonClicked(bool);
 	void onEditingFinished();
+
+private:
+    bool m_showAlpha;
 };
 
 QtnPropertyDelegateQColor::QtnPropertyDelegateQColor(
 	QtnPropertyQColorBase &owner)
 	: QtnPropertyDelegateTypedEx<QtnPropertyQColorBase>(owner)
 	, m_shape(QtnColorDelegateShapeSquare)
+    , m_hasAlpha(false)
 {
 }
 
@@ -79,12 +88,16 @@ void QtnPropertyDelegateQColor::applyAttributesImpl(
 	const QtnPropertyDelegateInfo &info)
 {
 	info.loadAttribute(qtnShapeAttr(), m_shape);
+    info.loadAttribute(qtnShowAlphaChannelAttr(), m_hasAlpha);
 
 	if (info.getAttribute(qtnRgbSubItemsAttr(), false))
 	{
 		addSubProperty(owner().createRedProperty());
 		addSubProperty(owner().createGreenProperty());
 		addSubProperty(owner().createBlueProperty());
+
+        if (m_hasAlpha)
+            addSubProperty(owner().createAlphaProperty());
 	}
 }
 
@@ -107,18 +120,15 @@ void QtnPropertyDelegateQColor::drawValueImpl(
 		colorRect.setWidth(colorRect.height());
 		colorRect.adjust(2, 2, -2, -2);
 
+        auto oldBrush = painter.brush();
+        painter.setBrush(value);
+
 		if (m_shape == QtnColorDelegateShapeSquare)
 		{
-			painter.fillRect(colorRect,
-				painter.style()->standardPalette().color(
-					stateProperty()->isEditableByUser() ? QPalette::Active
-														: QPalette::Disabled,
-					QPalette::Text));
-			colorRect.adjust(1, 1, -1, -1);
-			painter.fillRect(colorRect, value);
-		} else if (m_shape == QtnColorDelegateShapeCircle)
+            painter.drawRect(colorRect);
+        }
+        else if (m_shape == QtnColorDelegateShapeCircle)
 		{
-			auto oldBrush = painter.brush();
 			bool oldAntiAliasing =
 				painter.testRenderHint(QPainter::Antialiasing);
 			painter.setRenderHint(QPainter::Antialiasing);
@@ -129,6 +139,8 @@ void QtnPropertyDelegateQColor::drawValueImpl(
 			painter.setRenderHint(QPainter::Antialiasing, oldAntiAliasing);
 			painter.setBrush(oldBrush);
 		}
+
+        painter.setBrush(oldBrush);
 
 		textRect.setLeft(colorRect.right() + 3);
 	}
@@ -146,7 +158,7 @@ QWidget *QtnPropertyDelegateQColor::createValueEditorImpl(
 	QtnLineEditBttn *editor = new QtnLineEditBttn(parent);
 	editor->setGeometry(rect);
 
-	new QtnPropertyQColorLineEditBttnHandler(this, *editor);
+    new QtnPropertyQColorLineEditBttnHandler(this, *editor, m_hasAlpha);
 
 	if (inplaceInfo)
 	{
@@ -219,8 +231,9 @@ QWidget *QtnPropertyDelegateQColorSolid::createValueEditorImpl(
 }
 
 QtnPropertyQColorLineEditBttnHandler::QtnPropertyQColorLineEditBttnHandler(
-	QtnPropertyDelegate *delegate, QtnLineEditBttn &editor)
+    QtnPropertyDelegate *delegate, QtnLineEditBttn &editor, bool showAlpha)
 	: QtnPropertyEditorHandlerType(delegate, editor)
+    , m_showAlpha(showAlpha)
 {
 	if (!stateProperty()->isEditableByUser())
 	{
@@ -258,6 +271,8 @@ void QtnPropertyQColorLineEditBttnHandler::onToolButtonClicked(bool)
 	reverted = true;
 	auto dialog = new QColorDialog(property->value(), editorBase());
 	auto dialogContainer = connectDialog(dialog);
+    dialog->setOption(QColorDialog::ShowAlphaChannel, m_showAlpha);
+    dialog->setOption(QColorDialog::DontUseNativeDialog, true);
 
 	if (dialog->exec() == QDialog::Accepted && !destroyed)
 	{

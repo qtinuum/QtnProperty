@@ -87,7 +87,7 @@ QtnProperty *qtnCreateQObjectProperty(QObject *object,
 	if (it == map.end())
 		return nullptr;
 
-	if (!metaProperty.isDesignable(object) || !metaProperty.isReadable())
+    if (!metaProperty.isDesignable() || !metaProperty.isReadable())
 		return nullptr;
 
 	QtnProperty *property = it.value()(object, metaProperty);

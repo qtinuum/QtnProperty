@@ -22,6 +22,9 @@ limitations under the License.
 
 #include <QPainterPath>
 
+QtnPropertyDelegate::QtnBranchIndicatorStyleFlag
+    QtnPropertyDelegate::m_branchIndicatorStyle = QtnPropertyDelegate::QtnBranchIndicatorStyleDefault;
+
 QtnPropertyDelegate::QtnPropertyDelegate(QtnPropertyBase &ownerProperty)
 	: m_ownerProperty(&ownerProperty)
 	, m_stateProperty(nullptr)
@@ -75,6 +78,7 @@ void QtnPropertyDelegate::applySubPropertyInfo(
 				}
 			}
 		}
+        break;
 
 		default:
 			break;
@@ -214,55 +218,74 @@ void QtnPropertyDelegate::addSubItemBranchNode(
 	if (!brItem.rect.isValid())
 		return;
 
-	brItem.drawHandler = [this](
-							 QtnDrawContext &context, const QtnSubItem &item) {
-		auto &painter = *context.painter;
-		QRectF branchRect = item.rect;
-		qreal side = branchRect.height() / qreal(3.5);
-		QColor fillClr = context.palette().color(QPalette::Text);
-		QColor outlineClr = (item.state() != QtnSubItemStateNone)
-			? Qt::blue
-			: context.palette().color(QPalette::Text);
+    if (m_branchIndicatorStyle == QtnBranchIndicatorStyleDefault)
+        brItem.drawHandler = [this](QtnDrawContext &context, const QtnSubItem &item)
+        {
+            auto &painter = *context.painter;
+            QRectF branchRect = item.rect;
+            qreal side = branchRect.height() / qreal(3.5);
+            QColor fillClr = context.palette().color(QPalette::Text);
+            QColor outlineClr = (item.state() != QtnSubItemStateNone)
+                ? Qt::blue
+                : context.palette().color(QPalette::Text);
 
-		painter.save();
-		painter.setPen(outlineClr);
+            painter.save();
+            painter.setPen(outlineClr);
 
-		QPainterPath branchPath;
-		if (stateProperty()->isCollapsed())
-		{
-			branchPath.moveTo(
-				branchRect.left() + side, branchRect.top() + side);
-			branchPath.lineTo(branchRect.right() - side - 1,
-				branchRect.top() + branchRect.height() / qreal(2.0));
-			branchPath.lineTo(
-				branchRect.left() + side, branchRect.bottom() - side);
-			branchPath.closeSubpath();
-		} else
-		{
-			branchPath.moveTo(
-				branchRect.left() + side, branchRect.top() + side);
-			branchPath.lineTo(
-				branchRect.right() - side, branchRect.top() + side);
-			branchPath.lineTo(
-				branchRect.left() + branchRect.width() / qreal(2.0),
-				branchRect.bottom() - side - 1);
-			branchPath.closeSubpath();
-		}
+            QPainterPath branchPath;
+            if (stateProperty()->isCollapsed())
+            {
+                branchPath.moveTo(
+                    branchRect.left() + side, branchRect.top() + side);
+                branchPath.lineTo(branchRect.right() - side - 1,
+                    branchRect.top() + branchRect.height() / qreal(2.0));
+                branchPath.lineTo(
+                    branchRect.left() + side, branchRect.bottom() - side);
+                branchPath.closeSubpath();
+            } else
+            {
+                branchPath.moveTo(
+                    branchRect.left() + side, branchRect.top() + side);
+                branchPath.lineTo(
+                    branchRect.right() - side, branchRect.top() + side);
+                branchPath.lineTo(
+                    branchRect.left() + branchRect.width() / qreal(2.0),
+                    branchRect.bottom() - side - 1);
+                branchPath.closeSubpath();
+            }
 
-		if (painter.testRenderHint(QPainter::Antialiasing))
-		{
-			painter.fillPath(branchPath, fillClr);
-			painter.drawPath(branchPath);
-		} else
-		{
-			painter.setRenderHint(QPainter::Antialiasing, true);
-			painter.fillPath(branchPath, fillClr);
-			painter.drawPath(branchPath);
-			painter.setRenderHint(QPainter::Antialiasing, false);
-		}
+            if (painter.testRenderHint(QPainter::Antialiasing))
+            {
+                painter.fillPath(branchPath, fillClr);
+                painter.drawPath(branchPath);
+            } else
+            {
+                painter.setRenderHint(QPainter::Antialiasing, true);
+                painter.fillPath(branchPath, fillClr);
+                painter.drawPath(branchPath);
+                painter.setRenderHint(QPainter::Antialiasing, false);
+            }
 
-		painter.restore();
-	};
+            painter.restore();
+        };
+    else
+        brItem.drawHandler = [this](QtnDrawContext &context, const QtnSubItem &item)
+        {
+            auto &painter = *context.painter;
+
+            QStyleOption branchOption;
+            branchOption.rect = item.rect;
+            branchOption.palette = context.palette();
+            branchOption.state = QStyle::State_Children;
+
+            if (stateProperty()->isExpanded())
+                branchOption.state |= QStyle::State_Open;
+
+            if (item.state() != QtnSubItemStateNone)
+                branchOption.state |= QStyle::State_MouseOver;
+
+            painter.drawPrimitive(QStyle::PE_IndicatorBranch, branchOption);
+        };
 
 	brItem.eventHandler = [this](QtnEventContext &context, const QtnSubItem &,
 							  QtnPropertyToEdit *) -> bool {
